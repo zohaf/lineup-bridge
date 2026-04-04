@@ -243,9 +243,11 @@ const mergeBranding = (brandingConfig, defaultBranding) => {
   const colorPrimaryButtonDark = colorPrimaryButton ? hexToCssHsl(colorPrimaryButton, -10) : null;
   const colorPrimaryButtonLight = colorPrimaryButton ? hexToCssHsl(colorPrimaryButton, 10) : null;
 
-  const logoSettingsRaw = logoSettings || defaultBranding.logoSettings;
+  // Prefer logo size from configBranding.js (same as local logo assets).
+  const logoSettingsRaw = defaultBranding.logoSettings || logoSettings;
   const validLogoSettings =
-    logoSettingsRaw?.format === 'image' && [24, 36, 48].includes(logoSettingsRaw?.height);
+    logoSettingsRaw?.format === 'image' &&
+    [24, 36, 48, 96].includes(logoSettingsRaw?.height);
 
   const facebookImage =
     getVariantURL(socialSharingImage, 'scaled1200') || defaultBranding.facebookImageURL;
@@ -260,8 +262,11 @@ const mergeBranding = (brandingConfig, defaultBranding) => {
     colorPrimaryButtonDark,
     colorPrimaryButtonLight,
     logoSettings: validLogoSettings ? logoSettingsRaw : { format: 'image', height: 24 },
-    logoImageDesktop: logo || defaultBranding.logoImageDesktopURL,
-    logoImageMobile: logo || defaultBranding.logoImageMobileURL,
+    // Prefer logos from src/config/configBranding.js so local/bundled assets (e.g. SVG) are not
+    // overridden by the hosted branding.json logo from Console during development.
+    // To use Console-only logos, omit logoImageDesktopURL / logoImageMobileURL in configBranding.js.
+    logoImageDesktop: defaultBranding.logoImageDesktopURL || logo,
+    logoImageMobile: defaultBranding.logoImageMobileURL || logo,
     brandImage: loginBackgroundImage,
     facebookImage,
     twitterImage,

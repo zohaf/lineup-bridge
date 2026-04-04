@@ -92,7 +92,7 @@ const EmailVerificationForm = props => (
           </div>
 
           <div className={css.bottomWrapper}>
-            <NamedLink className={css.submitButton} name="LandingPage">
+            <NamedLink className={css.submitButton} name="CMSPage" params={{ pageId: 'home' }}>
               <FormattedMessage id="EmailVerificationForm.successButtonText" />
             </NamedLink>
           </div>
@@ -117,7 +117,7 @@ const EmailVerificationForm = props => (
           </div>
 
           <div className={css.bottomWrapper}>
-            <NamedLink className={css.submitButton} name="LandingPage">
+            <NamedLink className={css.submitButton} name="CMSPage" params={{ pageId: 'home' }}>
               <FormattedMessage id="EmailVerificationForm.successButtonText" />
             </NamedLink>
           </div>

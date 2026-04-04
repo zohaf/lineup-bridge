@@ -60,7 +60,7 @@
   --marketplaceColorLight: #4a12e2; /* hsl(256, 85%, 48%) */
   --marketplaceColorDark: #8d68f3; /* hsl(256, 85%, 68% */
 
-  /** 
+  /**
    * The fill color used by <PrimaryButton>
    * These might be overwritten by values from hosted assets
    */
@@ -68,7 +68,7 @@
   --colorPrimaryButtonDark: #0d542a;
   --colorPrimaryButtonLight: #1aad57;
 
-  /** 
+  /**
    * The fill color used by <SecondaryButton>
    */
   --colorSecondaryButton: var(--colorWhite);
@@ -83,10 +83,14 @@
   --colorStatusFinalState: var(--colorGrey600);
 
   /* ================ Font ================ */
-  --fontFamily: -apple-system, BlinkMacSystemFont, 'Inter', Helvetica, Arial, sans-serif,
+  /* Body: Suisse Intl Book (450). Headings: Rhymes Display Light (300). Files: public/fonts/ */
+  --fontFamily: 'Suisse Intl', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --fontFamilyHeading: 'Rhymes Display', Georgia, 'Times New Roman', serif;
+  --fontWeightHeading: 300;
+  --fontWeightBody: 450;
 
-  --fontWeightRegular: 400;
+  --fontWeightRegular: 450;
   --fontWeightMedium: 500;
   --fontWeightSemiBold: 600;
   --fontWeightBold: 700;
@@ -146,7 +150,8 @@
   /* ================ Topbar related ================ */
 
   --topbarHeight: 60px;
-  --topbarHeightDesktop: 72px;
+  /* Extra room for large header logo (96px) */
+  --topbarHeightDesktop: 112px;
 
   --TopbarMobileMenu_topMargin: 96px;
 
@@ -213,6 +218,7 @@
 
 body {
   font-family: var(--fontFamily);
+  font-weight: var(--fontWeightBody);
 
   /* A non-standard feature: https://developer.mozilla.org/en-US/docs/Web/CSS/font-smooth */
   -webkit-font-smoothing: antialiased;
@@ -267,9 +273,10 @@ a:hover {
 }
 
 h1 {
+  font-family: var(--fontFamilyHeading);
   font-size: 24px;
   line-height: 24px;
-  font-weight: var(--fontWeightBlack);
+  font-weight: var(--fontWeightHeading);
   padding: 3px 0 3px 0;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
   margin-top: 18px;
@@ -286,9 +293,10 @@ h1 {
 }
 
 h2 {
+  font-family: var(--fontFamilyHeading);
   font-size: 21px;
   line-height: 24px;
-  font-weight: var(--fontWeightBold);
+  font-weight: var(--fontWeightHeading);
 
   padding: 4px 0 2px 0;
   /* x * 6px */
@@ -306,7 +314,8 @@ h2 {
 }
 
 h3 {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 18px;
   line-height: 24px;
   /* x * 6px */
@@ -324,7 +333,8 @@ h3 {
 }
 
 h4 {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 16px;
   line-height: 30px;
   padding: 5px 0 1px 0;
@@ -343,7 +353,8 @@ h4 {
 }
 
 h5 {
-  font-weight: var(--fontWeightMedium);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 14px;
   line-height: 18px;
   /* x * 6px */
@@ -361,7 +372,8 @@ h5 {
 }
 
 h6 {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 12px;
   line-height: 18px;
   text-transform: uppercase;
@@ -384,7 +396,7 @@ li,
 p,
 pre {
   font-family: var(--fontFamily);
-  font-weight: var(--fontWeightMedium);
+  font-weight: var(--fontWeightBody);
 
   /* No margins for default font */
   font-size: 14px;
@@ -601,7 +613,7 @@ textarea {
 /* ================ Plain global CSS glasses ================ */
 
 /**
- * Note: even though these reflect element styles, 
+ * Note: even though these reflect element styles,
  * these are below element styles to allow overwrites using classes.
  */
 
@@ -626,7 +638,8 @@ textarea {
 }
 
 .h1 {
-  font-weight: var(--fontWeightBlack);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 24px;
   line-height: 24px;
 
@@ -646,7 +659,8 @@ textarea {
 }
 
 .h2 {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 21px;
   line-height: 24px;
 
@@ -666,7 +680,8 @@ textarea {
 }
 
 .h3 {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 18px;
   line-height: 24px;
   /* x * 6px */
@@ -684,7 +699,8 @@ textarea {
 }
 
 .h4 {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 16px;
   line-height: 30px;
   padding: 5px 0 1px 0;
@@ -703,7 +719,8 @@ textarea {
 }
 
 .h5 {
-  font-weight: var(--fontWeightMedium);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 14px;
   line-height: 18px;
   /* x * 6px */
@@ -721,7 +738,8 @@ textarea {
 }
 
 .h6 {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 12px;
   line-height: 18px;
   text-transform: uppercase;
@@ -769,7 +787,7 @@ textarea {
 .marketplaceBodyFontStyles,
 .marketplaceDefaultFontStyles {
   font-family: var(--fontFamily);
-  font-weight: var(--fontWeightMedium);
+  font-weight: var(--fontWeightBody);
 
   /* No margins for default font */
   font-size: 14px;
@@ -971,7 +989,7 @@ textarea {
  * For actual buttons, use components: <Button>, <PrimaryButton>, <SecondaryButton>
  *
  * To create button look-and-feel for links, etc. combine button classes in CSS Modules:
- * 
+ *
  * <Button>:
  *   composes: buttonDefault from global;
  * <PrimaryButton>:
@@ -1369,13 +1387,13 @@ textarea {
 
 /* Modal title */
 .marketplaceModalTitleStyles {
-  font-weight: var(--fontWeightBold);
+  font-family: var(--fontFamilyHeading);
+  font-weight: var(--fontWeightHeading);
   font-size: 30px;
   line-height: 36px;
   margin: 0;
 
   @media (--viewportMedium) {
-    font-weight: var(--fontWeightBold);
     line-height: 40px;
     margin: 0;
   }
@@ -1385,7 +1403,7 @@ textarea {
 .marketplaceModalParagraphStyles {
   font-size: 20px;
   line-height: 32px;
-  font-weight: var(--fontWeightMedium);
+  font-weight: var(--fontWeightBody);
   margin: 18px 0 0 0;
 
   @media (--viewportMedium) {

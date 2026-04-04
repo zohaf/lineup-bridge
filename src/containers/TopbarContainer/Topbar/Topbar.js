@@ -27,7 +27,7 @@ import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
 
 import css from './Topbar.module.css';
-import { getCurrentUserTypeRoles, showCreateListingLinkForUser } from '../../../util/userHelpers';
+import { getCurrentUserTypeRoles } from '../../../util/userHelpers';
 
 const MAX_MOBILE_SCREEN_WIDTH = 1024;
 
@@ -72,17 +72,27 @@ const getResolvedCustomLinks = (customLinks, routeConfiguration) => {
   const links = Array.isArray(customLinks) ? customLinks : [];
   return links.map(linkConfig => {
     const { type, href } = linkConfig;
-    const isInternalLink = type === 'internal' || href.charAt(0) === '/';
-    if (isInternalLink) {
-      // Internal link
+    const isFullUrl = href && (href.startsWith('http://') || href.startsWith('https://'));
+    // Hosted top-bar links often use "p/home" without a leading slash; that breaks URL parsing
+    // and falls through to ExternalLink (new tab + relative URL → /inbox/p/home).
+    const normalizedHref =
+      href && !isFullUrl && !href.startsWith('/') && !href.startsWith('//')
+        ? `/${href}`
+        : href;
+
+    const isInternalLink =
+      type === 'internal' || (normalizedHref && normalizedHref.charAt(0) === '/');
+
+    if (isInternalLink && normalizedHref) {
       try {
-        const testURL = new URL('http://my.marketplace.com' + href);
+        const testURL = new URL(`http://my.marketplace.com${normalizedHref}`);
         const matchedRoutes = matchPathname(testURL.pathname, routeConfiguration);
         if (matchedRoutes.length > 0) {
           const found = matchedRoutes[0];
           const to = { search: testURL.search, hash: testURL.hash };
           return {
             ...linkConfig,
+            href: normalizedHref,
             route: {
               name: found.route?.name,
               params: found.params,
@@ -91,11 +101,20 @@ const getResolvedCustomLinks = (customLinks, routeConfiguration) => {
           };
         }
       } catch (e) {
-        return linkConfig;
+        return { ...linkConfig, href: normalizedHref };
       }
     }
-    return linkConfig;
+    return normalizedHref ? { ...linkConfig, href: normalizedHref } : linkConfig;
   });
+};
+
+/** CMS "home" top-bar link — only for logged-in users (hide on login/signup and for guests). */
+const isHomeTopbarLink = link => {
+  if (link.route?.name === 'CMSPage' && link.route?.params?.pageId === 'home') {
+    return true;
+  }
+  const h = link.href || '';
+  return h === '/p/home' || h === 'p/home';
 };
 
 const isCMSPage = found =>
@@ -208,7 +227,8 @@ const TopbarComponent = props => {
     });
   };
 
-  const showCreateListingsLink = showCreateListingLinkForUser(config, currentUser);
+  // Hide "Post a new listing" in the header (desktop and mobile).
+  const showCreateListingsLink = false;
   const { customer: isCustomer, provider: isProvider } = getCurrentUserTypeRoles(
     config,
     currentUser
@@ -235,8 +255,18 @@ const TopbarComponent = props => {
 
   // Custom links are sorted so that group="primary" are always at the beginning of the list.
   const sortedCustomLinks = sortCustomLinks(config.topbar?.customLinks);
-  const customLinks = getResolvedCustomLinks(sortedCustomLinks, routeConfiguration);
+  const customLinksResolved = getResolvedCustomLinks(sortedCustomLinks, routeConfiguration);
   const resolvedCurrentPage = currentPage || getResolvedCurrentPage(location, routeConfiguration);
+
+  // Logged-out users on the marketing landing page only see Sign up + Log in (no search, no custom links).
+  const isLandingUnauthenticated = resolvedCurrentPage === 'LandingPage' && !isAuthenticated;
+
+  // Home (/p/home) in the top bar only when logged in — not on signup/login flows for guests.
+  const customLinksFilteredForAuth = isAuthenticated
+    ? customLinksResolved
+    : customLinksResolved.filter(link => !isHomeTopbarLink(link));
+
+  const customLinksForTopbar = isLandingUnauthenticated ? [] : customLinksFilteredForAuth;
 
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
 
@@ -254,7 +284,7 @@ const TopbarComponent = props => {
       onLogout={handleLogout}
       notificationCount={notificationCount}
       currentPage={resolvedCurrentPage}
-      customLinks={customLinks}
+      customLinks={customLinksForTopbar}
       showCreateListingsLink={showCreateListingsLink}
       inboxTab={topbarInboxTab}
     />
@@ -294,7 +324,8 @@ const TopbarComponent = props => {
     searchFormDisplay === SEARCH_DISPLAY_NOT_LANDING_PAGE && resolvedCurrentPage !== 'LandingPage';
 
   const showSearchForm =
-    showSearchOnAllPages || showSearchOnSearchPage || showSearchNotOnLandingPage;
+    !isLandingUnauthenticated &&
+    (showSearchOnAllPages || showSearchOnSearchPage || showSearchNotOnLandingPage);
 
   const mobileSearchButtonMaybe = showSearchForm ? (
     <Button
@@ -379,7 +410,7 @@ const TopbarComponent = props => {
           onLogout={handleLogout}
           onSearchSubmit={handleSubmit}
           config={config}
-          customLinks={customLinks}
+          customLinks={customLinksForTopbar}
           showSearchForm={showSearchForm}
           showCreateListingsLink={showCreateListingsLink}
           inboxTab={topbarInboxTab}

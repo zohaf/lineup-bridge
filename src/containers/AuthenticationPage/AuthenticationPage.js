@@ -70,8 +70,8 @@ export const SocialLoginButtonsMaybe = props => {
   const getDataForSSORoutes = () => {
     const baseUrl = apiBaseUrl();
 
-    // Default route where user is returned after successfull authentication
-    const defaultReturn = pathByRouteName('LandingPage', routeConfiguration);
+    // Default route where user is returned after successful authentication
+    const defaultReturn = pathByRouteName('CMSPage', routeConfiguration, { pageId: 'home' });
 
     // Route for confirming user data before creating a new user
     const defaultConfirm = pathByRouteName('ConfirmPage', routeConfiguration);
@@ -618,8 +618,8 @@ export const AuthenticationPageComponent = props => {
     // Already authenticated, redirect back to the page the user tried to access
     return <Redirect to={from} />;
   } else if (shouldRedirectToLandingPage) {
-    // Already authenticated, redirect to the landing page (this was direct access to /login or /signup)
-    return <NamedRedirect name="LandingPage" />;
+    // Already authenticated: go to app home CMS page (not the marketing landing page).
+    return <NamedRedirect name="CMSPage" params={{ pageId: 'home' }} />;
   } else if (show404) {
     // User type not found, show 404
     return <NotFoundPage staticContext={props.staticContext} />;

@@ -64,7 +64,7 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "bfj": "^9.1.2",
-    "chalk": "^v4.1.2",
+    "chalk": "^4.1.2",
     "concurrently": "^9.2.1",
     "cross-env": "10.1.0",
     "inquirer": "^8.2.6",
@@ -72,8 +72,9 @@
     "prettier": "^1.18.2"
   },
   "resolutions": {
-    "sharetribe-scripts/webpack-dev-server/express/path-to-regexp": "0.1.12",
-    "moment": "^2.30.1"
+    "moment": "^2.30.1",
+    "nopt@npm:^9.0.0": "npm:nopt@9.0.0",
+    "express/path-to-regexp": "0.1.12"
   },
   "jest": {
     "moduleNameMapper": {

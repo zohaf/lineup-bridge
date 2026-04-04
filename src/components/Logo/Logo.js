@@ -9,7 +9,8 @@ import css from './Logo.module.css';
 const HEIGHT_24 = 24;
 const HEIGHT_36 = 36;
 const HEIGHT_48 = 48;
-const HEIGHT_OPTIONS = [HEIGHT_24, HEIGHT_36, HEIGHT_48];
+const HEIGHT_96 = 96;
+const HEIGHT_OPTIONS = [HEIGHT_24, HEIGHT_36, HEIGHT_48, HEIGHT_96];
 
 // logoSettings property supports only 3 types at this point
 const isValidLogoSettings = settings =>
@@ -31,7 +32,16 @@ const getVariantData = variants => {
 
 // We have maximum heights for each logo type. It's enforced through classes
 const getHeightClassName = height => {
-  return height === HEIGHT_48 ? css.logo48 : height === HEIGHT_36 ? css.logo36 : css.logo24;
+  if (height === HEIGHT_96) {
+    return css.logo96;
+  }
+  if (height === HEIGHT_48) {
+    return css.logo48;
+  }
+  if (height === HEIGHT_36) {
+    return css.logo36;
+  }
+  return css.logo24;
 };
 
 export const LogoComponent = props => {

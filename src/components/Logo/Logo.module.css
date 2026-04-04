@@ -9,6 +9,10 @@
 
   @media (--viewportMedium) {
     margin: 6px 0;
+    /* Taller logo (e.g. 96px) needs vertical room in the desktop top bar */
+    height: auto;
+    min-height: var(--topbarHeightDesktop);
+    max-height: none;
   }
 }
 
@@ -35,4 +39,13 @@
 }
 .logo48 {
   max-height: 48px;
+}
+
+.logo96 {
+  /* ~4× default 24px; cap on small screens so the mobile bar does not explode */
+  max-height: 48px;
+
+  @media (--viewportMedium) {
+    max-height: 96px;
+  }
 }

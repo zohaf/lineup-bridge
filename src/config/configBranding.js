@@ -1,5 +1,4 @@
-import logoImageDesktop from '../assets/biketribe-logo-desktop.png';
-import logoImageMobile from '../assets/biketribe-logo-mobile.png';
+import brandLogo from '../assets/brand-logo.png';
 import brandImage from '../assets/biketribe-brandImage-1500.jpg';
 import facebookImage from '../assets/biketribe-facebook-sharing-1200x630.jpg';
 import twitterImage from '../assets/biketribe-twitter-sharing-600x314.jpg';
@@ -26,15 +25,15 @@ export const marketplaceColor = '#7c3aed';
 // If you need to fine-tune the logo, the component is defined in src/components/Logo/Logo.js
 // By default logo gets 24 pixels vertical space, but it could be wider (e.g. 180px)
 // The default images are meant for retina displays and are therefore twice as big in actual dimensions
-export const logoImageDesktopURL = logoImageDesktop;
-export const logoImageMobileURL = logoImageMobile;
+export const logoImageDesktopURL = brandLogo;
+export const logoImageMobileURL = brandLogo;
 
 // The _logoSettings_ settings for the logo. Due to constraints in current Topbar, we only support 3 height variants
 // at this point. There could be more height variants in the future and potentially other logo formats than 'image'.
 // Note: logo image is always scaled and the limiting factor is height. However, there's also maximum width,
 //       which is 370px in the Topbar. If the logo is wider than that, browser will scale it down.
 export const logoSettings = {
-  height: 24, // Hosted asset supports: 24, 36, 48
+  height: 96, // Template supports: 24, 36, 48, 96 (96 ≈ 4× default 24px bar logo)
   format: 'image',
 };
 
