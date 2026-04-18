@@ -100,10 +100,10 @@ describe('EditListingDetailsForm', () => {
     );
 
     // Pickup fields
-    const title = 'EditListingDetailsForm.title';
+    const title = 'EditListingDetailsForm.djTitle';
     expect(screen.getByText(title)).toBeInTheDocument();
 
-    const description = 'EditListingDetailsForm.description';
+    const description = 'EditListingDetailsForm.djDescription';
     expect(screen.getByText(description)).toBeInTheDocument();
 
     // Test that save button is disabled at first

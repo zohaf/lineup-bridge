@@ -34,7 +34,11 @@ import {
   pickCategoryFields,
 } from '../../../util/fieldHelpers';
 import { ensureCurrentUser, ensureListing } from '../../../util/data';
-import { INQUIRY_PROCESS_NAME, resolveLatestProcessName } from '../../../transactions/transaction';
+import {
+  INQUIRY_PROCESS_NAME,
+  resolveLatestProcessName,
+} from '../../../transactions/transaction';
+import { isListingPriceOptionalUnitType } from './EditListingPricingPanel/pricingFormValidators';
 
 // Import shared components
 import {
@@ -120,10 +124,10 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
   let labelKey = null;
   let submitButtonKey = null;
   if (tab === DETAILS) {
-    labelKey = 'EditListingWizard.tabLabelDetails';
+    labelKey = 'EditListingWizard.tabLabelDetailsDj';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetails`;
   } else if (tab === PRICING) {
-    labelKey = 'EditListingWizard.tabLabelPricing';
+    labelKey = 'EditListingWizard.tabLabelPricingDj';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.savePricing`;
   } else if (tab === PRICING_AND_STOCK) {
     labelKey = 'EditListingWizard.tabLabelPricingAndStock';
@@ -253,7 +257,7 @@ const tabCompleted = (tab, listing, config) => {
         hasValidListingFieldsInExtendedData(publicData, privateData, config)
       );
     case PRICING:
-      return !!price;
+      return isListingPriceOptionalUnitType(unitType) || !!price;
     case PRICING_AND_STOCK:
       return !!price;
     case DELIVERY:

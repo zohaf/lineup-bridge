@@ -1,7 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
-import { LinkedLogo } from '../../../../components';
+import { LinkedLogo, NamedLink } from '../../../../components';
 
+import { FormattedMessage } from '../../../../util/reactIntl';
 import Field from '../../Field';
 import BlockBuilder from '../../BlockBuilder';
 
@@ -110,36 +111,46 @@ const SectionFooter = props => {
       id={sectionId}
       className={className || css.root}
       rootClassName={rootClassName}
+      sectionContentClassName={css.sectionContentNoPadding}
       appearance={appearance}
       options={fieldOptions}
     >
       <div className={css.footer}>
         <div className={classNames(css.content, getContentCss(numberOfColumns))}>
-          <div>
-            <LinkedLogo
-              rootClassName={css.logoLink}
-              logoClassName={css.logoWrapper}
-              logoImageClassName={css.logoImage}
-              linkToExternalSite={linkLogoToExternalSite}
-              layout={logoLayout}
-            />
-          </div>
-          <div className={css.sloganMobile}>
-            <Field data={slogan} className={css.slogan} />
-          </div>
-          <div className={css.detailsInfo}>
+          <div className={css.brandingColumn}>
+            <div>
+              <LinkedLogo
+                rootClassName={css.logoLink}
+                logoClassName={css.logoWrapper}
+                logoImageClassName={css.logoImage}
+                linkToExternalSite={linkLogoToExternalSite}
+                layout={logoLayout}
+              />
+            </div>
+            <div className={css.sloganMobile}>
+              <Field data={slogan} className={css.slogan} />
+            </div>
             <div className={css.sloganDesktop}>
               <Field data={slogan} className={css.slogan} />
             </div>
+          </div>
+          <div className={classNames(css.grid, getGridCss(numberOfColumns))}>
+            <BlockBuilder blocks={blocks} sectionId={sectionId} options={options} />
+            <NamedLink
+              name="CMSPage"
+              params={{ pageId: 'contact' }}
+              className={css.footerContactLink}
+            >
+              <FormattedMessage id="SectionFooter.contactUs" />
+            </NamedLink>
+          </div>
+          <div className={css.detailsInfo}>
             {showSocialMediaLinks ? (
               <div className={css.icons}>
                 <BlockBuilder blocks={linksWithBlockId} sectionId={sectionId} options={options} />
               </div>
             ) : null}
             <Field data={copyright} className={css.copyright} />
-          </div>
-          <div className={classNames(css.grid, getGridCss(numberOfColumns))}>
-            <BlockBuilder blocks={blocks} sectionId={sectionId} options={options} />
           </div>
         </div>
       </div>

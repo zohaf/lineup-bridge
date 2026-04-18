@@ -6,6 +6,68 @@ import { fetchCurrentUser, setCurrentUser } from '../../ducks/user.duck';
 
 // ================ Async thunks ================ //
 
+//////////////////
+// Upload Image //
+//////////////////
+export const uploadImageThunk = createAsyncThunk(
+  'ContactDetailsPage/uploadImage',
+  ({ id, file }, { rejectWithValue, extra: sdk }) => {
+    const bodyParams = {
+      image: file,
+    };
+    const queryParams = {
+      expand: true,
+      'fields.image': ['variants.square-small', 'variants.square-small2x'],
+    };
+
+    return sdk.images
+      .upload(bodyParams, queryParams)
+      .then(resp => {
+        const uploadedImage = resp.data.data;
+        return { id, uploadedImage };
+      })
+      .catch(e => {
+        return rejectWithValue({ id, error: storableError(e) });
+      });
+  }
+);
+// Backward compatible wrapper for the uploadImage thunk
+export const uploadImage = actionPayload => dispatch => {
+  return dispatch(uploadImageThunk(actionPayload));
+};
+
+//////////////////////////
+// Update profile image //
+//////////////////////////
+export const updateProfileImageThunk = createAsyncThunk(
+  'ContactDetailsPage/updateProfileImage',
+  ({ profileImageId }, { dispatch, extra: sdk, rejectWithValue }) => {
+    return sdk.currentUser
+      .updateProfile(
+        { profileImageId },
+        {
+          expand: true,
+          include: ['profileImage'],
+          'fields.image': ['variants.square-small', 'variants.square-small2x'],
+        }
+      )
+      .then(response => {
+        const entities = denormalisedResponseEntities(response);
+        if (entities.length !== 1) {
+          throw new Error('Expected a resource in the sdk.currentUser.updateProfile response');
+        }
+        dispatch(setCurrentUser(entities[0]));
+        return entities[0];
+      })
+      .catch(e => {
+        return rejectWithValue(storableError(e));
+      });
+  }
+);
+export const updateProfileImage = params => dispatch => {
+  return dispatch(updateProfileImageThunk(params)).unwrap();
+};
+
 export const resetPasswordThunk = createAsyncThunk(
   'ContactDetailsPage/resetPassword',
   ({ email }, { extra: sdk, rejectWithValue }) => {
@@ -158,6 +220,11 @@ const contactDetailsSlice = createSlice({
     contactDetailsChanged: false,
     resetPasswordInProgress: false,
     resetPasswordError: null,
+    image: null,
+    uploadInProgress: false,
+    uploadImageError: null,
+    updateProfileImageInProgress: false,
+    updateProfileImageError: null,
   },
   reducers: {
     saveContactDetailsClear: state => {
@@ -169,6 +236,38 @@ const contactDetailsSlice = createSlice({
   },
   extraReducers: builder => {
     builder
+      // Upload image
+      .addCase(uploadImageThunk.pending, (state, action) => {
+        const { id, file } = action.meta.arg;
+        state.image = { id, file };
+        state.uploadInProgress = true;
+        state.uploadImageError = null;
+      })
+      .addCase(uploadImageThunk.fulfilled, (state, action) => {
+        const { id, uploadedImage } = action.payload;
+        const { file } = state.image || {};
+        state.image = { id, imageId: uploadedImage.id, file, uploadedImage };
+        state.uploadInProgress = false;
+      })
+      .addCase(uploadImageThunk.rejected, (state, action) => {
+        state.image = null;
+        state.uploadInProgress = false;
+        state.uploadImageError = action.payload?.error || action.payload;
+      })
+      // Update profile image
+      .addCase(updateProfileImageThunk.pending, state => {
+        state.updateProfileImageInProgress = true;
+        state.updateProfileImageError = null;
+      })
+      .addCase(updateProfileImageThunk.fulfilled, state => {
+        state.image = null;
+        state.updateProfileImageInProgress = false;
+      })
+      .addCase(updateProfileImageThunk.rejected, (state, action) => {
+        state.image = null;
+        state.updateProfileImageInProgress = false;
+        state.updateProfileImageError = action.payload;
+      })
       // Reset password
       .addCase(resetPasswordThunk.pending, state => {
         state.resetPasswordInProgress = true;

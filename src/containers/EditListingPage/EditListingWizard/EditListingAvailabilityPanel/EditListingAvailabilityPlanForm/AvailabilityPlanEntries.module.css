@@ -42,7 +42,7 @@
 }
 
 .hasEntries {
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 }
 
 .dayOfWeek {

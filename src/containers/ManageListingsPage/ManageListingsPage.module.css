@@ -77,17 +77,38 @@
   }
 }
 
-.createListingParagraph,
-.headingNoListings {
-  margin: 0 0 12px 0;
+/* Square dotted frame; link fills box — text centered */
+.emptyStateBox {
+  composes: a from global;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(220px, calc(100vw - 48px));
+  aspect-ratio: 1;
+  margin: 0 auto;
+  padding: 12px;
+  text-align: center;
+  text-decoration: none;
+  border-width: 4px;
+  border-style: dotted;
+  border-color: var(--colorGrey400);
+  border-radius: var(--borderRadiusMedium);
+  font-weight: var(--fontWeightMedium);
+  color: var(--colorGrey700);
 
-  @media (--viewportMedium) {
-    margin: 0 0 8px 0;
+  &:hover {
+    color: var(--marketplaceColor);
+    text-decoration: none;
   }
+}
 
-  @media (--viewportLarge) {
-    margin: 0 0 8px 0;
-  }
+.emptyStateLabel {
+  composes: textSmall from global;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: var(--fontWeightMedium);
+  color: inherit;
 }
 
 .listingCards {

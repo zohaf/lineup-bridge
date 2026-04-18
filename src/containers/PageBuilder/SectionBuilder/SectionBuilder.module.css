@@ -228,3 +228,13 @@
 .darkTheme pre {
   background-color: var(--colorGrey700);
 }
+
+/**
+ * "How it works" landing section: black frame; fill stays --colorPageBackground from SectionContainer.
+ * Set this section’s Section ID in Sharetribe Console to: how-it-works
+ */
+:global(section#how-it-works) {
+  border: 1px solid var(--colorBlack);
+  box-sizing: border-box;
+  border-radius: var(--borderRadiusMedium);
+}

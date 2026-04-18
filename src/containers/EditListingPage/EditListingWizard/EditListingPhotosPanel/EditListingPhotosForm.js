@@ -274,10 +274,6 @@ export const EditListingPhotosForm = props => {
               uploadImageError={uploadImageError}
             />
 
-            <p className={css.tip}>
-              <FormattedMessage id="EditListingPhotosForm.addImagesTip" />
-            </p>
-
             <PublishListingError error={publishListingError} />
             <ShowListingsError error={showListingsError} />
 

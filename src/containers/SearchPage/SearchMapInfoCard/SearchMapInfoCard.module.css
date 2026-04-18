@@ -42,7 +42,7 @@
   /* Font */
   color: var(--colorGrey700);
 
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   /* Dimensions */
   padding: 0;
@@ -63,7 +63,7 @@
 }
 
 .aspectratioWrapper {
-  background: var(--colorGrey100); /* Loading BG color */
+  background: var(--colorPageBackground); /* Loading BG color */
 }
 
 .rootForImage {
@@ -176,7 +176,7 @@
   transform: rotate(45deg);
 
   /* Caret should have same bg-color and border as label */
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
   border-right-style: solid;
   border-right-color: var(--colorGrey100);
   border-right-width: 1px;

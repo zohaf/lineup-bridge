@@ -53,7 +53,7 @@
   border: 1px solid var(--colorGrey100);
   border-radius: var(--borderRadiusMedium);
 
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   &:hover,
   &:focus {

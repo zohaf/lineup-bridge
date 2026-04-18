@@ -58,13 +58,6 @@ exports[`EditListingDeliveryForm matches snapshot 1`] = `
         </div>
       </div>
     </div>
-    <p
-      class="tip"
-    >
-      <span>
-        EditListingPhotosForm.addImagesTip
-      </span>
-    </p>
     <button
       class="root submitButton"
       disabled=""

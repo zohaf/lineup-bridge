@@ -272,8 +272,8 @@ describe('OrderPanel', () => {
       expect(queryAllByText('OrderPanel.priceInMobileCTA')).toHaveLength(1);
       expect(queryAllByText('OrderPanel.perUnit')).toHaveLength(1);
       expect(queryAllByText('OrderPanel.author')).toHaveLength(2);
-      expect(getByText('BookingDatesForm.bookingStartTitle')).toBeInTheDocument();
-      expect(getByText('BookingDatesForm.bookingEndTitle')).toBeInTheDocument();
+      expect(getByText('BookingDatesForm.bookingSingleDayTitle')).toBeInTheDocument();
+      expect(queryAllByText('BookingDatesForm.bookingEndTitle')).toHaveLength(0);
       expect(getByText('BookingDatesForm.requestToBook')).toBeInTheDocument();
       expect(getByText('OrderPanel.youWontBeChargedInfo')).toBeInTheDocument();
       expect(getByText('OrderPanel.ctaButtonMessageBooking')).toBeInTheDocument();

@@ -16,6 +16,7 @@ const AuthenticationPage = loadable(() => import(/* webpackChunkName: "Authentic
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
+const DjProfileGuidelinesPage = loadable(() => import(/* webpackChunkName: "DjProfileGuidelinesPage" */ '../containers/DjProfileGuidelinesPage/DjProfileGuidelinesPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ '../containers/EmailVerificationPage/EmailVerificationPage'));
 const InboxPage = loadable(() => import(/* webpackChunkName: "InboxPage" */ '../containers/InboxPage/InboxPage'));
@@ -31,7 +32,6 @@ const PasswordResetPage = loadable(() => import(/* webpackChunkName: "PasswordRe
 const PaymentMethodsPage = loadable(() => import(/* webpackChunkName: "PaymentMethodsPage" */ '../containers/PaymentMethodsPage/PaymentMethodsPage'));
 const PrivacyPolicyPage = loadable(() => import(/* webpackChunkName: "PrivacyPolicyPage" */ '../containers/PrivacyPolicyPage/PrivacyPolicyPage'));
 const ProfilePage = loadable(() => import(/* webpackChunkName: "ProfilePage" */ '../containers/ProfilePage/ProfilePage'));
-const ProfileSettingsPage = loadable(() => import(/* webpackChunkName: "ProfileSettingsPage" */ '../containers/ProfileSettingsPage/ProfileSettingsPage'));
 const RequestQuotePage = loadable(() => import(/* webpackChunkName: "RequestQuotePage" */ '../containers/RequestQuotePage/RequestQuotePage'));
 const SearchPageWithMap = loadable(() => import(/* webpackChunkName: "SearchPageWithMap" */ /* webpackPrefetch: true */  '../containers/SearchPage/SearchPageWithMap'));
 const SearchPageWithGrid = loadable(() => import(/* webpackChunkName: "SearchPageWithGrid" */ /* webpackPrefetch: true */  '../containers/SearchPage/SearchPageWithGrid'));
@@ -207,10 +207,10 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
     },
     {
       path: '/profile-settings',
-      name: 'ProfileSettingsPage',
+      name: 'ProfileSettingsLegacyRedirect',
       auth: true,
       authPage: 'LoginPage',
-      component: ProfileSettingsPage,
+      component: () => <NamedRedirect name="ContactDetailsPage" />,
     },
 
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
@@ -369,6 +369,12 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'PrivacyPolicyPage',
       component: PrivacyPolicyPage,
       loadData: pageDataLoadingAPI.PrivacyPolicyPage.loadData,
+    },
+    {
+      path: '/dj-profile-guidelines',
+      name: 'DjProfileGuidelinesPage',
+      component: DjProfileGuidelinesPage,
+      loadData: pageDataLoadingAPI.DjProfileGuidelinesPage.loadData,
     },
     {
       path: '/styleguide',

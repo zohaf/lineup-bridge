@@ -123,28 +123,37 @@ describe('SignupForm', () => {
       />
     );
 
-    // Simulate user interaction and select parent level category
-    await user.selectOptions(
-      screen.getByRole('combobox'),
-      screen.getByRole('option', { name: 'Seller' })
-    );
+    // Choose a user type (buttons replace the old dropdown)
+    await user.click(screen.getByRole('button', { name: 'SignupForm.userTypeOptionEventOrganizer' }));
 
     // Test that sign up button is disabled at first
     expect(screen.getByRole('button', { name: 'SignupForm.signUp' })).toBeDisabled();
 
     // Type the values to the sign up form
     await user.type(
-      screen.getByRole('textbox', { name: 'SignupForm.emailLabel' }),
+      screen.getByRole('textbox', { name: 'SignupForm.businessNameLabel' }),
+      'DJ Events Ltd'
+    );
+    await user.type(
+      screen.getByRole('textbox', { name: 'SignupForm.contactPersonFullNameLabel' }),
+      'Jordan Smith'
+    );
+    await user.type(
+      screen.getByRole('textbox', { name: 'SignupForm.businessEmailLabel' }),
       'joe@example.com'
     );
-    await user.type(screen.getByRole('textbox', { name: 'SignupForm.firstNameLabel' }), 'Joe');
-    await user.type(screen.getByRole('textbox', { name: 'SignupForm.lastNameLabel' }), 'Dunphy');
     await user.type(screen.getByLabelText('SignupForm.passwordLabel'), 'secret-password');
+    await user.type(screen.getByLabelText('SignupForm.passwordConfirmLabel'), 'secret-password');
     await user.type(screen.getByLabelText('Text Field'), 'Text value');
 
     // Test that sign up button is still disabled before clicking the checkbox
     expect(screen.getByRole('button', { name: 'SignupForm.signUp' })).toBeDisabled();
-    fireEvent.click(screen.getByLabelText(/AuthenticationPage.termsAndConditionsAcceptText/i));
+    await user.click(
+      screen.getByRole('checkbox', { name: /SignupForm\.authorizationConfirmationLabel/i })
+    );
+    await user.click(
+      screen.getByRole('checkbox', { name: /AuthenticationPage\.termsAndConditionsAcceptText/i })
+    );
 
     // Test that sign up button is enabled after typing the values
     expect(screen.getByRole('button', { name: 'SignupForm.signUp' })).toBeEnabled();
@@ -162,11 +171,8 @@ describe('SignupForm', () => {
       />
     );
 
-    // Simulate user interaction and select parent level category
-    await user.selectOptions(
-      screen.getByRole('combobox'),
-      screen.getByRole('option', { name: 'Seller' })
-    );
+    // Choose a user type (buttons replace the old dropdown)
+    await user.click(screen.getByRole('button', { name: 'SignupForm.userTypeOptionEventOrganizer' }));
 
     // Show user fields that have not been limited to type and have displayInSignUp: true
     expect(screen.getByText('Enum Field 1')).toBeInTheDocument();

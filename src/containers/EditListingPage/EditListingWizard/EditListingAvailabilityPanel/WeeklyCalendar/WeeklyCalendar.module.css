@@ -73,7 +73,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: var(--colorGrey50);
+    background-color: var(--colorPageBackground);
   }
 
   @media (--viewportMedium) {
@@ -134,7 +134,7 @@
 
 .blockedDateLabel {
   background-color: #f3f3f3;
-  background-color: var(--colorGrey50);
+  background-color: var(--colorPageBackground);
   color: var(--colorGrey600);
 }
 
@@ -252,7 +252,7 @@
 
 .blockedDate {
   background-color: #f3f3f3;
-  background-color: var(--colorGrey50);
+  background-color: var(--colorPageBackground);
   color: var(--colorGrey600);
 
   & .timeRange {

@@ -4,13 +4,30 @@
   border-top: 1px solid var(--colorGrey100);
 }
 
+/* SectionContainer adds `.sectionContent` padding (32px / 64px vertical). Footer uses its own
+   `.footer` padding — avoid stacking both. */
+.sectionContentNoPadding {
+  padding: 0;
+}
+
 .footer {
-  max-width: var(--contentMaxWidthPages);
+  /* Full width like `TopbarDesktop` — do not cap with `--contentMaxWidthPages` or the
+     block is centered on wide screens and looks more inset than the header. */
+  width: 100%;
+  max-width: none;
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 32px;
-  margin: 0 auto;
-  padding: 24px 32px;
+  margin: 0;
+  /* Same horizontal inset as `TopbarDesktop.module.css` `.root` */
+  /* ~32px from last footer content to viewport bottom */
+  padding: 24px 12px 32px;
+
+  @media (--viewportLarge) {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 32px;
+  }
 }
 
 .footer ul {
@@ -26,26 +43,56 @@
 
 .content {
   display: grid;
-  justify-content: center;
+  /* Don't center the whole footer content block; align to container edges */
+  justify-content: stretch;
+  justify-items: stretch;
   align-content: end;
   grid-auto-rows: auto;
-  grid-gap: 32px;
-  grid-row-gap: 16px;
+  /* Tight vertical stack; logo→slogan gap is mostly from row-gap once `.logoWrapper` is collapsed */
+  row-gap: 4px;
+  column-gap: 32px;
   grid-template-columns: 1fr;
   grid-template-areas:
-    'logo'
-    'details'
+    'branding'
     'grid'
     'links';
+}
+
+.brandingColumn {
+  grid-area: branding;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  row-gap: 4px;
+  box-sizing: border-box;
 }
 
 .grid {
   grid-area: grid;
   display: grid;
-  justify-content: center;
+  /* Match right edge padding (no centering) */
+  justify-content: stretch;
+  justify-items: start;
   align-content: start;
   grid-auto-rows: auto;
   grid-gap: 32px;
+}
+
+/* Below Terms / Privacy blocks; spans full width of the middle column inner grid */
+.footerContactLink {
+  grid-column: 1 / -1;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: var(--fontWeightMedium);
+  color: var(--colorGrey700);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--marketplaceColor);
+    text-decoration: none;
+  }
 }
 
 .gridCol1,
@@ -57,6 +104,18 @@
 
 .detailsInfo {
   grid-area: links;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+
+  @media (--viewportLarge) {
+    align-items: flex-end;
+    align-self: stretch;
+    justify-content: flex-start;
+    min-height: 100%;
+    text-align: right;
+  }
 }
 
 .slogan {
@@ -64,9 +123,6 @@
   line-height: 24px;
 }
 .sloganMobile {
-  grid-area: details;
-  padding-bottom: 24px;
-
   @media (--viewportLarge) {
     display: none;
   }
@@ -79,24 +135,16 @@
   }
 }
 
-.logo {
-  grid-area: logo;
-}
-
 .copyright {
   display: inline-block;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 20px;
   color: var(--colorGrey600);
-  margin-top: 24px;
+  margin-top: 0;
 }
 
 .icons {
-  margin-top: 24px;
-
-  @media (--viewportLarge) {
-    margin-top: 0px;
-  }
+  margin-top: 0;
 }
 
 .icon {
@@ -115,16 +163,28 @@
 }
 .logoWrapper {
   max-width: 370px;
+  /* Logo.module.css `.root` uses fixed height / min-height (top bar sizing) — collapse that
+     in the footer so space below the image before the slogan is only from line-height, not
+     an empty logo box. */
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
 }
 .logoImage {
   height: auto;
   width: auto;
   max-width: 100%;
+  /* Keep footer logo same visual size as header logo */
+  max-height: calc(var(--topbarHeight) / 2);
   object-fit: contain;
   object-position: center;
 
+  @media (--viewportMedium) {
+    max-height: calc(var(--topbarHeightDesktop) / 2);
+  }
+
   @media (--viewportLarge) {
-    max-width: min(100%, 298px);
+    max-height: calc(var(--topbarHeightDesktop) / 2);
   }
 }
 
@@ -151,44 +211,40 @@
 
 @media (--viewportLarge) {
   .detailsInfo {
-    grid-area: details;
+    grid-area: links;
   }
 
+  /* Equal-height columns: stretch items to the row track height */
+  .contentCol1,
+  .contentCol2,
+  .contentCol3,
+  .contentCol4 {
+    align-content: stretch;
+    align-items: stretch;
+  }
+
+  .grid {
+    align-self: stretch;
+    min-height: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Three equal-height columns: (1) logo + slogan (2) legal links + contact (3) socials + copyright */
   .contentCol1 {
-    /* 1/6 of space is for grid, and grid uses 1 column internally */
-    grid-template-columns: 2fr 3fr 1fr;
-    grid-template-areas:
-      'logo . .'
-      'details . grid'
-      'details . grid'
-      'details . grid';
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 2fr) minmax(0, 1.4fr);
+    grid-template-areas: 'branding grid links';
   }
   .contentCol2 {
-    /* 2/6 of space is for grid, and grid splits it to 2 columns */
-    grid-template-columns: 2fr 2fr 2fr;
-    grid-template-areas:
-      'logo . .'
-      'details . grid'
-      'details . grid'
-      'details . grid';
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
+    grid-template-areas: 'branding grid links';
   }
   .contentCol3 {
-    /* 3/6 of space is for grid, and grid splits it to 3 columns */
-    grid-template-columns: 2fr 1fr 1fr 2fr;
-    grid-template-areas:
-      'logo . . .'
-      'details . grid grid'
-      'details . grid grid'
-      'details . grid grid';
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.5fr) minmax(0, 1.3fr);
+    grid-template-areas: 'branding grid links';
   }
   .contentCol4 {
-    /* 4/6 of space is for grid, and grid splits it to 4 columns */
-    grid-template-columns: 2fr 2fr 2fr;
-    grid-template-areas:
-      'logo . .'
-      'details grid grid'
-      'details grid grid'
-      'details grid grid';
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 2.2fr) minmax(0, 1.4fr);
+    grid-template-areas: 'branding grid links';
   }
 
   .gridCol1 {

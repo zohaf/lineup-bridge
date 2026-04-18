@@ -10,7 +10,7 @@
   width: 24px;
   align-self: stretch;
   border-bottom: 2px solid var(--marketplaceColor);
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 }
 
 .iconSvg {

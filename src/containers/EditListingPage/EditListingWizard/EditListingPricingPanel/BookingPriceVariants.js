@@ -11,8 +11,8 @@ import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { createSlug } from '../../../../util/urlHelpers';
 import { isPriceVariationsEnabled } from '../../../../util/configHelpers';
 import * as validators from '../../../../util/validators';
-import { formatMoney } from '../../../../util/currency';
 import { FIXED } from '../../../../transactions/transaction';
+import { getListingPriceValidators } from './pricingFormValidators';
 
 // Import shared components
 import {
@@ -166,25 +166,6 @@ export const handleSubmitValuesForPriceVariants = (
     : {};
 };
 
-const getPriceValidators = (listingMinimumPriceSubUnits, marketplaceCurrency, intl) => {
-  const priceRequiredMsgId = { id: 'EditListingPricingForm.priceRequired' };
-  const priceRequiredMsg = intl.formatMessage(priceRequiredMsgId);
-  const priceRequired = validators.required(priceRequiredMsg);
-
-  const minPriceRaw = new Money(listingMinimumPriceSubUnits, marketplaceCurrency);
-  const minPrice = formatMoney(intl, minPriceRaw);
-  const priceTooLowMsgId = { id: 'EditListingPricingForm.priceTooLow' };
-  const priceTooLowMsg = intl.formatMessage(priceTooLowMsgId, { minPrice });
-  const minPriceRequired = validators.moneySubUnitAmountAtLeast(
-    priceTooLowMsg,
-    listingMinimumPriceSubUnits
-  );
-
-  return listingMinimumPriceSubUnits
-    ? validators.composeValidators(priceRequired, minPriceRequired)
-    : priceRequired;
-};
-
 const FieldBookingLength = props => {
   const { name, className, rootClassName, label, idPrefix, intl, ...rest } = props;
 
@@ -286,10 +267,11 @@ const PriceVariant = props => {
     intl,
   } = props;
 
-  const priceValidators = getPriceValidators(
+  const priceValidators = getListingPriceValidators(
     listingMinimumPriceSubUnits,
     marketplaceCurrency,
-    intl
+    intl,
+    unitType
   );
 
   const requiredValidator = validators.required(
@@ -340,7 +322,7 @@ const PriceVariant = props => {
         id={`${idPrefix}_price`}
         name={`${name}.price`}
         label={intl.formatMessage(
-          { id: 'EditListingPricingForm.priceVariant.pricePerProduct' },
+          { id: 'EditListingPricingForm.priceVariant.djPricePerProduct' },
           { unitType }
         )}
         placeholder={intl.formatMessage({

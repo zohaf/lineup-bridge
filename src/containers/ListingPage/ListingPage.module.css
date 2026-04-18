@@ -39,7 +39,7 @@
 
 .imageWrapperForSectionHero {
   composes: heroHeight;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorPageBackground); /* Loading BG color */
 
   /* Image carousel can be opened from the image, therefore we should show a pointer */
   cursor: pointer;
@@ -714,7 +714,7 @@
   left: 0;
   right: 0;
   padding: 24px;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   @media (--viewportMedium) {
     position: static;

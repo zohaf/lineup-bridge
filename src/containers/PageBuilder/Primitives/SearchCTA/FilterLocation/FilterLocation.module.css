@@ -5,11 +5,13 @@
   padding-left: 8px;
   text-overflow: ellipsis;
   cursor: pointer;
+  background-color: var(--colorWhite);
   &:hover,
   &:focus {
     border: none;
     outline: none;
     box-shadow: none;
+    background-color: var(--colorWhite);
   }
   &::placeholder {
     color: var(--colorGrey600);

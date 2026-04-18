@@ -19,7 +19,7 @@
 
 .thumbnail {
   width: 100%;
-  background-color: var(--colorGrey50);
+  background-color: var(--colorPageBackground);
 }
 
 .addImageWrapper {
@@ -53,10 +53,10 @@
   margin-top: 0;
 
   /* Colors */
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   @media (--viewportLarge) {
-    background-color: var(--colorGrey50);
+    background-color: var(--colorPageBackground);
   }
 
   border-style: dashed;
@@ -119,20 +119,6 @@
 
   &:focus ~ .addImage {
     border-color: var(--colorGrey300);
-  }
-}
-
-.tip {
-  composes: h5 from global;
-
-  flex-shrink: 0;
-  color: var(--colorGrey600);
-  margin-top: 24px;
-  margin-bottom: 60px;
-
-  @media (--viewportLarge) {
-    margin-top: 0;
-    margin-bottom: 0;
   }
 }
 

@@ -2,42 +2,67 @@
 
 /* Desktop */
 .root {
-  /* Size */
   width: 100%;
+  min-height: var(--topbarHeightDesktop);
   height: var(--topbarHeightDesktop);
 
-  /* Layout for child components */
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 0 12px 0 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 12px;
 
-  /* fill */
-  background-color: var(--colorWhite);
-
-  /* shadows */
-  box-shadow: var(--boxShadowLight);
+  background-color: var(--colorPageBackground);
+  box-shadow: none;
 
   @media (--viewportLarge) {
-    padding: 0 24px 0 0;
+    padding: 0 24px;
   }
 }
 
-/* logo */
+/* Logo: no extra margin/padding, no hover/focus underline or bottom bar */
 .logoLink {
-  border-bottom: 0px solid;
-  transition: var(--transitionStyleButton);
+  flex-shrink: 0;
+  align-self: center;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  transition: none;
 }
-.logoLink:hover {
-  border-bottom: 4px solid var(--marketplaceColor);
-  border-radius: 0;
+
+.logoLink:hover,
+.logoLink:focus,
+.logoLink:focus-visible,
+.logoLink:active {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+}
+
+/* Tight logo box: no extra vertical margin / min-height from Logo.module.css */
+.topbarLogoRoot {
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+}
+
+/* Half-height logo in header */
+.topbarLogoImageHalf {
+  max-height: calc(var(--topbarHeightDesktop) / 2) !important;
+  width: auto;
 }
 
 /* Search */
 .searchLink {
   min-width: 320px;
-  height: 100%;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
   border-left-style: solid;
   border-left-width: 1px;
   border-left-color: var(--colorGrey100);
@@ -46,7 +71,9 @@
 
 .spacer {
   min-width: 320px;
-  height: 100%;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
   margin-right: auto;
 }
 
@@ -76,19 +103,22 @@
 .topbarSearchWithLeftPadding {
   padding-left: 24px;
   padding-right: 24px;
-  height: var(--topbarHeightDesktop);
+  min-height: var(--topbarHeightDesktop);
 
   @media (--viewportLarge) {
     padding-left: 34px;
   }
 }
 
-/* These is used with Inbox, Sign up, and Log in */
+/* Inbox, Sign up, Log in */
 .topbarLink {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
 
-  border-bottom: 0px solid;
-  transition: var(--transitionStyleButton);
+  border-bottom: none !important;
+  transition: color var(--transitionStyleButton);
 
   font-weight: var(--fontWeightMedium);
   font-size: 14px;
@@ -96,15 +126,14 @@
   letter-spacing: 0;
   color: var(--colorGrey700);
 
-  height: 100%;
-  padding: 0 12px 0 12px;
+  padding: 0 12px;
   margin: 0;
+  text-decoration: none !important;
 
   &:hover {
     color: var(--colorBlack);
-    border-bottom: 4px solid var(--marketplaceColor);
-    border-radius: 0;
-    text-decoration: none;
+    border-bottom: none !important;
+    text-decoration: none !important;
   }
 
   @media (--viewportMedium) {
@@ -115,8 +144,9 @@
 
 .topbarLinkLabel {
   composes: textSmall from global;
-  display: inline-block;
-  margin: 28px 0;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
   text-decoration: inherit;
   position: relative;
 }
@@ -158,8 +188,8 @@
 
 /* Profile menu */
 .profileMenuLabel {
-  border-bottom: 0px solid;
-  transition: var(--transitionStyleButton);
+  border-bottom: none !important;
+  transition: color var(--transitionStyleButton);
 
   font-weight: var(--fontWeightMedium);
   font-size: 14px;
@@ -170,29 +200,28 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  height: 100%;
+  align-self: stretch;
   margin: 0;
-  padding: 0 12px 0 12px;
+  padding: 0 12px;
 
   &:hover {
-    border-bottom: 4px solid var(--marketplaceColor);
-    border-radius: 0;
-    text-decoration: none;
+    border-bottom: none !important;
+    text-decoration: none !important;
   }
 
   &:active {
-    border-bottom: 0;
+    border-bottom: none !important;
   }
 }
 
 .profileMenuIsOpen {
   &:hover {
-    border-bottom: 0;
+    border-bottom: none !important;
   }
 }
 
 .avatar {
-  margin: 16px 0;
+  margin: 0;
 }
 
 .profileMenuContent {

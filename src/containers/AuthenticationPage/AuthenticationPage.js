@@ -210,6 +210,32 @@ export const AuthenticationForms = props => {
   const handleSubmitSignup = values => {
     const { userType, email, password, fname, lname, displayName, ...rest } = values;
     const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
+    const {
+      // UI-only fields / confirmations that should not be stored
+      passwordConfirm,
+      authorizationConfirmation,
+      // Role-specific sign-up fields
+      artistName,
+      djFullName,
+      contactPersonFullName,
+      // Existing helper inputs that are mapped into first/last name
+      businessName,
+      fullName,
+      ...restValues
+    } = rest;
+
+    const artistNameMaybe =
+      typeof artistName === 'string' && artistName.trim()
+        ? { artistName: artistName.trim() }
+        : {};
+    const djFullNameMaybe =
+      typeof djFullName === 'string' && djFullName.trim()
+        ? { fullName: djFullName.trim() }
+        : {};
+    const contactPersonFullNameMaybe =
+      typeof contactPersonFullName === 'string' && contactPersonFullName.trim()
+        ? { contactPersonFullName: contactPersonFullName.trim() }
+        : {};
 
     const params = {
       email,
@@ -219,14 +245,17 @@ export const AuthenticationForms = props => {
       ...displayNameMaybe,
       publicData: {
         userType,
-        ...pickUserFieldsData(rest, 'public', userType, userFields),
+        ...pickUserFieldsData(restValues, 'public', userType, userFields),
+        ...artistNameMaybe,
       },
       privateData: {
-        ...pickUserFieldsData(rest, 'private', userType, userFields),
+        ...pickUserFieldsData(restValues, 'private', userType, userFields),
+        ...djFullNameMaybe,
+        ...contactPersonFullNameMaybe,
       },
       protectedData: {
-        ...pickUserFieldsData(rest, 'protected', userType, userFields),
-        ...getNonUserFieldParams(rest, userFields),
+        ...pickUserFieldsData(restValues, 'protected', userType, userFields),
+        ...getNonUserFieldParams(restValues, userFields),
       },
     };
 

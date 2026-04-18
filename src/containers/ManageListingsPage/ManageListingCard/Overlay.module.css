@@ -18,7 +18,7 @@
   composes: coverEverything;
 
   /* Overlay background style */
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
   opacity: 0.9;
 }
 

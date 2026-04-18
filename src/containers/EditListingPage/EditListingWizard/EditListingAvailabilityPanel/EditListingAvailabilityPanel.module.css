@@ -90,7 +90,7 @@
   padding-left: 0;
   padding-right: 0;
 
-  background-color: var(--colorGrey50);
+  background-color: var(--colorPageBackground);
 
   @media (--viewportMedium) {
     flex-basis: 576px;

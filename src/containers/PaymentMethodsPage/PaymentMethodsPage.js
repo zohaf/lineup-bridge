@@ -6,12 +6,12 @@ import { useConfiguration } from '../../context/configurationContext.js';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { ensureCurrentUser, ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
 import { propTypes } from '../../util/types';
-import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers.js';
+import { showPaymentDetailsForUser } from '../../util/userHelpers.js';
 import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
 import { handleCardSetup } from '../../ducks/stripe.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 
-import { H3, SavedCardDetails, Page, UserNav, LayoutSideNavigation } from '../../components';
+import { H3, SavedCardDetails, Page, LayoutSideNavigation } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -162,7 +162,6 @@ const PaymentMethodsPageComponent = props => {
   const showForm = cardState === 'replaceCard' || !hasDefaultPaymentMethod;
   const showCardDetails = !!hasDefaultPaymentMethod;
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
   const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
   const accountSettingsNavProps = {
     currentPage: 'PaymentMethodsPage',
@@ -174,16 +173,10 @@ const PaymentMethodsPageComponent = props => {
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation
         topbar={
-          <>
-            <TopbarContainer
-              desktopClassName={css.desktopTopbar}
-              mobileClassName={css.mobileTopbar}
-            />
-            <UserNav
-              currentPage="PaymentMethodsPage"
-              showManageListingsLink={showManageListingsLink}
-            />
-          </>
+          <TopbarContainer
+            desktopClassName={css.desktopTopbar}
+            mobileClassName={css.mobileTopbar}
+          />
         }
         sideNav={null}
         useAccountSettingsNav

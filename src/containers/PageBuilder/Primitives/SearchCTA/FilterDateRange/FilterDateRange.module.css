@@ -13,7 +13,7 @@
   transform: translateX(-50%);
   width: calc(100% + 16px);
   margin-top: 4px;
-  background-color: white;
+  background-color: var(--colorWhite);
   padding-bottom: 16px;
   border-radius: var(--borderRadiusMedium);
   box-shadow: var(--boxShadowPopup);

@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import loadable from '@loadable/component';
 import classNames from 'classnames';
+import { Field } from 'react-final-form';
 
 import { useIntl } from '../../../../../util/reactIntl';
 
-import { OutsideClickHandler, IconDate, FieldDateRangeController } from '../../../../../components';
+import { OutsideClickHandler, IconDate } from '../../../../../components';
 
 import css from './FilterDateRange.module.css';
+
+const DatePicker = loadable(() =>
+  import(/* webpackChunkName: "SingleDatePickerDropdown" */ '../../../../../components/DatePicker/DatePickers/DatePicker')
+);
 
 const handleKeyDown = (isOpen, setIsOpen) => e => {
   const toggleButton = e.currentTarget.getElementsByClassName(css.toggleButton)[0];
@@ -24,16 +30,6 @@ const handleKeyDown = (isOpen, setIsOpen) => e => {
     return;
   }
 };
-/**
- * FilterDateRange displays a toggleable date range picker.
- *
- * @component
- * @param {Object} props Component properties.
- * @param {Object} props.config Marketplace configuration object
- * @param {string?} props.className e add more style rules in addition to components own css.root
- * @param {string?} props.rootClassName overwrite components own css.root
- * @returns {JSX.Element} The FilterDateRange component.
- */
 const FilterDateRange = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState(null);
@@ -42,35 +38,25 @@ const FilterDateRange = props => {
   const intl = useIntl();
 
   useEffect(() => {
-    if (FieldDateRangeController.preload) {
-      FieldDateRangeController.preload();
-    }
+    if (DatePicker.preload) DatePicker.preload();
   }, []);
 
   const classes = classNames(rootClassName || css.root, className);
 
-  const formatDateRange = (start, end) => {
-    const formattedDate = intl.formatDateTimeRange(start, end, {
+  const formatSingleDate = date =>
+    intl.formatDate(date, {
       day: 'numeric',
       month: 'short',
     });
-    return formattedDate;
-  };
 
-  const handleDateRangeChange = value => {
-    if (!value) {
-      setSelectedDates(null);
-      return;
-    }
-
-    const { startDate, endDate } = value;
+  const formatRangeLabel = (startDate, endDate) => {
     if (startDate && endDate) {
-      setSelectedDates(formatDateRange(startDate, endDate));
-      toggleButtonRef.current?.focus();
-      setIsOpen(false);
-    } else {
-      setSelectedDates(null);
+      return `${formatSingleDate(startDate)} – ${formatSingleDate(endDate)}`;
     }
+    if (startDate) {
+      return formatSingleDate(startDate);
+    }
+    return null;
   };
 
   const handleClick = event => {
@@ -89,10 +75,6 @@ const FilterDateRange = props => {
     }
     setIsOpen(prevState => !prevState);
   };
-
-  const datesFilter = config.search.defaultFilters.find(f => f.key === 'dates');
-  const { dateRangeMode } = datesFilter || {};
-  const isNightlyMode = dateRangeMode === 'night';
 
   // Compute the CSS class for the label with an "active" modifier if there is a selection or if the picker is open.
   const labelClasses = classNames(css.label, {
@@ -122,16 +104,63 @@ const FilterDateRange = props => {
         </span>
       </div>
       {isOpen ? (
-        <FieldDateRangeController
-          onChange={handleDateRangeChange}
-          showClearButton
+        <div
           className={classNames(css.datePicker, {
             [css.alignLeft]: alignLeft,
           })}
-          name="dateRange"
-          id="dateRange"
-          minimumNights={isNightlyMode ? 1 : 0}
-        />
+        >
+          <Field
+            name="dateRange"
+            render={({ input }) => {
+              // Keep SearchCTA value shape `{ startDate, endDate }` while using the DatePicker range UI.
+              const startDate = input.value?.startDate || null;
+              const endDate = input.value?.endDate || null;
+              const value =
+                startDate instanceof Date
+                  ? endDate instanceof Date
+                    ? [startDate, endDate]
+                    : [startDate]
+                  : null;
+
+              const onChange = nextValue => {
+                // DatePicker emits arrays in range mode: [] | [start] | [start, end]
+                if (!Array.isArray(nextValue) || nextValue.length === 0) {
+                  setSelectedDates(null);
+                  input.onChange(null);
+                  toggleButtonRef.current?.focus();
+                  setIsOpen(false);
+                  return;
+                }
+
+                const [nextStart, nextEnd] = nextValue;
+                const cleanedStart =
+                  nextStart instanceof Date && !isNaN(nextStart) ? nextStart : null;
+                const cleanedEnd = nextEnd instanceof Date && !isNaN(nextEnd) ? nextEnd : null;
+
+                setSelectedDates(formatRangeLabel(cleanedStart, cleanedEnd));
+                input.onChange(cleanedStart ? { startDate: cleanedStart, endDate: cleanedEnd } : null);
+
+                // Close when the range is complete, keep open after choosing only start date.
+                if (cleanedStart && cleanedEnd) {
+                  toggleButtonRef.current?.focus();
+                  setIsOpen(false);
+                }
+              };
+
+              return (
+                <DatePicker
+                  range={true}
+                  value={value}
+                  onChange={onChange}
+                  showClearButton
+                  showMonthStepper
+                  rangeStartHasValue={!!startDate}
+                  rangeEndHasValue={!!endDate}
+                />
+              );
+            }}
+          />
+        </div>
       ) : null}
     </OutsideClickHandler>
   );

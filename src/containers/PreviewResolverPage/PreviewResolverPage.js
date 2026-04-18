@@ -28,6 +28,7 @@ const PreviewResolverPage = props => {
 
   const toTermsOfServicePage = <NamedRedirect name="TermsOfServicePage" />;
   const toPrivacyPolicyPage = <NamedRedirect name="PrivacyPolicyPage" />;
+  const toDjProfileGuidelinesPage = <NamedRedirect name="DjProfileGuidelinesPage" />;
   const toCMSPage = <NamedRedirect name="CMSPage" params={{ pageId: pageAssetName }} />;
   const toLandingPage = <NamedRedirect name="LandingPage" />;
 
@@ -52,6 +53,8 @@ const PreviewResolverPage = props => {
     ? toTermsOfServicePage
     : pageAssetName === 'privacy-policy'
     ? toPrivacyPolicyPage
+    : pageAssetName === 'dj-profile-guidelines'
+    ? toDjProfileGuidelinesPage
     : pageAssetName === 'landing-page'
     ? toLandingPage
     : hasCMSPagePath

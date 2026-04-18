@@ -6,9 +6,9 @@ import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
-import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers';
+import { showPaymentDetailsForUser } from '../../util/userHelpers';
 
-import { Page, UserNav, H3, LayoutSideNavigation } from '../../components';
+import { Page, H3, LayoutSideNavigation } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -67,7 +67,6 @@ export const PasswordChangePageComponent = props => {
 
   const title = intl.formatMessage({ id: 'PasswordChangePage.title' });
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
   const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
   const accountSettingsNavProps = {
     currentPage: 'PasswordChangePage',
@@ -79,16 +78,10 @@ export const PasswordChangePageComponent = props => {
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation
         topbar={
-          <>
-            <TopbarContainer
-              desktopClassName={css.desktopTopbar}
-              mobileClassName={css.mobileTopbar}
-            />
-            <UserNav
-              currentPage="PasswordChangePage"
-              showManageListingsLink={showManageListingsLink}
-            />
-          </>
+          <TopbarContainer
+            desktopClassName={css.desktopTopbar}
+            mobileClassName={css.mobileTopbar}
+          />
         }
         sideNav={null}
         useAccountSettingsNav

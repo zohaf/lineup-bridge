@@ -1,6 +1,7 @@
 .layout {
   min-height: 100vh;
   grid-template-rows: auto 1fr auto;
+  background-color: var(--colorPageBackground);
 }
 
 .topbar {
@@ -12,6 +13,7 @@
 .main {
   display: grid;
   scroll-margin-top: var(--topbarHeight);
+  background-color: var(--colorPageBackground);
   @media (--viewportMedium) {
     scroll-margin-top: var(--topbarHeightDesktop);
   }

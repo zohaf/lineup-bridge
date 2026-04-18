@@ -56,7 +56,7 @@ const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
 export const AsideContent = props => {
-  const { user, displayName, showLinkToProfileSettingsPage } = props;
+  const { user, displayName, showLinkToContactDetailsPage } = props;
   return (
     <div className={css.asideContent}>
       <AvatarLarge className={css.avatar} user={user} disableProfileLink />
@@ -65,12 +65,12 @@ export const AsideContent = props => {
           <FormattedMessage id="ProfilePage.mobileHeading" values={{ name: displayName }} />
         ) : null}
       </H2>
-      {showLinkToProfileSettingsPage ? (
+      {showLinkToContactDetailsPage ? (
         <>
-          <NamedLink className={css.editLinkMobile} name="ProfileSettingsPage">
+          <NamedLink className={css.editLinkMobile} name="ContactDetailsPage">
             <FormattedMessage id="ProfilePage.editProfileLinkMobile" />
           </NamedLink>
-          <NamedLink className={css.editLinkDesktop} name="ProfileSettingsPage">
+          <NamedLink className={css.editLinkDesktop} name="ContactDetailsPage">
             <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
           </NamedLink>
         </>
@@ -470,7 +470,7 @@ export const ProfilePageComponent = props => {
         sideNav={
           <AsideContent
             user={profileUser}
-            showLinkToProfileSettingsPage={mounted && isCurrentUser}
+            showLinkToContactDetailsPage={mounted && isCurrentUser}
             displayName={displayName}
           />
         }

@@ -4,32 +4,25 @@
   composes: marketplaceModalFormRootStyles from global;
 
   justify-content: flex-start;
-
-  @media (--viewportMedium) {
-    justify-content: space-between;
-  }
 }
 
 .defaultUserFields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (--viewportMedium) {
+    gap: 32px;
+  }
 }
 
 .name {
   display: flex;
   justify-content: space-between;
-  margin-top: 24px;
-
-  @media (--viewportMedium) {
-    margin-top: 32px;
-  }
 }
 
 .row,
 .customFields {
-  margin-top: 24px;
-
-  @media (--viewportMedium) {
-    margin-top: 32px;
-  }
 }
 
 .firstNameRoot {
@@ -41,11 +34,60 @@
 }
 
 .password {
-  composes: marketplaceModalPasswordMargins from global;
+  /* Keep spacing consistent via .defaultUserFields gap */
 }
 
 .bottomWrapper {
   composes: marketplaceModalBottomWrapper from global;
+  margin-top: 32px;
+
+  @media (--viewportMedium) {
+    margin-top: 32px;
+  }
+}
+
+.confirmationFinePrint {
+  composes: marketplaceModalHelperLink from global;
+  padding: 3px 0 5px 0;
+  text-align: left;
+}
+
+.confirmationRow,
+.termsRow {
+  display: block;
+  width: 100%;
+}
+
+.termsRow {
+  margin-top: 8px;
+}
+
+.userTypeSelector {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.userTypeLabel {
+  margin: 0 0 12px;
+  font-weight: var(--fontWeightSemiBold);
+  color: var(--colorGrey700);
+  text-align: left;
+}
+
+.userTypeButtons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.userTypeButton {
+  composes: buttonSecondary from global;
+  width: 100%;
+  min-height: 48px;
+}
+
+.userTypeButtonSelected {
+  border-color: var(--marketplaceColor);
 }
 
 .error {

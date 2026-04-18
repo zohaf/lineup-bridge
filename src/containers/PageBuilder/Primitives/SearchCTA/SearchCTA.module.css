@@ -25,6 +25,7 @@
 
 .searchBarContainer {
   composes: align;
+  /* Card sits on #EEEDE9 page; keep field chrome white */
   background-color: var(--colorWhite);
   border-color: var(--colorGrey800);
   border-width: 1px;
@@ -70,7 +71,7 @@
       grid-template-columns: minmax(0, 1fr) auto;
     }
     &.gridCol2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
     }
     &.gridCol3 {
       grid-template-columns: repeat(3, minmax(0, 1fr)) auto;

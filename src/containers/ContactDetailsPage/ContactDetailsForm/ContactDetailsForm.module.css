@@ -40,16 +40,15 @@
 }
 
 .confirmChangesSection {
-  flex-grow: 1;
-  display: flex;
+  display: none;
   flex-direction: column;
-  margin-bottom: 60px;
+  margin-bottom: 0;
   padding: 0;
-  opacity: 0;
 }
 
 .confirmChangesSectionVisible {
-  opacity: 1;
+  display: flex;
+  margin-bottom: 60px;
 }
 
 .emailVerified {
@@ -125,10 +124,10 @@
 }
 
 .bottomWrapper {
-  margin-top: 46px;
+  margin-top: 24px;
 
   @media (--viewportMedium) {
-    margin-top: 96px;
+    margin-top: 40px;
   }
 }
 
@@ -143,4 +142,56 @@
   @media (--viewportMedium) {
     margin: 24px 0;
   }
+}
+
+.profileImageSection {
+  margin-top: 16px;
+}
+
+.profileImageTitle {
+  margin-top: 0;
+}
+
+.avatarContainer {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+}
+
+.uploadedImage {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.uploadAvatarWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.label {
+  composes: h5 from global;
+  margin: 0 0 8px;
+}
+
+.uploadAvatarInput {
+  width: 100%;
+}
+
+.uploadingImage {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
 }

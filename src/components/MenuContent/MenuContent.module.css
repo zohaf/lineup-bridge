@@ -2,7 +2,7 @@
   position: absolute;
   z-index: var(--zIndexPopup);
 
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
   border-top: 1px solid var(--colorGrey100);
   box-shadow: var(--boxShadowPopup);
   border-radius: 0 0 2px 2px;
@@ -40,7 +40,7 @@
 }
 
 .arrowTop {
-  border-bottom-color: var(--colorWhite);
+  border-bottom-color: var(--colorPageBackground);
   border-width: 7px;
   margin-left: -7px;
 }

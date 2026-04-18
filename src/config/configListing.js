@@ -213,6 +213,81 @@ export const listingFields = [
   //     placeholderMessage: 'Some private note about this bike...',
   //   },
   // },
+  {
+    key: 'website',
+    scope: 'public',
+    schemaType: 'text',
+    showConfig: {
+      label: 'Website',
+      isDetail: true,
+    },
+    saveConfig: {
+      label: 'Website',
+      placeholderMessage: 'https://your-site.com',
+      isRequired: false,
+      multiline: false,
+    },
+  },
+  {
+    key: 'spotify',
+    scope: 'public',
+    schemaType: 'text',
+    showConfig: {
+      label: 'Spotify',
+      isDetail: true,
+    },
+    saveConfig: {
+      label: 'Spotify',
+      placeholderMessage: 'https://open.spotify.com/artist/...',
+      isRequired: false,
+      multiline: false,
+    },
+  },
+  {
+    key: 'residentAdvisorProfile',
+    scope: 'public',
+    schemaType: 'text',
+    showConfig: {
+      label: 'Resident Advisor',
+      isDetail: true,
+    },
+    saveConfig: {
+      label: 'Resident Advisor',
+      placeholderMessage: 'https://ra.co/dj/...',
+      isRequired: false,
+      multiline: false,
+    },
+  },
+  {
+    key: 'soundcloud',
+    scope: 'public',
+    schemaType: 'text',
+    showConfig: {
+      label: 'SoundCloud',
+      isDetail: true,
+    },
+    saveConfig: {
+      label: 'SoundCloud',
+      placeholderMessage: 'https://soundcloud.com/...',
+      isRequired: false,
+      multiline: false,
+    },
+  },
+  {
+    key: 'instagram',
+    scope: 'public',
+    schemaType: 'text',
+    showConfig: {
+      label: 'Instagram',
+      isDetail: true,
+    },
+    saveConfig: {
+      label: 'Instagram',
+      placeholderMessage: '@handle or profile URL',
+      isRequired: false,
+      multiline: false,
+    },
+  },
 ];
 
 ///////////////////////////////////////////////////////////////////////

@@ -16,7 +16,7 @@
  *                                  Possible values: 'enum', 'multi-enum', 'text', 'long', 'boolean'.
  * - enumOptions (optional):        Options shown for 'enum' and 'multi-enum' extended data.
  *                                  These are used to render options for inputs on
- *                                  ProfileSettingsPage and AuthenticationPage.
+ *                                  account/profile-related pages and AuthenticationPage.
  * - showConfig:                    Configuration for rendering user information. (How the field should be shown.)
  *   - label:                         Label for the saved data.
  *   - displayInProfile (optional):   Can be used to hide field content from profile page.

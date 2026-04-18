@@ -8,7 +8,7 @@ import { createResourceLocatorString } from '../../util/routes';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { ensureCurrentUser } from '../../util/data';
 import { propTypes } from '../../util/types';
-import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers';
+import { showPaymentDetailsForUser } from '../../util/userHelpers';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import {
   stripeAccountClearError,
@@ -21,7 +21,6 @@ import {
   Page,
   StripeConnectAccountStatusBox,
   StripeConnectAccountForm,
-  UserNav,
   LayoutSideNavigation,
 } from '../../components';
 
@@ -175,7 +174,6 @@ export const StripePayoutPageComponent = props => {
     handleGetStripeConnectAccountLink('custom_account_verification')();
   }
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
   const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
   const accountSettingsNavProps = {
     currentPage: 'StripePayoutPage',
@@ -187,16 +185,10 @@ export const StripePayoutPageComponent = props => {
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation
         topbar={
-          <>
-            <TopbarContainer
-              desktopClassName={css.desktopTopbar}
-              mobileClassName={css.mobileTopbar}
-            />
-            <UserNav
-              currentPage="StripePayoutPage"
-              showManageListingsLink={showManageListingsLink}
-            />
-          </>
+          <TopbarContainer
+            desktopClassName={css.desktopTopbar}
+            mobileClassName={css.mobileTopbar}
+          />
         }
         sideNav={null}
         useAccountSettingsNav

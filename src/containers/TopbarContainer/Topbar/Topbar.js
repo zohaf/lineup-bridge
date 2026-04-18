@@ -108,13 +108,31 @@ const getResolvedCustomLinks = (customLinks, routeConfiguration) => {
   });
 };
 
-/** CMS "home" top-bar link — only for logged-in users (hide on login/signup and for guests). */
+/**
+ * Top-bar link that goes to marketplace "home" (landing or CMS /p/home).
+ * Shown only when logged in — hidden for guests (logo already goes to landing).
+ */
 const isHomeTopbarLink = link => {
-  if (link.route?.name === 'CMSPage' && link.route?.params?.pageId === 'home') {
+  if (link.route?.name === 'LandingPage') {
     return true;
   }
-  const h = link.href || '';
-  return h === '/p/home' || h === 'p/home';
+  const pageId = link.route?.params?.pageId;
+  if (link.route?.name === 'CMSPage' && pageId != null && String(pageId).toLowerCase() === 'home') {
+    return true;
+  }
+  const h = (link.href || '').trim();
+  const stripped = h.replace(/\/+$/, '') || '/';
+  return (
+    h === '/p/home' ||
+    h === 'p/home' ||
+    stripped === '/p/home' ||
+    stripped === '/'
+  );
+};
+
+const normalizeTopbarLinkText = link => {
+  // Ensure consistent casing for "Home" label
+  return isHomeTopbarLink(link) ? { ...link, text: 'Home' } : link;
 };
 
 const isCMSPage = found =>
@@ -255,7 +273,9 @@ const TopbarComponent = props => {
 
   // Custom links are sorted so that group="primary" are always at the beginning of the list.
   const sortedCustomLinks = sortCustomLinks(config.topbar?.customLinks);
-  const customLinksResolved = getResolvedCustomLinks(sortedCustomLinks, routeConfiguration);
+  const customLinksResolved = getResolvedCustomLinks(sortedCustomLinks, routeConfiguration).map(
+    normalizeTopbarLinkText
+  );
   const resolvedCurrentPage = currentPage || getResolvedCurrentPage(location, routeConfiguration);
 
   // Logged-out users on the marketing landing page only see Sign up + Log in (no search, no custom links).
@@ -287,6 +307,7 @@ const TopbarComponent = props => {
       customLinks={customLinksForTopbar}
       showCreateListingsLink={showCreateListingsLink}
       inboxTab={topbarInboxTab}
+      config={config}
     />
   );
 
@@ -392,6 +413,8 @@ const TopbarComponent = props => {
         <LinkedLogo
           id="logo-topbar-mobile"
           layout={'mobile'}
+          logoClassName={css.topbarMobileLogoRoot}
+          logoImageClassName={css.topbarMobileLogoHalf}
           alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
           linkToExternalSite={config?.topbar?.logoLink}
         />

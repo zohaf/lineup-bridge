@@ -2,7 +2,7 @@
 
 .listingImageMobile {
   position: relative;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorPageBackground); /* Loading BG color */
 
   @media (--viewportLarge) {
     display: none;

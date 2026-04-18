@@ -13,7 +13,7 @@
   justify-content: center;
 
   /* fill */
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   /* shadows */
   box-shadow: var(--boxShadow);
@@ -59,7 +59,7 @@
 
 .listingImageMobile {
   position: relative;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorPageBackground); /* Loading BG color */
 
   @media (--viewportLarge) {
     display: none;
@@ -274,7 +274,7 @@
     margin: 56px 0 24px 0;
 
     /* Coloring */
-    background-color: var(--colorWhite);
+    background-color: var(--colorPageBackground);
     border: 1px solid var(--colorGrey100);
     border-radius: 2px;
   }
@@ -282,7 +282,7 @@
 
 .detailsAspectWrapper {
   position: relative;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorPageBackground); /* Loading BG color */
 }
 
 .detailsHeadings {

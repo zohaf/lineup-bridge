@@ -29,7 +29,7 @@ const EmailVerificationInfo = props => {
 
   return (
     <div className={css.content}>
-      <NamedLink className={css.verifyClose} name="ProfileSettingsPage">
+      <NamedLink className={css.verifyClose} name="ContactDetailsPage">
         <span className={css.closeText}>
           <FormattedMessage id="AuthenticationPage.verifyEmailClose" />
         </span>

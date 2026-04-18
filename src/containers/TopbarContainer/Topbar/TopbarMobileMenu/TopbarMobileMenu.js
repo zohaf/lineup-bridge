@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ensureCurrentUser } from '../../../../util/data';
+import { getCurrentUserTypeRoles } from '../../../../util/userHelpers';
 
 import {
   AvatarLarge,
@@ -81,9 +82,13 @@ const TopbarMobileMenu = props => {
     customLinks,
     onLogout,
     showCreateListingsLink,
+    config,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
+  const roles = getCurrentUserTypeRoles(config, currentUser);
+  const isEventOrganizer = roles?.customer && !roles?.provider;
+  const isDj = roles?.provider && !roles?.customer;
 
   const extraLinks = customLinks.map((linkConfig, index) => {
     return (
@@ -154,10 +159,16 @@ const TopbarMobileMenu = props => {
     return currentPage === page || isAccountSettingsPage || isInboxPage ? css.currentPage : null;
   };
 
-  const manageListingsLinkMaybe = showCreateListingsLink ? (
+  const primaryAccountLinkMaybe = isEventOrganizer ? (
+    <li className={classNames(css.navigationLink, currentPageClass('SearchPage'))}>
+      <NamedLink name="SearchPage">
+        <FormattedMessage id="TopbarMobileMenu.findDjLink" />
+      </NamedLink>
+    </li>
+  ) : isDj ? (
     <li className={classNames(css.navigationLink, currentPageClass('ManageListingsPage'))}>
       <NamedLink name="ManageListingsPage">
-        <FormattedMessage id="TopbarMobileMenu.yourListingsLink" />
+        <FormattedMessage id="TopbarMobileMenu.myPublicProfileLink" />
       </NamedLink>
     </li>
   ) : null;
@@ -180,12 +191,7 @@ const TopbarMobileMenu = props => {
               {notificationCountBadge}
             </NamedLink>
           </li>
-          {manageListingsLinkMaybe}
-          <li className={classNames(css.navigationLink, currentPageClass('ProfileSettingsPage'))}>
-            <NamedLink name="ProfileSettingsPage">
-              <FormattedMessage id="TopbarMobileMenu.profileSettingsLink" />
-            </NamedLink>
-          </li>
+          {primaryAccountLinkMaybe}
           <li className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}>
             <NamedLink name="AccountSettingsPage">
               <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />

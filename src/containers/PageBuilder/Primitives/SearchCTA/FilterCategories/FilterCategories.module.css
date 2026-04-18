@@ -52,7 +52,7 @@
   min-width: 288px;
   padding: 14px 0 18px;
   margin-top: 0;
-  background-color: white;
+  background-color: var(--colorWhite);
   border-radius: 4px;
   box-shadow: var(--boxShadowPopup);
   z-index: 1;
@@ -76,7 +76,7 @@
     padding: 7px 22px;
     text-align: left;
     border: none;
-    background: white;
+    background: var(--colorWhite);
     cursor: pointer;
     display: block;
     color: var(--colorGrey700);

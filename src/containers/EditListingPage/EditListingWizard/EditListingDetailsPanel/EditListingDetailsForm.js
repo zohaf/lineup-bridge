@@ -21,7 +21,6 @@ import {
   Button,
   FieldSelect,
   FieldTextInput,
-  Heading,
   CustomExtendedDataField,
 } from '../../../../components';
 // Import modules from this directory
@@ -63,69 +62,11 @@ const FieldHidden = props => {
 // - transactionProcessAlias  Initiate correct transaction against Marketplace API
 // - unitType                 Main use case: pricing unit
 const FieldSelectListingType = props => {
-  const {
-    name,
-    listingTypes,
-    hasPredefinedListingType,
-    onListingTypeChange,
-    formApi,
-    formId,
-    intl,
-  } = props;
-  const hasMultipleListingTypes = listingTypes?.length > 1;
+  const { name } = props;
 
-  const handleOnChange = value => {
-    const selectedListingType = listingTypes.find(config => config.listingType === value);
-    formApi.change('transactionProcessAlias', selectedListingType.transactionProcessAlias);
-    formApi.change('unitType', selectedListingType.unitType);
-
-    if (onListingTypeChange) {
-      onListingTypeChange(selectedListingType);
-    }
-  };
-  const getListingTypeLabel = listingType => {
-    const listingTypeConfig = listingTypes.find(config => config.listingType === listingType);
-    return listingTypeConfig ? listingTypeConfig.label : listingType;
-  };
-
-  return hasMultipleListingTypes && !hasPredefinedListingType ? (
-    <>
-      <FieldSelect
-        id={formId ? `${formId}.${name}` : name}
-        name={name}
-        className={css.listingTypeSelect}
-        label={intl.formatMessage({ id: 'EditListingDetailsForm.listingTypeLabel' })}
-        validate={required(
-          intl.formatMessage({ id: 'EditListingDetailsForm.listingTypeRequired' })
-        )}
-        onChange={handleOnChange}
-      >
-        <option disabled value="">
-          {intl.formatMessage({ id: 'EditListingDetailsForm.listingTypePlaceholder' })}
-        </option>
-        {listingTypes.map(config => {
-          const type = config.listingType;
-          return (
-            <option key={type} value={type}>
-              {config.label}
-            </option>
-          );
-        })}
-      </FieldSelect>
-      <FieldHidden name="transactionProcessAlias" />
-      <FieldHidden name="unitType" />
-    </>
-  ) : hasMultipleListingTypes && hasPredefinedListingType ? (
-    <div className={css.listingTypeSelect}>
-      <Heading as="h5" rootClassName={css.selectedLabel}>
-        {intl.formatMessage({ id: 'EditListingDetailsForm.listingTypeLabel' })}
-      </Heading>
-      <p className={css.selectedValue}>{getListingTypeLabel(formApi.getFieldState(name)?.value)}</p>
-      <FieldHidden name={name} />
-      <FieldHidden name="transactionProcessAlias" />
-      <FieldHidden name="unitType" />
-    </div>
-  ) : (
+  // Listing type is always set from config / URL (see EditListingDetailsPanel getTransactionInfo).
+  // Do not show the listing type control in the UI.
+  return (
     <>
       <FieldHidden name={name} />
       <FieldHidden name="transactionProcessAlias" />
@@ -345,10 +286,10 @@ const EditListingDetailsForm = props => (
       const [allCategoriesChosen, setAllCategoriesChosen] = useState(false);
 
       const titleRequiredMessage = intl.formatMessage({
-        id: 'EditListingDetailsForm.titleRequired',
+        id: 'EditListingDetailsForm.djTitleRequired',
       });
       const maxLengthMessage = intl.formatMessage(
-        { id: 'EditListingDetailsForm.maxLength' },
+        { id: 'EditListingDetailsForm.djMaxLength' },
         {
           maxLength: TITLE_MAX_LENGTH,
         }
@@ -426,9 +367,9 @@ const EditListingDetailsForm = props => (
               name="title"
               className={css.title}
               type="text"
-              label={intl.formatMessage({ id: 'EditListingDetailsForm.title' })}
+              label={intl.formatMessage({ id: 'EditListingDetailsForm.djTitle' })}
               placeholder={intl.formatMessage({
-                id: 'EditListingDetailsForm.titlePlaceholder',
+                id: 'EditListingDetailsForm.djTitlePlaceholder',
               })}
               maxLength={TITLE_MAX_LENGTH}
               validate={composeValidators(required(titleRequiredMessage), maxLength60Message)}
@@ -442,13 +383,13 @@ const EditListingDetailsForm = props => (
               name="description"
               className={css.description}
               type="textarea"
-              label={intl.formatMessage({ id: 'EditListingDetailsForm.description' })}
+              label={intl.formatMessage({ id: 'EditListingDetailsForm.djDescription' })}
               placeholder={intl.formatMessage({
-                id: 'EditListingDetailsForm.descriptionPlaceholder',
+                id: 'EditListingDetailsForm.djDescriptionPlaceholder',
               })}
               validate={required(
                 intl.formatMessage({
-                  id: 'EditListingDetailsForm.descriptionRequired',
+                  id: 'EditListingDetailsForm.djDescriptionRequired',
                 })
               )}
             />

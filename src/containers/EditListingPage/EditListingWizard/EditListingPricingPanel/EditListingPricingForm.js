@@ -6,9 +6,6 @@ import classNames from 'classnames';
 // Import configs and util modules
 import appSettings from '../../../../config/settings';
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
-import * as validators from '../../../../util/validators';
-import { formatMoney } from '../../../../util/currency';
-import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
 
 // Import shared components
@@ -16,30 +13,10 @@ import { Button, Form, FieldCurrencyInput } from '../../../../components';
 
 import BookingPriceVariants from './BookingPriceVariants';
 import StartTimeInterval from './StartTimeInverval';
+import { getListingPriceValidators } from './pricingFormValidators';
 
 // Import modules from this directory
 import css from './EditListingPricingForm.module.css';
-
-const { Money } = sdkTypes;
-
-const getPriceValidators = (listingMinimumPriceSubUnits, marketplaceCurrency, intl) => {
-  const priceRequiredMsgId = { id: 'EditListingPricingForm.priceRequired' };
-  const priceRequiredMsg = intl.formatMessage(priceRequiredMsgId);
-  const priceRequired = validators.required(priceRequiredMsg);
-
-  const minPriceRaw = new Money(listingMinimumPriceSubUnits, marketplaceCurrency);
-  const minPrice = formatMoney(intl, minPriceRaw);
-  const priceTooLowMsgId = { id: 'EditListingPricingForm.priceTooLow' };
-  const priceTooLowMsg = intl.formatMessage(priceTooLowMsgId, { minPrice });
-  const minPriceRequired = validators.moneySubUnitAmountAtLeast(
-    priceTooLowMsg,
-    listingMinimumPriceSubUnits
-  );
-
-  return listingMinimumPriceSubUnits
-    ? validators.composeValidators(priceRequired, minPriceRequired)
-    : priceRequired;
-};
 
 const ErrorMessages = props => {
   const { fetchErrors } = props;
@@ -119,10 +96,11 @@ export const EditListingPricingForm = props => (
       } = formRenderProps;
 
       const intl = useIntl();
-      const priceValidators = getPriceValidators(
+      const priceValidators = getListingPriceValidators(
         listingMinimumPriceSubUnits,
         marketplaceCurrency,
-        intl
+        intl,
+        unitType
       );
 
       const classes = classNames(rootClassName || css.root, className);
@@ -159,10 +137,7 @@ export const EditListingPricingForm = props => (
               name="price"
               className={css.input}
               autoFocus={autoFocus}
-              label={intl.formatMessage(
-                { id: 'EditListingPricingForm.pricePerProduct' },
-                { unitType }
-              )}
+              label={intl.formatMessage({ id: 'EditListingPricingForm.djPricePerProduct' }, { unitType })}
               placeholder={intl.formatMessage({
                 id: 'EditListingPricingForm.priceInputPlaceholder',
               })}

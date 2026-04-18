@@ -91,7 +91,7 @@
   /* Layout */
   min-width: 300px;
   margin-top: 7px;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   /* Borders */
   border-top: 1px solid var(--colorGrey100);

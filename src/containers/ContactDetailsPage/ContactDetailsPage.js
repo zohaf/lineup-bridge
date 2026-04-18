@@ -7,12 +7,12 @@ import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser } from '../../util/data';
-import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers';
+import { showPaymentDetailsForUser } from '../../util/userHelpers';
 
 import { sendVerificationEmail } from '../../ducks/user.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
-import { H3, Page, UserNav, LayoutSideNavigation } from '../../components';
+import { H3, Page, LayoutSideNavigation } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -23,6 +23,8 @@ import {
   saveContactDetails,
   saveContactDetailsClear,
   resetPassword,
+  uploadImage,
+  updateProfileImage,
 } from './ContactDetailsPage.duck';
 import css from './ContactDetailsPage.module.css';
 
@@ -62,6 +64,13 @@ export const ContactDetailsPageComponent = props => {
     onResetPassword,
     resetPasswordInProgress = false,
     resetPasswordError,
+    image,
+    uploadInProgress,
+    uploadImageError,
+    updateProfileImageInProgress,
+    updateProfileImageError,
+    onImageUpload,
+    onUpdateProfileImage,
   } = props;
   const { userTypes = [] } = config.user;
 
@@ -89,6 +98,13 @@ export const ContactDetailsPageComponent = props => {
       saveEmailError={saveEmailError}
       savePhoneNumberError={savePhoneNumberError}
       currentUser={currentUser}
+      profileImage={image || { imageId: user.profileImage ? user.profileImage.id : null }}
+      uploadInProgress={uploadInProgress}
+      uploadImageError={uploadImageError}
+      updateProfileImageInProgress={updateProfileImageInProgress}
+      updateProfileImageError={updateProfileImageError}
+      onImageUpload={onImageUpload}
+      onUpdateProfileImage={onUpdateProfileImage}
       onResendVerificationEmail={onResendVerificationEmail}
       onResetPassword={onResetPassword}
       onSubmit={handleSubmit}
@@ -105,7 +121,6 @@ export const ContactDetailsPageComponent = props => {
 
   const title = intl.formatMessage({ id: 'ContactDetailsPage.title' });
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
   const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
   const accountSettingsNavProps = {
     currentPage: 'ContactDetailsPage',
@@ -117,16 +132,10 @@ export const ContactDetailsPageComponent = props => {
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation
         topbar={
-          <>
-            <TopbarContainer
-              desktopClassName={css.desktopTopbar}
-              mobileClassName={css.mobileTopbar}
-            />
-            <UserNav
-              currentPage="ContactDetailsPage"
-              showManageListingsLink={showManageListingsLink}
-            />
-          </>
+          <TopbarContainer
+            desktopClassName={css.desktopTopbar}
+            mobileClassName={css.mobileTopbar}
+          />
         }
         sideNav={null}
         useAccountSettingsNav
@@ -155,6 +164,11 @@ const mapStateToProps = state => {
     contactDetailsChanged,
     resetPasswordInProgress,
     resetPasswordError,
+    image,
+    uploadInProgress,
+    uploadImageError,
+    updateProfileImageInProgress,
+    updateProfileImageError,
   } = state.ContactDetailsPage;
   return {
     saveEmailError,
@@ -167,6 +181,11 @@ const mapStateToProps = state => {
     sendVerificationEmailError,
     resetPasswordInProgress,
     resetPasswordError,
+    image,
+    uploadInProgress,
+    uploadImageError,
+    updateProfileImageInProgress,
+    updateProfileImageError,
   };
 };
 
@@ -175,6 +194,8 @@ const mapDispatchToProps = dispatch => ({
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
   onSubmitContactDetails: values => dispatch(saveContactDetails(values)),
   onResetPassword: values => dispatch(resetPassword(values)),
+  onImageUpload: data => dispatch(uploadImage(data)),
+  onUpdateProfileImage: data => dispatch(updateProfileImage(data)),
 });
 
 const ContactDetailsPage = compose(

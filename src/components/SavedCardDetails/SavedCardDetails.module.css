@@ -90,7 +90,7 @@
   z-index: calc(var(--zIndexPopup) + 1);
   position: relative;
 
-  background-color: #fff;
+  background-color: var(--colorPageBackground);
   box-shadow: 0 2px 3px 0 rgba(216, 220, 230, 0.7);
 
   &:hover {
@@ -101,7 +101,7 @@
   &:focus {
     outline: none;
     box-shadow: none;
-    background-color: var(--colorWhite);
+    background-color: var(--colorPageBackground);
     border: 1px solid #d8dce6;
     text-decoration: none;
     border-radius: 6px 6px 0px 0px;
@@ -136,7 +136,7 @@
   position: absolute;
   z-index: var(--zIndexPopup);
 
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
   box-shadow: var(--boxShadowFilterButton);
   border-radius: 6px;
   border: 1px solid var(--colorGrey100);
@@ -156,7 +156,7 @@
 .menuItem {
   color: var(--colorGrey700);
   &:hover {
-    background-color: #f2f2f2;
+    background-color: var(--colorPageBackground);
   }
 }
 
@@ -175,7 +175,7 @@
 
   &:focus {
     outline: 0;
-    background-color: #f2f2f2;
+    background-color: var(--colorPageBackground);
   }
 }
 

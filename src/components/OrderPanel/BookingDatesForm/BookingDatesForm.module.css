@@ -17,7 +17,7 @@
   margin: 12px 0 5px 0;
 
   border: none;
-  background-color: var(--colorGrey100);
+  background-color: var(--colorPageBackground);
 
   @media (--viewportMedium) {
     margin: 7px 0 0px 0;

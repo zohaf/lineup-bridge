@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 import { Form as FinalForm } from 'react-final-form';
+import { Field } from 'react-final-form';
 
 import { FormattedMessage, injectIntl, intlShape } from '../../../util/reactIntl';
 import { propTypes } from '../../../util/types';
@@ -12,11 +13,15 @@ import {
   isChangeEmailTakenError,
   isChangeEmailWrongPassword,
   isTooManyEmailVerificationRequestsError,
+  isUploadImageOverLimitError,
 } from '../../../util/errors';
 
 import {
+  Avatar,
   FieldPhoneNumberInput,
   Form,
+  ImageFromFile,
+  IconSpinner,
   PrimaryButton,
   FieldTextInput,
   H4,
@@ -25,6 +30,7 @@ import {
 import css from './ContactDetailsForm.module.css';
 
 const SHOW_EMAIL_SENT_TIMEOUT = 2000;
+const ACCEPT_IMAGES = 'image/*';
 
 const PhoneNumberMaybe = props => {
   const { formId, userTypeConfig, intl } = props;
@@ -87,6 +93,7 @@ class ContactDetailsFormComponent extends Component {
     this.state = { showVerificationEmailSentMessage: false, showResetPasswordMessage: false };
     this.emailSentTimeoutId = null;
     this.restartTimeoutId = null;
+    this.lastProfileImageUpdateId = null;
     this.handleResendVerificationEmail = this.handleResendVerificationEmail.bind(this);
     this.handleResetPassword = this.handleResetPassword.bind(this);
     this.submittedValues = {};
@@ -133,6 +140,13 @@ class ContactDetailsFormComponent extends Component {
             sendVerificationEmailError,
             sendVerificationEmailInProgress = false,
             resetPasswordInProgress = false,
+            profileImage,
+            uploadInProgress: uploadImageInProgress = false,
+            uploadImageError,
+            updateProfileImageInProgress = false,
+            updateProfileImageError,
+            onImageUpload,
+            onUpdateProfileImage,
             values,
             userTypeConfig,
           } = fieldRenderProps;
@@ -145,6 +159,32 @@ class ContactDetailsFormComponent extends Component {
           }
 
           const { email: currentEmail, emailVerified, pendingEmail, profile } = user.attributes;
+
+          const currentProfileImageId = user.profileImage ? user.profileImage.id : null;
+          const transientUserProfileImage = profileImage?.uploadedImage || user.profileImage;
+          const transientUser = { ...user, profileImage: transientUserProfileImage };
+          const fileExists = !!profileImage?.file;
+          const fileUploadInProgress = uploadImageInProgress && fileExists;
+
+          // When image upload is done, immediately save it to profile.
+          if (
+            profileImage?.imageId &&
+            profileImage.imageId !== currentProfileImageId &&
+            profileImage.imageId !== this.lastProfileImageUpdateId &&
+            !updateProfileImageInProgress
+          ) {
+            this.lastProfileImageUpdateId = profileImage.imageId;
+            onUpdateProfileImage({ profileImageId: profileImage.imageId });
+          }
+
+          const chooseAvatarLabel = fileUploadInProgress ? (
+            <span className={css.uploadingImage}>
+              <IconSpinner className={css.spinner} />
+              <FormattedMessage id="ContactDetailsForm.uploadingImage" />
+            </span>
+          ) : (
+            <FormattedMessage id="ContactDetailsForm.changeAvatar" />
+          );
 
           // email
 
@@ -372,6 +412,91 @@ class ContactDetailsFormComponent extends Component {
                 });
               }}
             >
+              <div className={css.profileImageSection}>
+                <H4 as="h3" className={css.profileImageTitle}>
+                  <FormattedMessage id="ContactDetailsForm.yourProfilePicture" />
+                </H4>
+
+                <div className={css.avatarContainer}>
+                  {fileUploadInProgress ? (
+                    <ImageFromFile
+                      id={profileImage.id}
+                      className={css.uploadedImage}
+                      file={profileImage.file}
+                      alt={intl.formatMessage({ id: 'ContactDetailsForm.profileImageAlt' })}
+                    />
+                  ) : (
+                    <Avatar
+                      className={css.avatar}
+                      user={transientUser}
+                      disableProfileLink
+                    />
+                  )}
+                </div>
+
+                <Field
+                  accept={ACCEPT_IMAGES}
+                  id="profileImage"
+                  name="profileImage"
+                  label={chooseAvatarLabel}
+                  type="file"
+                  form={null}
+                  uploadImageError={uploadImageError}
+                  disabled={uploadImageInProgress || updateProfileImageInProgress}
+                >
+                  {fieldProps => {
+                    const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
+                    const { name, type } = input;
+                    const onChange = e => {
+                      const file = e.target.files[0];
+                      if (file != null) {
+                        const tempId = `${file.name}_${Date.now()}`;
+                        onImageUpload({ id: tempId, file });
+                      }
+                    };
+
+                    let error = null;
+                    if (isUploadImageOverLimitError(uploadImageError)) {
+                      error = (
+                        <div className={css.error}>
+                          <FormattedMessage id="ContactDetailsForm.imageUploadFailedFileTooLarge" />
+                        </div>
+                      );
+                    } else if (uploadImageError) {
+                      error = (
+                        <div className={css.error}>
+                          <FormattedMessage id="ContactDetailsForm.imageUploadFailed" />
+                        </div>
+                      );
+                    } else if (updateProfileImageError) {
+                      error = (
+                        <div className={css.error}>
+                          <FormattedMessage id="ContactDetailsForm.updateProfileImageFailed" />
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className={css.uploadAvatarWrapper}>
+                        <label className={css.label} htmlFor={id}>
+                          {label}
+                        </label>
+                        <input
+                          accept={accept}
+                          id={id}
+                          name={name}
+                          className={css.uploadAvatarInput}
+                          disabled={disabled}
+                          onChange={onChange}
+                          type={type}
+                        />
+                        {error}
+                      </div>
+                    );
+                  }}
+                </Field>
+              </div>
+
               <div className={css.contactDetailsSection}>
                 <FieldTextInput
                   type="email"

@@ -267,8 +267,8 @@
 
 .image-gallery-bullets .image-gallery-bullet.active {
   transform: scale(1.2);
-  border: 1px solid #fff;
-  background: #fff
+  border: 1px solid #eeede9;
+  background: #eeede9;
 }
 
 @media(hover: hover)and (pointer: fine) {

@@ -87,7 +87,8 @@ const CustomFieldMultiEnum = props => {
 
 const CustomFieldText = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
-  const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
+  const { placeholderMessage, isRequired, requiredMessage, multiline = true } =
+    fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig);
   const validateMaybe = isRequired
     ? { validate: required(requiredMessage || defaultRequiredMessage) }
@@ -100,7 +101,7 @@ const CustomFieldText = props => {
       className={css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
-      type="textarea"
+      type={multiline ? 'textarea' : 'text'}
       label={label}
       helpText={fieldConfig?.helpText}
       placeholder={placeholder}

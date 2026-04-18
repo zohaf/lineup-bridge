@@ -29,11 +29,13 @@
   cursor: pointer;
   text-overflow: ellipsis;
   height: 40px;
+  background-color: var(--colorWhite);
   &:hover,
   &:focus {
     border: none;
     outline: none;
     box-shadow: none;
+    background-color: var(--colorWhite);
   }
 
   &::placeholder {

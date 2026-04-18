@@ -4,10 +4,9 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
-import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { pathByRouteName } from '../../util/routes';
-import { hasPermissionToPostListings, showCreateListingLinkForUser } from '../../util/userHelpers';
+import { hasPermissionToPostListings } from '../../util/userHelpers';
 import { NO_ACCESS_PAGE_POST_LISTINGS } from '../../util/urlHelpers';
 import { propTypes } from '../../util/types';
 import { isErrorNoPermissionToPostListings } from '../../util/errors';
@@ -17,7 +16,6 @@ import {
   H3,
   Page,
   PaginationLinks,
-  UserNav,
   LayoutSingleColumn,
   NamedLink,
   Modal,
@@ -51,14 +49,11 @@ const Heading = props => {
     </H3>
   ) : hasNoResults ? (
     <div className={css.noResultsContainer}>
-      <H3 as="h1" className={css.headingNoListings}>
-        <FormattedMessage id="ManageListingsPage.noResults" />
-      </H3>
-      <p className={css.createListingParagraph}>
-        <NamedLink className={css.createListingLink} name="NewListingPage">
-          <FormattedMessage id="ManageListingsPage.createListing" />
-        </NamedLink>
-      </p>
+      <NamedLink className={css.emptyStateBox} name="NewListingPage">
+        <span className={css.emptyStateLabel}>
+          <FormattedMessage id="ManageListingsPage.createPublicProfile" />
+        </span>
+      </NamedLink>
     </div>
   ) : null;
 };
@@ -108,7 +103,6 @@ export const ManageListingsPageComponent = props => {
   const [discardDraftModalId, setDiscardDraftModalId] = useState(null);
   const history = useHistory();
   const routeConfiguration = useRouteConfiguration();
-  const config = useConfiguration();
   const intl = useIntl();
 
   const {
@@ -199,23 +193,13 @@ export const ManageListingsPageComponent = props => {
     `${panelWidth / 3}vw`,
   ].join(', ');
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
-
   return (
     <Page
       title={intl.formatMessage({ id: 'ManageListingsPage.title' })}
       scrollingDisabled={scrollingDisabled}
     >
       <LayoutSingleColumn
-        topbar={
-          <>
-            <TopbarContainer />
-            <UserNav
-              currentPage="ManageListingsPage"
-              showManageListingsLink={showManageListingsLink}
-            />
-          </>
-        }
+        topbar={<TopbarContainer />}
         footer={<FooterContainer />}
       >
         {queryInProgress ? loadingResults : null}

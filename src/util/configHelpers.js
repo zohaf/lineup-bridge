@@ -783,14 +783,22 @@ const validSaveConfig = config => {
   );
   const [isValidIsRequired, isRequired] = validBoolean('isRequired', config.isRequired, false);
   const [isValidRequiredMessage, requiredMessage] = validRequiredMessage(config.requiredMessage);
+  // multiline: false uses a one-line text input; default true keeps legacy textarea behavior for schema "text"
+  const [isValidMultiline, multiline] = validBoolean('multiline', config.multiline, true);
 
-  const isValid = isValidLabel && isValidPlaceholder && isValidIsRequired && isValidRequiredMessage;
+  const isValid =
+    isValidLabel &&
+    isValidPlaceholder &&
+    isValidIsRequired &&
+    isValidRequiredMessage &&
+    isValidMultiline;
   const validValue = {
     saveConfig: {
       ...label,
       ...placeholderMessage,
       ...isRequired,
       ...requiredMessage,
+      ...multiline,
     },
   };
   return [isValid, validValue];
@@ -1365,15 +1373,17 @@ const mergeListingConfig = (hostedConfig, defaultConfigs, categoriesInUse) => {
   const { listingTypes: defaultListingTypes, listingFields: defaultListingFields, ...rest } =
     defaultConfigs.listing || {};
 
-  // When debugging, include default configs by passing 'true' here.
-  // Otherwise, use listing types and fields from hosted assets.
-  const shouldMerge = mergeDefaultTypesAndFieldsForDebugging(false);
-  const listingTypes = shouldMerge
+  // Merge local `configListing.js` listing fields with hosted assets so extended-data options
+  // (e.g. multiline) apply when Console also defines the same field keys. Duplicate keys use
+  // the local default second in `union`, so defaults override hosted for the same key.
+  // Listing types stay hosted-only unless debugging merge is enabled (avoids clobbering tests/fixtures).
+  const mergeTypesAndFieldsForDebugging = mergeDefaultTypesAndFieldsForDebugging(
+    defaultConfigs.listing?.mergeDefaultTypesAndFields
+  );
+  const listingTypes = mergeTypesAndFieldsForDebugging
     ? union(hostedListingTypes, defaultListingTypes, 'listingType')
     : hostedListingTypes;
-  const listingFields = shouldMerge
-    ? union(hostedListingFields, defaultListingFields, 'key')
-    : hostedListingFields;
+  const listingFields = union(hostedListingFields, defaultListingFields, 'key');
 
   const listingTypesInUse = listingTypes.map(lt => `${lt.listingType}`);
 

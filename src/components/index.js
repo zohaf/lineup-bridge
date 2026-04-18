@@ -117,7 +117,6 @@ export const FieldDateRangeController = loadable(() => import(/* webpackChunkNam
 export { default as TabNav } from './TabNav/TabNav';
 export { LinkTabNavHorizontal, ButtonTabNavHorizontal } from './TabNavHorizontal/TabNavHorizontal';
 export { default as Tabs } from './Tabs/Tabs';
-export { default as UserNav } from './UserNav/UserNav';
 
 ///////////////////////////////////////////////
 // These components include other components //

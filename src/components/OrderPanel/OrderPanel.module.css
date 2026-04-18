@@ -16,7 +16,7 @@
     height: unset;
     min-height: unset;
     padding: var(--modalPaddingMedium);
-    background-color: var(--colorWhite);
+    background-color: var(--colorPageBackground);
     margin-top: 12.5vh;
     margin-bottom: 12.5vh;
   }
@@ -172,7 +172,7 @@
   left: 0;
   width: 100vw;
   padding: 18px 24px 18px 16px;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
   box-shadow: var(--boxShadowTop);
   display: flex;
 

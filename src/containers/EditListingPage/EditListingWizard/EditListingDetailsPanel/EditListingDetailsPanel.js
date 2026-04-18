@@ -49,13 +49,15 @@ const getTransactionInfo = props => {
   if (listingType && transactionProcessAlias && unitType) {
     // If listing type has already been set, return the existing listing type info.
     return { listingType, transactionProcessAlias, unitType };
-  } else if (listingTypes.length === 1 || preselectedListingType) {
-    const listingTypeConfig =
-      listingTypes.length === 1
-        ? listingTypes[0]
-        : preselectedListingType
-        ? listingTypes.find(conf => conf.listingType === preselectedListingType)
-        : {};
+  } else if (listingTypes.length >= 1) {
+    // Default to URL preselection, otherwise first configured type (listing type UI is hidden).
+    let listingTypeConfig = null;
+    if (preselectedListingType) {
+      listingTypeConfig = listingTypes.find(conf => conf.listingType === preselectedListingType);
+    }
+    if (!listingTypeConfig) {
+      listingTypeConfig = listingTypes[0];
+    }
     const { listingType: type, label, transactionType } = listingTypeConfig || {};
     if (!type) {
       // If listing type is not found (e.g. preselected listing type is not found among listingTypes),
@@ -341,6 +343,18 @@ const EditListingDetailsPanel = props => {
     }
   }, []);
 
+  // When multiple listing types exist but the picker is hidden, select the first type for the wizard.
+  useEffect(() => {
+    if (
+      !hasExistingListingType &&
+      listingTypes.length > 1 &&
+      !locationSearch?.listingType &&
+      onListingTypeChange
+    ) {
+      onListingTypeChange(listingTypes[0]);
+    }
+  }, []);
+
   const initialValues = getInitialValues(
     props,
     existingListingTypeInfo,
@@ -358,12 +372,12 @@ const EditListingDetailsPanel = props => {
 
   const panelHeadingProps = isPublished
     ? {
-        id: 'EditListingDetailsPanel.title',
+        id: 'EditListingDetailsPanel.djEditTitle',
         values: { listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> },
         messageProps: { listingTitle: listing.attributes.title },
       }
     : {
-        id: 'EditListingDetailsPanel.createListingTitle',
+        id: 'EditListingDetailsPanel.djCreateListingTitle',
         values: { lineBreak: <br /> },
         messageProps: {},
       };

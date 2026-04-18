@@ -38,7 +38,7 @@
   padding: 6px 14px;
 
   /* Coloring */
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
   color: var(--colorGrey700);
 
   /* Borders */
@@ -90,7 +90,7 @@
   transform: rotate(45deg);
 
   /* Caret should have same bg-color as label */
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   transition: var(--transitionStyleButton);
 }

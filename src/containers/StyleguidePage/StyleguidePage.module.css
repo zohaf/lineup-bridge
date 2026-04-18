@@ -196,7 +196,7 @@
 .colorDescription {
   flex-grow: 1;
   width: 100%;
-  background-color: #fff;
+  background-color: var(--colorPageBackground);
   padding: calc(2 * var(--spacingUnit));
 
   @media (--viewportMedium) {
@@ -295,7 +295,7 @@
 .colorWhite {
   composes: color;
   color: black;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 }
 
 .colorGrey50 {

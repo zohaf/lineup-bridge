@@ -274,7 +274,7 @@
   margin: 28px 0 20px 0;
   text-align: center;
   position: relative;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   &:after {
     content: '';
@@ -295,7 +295,7 @@
 }
 
 .socialButtonsOrText {
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
   width: auto;
   display: inline-block;
   z-index: 3;

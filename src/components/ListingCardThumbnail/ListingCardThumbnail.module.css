@@ -23,12 +23,12 @@
 /*  Modify or extend the available fallback styles here. */
 .white {
   color: var(--colorGrey800);
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 }
 
 .grey {
   color: var(--colorGrey800);
-  background-color: var(--colorGrey50);
+  background-color: var(--colorPageBackground);
 }
 
 .black {

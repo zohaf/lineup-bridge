@@ -12,7 +12,7 @@
   display: flex;
   width: 24px;
   align-self: stretch;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 }
 
 .searchInput {

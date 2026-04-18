@@ -11,6 +11,18 @@
   flex-grow: 1;
 }
 
+.intro {
+  margin: 0 0 24px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 32px;
+  }
+
+  /* Body text: readable line length */
+  max-width: 720px;
+  color: var(--colorGrey700);
+}
+
 .priceCurrencyInvalid {
   color: var(--colorFail);
 }

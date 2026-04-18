@@ -49,11 +49,9 @@
   justify-content: space-between;
   align-items: center;
 
-  /* fill */
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
-  /* shadows */
-  box-shadow: var(--boxShadow);
+  box-shadow: none;
 
   @media (--viewportMedium) {
     height: var(--topbarHeightDesktop);
@@ -61,6 +59,24 @@
 
   @media (--viewportLarge) {
     display: none;
+  }
+}
+
+.topbarMobileLogoRoot {
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+}
+
+/* Half-size logo in mobile header (< viewportLarge) */
+.topbarMobileLogoHalf {
+  max-height: calc(var(--topbarHeight) / 2) !important;
+  width: auto;
+}
+
+@media (--viewportMedium) {
+  .topbarMobileLogoHalf {
+    max-height: calc(var(--topbarHeightDesktop) / 2) !important;
   }
 }
 
@@ -205,7 +221,7 @@
     min-height: max(100%, 100vh);
     height: auto;
     padding: 24px;
-    background-color: var(--colorWhite);
+    background-color: var(--colorPageBackground);
     border-bottom: none;
   }
 }

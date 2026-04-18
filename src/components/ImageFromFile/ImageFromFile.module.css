@@ -4,7 +4,7 @@
   width: 100%;
   margin: 0;
   overflow: hidden;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorPageBackground); /* Loading BG color */
 }
 
 .aspectWrapper {

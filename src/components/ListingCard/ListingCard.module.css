@@ -13,7 +13,7 @@
 
 .aspectRatioWrapper {
   transition: var(--transitionStyleButton);
-  background: var(--colorGrey100); /* Loading BG color */
+  background: var(--colorPageBackground); /* Loading BG color */
   border-radius: var(--borderRadiusMedium);
 
   @media (--viewportMedium) {

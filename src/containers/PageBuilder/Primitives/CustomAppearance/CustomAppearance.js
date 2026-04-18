@@ -7,6 +7,27 @@ import { ResponsiveImage } from '../../../../components/index.js';
 import css from './CustomAppearance.module.css';
 
 /**
+ * Console often sets section background to pure white; inline styles override CSS.
+ * Map default "canvas white" to the app page background so it matches #EEEDE9 (--colorPageBackground).
+ */
+const canvasBackgroundColor = color => {
+  if (color == null || typeof color !== 'string') {
+    return color;
+  }
+  const c = color.trim().toLowerCase();
+  if (
+    c === '#fff' ||
+    c === '#ffffff' ||
+    c === 'white' ||
+    c === 'rgb(255, 255, 255)' ||
+    c === 'rgb(255,255,255)'
+  ) {
+    return 'var(--colorPageBackground)';
+  }
+  return color;
+};
+
+/**
  * @typedef {Object} ImageVariant
  * @property {number} width
  * @property {number} height
@@ -51,7 +72,9 @@ export const CustomAppearance = React.forwardRef((props, ref) => {
     return variants ? Object.keys(variants) : [];
   };
 
-  const backgroundColorMaybe = backgroundColor ? { backgroundColor } : {};
+  const backgroundColorMaybe = backgroundColor
+    ? { backgroundColor: canvasBackgroundColor(backgroundColor) }
+    : {};
   // On top of the background image there could be an overlay that mixes in some color (e.g. black)
   // with the given opacity. Currently, there are 2 presets: "dark" and "darker".
   // At this point this is used as a shader to add contrast between foreground text and background.

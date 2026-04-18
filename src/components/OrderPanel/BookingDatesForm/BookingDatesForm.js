@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, Field } from 'react-final-form';
 import classNames from 'classnames';
 
 import appSettings from '../../../config/settings';
+import { useConfiguration } from '../../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { required, bookingDatesRequired, composeValidators } from '../../../util/validators';
 import {
@@ -21,7 +22,17 @@ import { LINE_ITEM_DAY, propTypes } from '../../../util/types';
 import { timeSlotsPerDate } from '../../../util/generators';
 import { BOOKING_PROCESS_NAME } from '../../../transactions/transaction';
 
-import { Form, PrimaryButton, FieldDateRangePicker, FieldSelect, H6 } from '../../../components';
+import {
+  Form,
+  PrimaryButton,
+  FieldDateRangePicker,
+  FieldSelect,
+  H6,
+  ValidationError,
+} from '../../../components';
+
+import SingleDatePicker from '../../DatePicker/DatePickers/SingleDatePicker';
+import fieldSingleDatePickerCss from '../../DatePicker/FieldSingleDatePicker/FieldSingleDatePicker.module.css';
 
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 
@@ -540,6 +551,8 @@ export const BookingDatesForm = props => {
     ...rest
   } = props;
   const intl = useIntl();
+  const config = useConfiguration();
+  const firstDayOfWeek = config.localization.firstDayOfWeek;
   const [currentMonth, setCurrentMonth] = useState(getStartOf(TODAY, 'month', timeZone));
   const initialValuesMaybe =
     priceVariants.length > 1 && preselectedPriceVariant
@@ -686,8 +699,7 @@ export const BookingDatesForm = props => {
           endDate,
           lineItemUnitType,
           dayCountAvailableForBooking,
-          timeZone,
-          seatsEnabled
+          timeZone
         );
 
         const seatsOptions = getMinSeatsOptions(
@@ -698,6 +710,40 @@ export const BookingDatesForm = props => {
 
         const isDaily = lineItemUnitType === LINE_ITEM_DAY;
         const submitDisabled = isPriceVariationsInUse && !isPublishedListing;
+
+        const bookingDatePickerDisabled =
+          fetchLineItemsInProgress || (priceVariants.length > 0 && !priceVariantName);
+        const bookingDatesValidators = composeValidators(
+          required(
+            intl.formatMessage({
+              id: 'BookingDatesForm.requiredDate',
+            })
+          ),
+          bookingDatesRequired(startDateErrorMessage, endDateErrorMessage)
+        );
+
+        const handleBookingDatesChange = values => {
+          const { startDate: startDateFromValues, endDate: endDateFromValues } = values || {};
+          const { startDate: sd, endDate: ed } = values
+            ? getStartAndEndOnTimeZone(
+                startDateFromValues,
+                endDateFromValues,
+                isDaily,
+                timeZone
+              )
+            : {};
+          if (seatsEnabled) {
+            formApi.change('seats', 1);
+          }
+          onHandleFetchLineItems({
+            values: {
+              priceVariantName,
+              startDate: sd,
+              endDate: ed,
+              seats: seatsEnabled ? 1 : undefined,
+            },
+          });
+        };
 
         return (
           <Form onSubmit={handleSubmit} className={classes} enforcePagePreloadFor="CheckoutPage">
@@ -710,89 +756,132 @@ export const BookingDatesForm = props => {
               />
             ) : null}
 
-            <FieldDateRangePicker
-              className={css.bookingDates}
-              name="bookingDates"
-              isDaily={isDaily}
-              startDateId={`${formId}.bookingStartDate`}
-              startDateLabel={intl.formatMessage({
-                id: 'BookingDatesForm.bookingStartTitle',
-              })}
-              startDatePlaceholderText={startDatePlaceholderText}
-              endDateId={`${formId}.bookingEndDate`}
-              endDateLabel={intl.formatMessage({
-                id: 'BookingDatesForm.bookingEndTitle',
-              })}
-              endDatePlaceholderText={endDatePlaceholderText}
-              format={v => {
-                const { startDate, endDate } = v || {};
-                // Format the Final Form field's value for the DateRangePicker
-                // DateRangePicker operates on local time zone, but the form uses listing's time zone
-                const formattedStart = startDate
-                  ? timeOfDayFromTimeZoneToLocal(startDate, timeZone)
-                  : startDate;
-                const endDateForPicker =
-                  isDaily && endDate ? getInclusiveEndDate(endDate, timeZone) : endDate;
-                const formattedEnd = endDateForPicker
-                  ? timeOfDayFromTimeZoneToLocal(endDateForPicker, timeZone)
-                  : endDateForPicker;
-                return v ? { startDate: formattedStart, endDate: formattedEnd } : v;
-              }}
-              parse={v => {
-                const { startDate, endDate } = v || {};
-                return v ? getStartAndEndOnTimeZone(startDate, endDate, isDaily, timeZone) : v;
-              }}
-              useMobileMargins
-              validate={composeValidators(
-                required(
-                  intl.formatMessage({
-                    id: 'BookingDatesForm.requiredDate',
-                  })
-                ),
-                bookingDatesRequired(startDateErrorMessage, endDateErrorMessage)
-              )}
-              isDayBlocked={isDayBlocked}
-              isOutsideRange={isOutsideRange}
-              isBlockedBetween={isBlockedBetween(relevantTimeSlots, timeZone)}
-              disabled={fetchLineItemsInProgress || (priceVariants.length > 0 && !priceVariantName)}
-              showLabelAsDisabled={priceVariants.length > 0 && !priceVariantName}
-              showPreviousMonthStepper={showPreviousMonthStepper(currentMonth, timeZone)}
-              showNextMonthStepper={showNextMonthStepper(
-                currentMonth,
-                dayCountAvailableForBooking,
-                timeZone
-              )}
-              onMonthChange={date => {
-                const localizedDate = timeOfDayFromLocalToTimeZone(date, timeZone);
-                onMonthClick(localizedDate < currentMonth ? prevMonthFn : nextMonthFn);
-                setCurrentMonth(localizedDate);
-              }}
-              onClose={() => {
-                setCurrentMonth(startDate || endDate || startOfToday);
-              }}
-              onChange={values => {
-                const { startDate: startDateFromValues, endDate: endDateFromValues } = values || {};
-                const { startDate, endDate } = values
-                  ? getStartAndEndOnTimeZone(
-                      startDateFromValues,
-                      endDateFromValues,
-                      isDaily,
-                      timeZone
-                    )
-                  : {};
-                if (seatsEnabled) {
-                  formApi.change('seats', 1);
-                }
-                onHandleFetchLineItems({
-                  values: {
-                    priceVariantName,
-                    startDate,
-                    endDate,
-                    seats: seatsEnabled ? 1 : undefined,
-                  },
-                });
-              }}
-            />
+            {isDaily ? (
+              <Field name="bookingDates" validate={bookingDatesValidators}>
+                {({ input, meta }) => {
+                  const displayValue =
+                    input.value?.startDate != null
+                      ? timeOfDayFromTimeZoneToLocal(input.value.startDate, timeZone)
+                      : undefined;
+
+                  const handleSingleDayChange = date => {
+                    if (!date) {
+                      input.onChange(undefined);
+                      return;
+                    }
+                    const next = getStartAndEndOnTimeZone(date, date, true, timeZone);
+                    input.onChange(next);
+                    if (seatsEnabled) {
+                      formApi.change('seats', 1);
+                    }
+                    onHandleFetchLineItems({
+                      values: {
+                        priceVariantName,
+                        startDate: next.startDate,
+                        endDate: next.endDate,
+                        seats: seatsEnabled ? 1 : undefined,
+                      },
+                    });
+                  };
+
+                  return (
+                    <div
+                      className={classNames(
+                        css.bookingDates,
+                        fieldSingleDatePickerCss.fieldRoot,
+                        fieldSingleDatePickerCss.mobileMargins
+                      )}
+                    >
+                      <label
+                        htmlFor={`${formId}.bookingSingleDay`}
+                        className={classNames({
+                          [fieldSingleDatePickerCss.labelDisabled]:
+                            priceVariants.length > 0 && !priceVariantName,
+                        })}
+                      >
+                        <FormattedMessage id="BookingDatesForm.bookingSingleDayTitle" />
+                      </label>
+                      <SingleDatePicker
+                        id={`${formId}.bookingSingleDay`}
+                        value={displayValue}
+                        onChange={handleSingleDayChange}
+                        placeholderText={startDatePlaceholderText}
+                        isDayBlocked={isDayBlocked}
+                        isOutsideRange={isOutsideRange}
+                        disabled={bookingDatePickerDisabled}
+                        showPreviousMonthStepper={showPreviousMonthStepper(currentMonth, timeZone)}
+                        showNextMonthStepper={showNextMonthStepper(
+                          currentMonth,
+                          dayCountAvailableForBooking,
+                          timeZone
+                        )}
+                        onMonthChange={date => {
+                          const localizedDate = timeOfDayFromLocalToTimeZone(date, timeZone);
+                          onMonthClick(localizedDate < currentMonth ? prevMonthFn : nextMonthFn);
+                          setCurrentMonth(localizedDate);
+                        }}
+                        firstDayOfWeek={firstDayOfWeek}
+                      />
+                      <ValidationError fieldMeta={meta} />
+                    </div>
+                  );
+                }}
+              </Field>
+            ) : (
+              <FieldDateRangePicker
+                className={css.bookingDates}
+                name="bookingDates"
+                isDaily={isDaily}
+                startDateId={`${formId}.bookingStartDate`}
+                startDateLabel={intl.formatMessage({
+                  id: 'BookingDatesForm.bookingStartTitle',
+                })}
+                startDatePlaceholderText={startDatePlaceholderText}
+                endDateId={`${formId}.bookingEndDate`}
+                endDateLabel={intl.formatMessage({
+                  id: 'BookingDatesForm.bookingEndTitle',
+                })}
+                endDatePlaceholderText={endDatePlaceholderText}
+                format={v => {
+                  const { startDate: sd, endDate: ed } = v || {};
+                  const formattedStart = sd
+                    ? timeOfDayFromTimeZoneToLocal(sd, timeZone)
+                    : sd;
+                  const endDateForPicker =
+                    isDaily && ed ? getInclusiveEndDate(ed, timeZone) : ed;
+                  const formattedEnd = endDateForPicker
+                    ? timeOfDayFromTimeZoneToLocal(endDateForPicker, timeZone)
+                    : endDateForPicker;
+                  return v ? { startDate: formattedStart, endDate: formattedEnd } : v;
+                }}
+                parse={v => {
+                  const { startDate: sd, endDate: ed } = v || {};
+                  return v ? getStartAndEndOnTimeZone(sd, ed, isDaily, timeZone) : v;
+                }}
+                useMobileMargins
+                validate={bookingDatesValidators}
+                isDayBlocked={isDayBlocked}
+                isOutsideRange={isOutsideRange}
+                isBlockedBetween={isBlockedBetween(relevantTimeSlots, timeZone)}
+                disabled={bookingDatePickerDisabled}
+                showLabelAsDisabled={priceVariants.length > 0 && !priceVariantName}
+                showPreviousMonthStepper={showPreviousMonthStepper(currentMonth, timeZone)}
+                showNextMonthStepper={showNextMonthStepper(
+                  currentMonth,
+                  dayCountAvailableForBooking,
+                  timeZone
+                )}
+                onMonthChange={date => {
+                  const localizedDate = timeOfDayFromLocalToTimeZone(date, timeZone);
+                  onMonthClick(localizedDate < currentMonth ? prevMonthFn : nextMonthFn);
+                  setCurrentMonth(localizedDate);
+                }}
+                onClose={() => {
+                  setCurrentMonth(startDate || endDate || startOfToday);
+                }}
+                onChange={handleBookingDatesChange}
+              />
+            )}
 
             {seatsEnabled ? (
               <FieldSelect

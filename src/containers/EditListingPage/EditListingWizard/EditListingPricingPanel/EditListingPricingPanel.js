@@ -136,12 +136,12 @@ const EditListingPricingPanel = props => {
 
   const panelHeadingProps = isPublished
     ? {
-        id: 'EditListingPricingPanel.title',
+        id: 'EditListingPricingPanel.djTitle',
         values: { listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> },
         messageProps: { listingTitle: listing.attributes.title },
       }
     : {
-        id: 'EditListingPricingPanel.createListingTitle',
+        id: 'EditListingPricingPanel.djCreateListingTitle',
         values: { lineBreak: <br /> },
         messageProps: {},
       };
@@ -157,6 +157,9 @@ const EditListingPricingPanel = props => {
       <H3 as="h1">
         <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
       </H3>
+      <p className={css.intro}>
+        <FormattedMessage id="EditListingPricingPanel.djPricingIntro" />
+      </p>
       {priceCurrencyValid ? (
         <EditListingPricingForm
           className={css.form}

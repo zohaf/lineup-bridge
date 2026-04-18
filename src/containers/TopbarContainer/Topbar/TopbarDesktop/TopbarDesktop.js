@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
+import { getCurrentUserTypeRoles } from '../../../../util/userHelpers';
 import {
   Avatar,
   InlineTextButton,
@@ -56,12 +57,16 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
   );
 };
 
-const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink, intl }) => {
+const ProfileMenu = ({ currentPage, currentUser, onLogout, intl, config }) => {
   const currentPageClass = page => {
     const isAccountSettingsPage =
       page === 'AccountSettingsPage' && ACCOUNT_SETTINGS_PAGES.includes(currentPage);
     return currentPage === page || isAccountSettingsPage ? css.currentPage : null;
   };
+
+  const roles = getCurrentUserTypeRoles(config, currentUser);
+  const isEventOrganizer = roles?.customer && !roles?.provider;
+  const isDj = roles?.provider && !roles?.customer;
 
   return (
     <Menu skipFocusOnNavigation={true}>
@@ -74,26 +79,27 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
-        {showManageListingsLink ? (
+        {isEventOrganizer ? (
+          <MenuItem key="SearchPage">
+            <NamedLink
+              className={classNames(css.menuLink, currentPageClass('SearchPage'))}
+              name="SearchPage"
+            >
+              <span className={css.menuItemBorder} />
+              <FormattedMessage id="TopbarDesktop.findDjLink" />
+            </NamedLink>
+          </MenuItem>
+        ) : isDj ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
               name="ManageListingsPage"
             >
               <span className={css.menuItemBorder} />
-              <FormattedMessage id="TopbarDesktop.yourListingsLink" />
+              <FormattedMessage id="TopbarDesktop.myPublicProfileLink" />
             </NamedLink>
           </MenuItem>
         ) : null}
-        <MenuItem key="ProfileSettingsPage">
-          <NamedLink
-            className={classNames(css.menuLink, currentPageClass('ProfileSettingsPage'))}
-            name="ProfileSettingsPage"
-          >
-            <span className={css.menuItemBorder} />
-            <FormattedMessage id="TopbarDesktop.profileSettingsLink" />
-          </NamedLink>
-        </MenuItem>
         <MenuItem key="AccountSettingsPage">
           <NamedLink
             className={classNames(css.menuLink, currentPageClass('AccountSettingsPage'))}
@@ -175,8 +181,8 @@ const TopbarDesktop = props => {
       currentPage={currentPage}
       currentUser={currentUser}
       onLogout={onLogout}
-      showManageListingsLink={showCreateListingsLink}
       intl={intl}
+      config={config}
     />
   ) : null;
 
@@ -207,6 +213,8 @@ const TopbarDesktop = props => {
       <LinkedLogo
         id="logo-topbar-desktop"
         className={css.logoLink}
+        logoClassName={css.topbarLogoRoot}
+        logoImageClassName={css.topbarLogoImageHalf}
         layout="desktop"
         alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
         linkToExternalSite={config?.topbar?.logoLink}

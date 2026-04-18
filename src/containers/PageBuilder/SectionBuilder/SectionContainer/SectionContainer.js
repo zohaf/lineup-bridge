@@ -19,6 +19,7 @@ import css from './SectionContainer.module.css';
  * @param {Object} props
  * @param {string?} props.className add more style rules in addition to components own css.root
  * @param {string?} props.rootClassName overwrite components own css.root
+ * @param {string?} props.sectionContentClassName extra class for inner content wrapper (e.g. reset padding)
  * @param {string?} props.id id of the section
  * @param {string?} props.as tag/element name. Defaults to 'section'.
  * @param {ReactNode} props.children
@@ -28,9 +29,21 @@ import css from './SectionContainer.module.css';
  * @returns {JSX.Element} containing wrapper that can be used inside Block components.
  */
 const SectionContainer = props => {
-  const { className, rootClassName, id, as, children, appearance, options, ...otherProps } = props;
+  const {
+    className,
+    rootClassName,
+    sectionContentClassName,
+    id,
+    as,
+    children,
+    appearance,
+    options,
+    ...otherProps
+  } = props;
   const Tag = as || 'section';
-  const classes = classNames(rootClassName || css.root, className);
+  /* Always apply SectionContainer base (incl. canvas background); section types add rootClassName on top */
+  const classes = classNames(css.root, rootClassName, className);
+  const sectionContentClasses = classNames(css.sectionContent, sectionContentClassName);
 
   return (
     <Tag className={classes} id={id} {...otherProps}>
@@ -42,7 +55,7 @@ const SectionContainer = props => {
         />
       ) : null}
 
-      <div className={css.sectionContent}>{children}</div>
+      <div className={sectionContentClasses}>{children}</div>
     </Tag>
   );
 };

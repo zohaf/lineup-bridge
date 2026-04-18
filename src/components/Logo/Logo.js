@@ -57,9 +57,10 @@ export const LogoComponent = props => {
   } = props;
 
   const hasValidLogoSettings = isValidLogoSettings(logoSettings);
-  const logoClasses = className || css.root;
+  const logoClasses = classNames(css.root, className);
   const logoImageClasses = classNames(
-    logoImageClassName || css.logo,
+    css.logo,
+    logoImageClassName,
     getHeightClassName(logoSettings?.height)
   );
 

@@ -15,7 +15,7 @@
   display: flex;
   width: 24px;
   align-self: stretch;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 
   @media (--viewportMedium) {
     margin-left: 0;
@@ -72,7 +72,7 @@
   display: flex;
   width: 24px;
   align-self: stretch;
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 }
 
 .desktopInput {
@@ -202,7 +202,7 @@
   width: 24px;
   align-self: stretch;
   border-bottom: 2px solid var(--marketplaceColor);
-  background-color: var(--colorWhite);
+  background-color: var(--colorPageBackground);
 }
 
 .iconSvg {

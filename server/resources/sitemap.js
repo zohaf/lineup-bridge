@@ -48,6 +48,7 @@ const defaultPublicPaths = {
   landingPage: { url: '/' },
   termsOfService: { url: '/terms-of-service' },
   privacyPolicy: { url: '/privacy-policy' },
+  djProfileGuidelines: { url: '/dj-profile-guidelines' },
   signup: { url: '/signup' },
   login: { url: '/login' },
   search: { url: '/s' },
@@ -269,7 +270,12 @@ const sitemapPages = (req, res, rootUrl, sdk) => {
       const cmsPagePaths = assets.reduce((picked, asset) => {
         const assetFileName = asset.attributes?.assetPath?.slice(pathPrefix.length);
         const assetName = assetFileName.split('.')[0];
-        const permanentPaths = ['landing-page', 'terms-of-service', 'privacy-policy'];
+        const permanentPaths = [
+          'landing-page',
+          'terms-of-service',
+          'privacy-policy',
+          'dj-profile-guidelines',
+        ];
         return permanentPaths.includes(assetName) ? picked : [...picked, `p/${assetName}`];
       }, []);
 
