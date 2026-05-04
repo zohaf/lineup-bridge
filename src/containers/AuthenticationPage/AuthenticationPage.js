@@ -600,11 +600,38 @@ export const AuthenticationPageComponent = props => {
   const isConfirm = tab === 'confirm';
   const userTypeInPushState = location.state?.userType || null;
   const userTypeInAuthInfo = isConfirm && authInfo?.userType ? authInfo?.userType : null;
-  const userType = pathParams?.userType || userTypeInPushState || userTypeInAuthInfo || null;
+  const userTypeParam = pathParams?.userType || userTypeInPushState || userTypeInAuthInfo || null;
 
   const { userTypes = [] } = config.user;
-  const preselectedUserType = userTypes.find(conf => conf.userType === userType)?.userType || null;
-  const show404 = userType && !preselectedUserType;
+  const resolveUserTypeParam = (param, userTypeConfigs) => {
+    if (!param) return null;
+    const direct = userTypeConfigs.find(conf => conf.userType === param)?.userType;
+    if (direct) return direct;
+
+    const normalized = `${param}`.trim().toLowerCase();
+    const byLabel = matcher =>
+      userTypeConfigs.find(conf => matcher((conf?.label || '').toLowerCase()))?.userType || null;
+
+    // Friendly aliases (e.g. /signup/dj, /signup/organizer)
+    if (normalized === 'dj' || normalized.includes('dj')) {
+      return byLabel(l => l.includes('dj'));
+    }
+    if (
+      normalized === 'organizer' ||
+      normalized === 'organiser' ||
+      normalized.includes('organizer') ||
+      normalized.includes('organiser') ||
+      normalized.includes('event')
+    ) {
+      return byLabel(l => l.includes('event') || l.includes('organizer') || l.includes('organiser'));
+    }
+
+    return null;
+  };
+
+  const resolvedUserType = resolveUserTypeParam(userTypeParam, userTypes);
+  const preselectedUserType = userTypes.find(conf => conf.userType === resolvedUserType)?.userType || null;
+  const show404 = userTypeParam && !preselectedUserType;
 
   const user = ensureCurrentUser(currentUser);
   const currentUserLoaded = !!user.id;
@@ -700,7 +727,7 @@ export const AuthenticationPageComponent = props => {
           ) : (
             <AuthenticationOrConfirmInfoForm
               tab={tab}
-              userType={userType}
+              userType={resolvedUserType}
               authInfo={authInfo}
               from={from}
               showFacebookLogin={!!process.env.REACT_APP_FACEBOOK_APP_ID}

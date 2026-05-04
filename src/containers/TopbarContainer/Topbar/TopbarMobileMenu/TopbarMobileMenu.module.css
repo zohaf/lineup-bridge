@@ -130,6 +130,20 @@
   margin-top: 0;
   margin-bottom: 11px;
 }
+
+.navigationLinkButton {
+  /* Make InlineTextButton look like the existing <NamedLink> */
+  padding: 0;
+  border: 0;
+  color: inherit;
+  text-decoration: none;
+  display: inline;
+
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
 .currentPageLink {
   color: var(--marketplaceColorDark);
 }

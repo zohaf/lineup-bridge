@@ -296,9 +296,9 @@ export const listingFields = [
 
 // A presets of supported listing configurations
 //
-// Note 1: The listingTypes come from listingTypes asset nowadays by default.
-//         To use this built-in configuration, you need to change the overwrite from configHelper.js
-//         (E.g. use mergeDefaultTypesAndFieldsForDebugging func)
+// Note 1: The listingTypes come from listingTypes asset in Console by default.
+//         Set `mergeDefaultTypesAndFields` to true (below) to merge these entries with the hosted
+//         asset; local entries override hosted for the same `listingType` id.
 // Note 2: transaction type is part of listing type. It defines what transaction process and units
 //         are used when transaction is created against a specific listing.
 
@@ -354,9 +354,28 @@ export const listingFields = [
  *                          - enumOptions (array, for schemaType: 'enum', 'multi-enum'): [{ label: string, option: string }]
  */
 
+/**
+ * When true, `src/util/configHelpers.js` merges `listingTypes` below with Console listing-types.json.
+ */
+export const mergeDefaultTypesAndFields = false;
+
 export const listingTypes = [
   // // Here are some examples of listingTypes
   // // TODO: SearchPage does not work well if both booking and product selling are used at the same time
+  {
+    listingType: 'daily-booking',
+    label: 'Daily booking',
+    transactionType: {
+      process: 'default-booking',
+      alias: 'default-booking/release-1',
+      unitType: 'day',
+    },
+    availabilityType: 'oneSeat',
+    defaultListingFields: {
+      location: true,
+      payoutDetails: true,
+    },
+  },
   // {
   //   listingType: 'daily-booking',
   //   label: 'Daily booking',

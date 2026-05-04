@@ -45,15 +45,29 @@ class GeocoderGoogleMaps {
    * and an array of predictions. The format of the predictions is
    * only relevant for the `getPlaceDetails` function below.
    */
-  getPlacePredictions(search, countryLimit) {
+  getPlacePredictions(search, options = {}) {
+    const { countryLimit, restrictAutocompleteToCities = false, googleIncludedPrimaryTypes } =
+      options;
     const limitCountriesMaybe = countryLimit
       ? {
           includedRegionCodes: countryLimit,
         }
       : {};
+    // Locality = city or town in the Places API (new).
+    const cityTypesMaybe =
+      restrictAutocompleteToCities &&
+      Array.isArray(googleIncludedPrimaryTypes) &&
+      googleIncludedPrimaryTypes.length > 0
+        ? { includedPrimaryTypes: googleIncludedPrimaryTypes }
+        : restrictAutocompleteToCities
+        ? { includedPrimaryTypes: ['locality'] }
+        : {};
 
     return googleMapsUtil
-      .getPlacePredictions(search, this.getSessionToken(), limitCountriesMaybe)
+      .getPlacePredictions(search, this.getSessionToken(), {
+        ...limitCountriesMaybe,
+        ...cityTypesMaybe,
+      })
       .then(results => {
         return {
           search,

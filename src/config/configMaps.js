@@ -48,6 +48,12 @@ export const search = {
   // using ISO 3166 alpha 2 country codes separated by commas.
   // If you want to limit the autocomplete, uncomment this value:
   // countryLimit: ['AU'],
+
+  // When true, autocomplete only returns cities/towns (not street addresses or POIs).
+  // Mapbox: uses feature type "place"; Google: uses primary type "locality".
+  // Stored address is the provider's label for that place (city name users will see).
+  // "Current location" is disabled while this is on (coordinates are not a city name).
+  restrictAutocompleteToCities: false,
 };
 
 // When fuzzy locations are enabled, coordinates on maps are

@@ -87,11 +87,6 @@ class SearchFiltersMobileComponent extends Component {
 
     const classes = classNames(rootClassName || css.root, className);
 
-    const resultsFound = (
-      <FormattedMessage id="SearchFiltersMobile.foundResults" values={{ count: resultsCount }} />
-    );
-    const noResults = <FormattedMessage id="SearchFiltersMobile.noResults" />;
-    const loadingResults = <FormattedMessage id="SearchFiltersMobile.loadingResults" />;
     const filtersHeading = intl.formatMessage({ id: 'SearchFiltersMobile.heading' });
     const modalCloseButtonMessage = intl.formatMessage({ id: 'SearchFiltersMobile.cancel' });
 
@@ -102,11 +97,6 @@ class SearchFiltersMobileComponent extends Component {
 
     return (
       <div className={classes}>
-        <div className={css.searchResultSummary}>
-          {listingsAreLoaded && resultsCount > 0 ? resultsFound : null}
-          {listingsAreLoaded && resultsCount === 0 ? noResults : null}
-          {searchInProgress ? loadingResults : null}
-        </div>
         <div className={css.buttons}>
           <PopupOpenerButton isSelected={selectedFiltersCount > 0} toggleOpen={this.openFilters}>
             <FormattedMessage

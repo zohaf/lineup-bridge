@@ -57,7 +57,14 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
   );
 };
 
-const ProfileMenu = ({ currentPage, currentUser, onLogout, intl, config }) => {
+const ProfileMenu = ({
+  currentPage,
+  currentUser,
+  onLogout,
+  intl,
+  config,
+  onMyPublicProfileClick,
+}) => {
   const currentPageClass = page => {
     const isAccountSettingsPage =
       page === 'AccountSettingsPage' && ACCOUNT_SETTINGS_PAGES.includes(currentPage);
@@ -91,13 +98,13 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, intl, config }) => {
           </MenuItem>
         ) : isDj ? (
           <MenuItem key="ManageListingsPage">
-            <NamedLink
-              className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
-              name="ManageListingsPage"
+            <InlineTextButton
+              rootClassName={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
+              onClick={onMyPublicProfileClick}
             >
               <span className={css.menuItemBorder} />
               <FormattedMessage id="TopbarDesktop.myPublicProfileLink" />
-            </NamedLink>
+            </InlineTextButton>
           </MenuItem>
         ) : null}
         <MenuItem key="AccountSettingsPage">
@@ -154,6 +161,7 @@ const TopbarDesktop = props => {
     isAuthenticated,
     onLogout,
     onSearchSubmit,
+    onMyPublicProfileClick,
     initialSearchFormValues = {},
     showSearchForm,
     showCreateListingsLink,
@@ -183,6 +191,7 @@ const TopbarDesktop = props => {
       onLogout={onLogout}
       intl={intl}
       config={config}
+      onMyPublicProfileClick={onMyPublicProfileClick}
     />
   ) : null;
 

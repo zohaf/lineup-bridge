@@ -81,6 +81,15 @@ const FilterDateRange = props => {
     [css.active]: selectedDates || isOpen,
   });
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isDayBlocked = day => {
+    if (!(day instanceof Date) || isNaN(day)) return true;
+    const d = new Date(day);
+    d.setHours(0, 0, 0, 0);
+    return d < today;
+  };
+
   return (
     <OutsideClickHandler
       className={classes}
@@ -152,10 +161,12 @@ const FilterDateRange = props => {
                   range={true}
                   value={value}
                   onChange={onChange}
+                  isDayBlocked={isDayBlocked}
                   showClearButton
                   showMonthStepper
                   rangeStartHasValue={!!startDate}
                   rangeEndHasValue={!!endDate}
+                  rootClassName={css.pickerRoot}
                 />
               );
             }}

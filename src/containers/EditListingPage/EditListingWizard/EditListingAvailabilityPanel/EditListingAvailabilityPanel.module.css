@@ -41,6 +41,22 @@
   }
 }
 
+.planActions {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px 24px;
+    margin-top: 16px;
+  }
+}
+
 .section {
   margin: 0 0 24px 0;
 
@@ -49,26 +65,35 @@
   }
 }
 
-.editPlanButton {
-  display: block;
-  padding: 4px 0 2px 0;
-  margin: 0;
+/* Black control so “Set default schedule” is clearly visible */
+.setScheduleButton {
+  composes: buttonDefault from global;
+  background-color: var(--colorBlack);
+  color: var(--colorWhite);
 
   @media (--viewportMedium) {
-    padding: 5px 0 3px 0;
+    width: auto;
+    min-width: 240px;
   }
 }
 
-.addExceptionButton {
-  composes: h4 from global;
-  padding: 1px 0 5px 0;
-  margin: 0 0 24px 0;
+.setScheduleButton:focus:not(:disabled),
+.setScheduleButton:hover:not(:disabled) {
+  background-color: var(--colorGrey900);
+  box-shadow: var(--boxShadowButton);
+}
 
-  @media (--viewportMedium) {
-    display: block;
-    padding: 1px 0 7px 0;
-    margin: 0 0 72px 0;
-  }
+.setScheduleButton:focus-visible {
+  outline: 2px solid var(--colorBlack);
+  outline-offset: 2px;
+}
+
+/* Next to “Edit default schedule” / “Set default schedule” */
+.addExceptionButtonInline {
+  composes: textSmall from global;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .goToNextTabButton {

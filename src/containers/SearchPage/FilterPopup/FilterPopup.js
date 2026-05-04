@@ -84,7 +84,7 @@ class FilterPopup extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { isOpen: false };
+    this.state = { isOpen: false, clearKey: 0, hasClearedSelections: false };
     this.filter = null;
     this.filterContent = null;
 
@@ -98,9 +98,33 @@ class FilterPopup extends Component {
     this.positionStyleForContent = this.positionStyleForContent.bind(this);
   }
 
+  componentDidUpdate(prevProps) {
+    // Keep the open/closed filter UI in sync with URL-driven initialValues.
+    // Browser back/forward changes query params -> initialValues changes, but Final Form can keep
+    // old "dirty" checkbox state (keepDirtyOnReinitialize). Force a remount so the UI matches URL.
+    const prev = prevProps?.initialValues;
+    const next = this.props?.initialValues;
+    const sameInitialValues = (() => {
+      try {
+        return JSON.stringify(prev || {}) === JSON.stringify(next || {});
+      } catch (e) {
+        return prev === next;
+      }
+    })();
+
+    if (!sameInitialValues) {
+      this.setState(prevState => ({
+        clearKey: prevState.clearKey + 1,
+        hasClearedSelections: false,
+      }));
+    }
+  }
+
   handleSubmit(values) {
     const { id, onSubmit } = this.props;
     this.setState({ isOpen: false });
+    // Reset any local "cleared" override when user applies changes.
+    this.setState({ hasClearedSelections: false });
     const button = document.getElementById(`${id}.toggle`);
     if (button) {
       button.focus();
@@ -110,23 +134,23 @@ class FilterPopup extends Component {
   }
 
   handleClear() {
-    const { id, onSubmit, onClear } = this.props;
-    this.setState({ isOpen: false });
-
-    const button = document.getElementById(`${id}.toggle`);
-    if (button) {
-      button.focus();
-    }
+    const { onClear } = this.props;
 
     if (onClear) {
       onClear();
     }
 
-    onSubmit(null);
+    // Clear should only clear selections in the open dropdown.
+    // It should NOT submit -> not update query params -> not reload results.
+    // Force FilterForm to remount so checkbox UI resets immediately.
+    this.setState(prevState => ({
+      clearKey: prevState.clearKey + 1,
+      hasClearedSelections: true,
+    }));
   }
 
   handleCancel() {
-    const { id, onSubmit, onCancel, initialValues } = this.props;
+    const { id, onCancel } = this.props;
     this.setState({ isOpen: false });
 
     const button = document.getElementById(`${id}.toggle`);
@@ -137,8 +161,8 @@ class FilterPopup extends Component {
     if (onCancel) {
       onCancel();
     }
-
-    onSubmit(initialValues);
+    // Cancel just closes the dropdown; don't apply or change search params.
+    this.setState({ hasClearedSelections: false });
   }
 
   handleBlur(event) {
@@ -365,11 +389,12 @@ class FilterPopup extends Component {
             >
               {this.state.isOpen ? (
                 <FilterForm
+                  key={`${formId}.${this.state.clearKey}`}
                   id={formId}
                   paddingClasses={popupSizeClasses}
                   showAsPopup
                   contentPlacementOffset={contentPlacementOffset}
-                  initialValues={initialValues}
+                  initialValues={this.state.hasClearedSelections ? {} : initialValues}
                   keepDirtyOnReinitialize={keepDirtyOnReinitialize}
                   onSubmit={this.handleSubmit}
                   onCancel={this.handleCancel}

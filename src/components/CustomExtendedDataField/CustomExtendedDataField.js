@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 // Import config and utils
 import { useIntl } from '../../util/reactIntl';
@@ -65,21 +66,24 @@ const CustomFieldEnum = props => {
 
 const CustomFieldMultiEnum = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId } = props;
-  const { enumOptions = [], saveConfig } = fieldConfig || {};
+  const { enumOptions = [], saveConfig, key: fieldKey } = fieldConfig || {};
   const { isRequired, requiredMessage } = saveConfig || {};
   const label = getLabel(fieldConfig);
   const validateMaybe = isRequired
     ? { validate: nonEmptyArray(requiredMessage || defaultRequiredMessage) }
     : {};
+  const isGenre = fieldKey === 'genre';
 
   return enumOptions ? (
     <FieldCheckboxGroup
-      className={css.customField}
+      className={classNames(css.customField, isGenre && css.genreField)}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       label={label}
       helpText={fieldConfig?.helpText}
       options={createFilterOptions(enumOptions)}
+      threeColumns={isGenre}
+      checkboxVariant={isGenre ? 'minimal' : 'default'}
       {...validateMaybe}
     />
   ) : null;

@@ -1,6 +1,7 @@
 import { createIntl, createIntlCache } from './reactIntl';
 import {
   getTimeZoneNames,
+  getDeduplicatedTimeZoneNames,
   isDate,
   isSameDate,
   isSameDay,
@@ -45,6 +46,22 @@ describe('date utils', () => {
       const europeZonesPattern = new RegExp('^(Europe)');
       const europeTimeZones = getTimeZoneNames(europeZonesPattern);
       expect(europeTimeZones.includes('Europe/Helsinki')).toBeTruthy();
+    });
+  });
+
+  describe('getDeduplicatedTimeZoneNames()', () => {
+    it('should collapse zones with identical winter/summer offsets (e.g. Berlin and Amsterdam)', () => {
+      const zones = ['Europe/Amsterdam', 'Europe/Berlin', 'Europe/Helsinki'];
+      const deduped = getDeduplicatedTimeZoneNames(zones);
+      expect(deduped.includes('Europe/Helsinki')).toBe(true);
+      expect(deduped.includes('Europe/Amsterdam') && deduped.includes('Europe/Berlin')).toBe(false);
+      expect(deduped.length).toBe(2);
+    });
+
+    it('should keep preferred zone id when it shares a group with others', () => {
+      const zones = ['Europe/Amsterdam', 'Europe/Berlin'];
+      const withBerlin = getDeduplicatedTimeZoneNames(zones, 'Europe/Berlin');
+      expect(withBerlin).toEqual(['Europe/Berlin']);
     });
   });
 

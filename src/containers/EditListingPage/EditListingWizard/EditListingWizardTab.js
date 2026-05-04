@@ -18,10 +18,13 @@ import EditListingPhotosPanel from './EditListingPhotosPanel/EditListingPhotosPa
 import EditListingPricingPanel from './EditListingPricingPanel/EditListingPricingPanel';
 import EditListingPricingAndStockPanel from './EditListingPricingAndStockPanel/EditListingPricingAndStockPanel';
 import EditListingStylePanel from './EditListingStylePanel/EditListingStylePanel';
+import EditListingListingFieldsStepPanel from './EditListingListingFieldsStepPanel/EditListingListingFieldsStepPanel';
 
 import css from './EditListingWizardTab.module.css';
 
 export const DETAILS = 'details';
+export const GENRE = 'genre';
+export const LINKS = 'links';
 export const PRICING = 'pricing';
 export const PRICING_AND_STOCK = 'pricing-and-stock';
 export const DELIVERY = 'delivery';
@@ -33,6 +36,8 @@ export const STYLE = 'style';
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [
   DETAILS,
+  GENRE,
+  LINKS,
   PRICING,
   PRICING_AND_STOCK,
   DELIVERY,
@@ -200,6 +205,27 @@ const EditListingWizardTab = props => {
         <EditListingDetailsPanel
           {...panelProps(DETAILS)}
           onListingTypeChange={onListingTypeChange}
+          config={config}
+          hideGenreAndLinksInProfileForm={
+            marketplaceTabs.includes(GENRE) || marketplaceTabs.includes(LINKS)
+          }
+        />
+      );
+    }
+    case GENRE: {
+      return (
+        <EditListingListingFieldsStepPanel
+          {...panelProps(GENRE)}
+          section="genre"
+          config={config}
+        />
+      );
+    }
+    case LINKS: {
+      return (
+        <EditListingListingFieldsStepPanel
+          {...panelProps(LINKS)}
+          section="links"
           config={config}
         />
       );

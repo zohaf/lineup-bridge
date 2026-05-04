@@ -4,10 +4,16 @@
   border: 0;
   cursor: pointer;
   background-color: transparent;
+  outline: none;
 
   &:hover {
     background-color: transparent;
     box-shadow: none;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
   }
 }
 

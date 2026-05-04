@@ -8,7 +8,6 @@ import { FormattedMessage } from '../../../../../util/reactIntl';
 import {
   InlineTextButton,
   FieldSelect,
-  FieldCheckbox,
   IconDelete,
 } from '../../../../../components';
 
@@ -369,56 +368,14 @@ const SeatsWithTimeRangeHidden = props => {
 const AvailabilityPlanEntries = props => {
   const { dayOfWeek, useFullDays, useMultipleSeats, unitType, values, formApi, intl } = props;
   const entries = values[dayOfWeek];
-  const hasEntries = entries && entries[0];
   const getEntryStartTimes = getEntryBoundaries(entries, true);
   const getEntryEndTimes = getEntryBoundaries(entries, false);
 
-  const checkboxName = `checkbox_${dayOfWeek}`;
   return (
-    <div className={classNames(css.weekDay, hasEntries ? css.hasEntries : null)}>
-      <div className={css.dayOfWeek}>
-        <FieldCheckbox
-          key={checkboxName}
-          id={checkboxName}
-          className={css.dayOfWeekContent}
-          name="activePlanDays"
-          useSuccessColor
-          label={intl.formatMessage({
-            id: `EditListingAvailabilityPlanForm.dayOfWeek.${dayOfWeek}`,
-          })}
-          value={dayOfWeek}
-          onChange={e => {
-            const isChecked = e.target.checked;
-
-            // 'day' and 'night' units use full days
-            if (useFullDays) {
-              if (isChecked) {
-                const seats = useMultipleSeats ? { seats: 1 } : { seats: 1 };
-                formApi.mutators.push(dayOfWeek, {
-                  startTime: '00:00',
-                  endTime: '24:00',
-                  ...seats,
-                });
-              } else {
-                formApi.mutators.remove(dayOfWeek, 0);
-              }
-            } else {
-              const shouldAddEntry = isChecked && !hasEntries;
-              if (shouldAddEntry) {
-                const seats = useMultipleSeats ? { seats: 1 } : { seats: 1 };
-                // The 'hour' unit is not initialized with any value,
-                // because user need to pick them themselves.
-                formApi.mutators.push(dayOfWeek, { startTime: null, endTime: null, ...seats });
-              } else if (!isChecked) {
-                // If day of week checkbox is unchecked,
-                // we'll remove all the entries for that day.
-                formApi.mutators.removeBatch(dayOfWeek, entries);
-              }
-            }
-          }}
-        />
-      </div>
-
+    <div
+      className={classNames(css.weekDay, css.hasEntries)}
+      data-testid={`availability-day-${dayOfWeek}`}
+    >
       <FieldArray name={dayOfWeek}>
         {({ fields }) => {
           return (

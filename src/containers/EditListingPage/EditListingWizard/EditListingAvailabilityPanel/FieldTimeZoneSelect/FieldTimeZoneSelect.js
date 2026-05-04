@@ -1,5 +1,5 @@
 import React from 'react';
-import { getTimeZoneNames } from '../../../../../util/dates';
+import { getTimeZoneNames, getDeduplicatedTimeZoneNames } from '../../../../../util/dates';
 import { FieldSelect } from '../../../../../components';
 
 /**
@@ -18,17 +18,22 @@ import { FieldSelect } from '../../../../../components';
  * @returns {JSX.Element} containing FieldSelect
  */
 const FieldTimeZoneSelect = props => {
+  const { currentTimeZone, ...rest } = props;
+
   // IANA database contains irrelevant time zones too.
   const relevantZonesPattern = new RegExp(
     '^(Africa|America(?!/(Argentina/ComodRivadavia|Knox_IN|Nuuk))|Antarctica(?!/(DumontDUrville|McMurdo))|Asia(?!/Qostanay)|Atlantic|Australia(?!/(ACT|LHI|NSW))|Europe|Indian|Pacific)'
   );
 
+  const filtered = getTimeZoneNames(relevantZonesPattern);
+  const options = getDeduplicatedTimeZoneNames(filtered, currentTimeZone);
+
   return (
-    <FieldSelect {...props}>
+    <FieldSelect {...rest}>
       <option disabled value="">
         Pick something...
       </option>
-      {getTimeZoneNames(relevantZonesPattern).map(tz => (
+      {options.map(tz => (
         <option key={tz} value={tz}>
           {tz}
         </option>

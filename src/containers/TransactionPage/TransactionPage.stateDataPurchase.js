@@ -41,6 +41,15 @@ export const getStateDataForPurchaseProcess = (txInfo, processInfo) => {
     .cond([states.INQUIRY, PROVIDER], () => {
       return { processName, processState, showDetailCardHeadings: true };
     })
+    .cond([states.PENDING_PAYMENT, CUSTOMER], () => {
+      return {
+        processName,
+        processState,
+        showDetailCardHeadings: true,
+        showExtraInfo: false,
+        minimalPostBookingRequestCustomerView: true,
+      };
+    })
     .cond([states.PURCHASED, CUSTOMER], () => {
       return {
         processName,

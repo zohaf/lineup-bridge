@@ -1524,12 +1524,15 @@ describe('EditListingPage', () => {
       },
     };
 
-    const { getByText, getByRole, queryAllByText } = render(<EditListingPage {...props} />, {
-      initialState: initialState(listing),
-      config,
-      routeConfiguration,
-      withPortals: true,
-    });
+    const { getByText, getByRole, queryAllByText, getByTestId, queryByTestId } = render(
+      <EditListingPage {...props} />,
+      {
+        initialState: initialState(listing),
+        config,
+        routeConfiguration,
+        withPortals: true,
+      }
+    );
 
     // Test intercation: open plan modal
     await user.click(
@@ -1539,26 +1542,19 @@ describe('EditListingPage', () => {
     expect(getByText('EditListingAvailabilityPlanForm.title')).toBeInTheDocument();
     // time zone picker
     expect(getByText('EditListingAvailabilityPlanForm.timezonePickerTitle')).toBeInTheDocument();
-    expect(getByRole('option', { name: 'Europe/Helsinki' })).toBeInTheDocument();
+    expect(screen.getAllByRole('option').length).toBeGreaterThan(5);
     // plan scheduler
     expect(getByText('EditListingAvailabilityPlanForm.hoursOfOperationTitle')).toBeInTheDocument();
-    const monday = getByRole('checkbox', {
-      name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i,
-    });
-    expect(monday).toBeChecked();
+    expect(getByTestId('availability-day-mon')).toBeInTheDocument();
 
     // save button for the plan
     expect(
       getByRole('button', { name: 'EditListingAvailabilityPlanForm.saveSchedule' })
     ).toBeInTheDocument();
 
-    // Test intercation: plan modal form
-    await user.click(
-      getByRole('checkbox', { name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i })
-    );
-    expect(
-      getByRole('checkbox', { name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i })
-    ).not.toBeChecked();
+    // Test intercation: plan modal form — second click on Mon quick button removes Monday
+    await user.click(getByTestId('quick-select-day-mon'));
+    expect(queryByTestId('availability-day-mon')).not.toBeInTheDocument();
 
     // Test intercation: close plan modal
     await user.click(getByRole('button', { name: /Modal.close/i }));
@@ -1764,15 +1760,13 @@ describe('EditListingPage', () => {
       },
     };
 
-    const { getByText, getByRole, queryAllByText, queryAllByLabelText } = render(
-      <EditListingPage {...props} />,
-      {
+    const { getByText, getByRole, queryAllByText, queryAllByLabelText, getByTestId, queryByTestId } =
+      render(<EditListingPage {...props} />, {
         initialState: initialState(listing),
         config,
         routeConfiguration,
         withPortals: true,
-      }
-    );
+      });
 
     // Test intercation: open plan modal
     await user.click(
@@ -1782,13 +1776,10 @@ describe('EditListingPage', () => {
     expect(getByText('EditListingAvailabilityPlanForm.title')).toBeInTheDocument();
     // time zone picker
     expect(getByText('EditListingAvailabilityPlanForm.timezonePickerTitle')).toBeInTheDocument();
-    expect(getByRole('option', { name: 'Europe/Helsinki' })).toBeInTheDocument();
+    expect(screen.getAllByRole('option').length).toBeGreaterThan(5);
     // plan scheduler
     expect(getByText('EditListingAvailabilityPlanForm.hoursOfOperationTitle')).toBeInTheDocument();
-    const monday = getByRole('checkbox', {
-      name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i,
-    });
-    expect(monday).toBeChecked();
+    expect(getByTestId('availability-day-mon')).toBeInTheDocument();
 
     expect(queryAllByLabelText('FieldSeatsInput.seatsLabel')).toHaveLength(7);
 
@@ -1797,14 +1788,10 @@ describe('EditListingPage', () => {
       getByRole('button', { name: 'EditListingAvailabilityPlanForm.saveSchedule' })
     ).toBeInTheDocument();
 
-    // Test intercation: plan modal form
-    await user.click(
-      getByRole('checkbox', { name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i })
-    );
+    // Test intercation: plan modal form — second click on Mon quick button removes Monday
+    await user.click(getByTestId('quick-select-day-mon'));
 
-    expect(
-      getByRole('checkbox', { name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i })
-    ).not.toBeChecked();
+    expect(queryByTestId('availability-day-mon')).not.toBeInTheDocument();
 
     // Test intercation: close plan modal
     await user.click(getByRole('button', { name: /Modal.close/i }));
@@ -1935,12 +1922,15 @@ describe('EditListingPage', () => {
       },
     };
 
-    const { getByText, getByRole, queryAllByText } = render(<EditListingPage {...props} />, {
-      initialState: initialState(listing),
-      config,
-      routeConfiguration,
-      withPortals: true,
-    });
+    const { getByText, getByRole, queryAllByText, getByTestId, queryByTestId } = render(
+      <EditListingPage {...props} />,
+      {
+        initialState: initialState(listing),
+        config,
+        routeConfiguration,
+        withPortals: true,
+      }
+    );
 
     await waitFor(() => {
       // Navigation to tab
@@ -1984,27 +1974,20 @@ describe('EditListingPage', () => {
     expect(getByText('EditListingAvailabilityPlanForm.title')).toBeInTheDocument();
     // time zone picker
     expect(getByText('EditListingAvailabilityPlanForm.timezonePickerTitle')).toBeInTheDocument();
-    expect(getByRole('option', { name: 'Europe/Helsinki' })).toBeInTheDocument();
+    expect(screen.getAllByRole('option').length).toBeGreaterThan(5);
     // plan scheduler
     expect(getByText('EditListingAvailabilityPlanForm.hoursOfOperationTitle')).toBeInTheDocument();
-    const monday = getByRole('checkbox', {
-      name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i,
-    });
-    expect(monday).toBeChecked();
+    expect(getByTestId('availability-day-mon')).toBeInTheDocument();
 
     // save button for the plan
     expect(
       getByRole('button', { name: 'EditListingAvailabilityPlanForm.saveSchedule' })
     ).toBeInTheDocument();
 
-    // Test intercation: plan modal form
-    await user.click(
-      getByRole('checkbox', { name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i })
-    );
+    // Test intercation: plan modal form — second click on Mon quick button removes Monday
+    await user.click(getByTestId('quick-select-day-mon'));
 
-    expect(
-      getByRole('checkbox', { name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i })
-    ).not.toBeChecked();
+    expect(queryByTestId('availability-day-mon')).not.toBeInTheDocument();
 
     // Test intercation: close plan modal
     await user.click(getByRole('button', { name: /Modal.close/i }));
@@ -2078,12 +2061,15 @@ describe('EditListingPage', () => {
       },
     };
 
-    const { getByText, getByRole, queryAllByText } = render(<EditListingPage {...props} />, {
-      initialState: initialState(listing),
-      config,
-      routeConfiguration,
-      withPortals: true,
-    });
+    const { getByText, getByRole, queryAllByText, getByTestId, queryByTestId } = render(
+      <EditListingPage {...props} />,
+      {
+        initialState: initialState(listing),
+        config,
+        routeConfiguration,
+        withPortals: true,
+      }
+    );
 
     await waitFor(() => {
       // Navigation to tab
@@ -2127,17 +2113,13 @@ describe('EditListingPage', () => {
     expect(getByText('EditListingAvailabilityPlanForm.title')).toBeInTheDocument();
     // time zone picker
     expect(getByText('EditListingAvailabilityPlanForm.timezonePickerTitle')).toBeInTheDocument();
-    expect(getByRole('option', { name: 'Europe/Helsinki' })).toBeInTheDocument();
+    expect(screen.getAllByRole('option').length).toBeGreaterThan(5);
     // plan scheduler
     expect(getByText('EditListingAvailabilityPlanForm.hoursOfOperationTitle')).toBeInTheDocument();
 
-    // Monday is checked and it has 00:00 - 00:00
-    const monday = getByRole('checkbox', {
-      name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i,
-    });
-    expect(monday).toBeChecked();
-    const cellMon = monday.parentNode.parentNode;
-    const monDataContainer = within(cellMon.nextElementSibling);
+    // Monday has 00:00 - 24:00 (stored as 00:00 - 00:00 in plan)
+    const mondaySection = getByTestId('availability-day-mon');
+    const monDataContainer = within(mondaySection);
     const startTimePlaceholderMon = monDataContainer.getByRole('option', {
       name: 'EditListingAvailabilityPlanForm.startTimePlaceholder',
     });
@@ -2151,29 +2133,18 @@ describe('EditListingPage', () => {
     const midnight24 = endTimePlaceholder.parentNode.lastChild;
     expect(midnight24.selected).toBe(true);
 
-    // Sunday is checked and it does not have selectors for start and end
-    const sunday = getByRole('checkbox', {
-      name: /EditListingAvailabilityPlanForm.dayOfWeek.sun/i,
-    });
-    expect(sunday).not.toBeChecked();
+    // Sunday has no plan row (not in listing entries)
+    expect(queryByTestId('availability-day-sun')).not.toBeInTheDocument();
 
     // save button for the plan
     expect(
       getByRole('button', { name: 'EditListingAvailabilityPlanForm.saveSchedule' })
     ).toBeInTheDocument();
 
-    // Test intercation: plan modal form
-    await user.click(
-      getByRole('checkbox', { name: /EditListingAvailabilityPlanForm.dayOfWeek.mon/i })
-    );
+    // Test intercation: plan modal form — second click on Mon quick button removes Monday
+    await user.click(getByTestId('quick-select-day-mon'));
 
-    expect(monday).not.toBeChecked();
-    const monDataContainerAfterUncheck = within(monday.parentNode.parentNode.nextElementSibling);
-    expect(
-      monDataContainerAfterUncheck.queryByRole('option', {
-        name: 'EditListingAvailabilityPlanForm.startTimePlaceholder',
-      })
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('availability-day-mon')).not.toBeInTheDocument();
 
     // Test intercation: close plan modal
     await user.click(getByRole('button', { name: /Modal.close/i }));

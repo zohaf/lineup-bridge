@@ -73,6 +73,34 @@
   hyphens: auto;
 }
 
+.socialLink {
+  composes: a from global;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.socialIcon {
+  flex: 0 0 auto;
+}
+
+.sectionLinks {
+  padding: 0px 24px;
+  margin-bottom: 24px;
+
+  @media (--viewportMedium) {
+    padding: 0;
+    margin-bottom: 24px;
+  }
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+}
+
 .sectionText {
   padding: 0px 24px;
   margin-bottom: 24px;

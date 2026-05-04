@@ -37,8 +37,8 @@ const IconCheckbox = props => {
           />
         </g>
         <path
+          className={css.tickMark}
           d="M5.636621 10.7824771L3.3573694 8.6447948c-.4764924-.4739011-.4764924-1.2418639 0-1.7181952.4777142-.473901 1.251098-.473901 1.7288122 0l1.260291 1.1254782 2.8256927-4.5462307c.3934117-.5431636 1.1545778-.6695372 1.7055985-.278265.5473554.3912721.6731983 1.150729.2797866 1.6951077l-3.6650524 5.709111c-.2199195.306213-.5803433.5067097-.9920816.5067097-.3225487 0-.6328797-.1263736-.8637952-.3560334z"
-          fill="#FFF"
         />
       </g>
     </svg>
@@ -58,6 +58,7 @@ const IconCheckbox = props => {
  * @param {string} props.name Name groups several checkboxes to an array of selected values
  * @param {string} props.value Checkbox needs a value that is passed forward when user checks the checkbox
  * @param {ReactNode} props.label
+ * @param {'default'|'minimal'} [props.variant] - minimal: black box outline and tick (no brand fill)
  * @returns {JSX.Element} Final Form Field containing checkbox input
  */
 const FieldCheckbox = props => {
@@ -69,10 +70,15 @@ const FieldCheckbox = props => {
     id,
     label,
     useSuccessColor,
+    variant = 'default',
     ...rest
   } = props;
 
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(
+    rootClassName || css.root,
+    className,
+    variant === 'minimal' && css.minimal
+  );
 
   // This is a workaround for a bug in Firefox & React Final Form.
   // https://github.com/final-form/react-final-form/issues/134

@@ -193,6 +193,7 @@ export const getDefaultConfiguration = () => {
       },
       defaultFilters: [defaultConfig.search.dateRangeFilter, defaultConfig.search.priceFilter],
     },
+    checkoutCustomerMessageOnly: false,
   };
 };
 

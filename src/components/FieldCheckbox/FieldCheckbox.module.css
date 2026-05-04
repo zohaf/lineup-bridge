@@ -31,7 +31,7 @@
     stroke: var(--colorGrey300);
   }
 
-  /* Display the "check" when checked */
+  /* Display the filled background when checked (hidden for minimal variant via CSS) */
   &:checked + label .checked {
     display: inline;
     stroke: var(--marketplaceColor);
@@ -112,4 +112,51 @@
   margin-top: -1px;
   margin-bottom: 1px;
   cursor: pointer;
+}
+
+/* Tick: hidden until checked (fixes always-visible white mark) */
+.tickMark {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.input:checked + label .tickMark {
+  opacity: 1;
+  fill: var(--colorWhite);
+}
+
+/* Listing profile / genre: empty box with black outline; black tick when checked */
+.minimal .checked {
+  display: none !important;
+}
+
+.minimal .checkboxWrapper {
+  display: none;
+}
+
+.minimal .label {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.minimal .box {
+  stroke: var(--colorBlack);
+}
+
+.minimal .input:hover + label .box,
+.minimal .input:focus + label .box,
+.minimal .input:checked + label .box {
+  stroke: var(--colorBlack);
+}
+
+.minimal .input:checked + label .tickMark {
+  fill: var(--colorBlack);
+}
+
+.minimal .input:hover + label .textRoot,
+.minimal .input:focus-visible + label .textRoot,
+.minimal .input:checked + label .textRoot {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }

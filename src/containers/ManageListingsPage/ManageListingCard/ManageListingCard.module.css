@@ -372,6 +372,45 @@
   margin: 0 3px 0 3px;
 }
 
+.homePreview {
+  /* Keep the card flat on home, buttons are the primary CTA */
+  & .clickWrapper:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.homeActions {
+  display: flex;
+  width: 100%;
+  margin-top: 12px;
+  gap: 12px;
+}
+
+.homeActionButton {
+  composes: buttonPrimaryInline from global;
+
+  /* Layout */
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 14px 16px;
+
+  /* Black button */
+  background-color: var(--colorBlack);
+  color: var(--colorWhite);
+  border-radius: var(--borderRadiusMedium);
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--colorGrey700);
+    color: var(--colorWhite);
+    text-decoration: none;
+  }
+}
+
 .alternativeActionText {
   composes: h5 from global;
   margin: 0px 24px;

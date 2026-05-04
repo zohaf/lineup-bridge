@@ -26,7 +26,7 @@ import {
   isForbiddenError,
 } from '../../util/errors.js';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers.js';
-import { requireListingImage } from '../../util/configHelpers';
+import { displayDescription, requireListingImage } from '../../util/configHelpers';
 import {
   ensureListing,
   ensureOwnListing,
@@ -86,11 +86,9 @@ import {
   priceForSchemaMaybe,
 } from './ListingPage.shared';
 import ActionBarMaybe from './ActionBarMaybe';
-import SectionReviews from './SectionReviews';
-import SectionAuthorMaybe from './SectionAuthorMaybe';
-import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
+import SectionLocationText from './SectionLocationText';
 
 import css from './ListingPage.module.css';
 
@@ -119,8 +117,6 @@ export const ListingPageComponent = props => {
     location,
     scrollingDisabled,
     showListingError,
-    reviews = [],
-    fetchReviewsError,
     sendInquiryInProgress,
     sendInquiryError,
     history,
@@ -186,7 +182,6 @@ export const ListingPageComponent = props => {
 
   const {
     description = '',
-    geolocation = null,
     price = null,
     title = '',
     publicData = {},
@@ -217,7 +212,7 @@ export const ListingPageComponent = props => {
   const validListingTypes = listingConfig.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showListingImage = requireListingImage(foundListingTypeConfig);
-  const showDescription = foundListingTypeConfig?.defaultListingFields?.description;
+  const showDescription = displayDescription(foundListingTypeConfig);
 
   const processName = resolveLatestProcessName(transactionProcessAlias.split('/')[0]);
   const isBooking = isBookingProcess(processName);
@@ -380,10 +375,11 @@ export const ListingPageComponent = props => {
               <SectionGallery
                 listing={currentListing}
                 variantPrefix={config.layout.listingImage.variantPrefix}
+                onManageDisableScrolling={onManageDisableScrolling}
               />
             )}
             <div
-              className={showListingImage ? css.mobileHeading : css.noListingImageHeadingProduct}
+              className={showListingImage ? css.listingMainHeading : css.noListingImageHeadingProduct}
             >
               {showListingImage ? (
                 <H2 as="h1" className={css.orderPanelTitle}>
@@ -405,26 +401,7 @@ export const ListingPageComponent = props => {
               intl={intl}
             />
 
-            <SectionMapMaybe
-              geolocation={geolocation}
-              publicData={publicData}
-              listingId={currentListing.id}
-              mapsConfig={config.maps}
-            />
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
-            <SectionAuthorMaybe
-              title={title}
-              listing={currentListing}
-              authorDisplayName={authorDisplayName}
-              onContactUser={onContactUser}
-              isInquiryModalOpen={isAuthenticated && inquiryModalOpen}
-              onCloseInquiryModal={() => setInquiryModalOpen(false)}
-              sendInquiryError={sendInquiryError}
-              sendInquiryInProgress={sendInquiryInProgress}
-              onSubmitInquiry={onSubmitInquiry}
-              currentUser={currentUser}
-              onManageDisableScrolling={onManageDisableScrolling}
-            />
+            <SectionLocationText publicData={publicData} />
           </div>
           <div className={css.orderColumnForProductLayout}>
             <OrderPanel
@@ -434,16 +411,6 @@ export const ListingPageComponent = props => {
               listing={currentListing}
               isOwnListing={isOwnListing}
               onSubmit={handleOrderSubmit}
-              authorLink={
-                <NamedLink
-                  className={css.authorNameLink}
-                  name={isVariant ? 'ListingPageVariant' : 'ListingPage'}
-                  params={params}
-                  to={{ hash: '#author' }}
-                >
-                  {authorDisplayName}
-                </NamedLink>
-              }
               title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
               titleDesktop={
                 <H4 as="h1" className={css.orderPanelTitle}>
@@ -452,6 +419,9 @@ export const ListingPageComponent = props => {
               }
               payoutDetailsWarning={payoutDetailsWarning}
               author={ensuredAuthor}
+              hideListingTitleInPanel
+              hideOrderPanelAuthor
+              compactBookingSidebar
               onManageDisableScrolling={onManageDisableScrolling}
               onContactUser={onContactUser}
               {...restOfProps}

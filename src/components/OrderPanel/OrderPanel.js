@@ -143,6 +143,7 @@ const PriceMaybe = props => {
     intl,
     marketplaceCurrency,
     showCurrencyMismatch = false,
+    embedded = false,
   } = props;
   const { listingType, unitType } = publicData || {};
 
@@ -182,7 +183,7 @@ const PriceMaybe = props => {
     </div>
   ) : (
     <div className={css.priceContainer}>
-      <p className={css.price}>
+      <p className={classNames(css.price, { [css.priceEmbedded]: embedded })}>
         <FormattedMessage id="OrderPanel.price" values={{ priceValue, pricePerUnit }} />
       </p>
     </div>
@@ -266,6 +267,9 @@ const hasValidPriceVariants = priceVariants => {
  * @param {string} props.marketplaceCurrency - The currency used in the marketplace
  * @param {number} props.dayCountAvailableForBooking - Number of days available for booking
  * @param {string} props.marketplaceName - Name of the marketplace
+ * @param {boolean} [props.hideListingTitleInPanel] - Hide visible listing title (e.g. when shown in main column)
+ * @param {boolean} [props.hideOrderPanelAuthor] - Hide author row (avatar + name)
+ * @param {boolean} [props.compactBookingSidebar] - Listing page: unit price below dates, hide line-item breakdown
  *
  * @returns {JSX.Element} Component that displays the order panel with appropriate form
  */
@@ -305,6 +309,9 @@ const OrderPanel = props => {
     fetchLineItemsError,
     payoutDetailsWarning,
     showListingImage,
+    hideListingTitleInPanel = false,
+    hideOrderPanelAuthor = false,
+    compactBookingSidebar = false,
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
@@ -413,6 +420,7 @@ const OrderPanel = props => {
     fetchLineItemsInProgress,
     fetchLineItemsError,
     payoutDetailsWarning,
+    processName,
   };
 
   const showClosedListingHelpText = listing.id && isClosed;
@@ -425,6 +433,20 @@ const OrderPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
+
+  const showEmbeddedBookingPriceInForm =
+    showBookingFixedDurationForm || showBookingTimeForm || showBookingDatesForm;
+
+  const listingUnitPrice = (
+    <PriceMaybe
+      embedded
+      price={price}
+      publicData={publicData}
+      validListingTypes={validListingTypes}
+      intl={intl}
+      marketplaceCurrency={marketplaceCurrency}
+    />
+  );
 
   return (
     <div className={classes}>
@@ -441,33 +463,26 @@ const OrderPanel = props => {
         usePortal
       >
         <div className={css.modalHeading}>
-          <H1 className={css.heading}>{title}</H1>
+          <H1 className={hideListingTitleInPanel ? css.visuallyHidden : css.heading}>{title}</H1>
         </div>
 
-        {showListingImage && (
+        {showListingImage && (!hideListingTitleInPanel || subTitleText) ? (
           <div className={css.orderHeading}>
-            {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
+            {!hideListingTitleInPanel &&
+              (titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>)}
             {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
           </div>
-        )}
+        ) : null}
 
-        <PriceMaybe
-          price={price}
-          publicData={publicData}
-          validListingTypes={validListingTypes}
-          intl={intl}
-          marketplaceCurrency={marketplaceCurrency}
-        />
-
-        <div className={css.author}>
-          <AvatarSmall user={author} className={css.providerAvatar} />
-          <span className={css.providerNameLinked}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorLink }} />
-          </span>
-          <span className={css.providerNamePlain}>
-            <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
-          </span>
-        </div>
+        {!showEmbeddedBookingPriceInForm ? (
+          <PriceMaybe
+            price={price}
+            publicData={publicData}
+            validListingTypes={validListingTypes}
+            intl={intl}
+            marketplaceCurrency={marketplaceCurrency}
+          />
+        ) : null}
 
         {showPriceMissing ? (
           <PriceMissing />
@@ -488,6 +503,8 @@ const OrderPanel = props => {
             startTimeInterval={startTimeInterval}
             timeZone={timeZone}
             finePrintComponent={SubmitFinePrint}
+            listingUnitPrice={listingUnitPrice}
+            hideEstimatedBreakdown={compactBookingSidebar}
             {...priceVariantsMaybe}
             {...sharedProps}
           />
@@ -504,6 +521,8 @@ const OrderPanel = props => {
             endDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
             timeZone={timeZone}
             finePrintComponent={SubmitFinePrint}
+            listingUnitPrice={listingUnitPrice}
+            hideEstimatedBreakdown={compactBookingSidebar}
             {...priceVariantsMaybe}
             {...sharedProps}
           />
@@ -517,6 +536,7 @@ const OrderPanel = props => {
             onFetchTimeSlots={onFetchTimeSlots}
             timeZone={timeZone}
             finePrintComponent={SubmitFinePrint}
+            hideEstimatedBreakdown={compactBookingSidebar}
             {...priceVariantsMaybe}
             {...sharedProps}
           />
@@ -559,16 +579,30 @@ const OrderPanel = props => {
             <FormattedMessage id="OrderPanel.unknownTransactionProcess" />
           </p>
         ) : null}
+
+        {!hideOrderPanelAuthor ? (
+          <div className={css.author}>
+            <AvatarSmall user={author} className={css.providerAvatar} />
+            <span className={css.providerNameLinked}>
+              <FormattedMessage id="OrderPanel.author" values={{ name: authorLink }} />
+            </span>
+            <span className={css.providerNamePlain}>
+              <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
+            </span>
+          </div>
+        ) : null}
       </ModalInMobile>
       <div className={css.openOrderForm}>
-        <PriceMaybe
-          price={price}
-          publicData={publicData}
-          validListingTypes={validListingTypes}
-          intl={intl}
-          marketplaceCurrency={marketplaceCurrency}
-          showCurrencyMismatch
-        />
+        {showBookingDatesForm ? null : (
+          <PriceMaybe
+            price={price}
+            publicData={publicData}
+            validListingTypes={validListingTypes}
+            intl={intl}
+            marketplaceCurrency={marketplaceCurrency}
+            showCurrencyMismatch
+          />
+        )}
 
         {isClosed ? (
           <div className={css.closedListingButton}>

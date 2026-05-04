@@ -55,6 +55,15 @@ const Item = props => {
   );
 };
 
+const PillItem = props => {
+  const { label } = props;
+  return (
+    <li className={css.pillItem}>
+      <span className={css.pillLabel}>{label}</span>
+    </li>
+  );
+};
+
 /**
  * @typedef {Object} Option
  * @property {string} key - The key of the option
@@ -72,6 +81,7 @@ const Item = props => {
  * @param {Array<string>} props.selectedOptions - The selected options
  * @param {boolean} props.twoColumns - Whether to render the options in two columns
  * @param {boolean} props.showUnselectedOptions - Whether to show the unselected options
+ * @param {boolean} [props.pillLayout] - Selected values only, as outlined pills (no check icons)
  * @returns {JSX.Element}
  */
 const PropertyGroup = props => {
@@ -84,6 +94,7 @@ const PropertyGroup = props => {
     selectedOptions = [],
     twoColumns,
     showUnselectedOptions,
+    pillLayout,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const listClasses = twoColumns ? classNames(classes, css.twoColumns) : classes;
@@ -92,6 +103,21 @@ const PropertyGroup = props => {
   const checked = showUnselectedOptions
     ? checkSelected(options, selectedOptions)
     : checkSelected(options, selectedOptions).filter(o => o.isSelected);
+
+  if (pillLayout) {
+    const selectedOnly = checkSelected(options, selectedOptions).filter(o => o.isSelected);
+    if (selectedOnly.length === 0) {
+      return null;
+    }
+    const pillRootClass = classNames(css.pillRoot, className);
+    return (
+      <ul className={pillRootClass} {...ariaLabelMaybe}>
+        {selectedOnly.map(option => (
+          <PillItem key={`${id}.${option.key}`} label={option.label} />
+        ))}
+      </ul>
+    );
+  }
 
   return (
     <ul className={listClasses} {...ariaLabelMaybe}>

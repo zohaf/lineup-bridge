@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { Field } from 'react-final-form';
 
 import { useIntl } from '../../../util/reactIntl';
 import { parseSelectFilterOptions } from '../../../util/search';
@@ -27,6 +28,42 @@ const GroupOfFieldCheckboxes = props => {
           return (
             <li key={fieldId} className={css.item}>
               <FieldCheckbox id={fieldId} name={name} label={label} value={option} />
+            </li>
+          );
+        })}
+      </ul>
+    </fieldset>
+  );
+};
+
+const GroupOfTextOptions = props => {
+  const { id, className, name, options, legend } = props;
+  return (
+    <fieldset className={className}>
+      {legend ? <legend className={css.accessibilityLegend}>{legend}</legend> : null}
+      <ul className={classNames(css.list, css.twoColumnList)}>
+        {options.map(optionConfig => {
+          const { option, label } = optionConfig;
+          const fieldId = `${id}.${option}`;
+          return (
+            <li key={fieldId} className={css.item}>
+              <Field type="checkbox" name={name} value={option}>
+                {({ input }) => {
+                  return (
+                    <span className={css.textOptionRoot}>
+                      <input id={fieldId} className={css.textOptionInput} {...input} />
+                      <label
+                        htmlFor={fieldId}
+                        className={classNames(css.textOptionLabel, {
+                          [css.textOptionLabelSelected]: input.checked,
+                        })}
+                      >
+                        {label}
+                      </label>
+                    </span>
+                  );
+                }}
+              </Field>
             </li>
           );
         })}
@@ -85,6 +122,7 @@ const SelectMultipleFilter = props => {
     schemaType,
     searchMode,
     showAsPopup,
+    variant,
     ...rest
   } = props;
 
@@ -120,6 +158,8 @@ const SelectMultipleFilter = props => {
     onSubmit(format(usedValue, queryParamName, schemaType, searchMode));
   };
 
+  const isGenreVariant = variant === 'genre';
+
   return showAsPopup ? (
     <FilterPopup
       className={classes}
@@ -135,13 +175,23 @@ const SelectMultipleFilter = props => {
       keepDirtyOnReinitialize
       {...rest}
     >
-      <GroupOfFieldCheckboxes
-        className={css.fieldGroup}
-        name={name}
-        id={`${id}-checkbox-group`}
-        options={options}
-        legend={label}
-      />
+      {isGenreVariant ? (
+        <GroupOfTextOptions
+          className={classNames(css.fieldGroup, css.genreFieldGroup)}
+          name={name}
+          id={`${id}-text-option-group`}
+          options={options}
+          legend={label}
+        />
+      ) : (
+        <GroupOfFieldCheckboxes
+          className={css.fieldGroup}
+          name={name}
+          id={`${id}-checkbox-group`}
+          options={options}
+          legend={label}
+        />
+      )}
     </FilterPopup>
   ) : (
     <FilterPlain

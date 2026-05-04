@@ -130,19 +130,18 @@ const SectionFooter = props => {
             <div className={css.sloganMobile}>
               <Field data={slogan} className={css.slogan} />
             </div>
-            <div className={css.sloganDesktop}>
-              <Field data={slogan} className={css.slogan} />
-            </div>
           </div>
           <div className={classNames(css.grid, getGridCss(numberOfColumns))}>
             <BlockBuilder blocks={blocks} sectionId={sectionId} options={options} />
-            <NamedLink
-              name="CMSPage"
-              params={{ pageId: 'contact' }}
-              className={css.footerContactLink}
-            >
-              <FormattedMessage id="SectionFooter.contactUs" />
-            </NamedLink>
+            <div className={css.footerContactLinkMobileWrap}>
+              <NamedLink
+                name="CMSPage"
+                params={{ pageId: 'contact' }}
+                className={css.footerContactLink}
+              >
+                <FormattedMessage id="SectionFooter.contactUs" />
+              </NamedLink>
+            </div>
           </div>
           <div className={css.detailsInfo}>
             {showSocialMediaLinks ? (
@@ -150,6 +149,19 @@ const SectionFooter = props => {
                 <BlockBuilder blocks={linksWithBlockId} sectionId={sectionId} options={options} />
               </div>
             ) : null}
+            <div className={css.copyrightMobileWrap}>
+              <Field data={copyright} className={css.copyright} />
+            </div>
+          </div>
+          <div className={css.footerMetaRow}>
+            <Field data={slogan} className={css.slogan} />
+            <NamedLink
+              name="CMSPage"
+              params={{ pageId: 'contact' }}
+              className={css.footerContactLink}
+            >
+              <FormattedMessage id="SectionFooter.contactUs" />
+            </NamedLink>
             <Field data={copyright} className={css.copyright} />
           </div>
         </div>

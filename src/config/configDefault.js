@@ -135,6 +135,10 @@ const defaultConfig = {
     postalCode: null, // '00130',
     streetAddress: null, // 'Erottajankatu 19 B',
   },
+
+  // When true, checkout shows only the optional message field if the customer already has a saved card;
+  // otherwise the full Stripe payment form is shown (card + billing).
+  checkoutCustomerMessageOnly: false,
 };
 
 export default defaultConfig;

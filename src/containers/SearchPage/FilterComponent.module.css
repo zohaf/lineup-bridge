@@ -1,0 +1,22 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Label icon (used by Genre filter to match Sort By affordance) */
+.labelWithIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (--viewportMedium) {
+    gap: 36px;
+  }
+}
+
+.labelText {
+  display: inline-block;
+}
+
+.labelIcon {
+  display: inline-block;
+  color: currentColor;
+}
+

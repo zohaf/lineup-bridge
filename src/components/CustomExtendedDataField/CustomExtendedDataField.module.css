@@ -15,3 +15,22 @@
     }
   }
 }
+
+/* Profile genres: keep 32px gap to the next field (e.g. Instagram) on medium+ */
+.genreField {
+  margin-bottom: 24px;
+}
+
+.genreField ul {
+  margin-bottom: 0;
+}
+
+.genreField legend {
+  display: none;
+}
+
+@media (--viewportMedium) {
+  .genreField {
+    margin-bottom: 32px;
+  }
+}

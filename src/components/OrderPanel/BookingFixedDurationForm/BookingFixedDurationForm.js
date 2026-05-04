@@ -107,6 +107,9 @@ export const BookingFixedDurationForm = props => {
     priceVariantFieldComponent: PriceVariantFieldComponent,
     preselectedPriceVariant,
     isPublishedListing,
+    listingUnitPrice,
+    hideEstimatedBreakdown = false,
+    processName = BOOKING_PROCESS_NAME,
     ...rest
   } = props;
 
@@ -237,7 +240,11 @@ export const BookingFixedDurationForm = props => {
               </FieldSelect>
             ) : null}
 
-            {showEstimatedBreakdown ? (
+            {listingUnitPrice ? (
+              <div className={css.listingUnitPriceSlot}>{listingUnitPrice}</div>
+            ) : null}
+
+            {showEstimatedBreakdown && !hideEstimatedBreakdown ? (
               <div className={css.priceBreakdownContainer}>
                 <H6 as="h3" className={css.bookingBreakdownTitle}>
                   <FormattedMessage id="BookingFixedDurationForm.priceBreakdownTitle" />
@@ -249,7 +256,7 @@ export const BookingFixedDurationForm = props => {
                   timeZone={timeZone}
                   currency={unitPrice.currency}
                   marketplaceName={marketplaceName}
-                  processName={BOOKING_PROCESS_NAME}
+                  processName={processName}
                 />
               </div>
             ) : null}

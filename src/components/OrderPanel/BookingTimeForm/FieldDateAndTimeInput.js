@@ -557,6 +557,7 @@ const FieldDateAndTimeInput = props => {
     rootClassName,
     className,
     formId,
+    hideEndTime = false,
     disabled,
     startDateInputProps,
     values,
@@ -807,31 +808,34 @@ const FieldDateAndTimeInput = props => {
             )}
           </FieldSelect>
         </div>
+        {!hideEndTime ? (
+          <>
+            <div className={bookingStartDate ? css.lineBetween : css.lineBetweenDisabled}>-</div>
 
-        <div className={bookingStartDate ? css.lineBetween : css.lineBetweenDisabled}>-</div>
-
-        <div className={css.field}>
-          <FieldSelect
-            name="bookingEndTime"
-            id={formId ? `${formId}.bookingEndTime` : 'bookingEndTime'}
-            className={bookingStartDate ? css.fieldSelect : css.fieldSelectDisabled}
-            selectClassName={bookingStartDate ? css.select : css.selectDisabled}
-            label={intl.formatMessage({ id: 'FieldDateAndTimeInput.endTime' })}
-            disabled={!bookingEndTimeAvailable}
-            showLabelAsDisabled={!bookingEndTimeAvailable}
-            onChange={onBookingEndTimeChange(props)}
-          >
-            {bookingEndTimeAvailable ? (
-              availableEndTimes.map(p => (
-                <option key={p.timestamp} value={p.timestamp}>
-                  {p.timeOfDay}
-                </option>
-              ))
-            ) : (
-              <option>{placeholderTime}</option>
-            )}
-          </FieldSelect>
-        </div>
+            <div className={css.field}>
+              <FieldSelect
+                name="bookingEndTime"
+                id={formId ? `${formId}.bookingEndTime` : 'bookingEndTime'}
+                className={bookingStartDate ? css.fieldSelect : css.fieldSelectDisabled}
+                selectClassName={bookingStartDate ? css.select : css.selectDisabled}
+                label={intl.formatMessage({ id: 'FieldDateAndTimeInput.endTime' })}
+                disabled={!bookingEndTimeAvailable}
+                showLabelAsDisabled={!bookingEndTimeAvailable}
+                onChange={onBookingEndTimeChange(props)}
+              >
+                {bookingEndTimeAvailable ? (
+                  availableEndTimes.map(p => (
+                    <option key={p.timestamp} value={p.timestamp}>
+                      {p.timeOfDay}
+                    </option>
+                  ))
+                ) : (
+                  <option>{placeholderTime}</option>
+                )}
+              </FieldSelect>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

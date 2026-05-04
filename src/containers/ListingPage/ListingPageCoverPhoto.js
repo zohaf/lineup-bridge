@@ -26,7 +26,7 @@ import {
   isForbiddenError,
 } from '../../util/errors.js';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers.js';
-import { requireListingImage } from '../../util/configHelpers';
+import { displayDescription, requireListingImage } from '../../util/configHelpers';
 import {
   ensureListing,
   ensureOwnListing,
@@ -86,11 +86,9 @@ import {
   priceForSchemaMaybe,
 } from './ListingPage.shared';
 import SectionHero from './SectionHero';
-import SectionReviews from './SectionReviews';
-import SectionAuthorMaybe from './SectionAuthorMaybe';
-import SectionMapMaybe from './SectionMapMaybe';
 import CustomListingFields from './CustomListingFields';
 import ActionBarMaybe from './ActionBarMaybe';
+import SectionLocationText from './SectionLocationText';
 
 import css from './ListingPage.module.css';
 
@@ -103,6 +101,7 @@ export const ListingPageComponent = props => {
     props.inquiryModalOpenForListingId === props.params.id
   );
   const [imageCarouselOpen, setImageCarouselOpen] = useState(false);
+  const [heroCarouselStartIndex, setHeroCarouselStartIndex] = useState(0);
 
   const [mounted, setMounted] = useState(false);
 
@@ -121,8 +120,6 @@ export const ListingPageComponent = props => {
     location,
     scrollingDisabled,
     showListingError,
-    reviews = [],
-    fetchReviewsError,
     sendInquiryInProgress,
     sendInquiryError,
     history,
@@ -188,7 +185,6 @@ export const ListingPageComponent = props => {
 
   const {
     description = '',
-    geolocation = null,
     price = null,
     title = '',
     publicData = {},
@@ -231,7 +227,7 @@ export const ListingPageComponent = props => {
   const validListingTypes = listingConfig.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showListingImage = requireListingImage(foundListingTypeConfig);
-  const showDescription = foundListingTypeConfig?.defaultListingFields?.description;
+  const showDescription = displayDescription(foundListingTypeConfig);
 
   const currentAuthor = authorAvailable ? currentListing.author : null;
   const ensuredAuthor = ensureUser(currentAuthor);
@@ -328,10 +324,8 @@ export const ListingPageComponent = props => {
   const noIndexMaybe =
     currentListing.attributes.state === LISTING_STATE_CLOSED ? { noIndex: true } : {};
 
-  const handleViewPhotosClick = e => {
-    // Stop event from bubbling up to prevent image click handler
-    // trying to open the carousel as well.
-    e.stopPropagation();
+  const handleHeroPhotoTileClick = index => {
+    setHeroCarouselStartIndex(index);
     setImageCarouselOpen(true);
   };
 
@@ -392,23 +386,25 @@ export const ListingPageComponent = props => {
       <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
         {showListingImage ? (
           <SectionHero
-            title={title}
             listing={currentListing}
             isOwnListing={isOwnListing}
             imageCarouselOpen={imageCarouselOpen}
             onImageCarouselClose={() => setImageCarouselOpen(false)}
-            handleViewPhotosClick={handleViewPhotosClick}
             onManageDisableScrolling={onManageDisableScrolling}
             actionBar={actionBar}
+            variantPrefix={config.layout.listingImage.variantPrefix}
+            carouselStartIndex={heroCarouselStartIndex}
+            onPhotoTileClick={handleHeroPhotoTileClick}
           />
         ) : (
           isOwnListing && <div className={css.actionBarContainerForNoListingImage}>{actionBar}</div>
         )}
         <div className={css.contentWrapperForHeroLayout}>
           <div className={css.mainColumnForHeroLayout}>
-            <div className={showListingImage ? css.mobileHeading : css.noListingImageHeadingHero}>
+            <div
+              className={showListingImage ? css.listingMainHeading : css.noListingImageHeadingHero}
+            >
               {showListingImage ? (
-                // add css logic here that applies larger margin on mobile view to push down title
                 <H2 as="h1" className={css.orderPanelTitle}>
                   <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
                 </H2>
@@ -433,26 +429,7 @@ export const ListingPageComponent = props => {
               intl={intl}
             />
 
-            <SectionMapMaybe
-              geolocation={geolocation}
-              publicData={publicData}
-              listingId={currentListing.id}
-              mapsConfig={config.maps}
-            />
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
-            <SectionAuthorMaybe
-              title={title}
-              listing={currentListing}
-              authorDisplayName={authorDisplayName}
-              onContactUser={onContactUser}
-              isInquiryModalOpen={isAuthenticated && inquiryModalOpen}
-              onCloseInquiryModal={() => setInquiryModalOpen(false)}
-              sendInquiryError={sendInquiryError}
-              sendInquiryInProgress={sendInquiryInProgress}
-              onSubmitInquiry={onSubmitInquiry}
-              currentUser={currentUser}
-              onManageDisableScrolling={onManageDisableScrolling}
-            />
+            <SectionLocationText publicData={publicData} />
           </div>
           <div className={css.orderColumnForHeroLayout}>
             <OrderPanel
@@ -460,16 +437,6 @@ export const ListingPageComponent = props => {
               listing={currentListing}
               isOwnListing={isOwnListing}
               onSubmit={handleOrderSubmit}
-              authorLink={
-                <NamedLink
-                  className={css.authorNameLink}
-                  name={isVariant ? 'ListingPageVariant' : 'ListingPage'}
-                  params={params}
-                  to={{ hash: '#author' }}
-                >
-                  {authorDisplayName}
-                </NamedLink>
-              }
               title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
               titleDesktop={
                 <H4 as="h1" className={css.orderPanelTitle}>
@@ -478,6 +445,9 @@ export const ListingPageComponent = props => {
               }
               payoutDetailsWarning={payoutDetailsWarning}
               author={ensuredAuthor}
+              hideListingTitleInPanel
+              hideOrderPanelAuthor
+              compactBookingSidebar
               onManageDisableScrolling={onManageDisableScrolling}
               onContactUser={onContactUser}
               {...restOfProps}

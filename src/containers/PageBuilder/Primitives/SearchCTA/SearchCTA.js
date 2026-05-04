@@ -54,7 +54,9 @@ export const SearchCTA = React.forwardRef((props, ref) => {
   const routeConfiguration = useRouteConfiguration();
   const config = useConfiguration();
 
+  const { containerClassName, ...restProps } = props;
   const { categories, dateRange, keywordSearch, locationSearch } = props.searchFields;
+  const { routeName = 'SearchPage', pathParams = {} } = props;
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
@@ -153,16 +155,23 @@ export const SearchCTA = React.forwardRef((props, ref) => {
       }
     });
 
-    const to = createResourceLocatorString('SearchPage', routeConfiguration, {}, queryParams);
+    const to = createResourceLocatorString(routeName, routeConfiguration, pathParams, queryParams);
     // Use history.push to navigate without page refresh
     history.push(to);
   };
 
   return (
-    <div className={classNames(css.searchBarContainer, getGridCount(fieldCountForGrid))}>
+    <div
+      className={classNames(
+        css.searchBarContainer,
+        getGridCount(fieldCountForGrid),
+        containerClassName,
+        'pbSearchCTA'
+      )}
+    >
       <FinalForm
         onSubmit={onSubmit}
-        {...props}
+        {...restProps}
         render={({ fieldRenderProps, handleSubmit }) => {
           return (
             <Form

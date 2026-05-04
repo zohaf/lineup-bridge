@@ -237,7 +237,7 @@
     align-items: center;
     background-color: var(--datepickerSelectedBgColor);
     border-radius: calc(37px / 2);
-    color: var(--datepickerFgColor);
+    color: var(--datepickerSelectedFgColor);
   }
 }
 
@@ -248,7 +248,7 @@
     border-bottom-left-radius: 0;
     border-top-right-radius: calc(37px / 2);
     border-bottom-right-radius: calc(37px / 2);
-    color: var(--colorWhite);
+    color: var(--datepickerSelectedFgColor);
   }
 
   &:hover .renderedDay {
@@ -264,7 +264,7 @@
     border-bottom-left-radius: calc(37px / 2);
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    color: var(--colorWhite);
+    color: var(--datepickerSelectedFgColor);
   }
 
   &:hover .renderedDay {

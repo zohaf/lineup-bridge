@@ -7,7 +7,8 @@ import { timestampToDate } from '../../../util/dates';
 import { propTypes } from '../../../util/types';
 import { BOOKING_PROCESS_NAME } from '../../../transactions/transaction';
 
-import { Form, H6, PrimaryButton, FieldSelect } from '../../../components';
+import { Form, H6, PrimaryButton, FieldSelect, FieldTextInput } from '../../../components';
+import * as validators from '../../../util/validators';
 
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 import FieldDateAndTimeInput from './FieldDateAndTimeInput';
@@ -61,6 +62,7 @@ const onPriceVariantChange = props => value => {
     formApi.change('bookingStartDate', null);
     formApi.change('bookingStartTime', null);
     formApi.change('bookingEndTime', null);
+    formApi.change('bookingHours', null);
     if (seatsEnabled) {
       formApi.change('seats', 1);
     }
@@ -107,6 +109,9 @@ export const BookingTimeForm = props => {
     priceVariantFieldComponent: PriceVariantFieldComponent,
     preselectedPriceVariant,
     isPublishedListing,
+    listingUnitPrice,
+    hideEstimatedBreakdown = false,
+    processName = BOOKING_PROCESS_NAME,
     ...rest
   } = props;
 
@@ -147,7 +152,12 @@ export const BookingTimeForm = props => {
         } = formRenderProps;
 
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
-        const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
+        const bookingHours = values?.bookingHours;
+        const endTimeFromHours =
+          startTime && bookingHours
+            ? (Number(startTime) + Number(bookingHours) * 60 * 60 * 1000).toString()
+            : null;
+        const endTime = endTimeFromHours || (values?.bookingEndTime ? values.bookingEndTime : null);
         const startDate = startTime ? timestampToDate(startTime) : null;
         const endDate = endTime ? timestampToDate(endTime) : null;
         const priceVariantName = values?.priceVariantName || null;
@@ -184,13 +194,10 @@ export const BookingTimeForm = props => {
               <FieldDateAndTimeInput
                 seatsEnabled={seatsEnabled}
                 setSeatsOptions={setSeatsOptions}
+                hideEndTime
                 startDateInputProps={{
                   label: intl.formatMessage({ id: 'BookingTimeForm.bookingStartTitle' }),
                   placeholderText: startDatePlaceholder,
-                }}
-                endDateInputProps={{
-                  label: intl.formatMessage({ id: 'BookingTimeForm.bookingEndTitle' }),
-                  placeholderText: endDatePlaceholder,
                 }}
                 className={css.bookingDates}
                 listingId={listingId}
@@ -207,6 +214,52 @@ export const BookingTimeForm = props => {
                 handleFetchLineItems={onHandleFetchLineItems}
               />
             ) : null}
+
+            <FieldTextInput
+              type="number"
+              id="bookingHours"
+              name="bookingHours"
+              min="1"
+              step="1"
+              max="24"
+              label={intl.formatMessage({ id: 'BookingTimeForm.performanceDurationTitle' })}
+              placeholder={intl.formatMessage({ id: 'BookingTimeForm.performanceDurationPlaceholder' })}
+              disabled={!startTime}
+              validate={validators.composeValidators(
+                validators.required(
+                  intl.formatMessage({ id: 'BookingTimeForm.performanceDurationRequired' })
+                ),
+                validators.numberAtLeast(
+                  intl.formatMessage({ id: 'BookingTimeForm.performanceDurationMin' }),
+                  1
+                )
+              )}
+              onChange={e => {
+                const nextHours = e?.target?.value;
+                form.batch(() => {
+                  form.change('bookingHours', nextHours);
+                  if (startTime && nextHours) {
+                    form.change(
+                      'bookingEndTime',
+                      (Number(startTime) + Number(nextHours) * 60 * 60 * 1000).toString()
+                    );
+                  } else {
+                    form.change('bookingEndTime', null);
+                  }
+                });
+                onHandleFetchLineItems({
+                  values: {
+                    priceVariantName,
+                    bookingStartDate: startDate,
+                    bookingStartTime: startTime,
+                    bookingEndDate: endDate,
+                    bookingEndTime: endTimeFromHours,
+                    seats: values?.seats,
+                  },
+                });
+              }}
+              className={css.fieldHours}
+            />
             {seatsEnabled ? (
               <FieldSelect
                 name="seats"
@@ -239,7 +292,11 @@ export const BookingTimeForm = props => {
               </FieldSelect>
             ) : null}
 
-            {showEstimatedBreakdown ? (
+            {listingUnitPrice ? (
+              <div className={css.listingUnitPriceSlot}>{listingUnitPrice}</div>
+            ) : null}
+
+            {showEstimatedBreakdown && !hideEstimatedBreakdown ? (
               <div className={css.priceBreakdownContainer}>
                 <H6 as="h3" className={css.bookingBreakdownTitle}>
                   <FormattedMessage id="BookingTimeForm.priceBreakdownTitle" />
@@ -251,7 +308,7 @@ export const BookingTimeForm = props => {
                   timeZone={timeZone}
                   currency={unitPrice.currency}
                   marketplaceName={marketplaceName}
-                  processName={BOOKING_PROCESS_NAME}
+                  processName={processName}
                 />
               </div>
             ) : null}

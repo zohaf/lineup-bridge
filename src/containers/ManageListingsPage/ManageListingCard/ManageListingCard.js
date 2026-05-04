@@ -297,6 +297,8 @@ const ShowOutOfStockOverlayMaybe = props => {
 
 const LinkToStockOrAvailabilityTab = props => {
   const {
+    className,
+    showSeparator = true,
     id,
     slug,
     title,
@@ -314,11 +316,11 @@ const LinkToStockOrAvailabilityTab = props => {
 
   return (
     <>
-      <span className={css.manageLinksSeparator}>{' • '}</span>
+      {showSeparator ? <span className={css.manageLinksSeparator}>{' • '}</span> : null}
 
       {isBookable ? (
         <NamedLink
-          className={css.manageLink}
+          className={className || css.manageLink}
           name="EditListingPage"
           params={{ id, slug, type: editListingLinkType, tab: 'availability' }}
           ariaLabel={`${intl.formatMessage({
@@ -329,7 +331,7 @@ const LinkToStockOrAvailabilityTab = props => {
         </NamedLink>
       ) : (
         <NamedLink
-          className={css.manageLink}
+          className={className || css.manageLink}
           name="EditListingPage"
           params={{ id, slug, type: editListingLinkType, tab: 'pricing-and-stock' }}
         >
@@ -416,6 +418,7 @@ export const ManageListingCard = props => {
   const {
     className,
     rootClassName,
+    variant,
     hasClosingError,
     hasDiscardingError,
     hasOpeningError,
@@ -491,8 +494,10 @@ export const ManageListingCard = props => {
     ? Object.keys(firstImage?.attributes?.variants).filter(k => k.startsWith(variantPrefix))
     : [];
 
+  const isHomePreview = variant === 'home';
+
   return (
-    <div className={classes}>
+    <div className={classNames(classes, { [css.homePreview]: isHomePreview })}>
       <div
         className={css.clickWrapper}
         tabIndex={0}
@@ -524,53 +529,57 @@ export const ManageListingCard = props => {
           <ListingCardThumbnail style={cardStyle} width={aspectWidth} height={aspectHeight} />
         )}
 
-        <div className={classNames(css.menuOverlayWrapper)}>
-          <div className={classNames(css.menuOverlay, { [css.menuOverlayOpen]: isMenuOpen })} />
-        </div>
-        <div className={css.menubarWrapper}>
-          <div className={css.menubarGradient} />
-          <div className={css.menubar}>
-            <Menu
-              className={classNames(css.menu, { [css.cardIsOpen]: !(isClosed || isDraft) })}
-              contentPlacementOffset={MENU_CONTENT_OFFSET}
-              mobileMaxWidth={MOBILE_MAX_WIDTH}
-              contentPosition="left"
-              useArrow={false}
-              onToggleActive={isOpen => {
-                const listingOpen = isOpen ? currentListing : null;
-                onToggleMenu(listingOpen);
-              }}
-              isOpen={isMenuOpen}
-            >
-              <MenuLabel className={css.menuLabel} isOpenClassName={css.listingMenuIsOpen}>
-                <div
-                  className={css.iconWrapper}
-                  role="button"
-                  aria-label={intl.formatMessage({ id: 'ManageListingCard.screenreader.menu' })}
+        {!isHomePreview ? (
+          <>
+            <div className={classNames(css.menuOverlayWrapper)}>
+              <div className={classNames(css.menuOverlay, { [css.menuOverlayOpen]: isMenuOpen })} />
+            </div>
+            <div className={css.menubarWrapper}>
+              <div className={css.menubarGradient} />
+              <div className={css.menubar}>
+                <Menu
+                  className={classNames(css.menu, { [css.cardIsOpen]: !(isClosed || isDraft) })}
+                  contentPlacementOffset={MENU_CONTENT_OFFSET}
+                  mobileMaxWidth={MOBILE_MAX_WIDTH}
+                  contentPosition="left"
+                  useArrow={false}
+                  onToggleActive={isOpen => {
+                    const listingOpen = isOpen ? currentListing : null;
+                    onToggleMenu(listingOpen);
+                  }}
+                  isOpen={isMenuOpen}
                 >
-                  <MenuIcon className={css.menuIcon} isActive={isMenuOpen} />
-                </div>
-              </MenuLabel>
-              <MenuContent rootClassName={css.menuContent}>
-                <MenuItem key="close-listing">
-                  <InlineTextButton
-                    rootClassName={menuItemClasses}
-                    onClick={event => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      if (!actionsInProgressListingId) {
-                        onToggleMenu(null);
-                        onCloseListing(currentListing.id);
-                      }
-                    }}
-                  >
-                    <FormattedMessage id="ManageListingCard.closeListing" />
-                  </InlineTextButton>
-                </MenuItem>
-              </MenuContent>
-            </Menu>
-          </div>
-        </div>
+                  <MenuLabel className={css.menuLabel} isOpenClassName={css.listingMenuIsOpen}>
+                    <div
+                      className={css.iconWrapper}
+                      role="button"
+                      aria-label={intl.formatMessage({ id: 'ManageListingCard.screenreader.menu' })}
+                    >
+                      <MenuIcon className={css.menuIcon} isActive={isMenuOpen} />
+                    </div>
+                  </MenuLabel>
+                  <MenuContent rootClassName={css.menuContent}>
+                    <MenuItem key="close-listing">
+                      <InlineTextButton
+                        rootClassName={menuItemClasses}
+                        onClick={event => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          if (!actionsInProgressListingId) {
+                            onToggleMenu(null);
+                            onCloseListing(currentListing.id);
+                          }
+                        }}
+                      >
+                        <FormattedMessage id="ManageListingCard.closeListing" />
+                      </InlineTextButton>
+                    </MenuItem>
+                  </MenuContent>
+                </Menu>
+              </div>
+            </div>
+          </>
+        ) : null}
 
         <ShowFinishDraftOverlayMaybe
           isDraft={isDraft}
@@ -620,33 +629,10 @@ export const ManageListingCard = props => {
         ) : null}
       </div>
 
-      <div className={css.info}>
-        <PriceMaybe
-          price={price}
-          publicData={publicData}
-          config={config}
-          intl={intl}
-          foundListingTypeConfig={foundListingTypeConfig}
-        />
-
-        <div className={css.mainInfo}>
-          <div className={css.titleWrapper}>
-            <InlineTextButton
-              rootClassName={titleClasses}
-              onClick={event => {
-                event.preventDefault();
-                event.stopPropagation();
-                history.push(createListingURL(routeConfiguration, listing));
-              }}
-            >
-              {formatTitle(title, MAX_LENGTH_FOR_WORDS_IN_TITLE)}
-            </InlineTextButton>
-          </div>
-        </div>
-
-        <div className={css.manageLinks}>
+      {isHomePreview ? (
+        <div className={css.homeActions} onClick={e => e.stopPropagation()}>
           <NamedLink
-            className={css.manageLink}
+            className={css.homeActionButton}
             name="EditListingPage"
             params={{ id, slug, type: editListingLinkType, tab: 'details' }}
             ariaLabel={`${intl.formatMessage({ id: 'ManageListingCard.editListing' })}: ${title}`}
@@ -655,6 +641,8 @@ export const ManageListingCard = props => {
           </NamedLink>
 
           <LinkToStockOrAvailabilityTab
+            className={css.homeActionButton}
+            showSeparator={false}
             id={id}
             slug={slug}
             title={title}
@@ -666,7 +654,55 @@ export const ManageListingCard = props => {
             intl={intl}
           />
         </div>
-      </div>
+      ) : (
+        <div className={css.info}>
+          <PriceMaybe
+            price={price}
+            publicData={publicData}
+            config={config}
+            intl={intl}
+            foundListingTypeConfig={foundListingTypeConfig}
+          />
+
+          <div className={css.mainInfo}>
+            <div className={css.titleWrapper}>
+              <InlineTextButton
+                rootClassName={titleClasses}
+                onClick={event => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  history.push(createListingURL(routeConfiguration, listing));
+                }}
+              >
+                {formatTitle(title, MAX_LENGTH_FOR_WORDS_IN_TITLE)}
+              </InlineTextButton>
+            </div>
+          </div>
+
+          <div className={css.manageLinks}>
+            <NamedLink
+              className={css.manageLink}
+              name="EditListingPage"
+              params={{ id, slug, type: editListingLinkType, tab: 'details' }}
+              ariaLabel={`${intl.formatMessage({ id: 'ManageListingCard.editListing' })}: ${title}`}
+            >
+              <FormattedMessage id="ManageListingCard.editListing" />
+            </NamedLink>
+
+            <LinkToStockOrAvailabilityTab
+              id={id}
+              slug={slug}
+              title={title}
+              editListingLinkType={editListingLinkType}
+              isBookable={isBookable}
+              currentStock={currentStock}
+              hasListingType={hasListingType}
+              hasStockManagementInUse={hasStockManagementInUse}
+              intl={intl}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

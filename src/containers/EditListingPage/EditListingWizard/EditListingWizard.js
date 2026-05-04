@@ -53,6 +53,8 @@ import {
 // Import modules from this directory
 import EditListingWizardTab, {
   DETAILS,
+  GENRE,
+  LINKS,
   PRICING,
   PRICING_AND_STOCK,
   DELIVERY,
@@ -61,6 +63,12 @@ import EditListingWizardTab, {
   PHOTOS,
   STYLE,
 } from './EditListingWizardTab';
+import {
+  isGenreField,
+  isLinkField,
+  isGenreOrLinkField,
+  listingTypeHasWizardSectionField,
+} from '../../../util/listingFieldWizardSections';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -82,10 +90,22 @@ const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
  *
  * @param {string} processName - The name of the process
  * @param {Object} listingTypeConfig - The listing type configuration
+ * @param {Object} config - App config (listing fields).
  * @returns {Array<string>} - The allowed tabs for the given process and listing type configuration
  */
-const tabsForListingType = (processName, listingTypeConfig) => {
-  const locationMaybe = displayLocation(listingTypeConfig) ? [LOCATION] : [];
+const tabsForListingType = (processName, listingTypeConfig, config) => {
+  // Location is collected on the Profile (details) tab; no separate Location step.
+  const locationMaybe = [];
+  const listingType = listingTypeConfig?.listingType;
+  const isDefaultBookingLayout = processName === 'default-booking';
+  const genreTabMaybe =
+    isDefaultBookingLayout && listingTypeHasWizardSectionField(config, listingType, isGenreField)
+      ? [GENRE]
+      : [];
+  const linksTabMaybe =
+    isDefaultBookingLayout && listingTypeHasWizardSectionField(config, listingType, isLinkField)
+      ? [LINKS]
+      : [];
   const pricingMaybe = displayPrice(listingTypeConfig) ? [PRICING] : [];
   const deliveryMaybe =
     displayDeliveryPickup(listingTypeConfig) || displayDeliveryShipping(listingTypeConfig)
@@ -100,7 +120,15 @@ const tabsForListingType = (processName, listingTypeConfig) => {
   // Note 3: The first tab creates a draft listing and title is mandatory attribute for it.
   //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
   const tabs = {
-    ['default-booking']: [DETAILS, ...locationMaybe, PRICING, AVAILABILITY, ...styleOrPhotosTab],
+    ['default-booking']: [
+      DETAILS,
+      ...genreTabMaybe,
+      ...linksTabMaybe,
+      ...locationMaybe,
+      PRICING,
+      AVAILABILITY,
+      ...styleOrPhotosTab,
+    ],
     ['default-purchase']: [DETAILS, PRICING_AND_STOCK, ...deliveryMaybe, ...styleOrPhotosTab],
     ['default-negotiation']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
     ['default-inquiry']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
@@ -118,7 +146,8 @@ const tabsForListingType = (processName, listingTypeConfig) => {
  * @param {string} processName
  */
 const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, processName) => {
-  const processNameString = isNewListingFlow ? `${processName}.` : '';
+  const wizardTranslationProcess = processName;
+  const processNameString = isNewListingFlow ? `${wizardTranslationProcess}.` : '';
   const newOrEdit = isNewListingFlow ? 'new' : 'edit';
 
   let labelKey = null;
@@ -141,6 +170,12 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
       isPriceDisabled && isNewListingFlow
         ? `EditListingWizard.${processNameString}${newOrEdit}.saveLocationNoPricingTab`
         : `EditListingWizard.${processNameString}${newOrEdit}.saveLocation`;
+  } else if (tab === GENRE) {
+    labelKey = 'EditListingWizard.tabLabelGenre';
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveGenre`;
+  } else if (tab === LINKS) {
+    labelKey = 'EditListingWizard.tabLabelLinks';
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveLinks`;
   } else if (tab === AVAILABILITY) {
     labelKey = 'EditListingWizard.tabLabelAvailability';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveAvailability`;
@@ -165,7 +200,11 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
  * @param {Object} publicData
  * @param {Object} privateData
  */
-const hasValidListingFieldsInExtendedData = (publicData, privateData, config) => {
+const hasValidListingFieldsInExtendedData = (publicData, privateData, config, fieldFilter) => {
+  const listingFieldConfigs = fieldFilter
+    ? config.listing.listingFields.filter(fieldFilter)
+    : config.listing.listingFields;
+
   const isValidField = (fieldConfig, fieldData) => {
     const { key, schemaType, enumOptions = [], saveConfig = {} } = fieldConfig;
 
@@ -204,7 +243,7 @@ const hasValidListingFieldsInExtendedData = (publicData, privateData, config) =>
     }
     return true;
   };
-  return config.listing.listingFields.reduce((isValid, fieldConfig) => {
+  return listingFieldConfigs.reduce((isValid, fieldConfig) => {
     const data = fieldConfig.scope === 'private' ? privateData : publicData;
     return isValid && isValidField(fieldConfig, data);
   }, true);
@@ -218,7 +257,7 @@ const hasValidListingFieldsInExtendedData = (publicData, privateData, config) =>
  *
  * @return true if tab / step is completed.
  */
-const tabCompleted = (tab, listing, config) => {
+const tabCompleted = (tab, listing, config, tabs) => {
   const {
     availabilityPlan,
     description,
@@ -246,16 +285,35 @@ const tabCompleted = (tab, listing, config) => {
 
   const deliveryOptionPicked = publicData && (shippingEnabled || pickupEnabled);
 
+  const profileExtendedFieldFilter =
+    tabs && (tabs.includes(GENRE) || tabs.includes(LINKS))
+      ? f => !isGenreOrLinkField(f)
+      : undefined;
+
   switch (tab) {
-    case DETAILS:
+    case DETAILS: {
+      const locationRequired = listingTypeConfig && displayLocation(listingTypeConfig);
+      const hasLocationIfRequired =
+        !locationRequired || !!(geolocation && publicData?.location?.address);
       return !!(
         (!descriptionRequired || hasValidDescription) &&
         title &&
         listingType &&
         transactionProcessAlias &&
         unitType &&
-        hasValidListingFieldsInExtendedData(publicData, privateData, config)
+        hasValidListingFieldsInExtendedData(
+          publicData,
+          privateData,
+          config,
+          profileExtendedFieldFilter
+        ) &&
+        hasLocationIfRequired
       );
+    }
+    case GENRE:
+      return hasValidListingFieldsInExtendedData(publicData, privateData, config, isGenreField);
+    case LINKS:
+      return hasValidListingFieldsInExtendedData(publicData, privateData, config, isLinkField);
     case PRICING:
       return isListingPriceOptionalUnitType(unitType) || !!price;
     case PRICING_AND_STOCK:
@@ -290,7 +348,12 @@ const tabsActive = (isNew, listing, tabs, config) => {
     const previousTabIndex = tabs.findIndex(t => t === tab) - 1;
     const validTab = previousTabIndex >= 0;
     const hasListingType = !!listing?.attributes?.publicData?.listingType;
-    const prevTabComletedInNewFlow = tabCompleted(tabs[previousTabIndex], listing, config);
+    const prevTabComletedInNewFlow = tabCompleted(
+      tabs[previousTabIndex],
+      listing,
+      config,
+      tabs
+    );
     const isActive =
       validTab && !isNew ? hasListingType : validTab && isNew ? prevTabComletedInNewFlow : true;
     return { ...acc, [tab]: isActive };
@@ -547,7 +610,12 @@ class EditListingWizard extends Component {
     const tabs =
       isNewListingFlow && (invalidExistingListingType || !hasListingTypeSelected)
         ? TABS_DETAILS_ONLY
-        : tabsForListingType(processName, listingTypeConfig);
+        : tabsForListingType(processName, listingTypeConfig, config);
+
+    // Location is collected on Profile (details); redirect legacy ?tab=location URLs.
+    if (selectedTab === LOCATION) {
+      return <NamedRedirect name="EditListingPage" params={{ ...params, tab: DETAILS }} />;
+    }
 
     // Check if wizard tab is active / linkable.
     // When creating a new listing, we don't allow users to access next tab until the current one is completed.

@@ -27,14 +27,14 @@
   composes: align;
   /* Card sits on #EEEDE9 page; keep field chrome white */
   background-color: var(--colorWhite);
-  border-color: var(--colorGrey800);
+  border-color: rgba(0, 0, 0, 0.35);
   border-width: 1px;
   color: var(--colorGrey500);
   border-radius: 8px;
-  box-shadow: var(--boxShadowPopup);
   width: calc(100vw - 83px);
   padding: 0 8px 8px 8px;
   margin-top: 40px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
   @media (--viewportMedium) {
     width: 576px;
   }
@@ -54,6 +54,28 @@
       max-width: 1056px;
       min-width: 960px;
     }
+  }
+}
+
+.searchBarContainer:focus-within {
+  border-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes pbSearchCtaReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :global(main#main-content section[data-section-type='hero'] .pbSearchCTA) {
+    animation: pbSearchCtaReveal 560ms ease-out 80ms both;
   }
 }
 

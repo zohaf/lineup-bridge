@@ -45,6 +45,13 @@
   cursor: pointer;
 }
 
+/* Tile grid hero: natural height, tiles are individually clickable */
+.imageWrapperForSectionHeroGrid {
+  background-color: var(--colorPageBackground);
+  cursor: default;
+  position: relative;
+}
+
 .actionBarWithCTAEnabled {
   display: inline-flex;
   flex-wrap: wrap;
@@ -236,9 +243,11 @@
   composes: heroHeight;
   width: 100%;
   transition: var(--transitionStyleButton);
+  /* Show the top portion, crop equally from left/right */
+  object-fit: cover;
+  object-position: 50% 0;
 
   @media (--viewportMedium) {
-    object-fit: cover;
     border-radius: var(--borderRadius);
 
     &:hover {
@@ -246,15 +255,6 @@
       box-shadow: var(--boxShadowListingCard);
     }
   }
-}
-
-.viewPhotos {
-  composes: buttonSmall from global;
-
-  /* Position and dimensions */
-  position: absolute;
-  bottom: 19px;
-  right: 24px;
 }
 
 .carouselModalScrollLayer {
@@ -565,6 +565,23 @@
   }
 }
 
+.sectionLocationText {
+  padding: 0 24px;
+  margin-bottom: 36px;
+
+  @media (--viewportMedium) {
+    padding: 0;
+    margin-bottom: 40px;
+  }
+}
+
+.locationAddressText {
+  composes: marketplaceBodyFontStyles from global;
+  margin: 0;
+  color: var(--colorGrey700);
+  white-space: pre-line;
+}
+
 .sectionText {
   padding: 0 24px;
   margin-bottom: 36px;
@@ -772,6 +789,15 @@
 
   @media (--viewportLarge) {
     display: none;
+  }
+}
+
+/* Primary listing title in the main column (visible at all breakpoints). */
+.listingMainHeading {
+  margin: 0 24px 24px 24px;
+
+  @media (--viewportMedium) {
+    margin: 0 0 24px 0;
   }
 }
 

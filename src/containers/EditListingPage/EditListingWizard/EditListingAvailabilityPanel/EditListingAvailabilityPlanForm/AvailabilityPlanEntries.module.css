@@ -30,11 +30,6 @@
     border-bottom: solid 1px var(--colorGrey100);
   }
 
-  @media (--viewportSmall) {
-    flex-direction: row;
-    gap: 16px;
-  }
-
   @media (--viewportMedium) {
     padding-top: 16px;
     padding-bottom: 16px;
@@ -43,24 +38,6 @@
 
 .hasEntries {
   background-color: var(--colorPageBackground);
-}
-
-.dayOfWeek {
-  display: flex;
-  align-items: center;
-  height: 36px;
-  min-width: 120px;
-  max-width: 160px;
-  width: 140px;
-  flex-grow: 1;
-
-  @media (--viewportMedium) {
-    height: 40px;
-  }
-}
-.dayOfWeekContent {
-  display: flex;
-  flex-grow: 1;
 }
 
 .planEntriesForDay {

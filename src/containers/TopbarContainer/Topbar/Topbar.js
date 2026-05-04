@@ -8,8 +8,19 @@ import { useRouteConfiguration } from '../../../context/routeConfigurationContex
 import { pickBy } from '../../../util/common';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { isMainSearchTypeKeywords, isOriginInUse } from '../../../util/search';
-import { parse, stringify } from '../../../util/urlHelpers';
+import {
+  LISTING_PAGE_DRAFT_VARIANT,
+  LISTING_PAGE_PENDING_APPROVAL_VARIANT,
+  createSlug,
+  parse,
+  stringify,
+} from '../../../util/urlHelpers';
 import { createResourceLocatorString, matchPathname, pathByRouteName } from '../../../util/routes';
+import {
+  LISTING_STATE_DRAFT,
+  LISTING_STATE_PENDING_APPROVAL,
+  LISTING_STATE_PUBLISHED,
+} from '../../../util/types';
 import {
   Button,
   IconArrowHead,
@@ -178,6 +189,7 @@ const TopbarComponent = props => {
     isLoggedInAs,
     authScopes = [],
     authInProgress,
+    logoutInProgress,
     currentUser,
     currentUserHasListings,
     currentUserHasOrders,
@@ -188,6 +200,7 @@ const TopbarComponent = props => {
     location,
     onManageDisableScrolling,
     onResendVerificationEmail,
+    onQueryOwnListings,
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     showGenericError,
@@ -279,16 +292,59 @@ const TopbarComponent = props => {
   const resolvedCurrentPage = currentPage || getResolvedCurrentPage(location, routeConfiguration);
 
   // Logged-out users on the marketing landing page only see Sign up + Log in (no search, no custom links).
-  const isLandingUnauthenticated = resolvedCurrentPage === 'LandingPage' && !isAuthenticated;
+  const isEffectivelyAuthenticated = isAuthenticated && !logoutInProgress;
+  const isLandingUnauthenticated = resolvedCurrentPage === 'LandingPage' && !isEffectivelyAuthenticated;
 
   // Home (/p/home) in the top bar only when logged in — not on signup/login flows for guests.
-  const customLinksFilteredForAuth = isAuthenticated
+  const customLinksFilteredForAuth = isEffectivelyAuthenticated
     ? customLinksResolved
     : customLinksResolved.filter(link => !isHomeTopbarLink(link));
 
   const customLinksForTopbar = isLandingUnauthenticated ? [] : customLinksFilteredForAuth;
 
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
+
+  const createOwnListingURL = ownListing => {
+    const id = ownListing?.id?.uuid;
+    const title = ownListing?.attributes?.title;
+    const state = ownListing?.attributes?.state;
+    if (!id || !title) return null;
+
+    const slug = createSlug(title);
+    const variant =
+      state === LISTING_STATE_PENDING_APPROVAL
+        ? LISTING_PAGE_PENDING_APPROVAL_VARIANT
+        : state === LISTING_STATE_DRAFT
+        ? LISTING_PAGE_DRAFT_VARIANT
+        : null;
+
+    const linkProps = variant
+      ? { name: 'ListingPageVariant', params: { id, slug, variant } }
+      : { name: 'ListingPage', params: { id, slug } };
+
+    return createResourceLocatorString(linkProps.name, routeConfiguration, linkProps.params, {});
+  };
+
+  const handleMyPublicProfileClick = () => {
+    const homePath = pathByRouteName('CMSPage', routeConfiguration, { pageId: 'home' });
+
+    // Pick "best" listing: published > pendingApproval > draft.
+    // If none, keep the user on /p/home (where the create listing CTA exists).
+    return onQueryOwnListings({ page: 1, perPage: 20 })
+      .then(response => {
+        const listings = response?.data?.data || [];
+        const firstPublished = listings.find(l => l?.attributes?.state === LISTING_STATE_PUBLISHED);
+        const firstPending = listings.find(
+          l => l?.attributes?.state === LISTING_STATE_PENDING_APPROVAL
+        );
+        const firstDraft = listings.find(l => l?.attributes?.state === LISTING_STATE_DRAFT);
+        const chosen = firstPublished || firstPending || firstDraft;
+
+        const url = chosen ? createOwnListingURL(chosen) : null;
+        history.push(url || homePath);
+      })
+      .catch(() => history.push(homePath));
+  };
 
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;
   const isMobileLayout = hasMatchMedia
@@ -308,6 +364,7 @@ const TopbarComponent = props => {
       showCreateListingsLink={showCreateListingsLink}
       inboxTab={topbarInboxTab}
       config={config}
+      onMyPublicProfileClick={handleMyPublicProfileClick}
     />
   );
 
@@ -344,9 +401,9 @@ const TopbarComponent = props => {
   const showSearchNotOnLandingPage =
     searchFormDisplay === SEARCH_DISPLAY_NOT_LANDING_PAGE && resolvedCurrentPage !== 'LandingPage';
 
-  const showSearchForm =
-    !isLandingUnauthenticated &&
-    (showSearchOnAllPages || showSearchOnSearchPage || showSearchNotOnLandingPage);
+  // Search UI is rendered on-page (e.g. SearchCTA on SearchPage),
+  // so we disable the Topbar search form completely.
+  const showSearchForm = false;
 
   const mobileSearchButtonMaybe = showSearchForm ? (
     <Button
@@ -437,6 +494,7 @@ const TopbarComponent = props => {
           showSearchForm={showSearchForm}
           showCreateListingsLink={showCreateListingsLink}
           inboxTab={topbarInboxTab}
+          onMyPublicProfileClick={handleMyPublicProfileClick}
         />
       </div>
       <Modal

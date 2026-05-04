@@ -293,52 +293,54 @@ const EditListingAvailabilityPanel = props => {
           </p>
         ) : null}
 
-        <InlineTextButton
-          id={EDIT_AVAILABILITY_PLAN_BUTTON}
-          className={css.editPlanButton}
-          onClick={() => setIsEditPlanModalOpen(true)}
-        >
+        <div className={css.planActions}>
+          <Button
+            id={EDIT_AVAILABILITY_PLAN_BUTTON}
+            type="button"
+            className={css.setScheduleButton}
+            onClick={() => setIsEditPlanModalOpen(true)}
+          >
+            {hasAvailabilityPlan ? (
+              <FormattedMessage id="EditListingAvailabilityPanel.editAvailabilityPlan" />
+            ) : (
+              <FormattedMessage id="EditListingAvailabilityPanel.setAvailabilityPlan" />
+            )}
+          </Button>
+
           {hasAvailabilityPlan ? (
-            <FormattedMessage id="EditListingAvailabilityPanel.editAvailabilityPlan" />
-          ) : (
-            <FormattedMessage id="EditListingAvailabilityPanel.setAvailabilityPlan" />
-          )}
-        </InlineTextButton>
-      </div>
-
-      {hasAvailabilityPlan ? (
-        <>
-          <WeeklyCalendar
-            className={css.section}
-            headerClassName={css.sectionHeader}
-            listingId={listing.id}
-            availabilityPlan={availabilityPlan}
-            availabilityExceptions={sortedAvailabilityExceptions}
-            weeklyExceptionQueries={weeklyExceptionQueries}
-            isDaily={unitType === DAY}
-            useFullDays={useFullDays}
-            useMultipleSeats={useMultipleSeats}
-            onDeleteAvailabilityException={onDeleteAvailabilityException}
-            onFetchExceptions={onFetchExceptions}
-            params={params}
-            locationSearch={locationSearch}
-            firstDayOfWeek={firstDayOfWeek}
-            routeConfiguration={routeConfiguration}
-            history={history}
-          />
-
-          <section className={css.section}>
             <InlineTextButton
               id={EDIT_AVAILABILITY_EXCEPTIONS_BUTTON}
-              className={css.addExceptionButton}
+              type="button"
+              className={css.addExceptionButtonInline}
               onClick={() => setIsEditExceptionsModalOpen(true)}
               disabled={disabled || !hasAvailabilityPlan}
               ready={ready}
             >
               <FormattedMessage id="EditListingAvailabilityPanel.addException" />
             </InlineTextButton>
-          </section>
-        </>
+          ) : null}
+        </div>
+      </div>
+
+      {hasAvailabilityPlan ? (
+        <WeeklyCalendar
+          className={css.section}
+          headerClassName={css.sectionHeader}
+          listingId={listing.id}
+          availabilityPlan={availabilityPlan}
+          availabilityExceptions={sortedAvailabilityExceptions}
+          weeklyExceptionQueries={weeklyExceptionQueries}
+          isDaily={unitType === DAY}
+          useFullDays={useFullDays}
+          useMultipleSeats={useMultipleSeats}
+          onDeleteAvailabilityException={onDeleteAvailabilityException}
+          onFetchExceptions={onFetchExceptions}
+          params={params}
+          locationSearch={locationSearch}
+          firstDayOfWeek={firstDayOfWeek}
+          routeConfiguration={routeConfiguration}
+          history={history}
+        />
       ) : null}
 
       {errors.showListingsError ? (

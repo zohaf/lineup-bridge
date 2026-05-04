@@ -148,6 +148,62 @@ export const getTimeZoneNames = relevantZonesRegExp => {
   return relevantZonesRegExp ? allTimeZones.filter(z => relevantZonesRegExp.test(z)) : allTimeZones;
 };
 
+/** Mid-winter / mid-summer UTC instants to compare offset + DST rules between zones. */
+const TZ_SAMPLE_WINTER_UTC = '2024-01-15T12:00:00Z';
+const TZ_SAMPLE_SUMMER_UTC = '2024-07-15T12:00:00Z';
+
+/**
+ * Stable grouping key: same key ⇒ same offset on both sample dates (e.g. Europe/Berlin ≈ Europe/Amsterdam).
+ *
+ * @param {string} timeZoneId IANA time zone
+ * @returns {string}
+ */
+const getTimeZoneOffsetGroupKey = timeZoneId => {
+  try {
+    const winter = moment.tz(TZ_SAMPLE_WINTER_UTC, timeZoneId).utcOffset();
+    const summer = moment.tz(TZ_SAMPLE_SUMMER_UTC, timeZoneId).utcOffset();
+    return `${winter}|${summer}`;
+  } catch (e) {
+    return timeZoneId;
+  }
+};
+
+/**
+ * One IANA id per group of zones that share the same winter/summer UTC offsets.
+ * If `preferredZoneId` is in a group, that id is kept as the option (so saved values stay visible).
+ *
+ * @param {string[]} zoneNames filtered IANA names (e.g. from getTimeZoneNames)
+ * @param {string} [preferredZoneId] current form value
+ * @returns {string[]} sorted list for `<select>` options
+ */
+export const getDeduplicatedTimeZoneNames = (zoneNames, preferredZoneId) => {
+  const groups = new Map();
+  for (const z of zoneNames) {
+    const key = getTimeZoneOffsetGroupKey(z);
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key).push(z);
+  }
+
+  const result = [];
+  for (const members of groups.values()) {
+    members.sort((a, b) => a.localeCompare(b));
+    const rep =
+      preferredZoneId && members.includes(preferredZoneId) ? preferredZoneId : members[0];
+    result.push(rep);
+  }
+
+  result.sort((a, b) => a.localeCompare(b));
+
+  if (preferredZoneId && zoneNames.includes(preferredZoneId) && !result.includes(preferredZoneId)) {
+    result.push(preferredZoneId);
+    result.sort((a, b) => a.localeCompare(b));
+  }
+
+  return result;
+};
+
 /**
  * Check if the given date is in Daylight Saving Time (DST) for the given time zone.
  *

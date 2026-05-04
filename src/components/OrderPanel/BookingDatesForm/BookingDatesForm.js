@@ -5,7 +5,11 @@ import classNames from 'classnames';
 import appSettings from '../../../config/settings';
 import { useConfiguration } from '../../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
-import { required, bookingDatesRequired, composeValidators } from '../../../util/validators';
+import {
+  required,
+  bookingDatesRequired,
+  composeValidators,
+} from '../../../util/validators';
 import {
   getStartOf,
   addTime,
@@ -30,6 +34,30 @@ import {
   H6,
   ValidationError,
 } from '../../../components';
+
+const DURATION_HOURS_MAX = 168;
+
+const durationHoursValidators = intl =>
+  composeValidators(
+    required(intl.formatMessage({ id: 'BookingDatesForm.durationRequired' })),
+    value => {
+      const trimmed = typeof value === 'string' ? value.trim() : `${value}`;
+      const n = parseInt(trimmed, 10);
+      if (Number.isNaN(n) || String(n) !== trimmed) {
+        return intl.formatMessage({ id: 'BookingDatesForm.durationInvalid' });
+      }
+      if (n < 1) {
+        return intl.formatMessage({ id: 'BookingDatesForm.durationInvalid' });
+      }
+      if (n > DURATION_HOURS_MAX) {
+        return intl.formatMessage(
+          { id: 'BookingDatesForm.durationTooHigh' },
+          { max: DURATION_HOURS_MAX }
+        );
+      }
+      return undefined;
+    }
+  );
 
 import SingleDatePicker from '../../DatePicker/DatePickers/SingleDatePicker';
 import fieldSingleDatePickerCss from '../../DatePicker/FieldSingleDatePicker/FieldSingleDatePicker.module.css';
@@ -356,16 +384,31 @@ const calculateLineItems = (
   onFetchTransactionLineItems,
   seatsEnabled
 ) => formValues => {
-  const { startDate, endDate, priceVariantName, seats } = formValues?.values || {};
+  const { startDate, endDate, priceVariantName, seats, durationHours: durationHoursRaw } =
+    formValues?.values || {};
 
   const priceVariantMaybe = priceVariantName ? { priceVariantName } : {};
   const seatCount = seats ? parseInt(seats, 10) : 1;
+  const durationTrimmed =
+    durationHoursRaw == null || durationHoursRaw === ''
+      ? ''
+      : typeof durationHoursRaw === 'string'
+      ? durationHoursRaw.trim()
+      : `${durationHoursRaw}`;
+  const durationParsed = durationTrimmed === '' ? NaN : parseInt(durationTrimmed, 10);
+  const durationHoursMaybe =
+    Number.isInteger(durationParsed) &&
+    durationParsed > 0 &&
+    String(durationParsed) === durationTrimmed
+      ? { durationHours: durationParsed }
+      : {};
 
   const orderData = {
     bookingStart: startDate,
     bookingEnd: endDate,
     ...priceVariantMaybe,
     ...(seatsEnabled && { seats: seatCount }),
+    ...durationHoursMaybe,
   };
 
   if (startDate && endDate && !fetchLineItemsInProgress) {
@@ -525,6 +568,7 @@ const onPriceVariantChange = props => value => {
  * @param {Array<Object>} [props.priceVariants] - The price variants
  * @param {ReactNode} [props.priceVariantFieldComponent] - The component to use for the price variant field
  * @param {boolean} props.isPublishedListing - Whether the listing is published
+ * @param {boolean} [props.hideEstimatedBreakdown] - Hide estimated price breakdown in the sidebar
  * @returns {JSX.Element}
  */
 export const BookingDatesForm = props => {
@@ -541,6 +585,7 @@ export const BookingDatesForm = props => {
     marketplaceName,
     payoutDetailsWarning,
     monthlyTimeSlots,
+    onFetchTimeSlots,
     onMonthChanged,
     seatsEnabled,
     isPriceVariationsInUse,
@@ -548,6 +593,8 @@ export const BookingDatesForm = props => {
     priceVariantFieldComponent: PriceVariantFieldComponent,
     preselectedPriceVariant,
     isPublishedListing,
+    hideEstimatedBreakdown = false,
+    processName = BOOKING_PROCESS_NAME,
     ...rest
   } = props;
   const intl = useIntl();
@@ -573,6 +620,29 @@ export const BookingDatesForm = props => {
       onMonthChanged(monthId);
     }
   }, [currentMonth, onMonthChanged]);
+
+  // ListingPage only prefetches a server-defined month window; the calendar may start on a
+  // different month with no slots until the user navigates. Prefetch the visible month when
+  // the listing, range, or focused calendar month changes.
+  useEffect(() => {
+    if (!listingId || !timeZone || !onFetchTimeSlots) {
+      return undefined;
+    }
+    fetchMonthData(
+      currentMonth,
+      listingId,
+      dayCountAvailableForBooking,
+      timeZone,
+      onFetchTimeSlots
+    );
+    return undefined;
+  }, [
+    listingId,
+    timeZone,
+    dayCountAvailableForBooking,
+    onFetchTimeSlots,
+    currentMonth,
+  ]);
 
   useEffect(() => {
     // Log time slots marked for each day for debugging
@@ -619,6 +689,7 @@ export const BookingDatesForm = props => {
       {...initialValuesMaybe}
       {...rest}
       unitPrice={unitPrice}
+      onFetchTimeSlots={onFetchTimeSlots}
       render={formRenderProps => {
         const {
           endDatePlaceholder,
@@ -722,9 +793,10 @@ export const BookingDatesForm = props => {
           bookingDatesRequired(startDateErrorMessage, endDateErrorMessage)
         );
 
-        const handleBookingDatesChange = values => {
-          const { startDate: startDateFromValues, endDate: endDateFromValues } = values || {};
-          const { startDate: sd, endDate: ed } = values
+        const handleBookingDatesChange = bookingRangeValues => {
+          const { startDate: startDateFromValues, endDate: endDateFromValues } =
+            bookingRangeValues || {};
+          const { startDate: sd, endDate: ed } = bookingRangeValues
             ? getStartAndEndOnTimeZone(
                 startDateFromValues,
                 endDateFromValues,
@@ -741,6 +813,7 @@ export const BookingDatesForm = props => {
               startDate: sd,
               endDate: ed,
               seats: seatsEnabled ? 1 : undefined,
+              durationHours: values?.durationHours,
             },
           });
         };
@@ -780,6 +853,7 @@ export const BookingDatesForm = props => {
                         startDate: next.startDate,
                         endDate: next.endDate,
                         seats: seatsEnabled ? 1 : undefined,
+                        durationHours: formApi.getState().values?.durationHours,
                       },
                     });
                   };
@@ -883,6 +957,52 @@ export const BookingDatesForm = props => {
               />
             )}
 
+            <Field name="durationHours" validate={durationHoursValidators(intl)}>
+              {({ input, meta }) => (
+                <div
+                  className={classNames(css.durationField, fieldSingleDatePickerCss.mobileMargins)}
+                >
+                  <label htmlFor={`${formId}.durationHours`} className={css.durationLabel}>
+                    <FormattedMessage id="BookingDatesForm.durationLabel" />
+                  </label>
+                  <div
+                    className={classNames(css.durationInputShell, {
+                      [css.durationInputShellError]: meta.touched && meta.invalid,
+                    })}
+                  >
+                    <input
+                      {...input}
+                      id={`${formId}.durationHours`}
+                      type="number"
+                      min={1}
+                      max={DURATION_HOURS_MAX}
+                      step={1}
+                      className={css.durationInput}
+                      autoComplete="off"
+                      onChange={e => {
+                        input.onChange(e);
+                        if (startDate && endDate) {
+                          onHandleFetchLineItems({
+                            values: {
+                              priceVariantName,
+                              startDate,
+                              endDate,
+                              seats: seatsEnabled ? values?.seats : undefined,
+                              durationHours: e.target.value,
+                            },
+                          });
+                        }
+                      }}
+                    />
+                    <span className={css.durationSuffix} aria-hidden="true">
+                      <FormattedMessage id="BookingDatesForm.durationHoursSuffix" />
+                    </span>
+                  </div>
+                  <ValidationError fieldMeta={meta} />
+                </div>
+              )}
+            </Field>
+
             {seatsEnabled ? (
               <FieldSelect
                 name="seats"
@@ -891,13 +1011,14 @@ export const BookingDatesForm = props => {
                 disabled={!(startDate && endDate)}
                 showLabelAsDisabled={!(startDate && endDate)}
                 className={css.fieldSeats}
-                onChange={values => {
+                onChange={seatsValue => {
                   onHandleFetchLineItems({
                     values: {
                       priceVariantName,
                       startDate: startDate,
                       endDate: endDate,
-                      seats: values,
+                      seats: seatsValue,
+                      durationHours: values?.durationHours,
                     },
                   });
                 }}
@@ -913,7 +1034,7 @@ export const BookingDatesForm = props => {
               </FieldSelect>
             ) : null}
 
-            {showEstimatedBreakdown ? (
+            {showEstimatedBreakdown && !hideEstimatedBreakdown ? (
               <div className={css.priceBreakdownContainer}>
                 <H6 as="h3" className={css.bookingBreakdownTitle}>
                   <FormattedMessage id="BookingDatesForm.priceBreakdownTitle" />
@@ -925,7 +1046,7 @@ export const BookingDatesForm = props => {
                   timeZone={timeZone}
                   currency={unitPrice.currency}
                   marketplaceName={marketplaceName}
-                  processName={BOOKING_PROCESS_NAME}
+                  processName={processName}
                 />
               </div>
             ) : null}

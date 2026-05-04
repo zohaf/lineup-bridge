@@ -79,12 +79,19 @@
   grid-gap: 32px;
 }
 
-/* Below Terms / Privacy blocks; spans full width of the middle column inner grid */
-.footerContactLink {
+/* Contact below legal blocks on small screens only; desktop uses .footerMetaRow */
+.footerContactLinkMobileWrap {
   grid-column: 1 / -1;
   margin-top: 12px;
+
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
+.footerContactLink {
   font-size: 14px;
-  line-height: 18px;
+  line-height: 20px;
   font-weight: var(--fontWeightMedium);
   color: var(--colorGrey700);
   text-decoration: none;
@@ -92,6 +99,52 @@
   &:hover {
     color: var(--marketplaceColor);
     text-decoration: none;
+  }
+}
+
+/* One row: slogan | Contact us | copyright (large screens only) */
+.footerMetaRow {
+  display: none;
+
+  @media (--viewportLarge) {
+    grid-area: meta;
+    display: grid;
+    grid-template-columns: var(--footerMetaCols, 1fr);
+    align-items: start;
+    column-gap: 32px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0;
+    padding-top: 12px;
+    border-top: none;
+  }
+
+  /* Match the footer columns: (1) slogan aligns with logo column,
+     (2) contact aligns with Terms/Privacy column,
+     (3) copyright aligns with socials/copyright column */
+  & .slogan {
+    grid-column: 1;
+    min-width: 0;
+    text-align: left;
+    justify-self: start;
+  }
+
+  & .footerContactLink {
+    grid-column: 2;
+    justify-self: start;
+    white-space: nowrap;
+  }
+
+  & .copyright {
+    grid-column: 3;
+    justify-self: end;
+    text-align: right;
+  }
+}
+
+.copyrightMobileWrap {
+  @media (--viewportLarge) {
+    display: none;
   }
 }
 
@@ -111,9 +164,8 @@
 
   @media (--viewportLarge) {
     align-items: flex-end;
-    align-self: stretch;
+    align-self: start;
     justify-content: flex-start;
-    min-height: 100%;
     text-align: right;
   }
 }
@@ -127,13 +179,7 @@
     display: none;
   }
 }
-.sloganDesktop {
-  display: none;
-
-  @media (--viewportLarge) {
-    display: block;
-  }
-}
+/* Slogan on large screens lives in .footerMetaRow only */
 
 .copyright {
   display: inline-block;
@@ -149,7 +195,7 @@
 
 .icon {
   font-size: 28px;
-  margin: 15px 15px 0px 0px;
+  margin: 0 15px 0 0;
   padding: 10px 15px;
 }
 
@@ -210,6 +256,11 @@
 }
 
 @media (--viewportLarge) {
+  .content {
+    /* Ensure second row sits at the top of its grid tracks */
+    align-content: start;
+  }
+
   .detailsInfo {
     grid-area: links;
   }
@@ -231,20 +282,32 @@
 
   /* Three equal-height columns: (1) logo + slogan (2) legal links + contact (3) socials + copyright */
   .contentCol1 {
+    --footerMetaCols: minmax(0, 1.6fr) minmax(0, 2fr) minmax(0, 1.4fr);
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 2fr) minmax(0, 1.4fr);
-    grid-template-areas: 'branding grid links';
+    grid-template-areas:
+      'branding grid links'
+      'meta meta meta';
   }
   .contentCol2 {
+    --footerMetaCols: minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
-    grid-template-areas: 'branding grid links';
+    grid-template-areas:
+      'branding grid links'
+      'meta meta meta';
   }
   .contentCol3 {
+    --footerMetaCols: minmax(0, 1.5fr) minmax(0, 1.5fr) minmax(0, 1.3fr);
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.5fr) minmax(0, 1.3fr);
-    grid-template-areas: 'branding grid links';
+    grid-template-areas:
+      'branding grid links'
+      'meta meta meta';
   }
   .contentCol4 {
+    --footerMetaCols: minmax(0, 1.4fr) minmax(0, 2.2fr) minmax(0, 1.4fr);
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 2.2fr) minmax(0, 1.4fr);
-    grid-template-areas: 'branding grid links';
+    grid-template-areas:
+      'branding grid links'
+      'meta meta meta';
   }
 
   .gridCol1 {

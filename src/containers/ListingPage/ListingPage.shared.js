@@ -244,6 +244,7 @@ export const handleSubmit = parameters => values => {
     quantity: quantityRaw,
     seats: seatsRaw,
     deliveryMethod,
+    durationHours: durationHoursRaw,
     ...otherOrderData
   } = values;
 
@@ -269,6 +270,11 @@ export const handleSubmit = parameters => values => {
   const seats = Number.parseInt(seatsRaw, 10);
   const seatsMaybe = Number.isInteger(seats) ? { seats } : {};
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
+  const durationHoursParsed = Number.parseInt(durationHoursRaw, 10);
+  const durationHoursMaybe =
+    Number.isInteger(durationHoursParsed) && durationHoursParsed > 0
+      ? { durationHours: durationHoursParsed }
+      : {};
 
   const initialValues = {
     listing,
@@ -278,6 +284,7 @@ export const handleSubmit = parameters => values => {
       ...quantityMaybe,
       ...seatsMaybe,
       ...deliveryMethodMaybe,
+      ...durationHoursMaybe,
       ...otherOrderData,
     },
     confirmPaymentError: null,

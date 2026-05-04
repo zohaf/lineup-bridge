@@ -1,0 +1,66 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @media (--viewportMedium) {
+    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (--viewportLarge) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.tileButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--borderRadiusMedium);
+  overflow: hidden;
+  cursor: pointer;
+  background-color: var(--colorGrey50);
+  text-align: left;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.tileAspect {
+  width: 100%;
+}
+
+/* Definite box so `object-fit` / `object-position` apply reliably on the <img> */
+.tileImageClip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tileImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* X: center (middle of image). Y: top (show upper band when height is cropped). */
+  object-position: 50% 0;
+}
+
+.noImage {
+  border: 1px solid var(--colorGrey100);
+  border-radius: var(--borderRadiusMedium);
+}

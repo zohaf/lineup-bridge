@@ -21,11 +21,13 @@ import SectionFooter from './SectionFooter';
 // Use these to have consistent styles between different section components
 // E.g. share the same title styles
 const DEFAULT_CLASSES = {
-  sectionDetails: css.sectionDetails,
-  title: css.title,
-  description: css.description,
+  // Add stable global hooks for CSS targeting (CSS modules hash classnames).
+  sectionDetails: classNames(css.sectionDetails, 'pbSectionDetails'),
+  title: classNames(css.title, 'pbSectionTitle'),
+  description: classNames(css.description, 'pbSectionDescription'),
   ctaButton: css.ctaButton,
-  blockContainer: css.blockContainer,
+  // Add a stable global hook for CSS targeting (CSS modules hash classnames).
+  blockContainer: classNames(css.blockContainer, 'pbBlockContainer'),
   defaultLink: css.defaultLink,
 };
 

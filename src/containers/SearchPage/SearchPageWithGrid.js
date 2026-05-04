@@ -22,6 +22,7 @@ import {
 } from '../../util/urlHelpers';
 import { createResourceLocatorString } from '../../util/routes';
 import { propTypes } from '../../util/types';
+import { parseDateFromISO8601 } from '../../util/dates';
 import {
   isErrorNoViewingPermission,
   isErrorUserPendingApproval,
@@ -38,6 +39,7 @@ import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck
 import { H3, H5, NamedRedirect, Page } from '../../components';
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer';
+import { SearchCTA } from '../PageBuilder/Primitives/SearchCTA/SearchCTA';
 
 import {
   groupListingFieldConfigs,
@@ -54,7 +56,6 @@ import {
 } from './SearchPage.shared';
 
 import FilterComponent from './FilterComponent';
-import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
 import SearchFiltersMobile from './SearchFiltersMobile/SearchFiltersMobile';
 import SortBy from './SortBy/SortBy';
 import SearchResultsPanel from './SearchResultsPanel/SearchResultsPanel';
@@ -86,6 +87,16 @@ export class SearchPageComponent extends Component {
 
     // SortBy
     this.handleSortBy = this.handleSortBy.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    // Keep UI state (currentQueryParams) in sync with the URL.
+    // Browser back/forward changes location.search without reloading the page.
+    // On full reload, currentQueryParams is derived from URL in the constructor.
+    // Do the same on any URL search change so filters don't show stale selections.
+    if (prevProps.location.search !== this.props.location.search) {
+      this.setState({ currentQueryParams: validUrlQueryParamsFromProps(this.props) });
+    }
   }
 
   // Invoked when a modal is opened from a child component,
@@ -249,9 +260,14 @@ export class SearchPageComponent extends Component {
     const { defaultFilters: defaultFiltersRaw, sortConfig, mainSearch } = config?.search || {};
 
     const activeListingTypes = config?.listing?.listingTypes.map(config => config.listingType);
-    const defaultFiltersConfig = listingTypePathParam
+    const defaultFiltersConfigRaw = listingTypePathParam
       ? defaultFiltersRaw.filter(f => f.key !== 'listingType')
       : defaultFiltersRaw;
+    // Search UI is handled by SearchCTA (keywords/location + date range),
+    // so omit those built-in filters to avoid duplicated dropdowns.
+    const defaultFiltersConfig = defaultFiltersConfigRaw.filter(
+      f => !['listingType', 'price', 'dates'].includes(f.key)
+    );
 
     const marketplaceCurrency = config.currency;
     const categoryConfiguration = config.categoryConfiguration;
@@ -287,13 +303,13 @@ export class SearchPageComponent extends Component {
 
     const isKeywordSearch = isMainSearchTypeKeywords(config);
     const builtInPrimaryFilters = defaultFiltersConfig.filter(f =>
-      ['categoryLevel', 'listingType'].includes(f.key)
+      ['categoryLevel'].includes(f.key)
     );
     const builtInFilters = isKeywordSearch
       ? defaultFiltersConfig.filter(
-          f => !['keywords', 'categoryLevel', 'listingType'].includes(f.key)
+          f => !['keywords', 'categoryLevel', 'listingType', 'price'].includes(f.key)
         )
-      : defaultFiltersConfig.filter(f => !['categoryLevel', 'listingType'].includes(f.key));
+      : defaultFiltersConfig.filter(f => !['categoryLevel', 'listingType', 'price'].includes(f.key));
     const [customPrimaryFilters, customSecondaryFilters] = groupListingFieldConfigs(
       listingFieldsConfig,
       activeListingTypes
@@ -307,9 +323,6 @@ export class SearchPageComponent extends Component {
 
     // Selected aka active filters
     const selectedFilters = validQueryParams;
-    const isValidDatesFilter =
-      searchParamsInURL.dates == null ||
-      (searchParamsInURL.dates != null && searchParamsInURL.dates === selectedFilters.dates);
     const keysOfSelectedFilters = Object.keys(selectedFilters);
     const selectedFiltersCountForMobile = isKeywordSearch
       ? keysOfSelectedFilters.filter(f => f !== 'keywords').length
@@ -333,7 +346,7 @@ export class SearchPageComponent extends Component {
       filterConfigs
     );
 
-    const showCreateListingsLink = showCreateListingLinkForUser(config, currentUser);
+    const showCreateListingsLink = false;
     const sortBy = mode => {
       return sortConfig.active ? (
         <SortBy
@@ -373,6 +386,36 @@ export class SearchPageComponent extends Component {
       pageHeading
     );
 
+    const resultsSearchFields = {
+      categories: false,
+      dateRange: true,
+      keywordSearch: isKeywordSearch,
+      locationSearch: !isKeywordSearch,
+    };
+    const dates = typeof searchParamsInURL?.dates === 'string' ? searchParamsInURL.dates : null;
+    const [startDateStr, endDateStr] = dates ? dates.split(',') : [];
+    const startDate = startDateStr ? parseDateFromISO8601(startDateStr) : null;
+    const endDate = endDateStr ? parseDateFromISO8601(endDateStr) : null;
+    const dateRange =
+      startDate instanceof Date && !isNaN(startDate) ? { startDate, endDate } : null;
+    const locationInitialValue = searchParamsInURL?.address
+      ? {
+          search: searchParamsInURL.address,
+          selectedPlace: {
+            address: searchParamsInURL.address,
+            origin: searchParamsInURL.origin,
+            bounds: searchParamsInURL.bounds,
+          },
+        }
+      : null;
+    const resultsSearchInitialValues = isKeywordSearch
+      ? { keywords: searchParamsInURL?.keywords || '', dateRange }
+      : { location: locationInitialValue, dateRange };
+
+    // Note: listingFieldsConfig is filtered based on current category + listingType selection.
+    // For Search, we want to show Genre even when listingType isn't selected yet.
+    const genreFilterConfig = (listingFields || []).find(f => f?.key === 'genre') || null;
+
     // Set topbar class based on if a modal is open in
     // a child component
     const topbarClasses = this.state.isMobileModalOpen
@@ -390,40 +433,38 @@ export class SearchPageComponent extends Component {
       >
         <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
         <div className={css.layoutWrapperContainer}>
-          <aside className={css.layoutWrapperFilterColumn} data-testid="filterColumnAside">
-            <div className={css.filterColumnContent}>
-              {availableFilters.map(filterConfig => {
-                const key = `SearchFiltersDesktop.${filterConfig.scope || 'built-in'}.${
-                  filterConfig.key
-                }`;
-                const filterId = `SearchFiltersDesktop.${filterConfig.key.toLowerCase()}`;
-                return (
-                  <FilterComponent
-                    key={key}
-                    id={filterId}
-                    className={css.filter}
-                    config={filterConfig}
-                    containerId="SearchPageWithGrid_DesktopFilters"
-                    listingCategories={listingCategories}
-                    marketplaceCurrency={marketplaceCurrency}
-                    urlQueryParams={validQueryParams}
-                    initialValues={initialValues(this.props, this.state.currentQueryParams)}
-                    getHandleChangedValueFn={this.getHandleChangedValueFn}
-                    intl={intl}
-                    liveEdit
-                    showAsPopup={false}
-                    isDesktop
-                  />
-                );
-              })}
-              <button className={css.resetAllButton} onClick={e => this.handleResetAll(e)}>
-                <FormattedMessage id={'SearchFiltersMobile.resetAll'} />
-              </button>
-            </div>
-          </aside>
-
           <div id="main-content" className={css.layoutWrapperMain} role="main">
             <div className={css.searchResultContainer}>
+              <div className={css.resultsFiltersSection}>
+                <div className={css.resultsSearchBar}>
+                  <SearchCTA
+                    containerClassName={css.searchBarInResults}
+                    searchFields={resultsSearchFields}
+                    initialValues={resultsSearchInitialValues}
+                    routeName={listingTypePathParam ? 'SearchPageWithListingType' : 'SearchPage'}
+                    pathParams={listingTypePathParam ? { listingType: listingTypePathParam } : {}}
+                  />
+                </div>
+                <div className={css.resultsFilterRow}>
+                  <div className={css.genreFilter}>
+                    {genreFilterConfig ? (
+                      <FilterComponent
+                        id="SearchPage.genre"
+                        config={genreFilterConfig}
+                        containerId="SearchPage_GenreFilter"
+                        listingCategories={listingCategories}
+                        marketplaceCurrency={marketplaceCurrency}
+                        urlQueryParams={validQueryParams}
+                        initialValues={initialValues(this.props, this.state.currentQueryParams)}
+                        getHandleChangedValueFn={this.getHandleChangedValueFn}
+                        intl={intl}
+                        showAsPopup
+                      />
+                    ) : null}
+                  </div>
+                  <div className={css.sortByRight}>{sortBy('desktop')}</div>
+                </div>
+              </div>
               <SearchFiltersMobile
                 className={css.searchFiltersMobileList}
                 urlQueryParams={validQueryParams}
@@ -466,16 +507,7 @@ export class SearchPageComponent extends Component {
                   );
                 })}
               </SearchFiltersMobile>
-              <MainPanelHeader
-                className={css.mainPanel}
-                sortByComponent={sortBy('desktop')}
-                isSortByActive={sortConfig.active}
-                listingsAreLoaded={listingsAreLoaded}
-                resultsCount={totalItems}
-                searchInProgress={searchInProgress}
-                searchListingsError={searchListingsError}
-                noResultsInfo={noResultsInfo}
-              />
+              {noResultsInfo}
               <div
                 className={classNames(css.listingsForGridVariant, {
                   [css.newSearchInProgress]: !(listingsAreLoaded || searchListingsError),
@@ -485,11 +517,6 @@ export class SearchPageComponent extends Component {
                   <H3 className={css.error}>
                     <FormattedMessage id="SearchPage.searchError" />
                   </H3>
-                ) : null}
-                {!isValidDatesFilter ? (
-                  <H5>
-                    <FormattedMessage id="SearchPage.invalidDatesFilter" />
-                  </H5>
                 ) : null}
                 <SearchResultsPanel
                   className={css.searchListingsPanel}

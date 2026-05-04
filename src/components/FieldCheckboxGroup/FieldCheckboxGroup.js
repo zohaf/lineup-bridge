@@ -22,6 +22,8 @@ const FieldCheckboxRenderer = props => {
     helpText,
     optionLabelClassName,
     twoColumns,
+    threeColumns,
+    checkboxVariant,
     id,
     fields,
     options,
@@ -29,7 +31,11 @@ const FieldCheckboxRenderer = props => {
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
-  const listClasses = twoColumns ? classNames(css.list, css.twoColumns) : css.list;
+  const listClasses = threeColumns
+    ? classNames(css.list, css.threeColumns)
+    : twoColumns
+    ? classNames(css.list, css.twoColumns)
+    : css.list;
   const Tag = label ? 'fieldset' : 'div';
 
   return (
@@ -47,6 +53,7 @@ const FieldCheckboxRenderer = props => {
                 name={fields.name}
                 label={option.label}
                 value={option.key}
+                variant={checkboxVariant || 'default'}
                 {...textClassNameMaybe}
               />
             </li>
@@ -86,6 +93,8 @@ const FieldCheckboxRenderer = props => {
  * @param {ReactNode} props.label the label for the checkbox group
  * @param {Array<CheckboxGroupOption>} props.options E.g. [{ key, label }]
  * @param {boolean} props.twoColumns
+ * @param {boolean} [props.threeColumns] - Grid layout with up to 3 columns (medium+)
+ * @param {'default'|'minimal'} [props.checkboxVariant] - minimal: black outline/tick (e.g. genres)
  * @returns {JSX.Element} Final Form Field containing multiple checkbox inputs
  */
 const FieldCheckboxGroup = props => <FieldArray component={FieldCheckboxRenderer} {...props} />;

@@ -13,10 +13,12 @@
   transform: translateX(-50%);
   width: calc(100% + 16px);
   margin-top: 4px;
-  background-color: var(--colorWhite);
-  padding-bottom: 16px;
-  border-radius: var(--borderRadiusMedium);
-  box-shadow: var(--boxShadowPopup);
+  /* Do not paint a second “card” behind DatePicker; it already uses marketplace purple / borders */
+  background-color: transparent;
+  padding-bottom: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   z-index: 1;
 
   @media (--viewportLarge) {
@@ -74,4 +76,14 @@
 
 .iconDate {
   color: var(--colorGrey600);
+}
+
+/* Drop global grey50 outline — reads as a white frame on dark purple */
+.pickerRoot {
+  --datepickerBorderColor: transparent;
+  /* Range highlight: white wash instead of success green (still readable on purple via dark digits) */
+  --datepickerSelectedBgColor: var(--colorWhite);
+  --datepickerSelectedFgColor: var(--colorGrey900);
+  --datepickerSelectedHoveredBgColor: var(--colorGrey100);
+  --datepickerSelectedHoveredFgColor: var(--colorGrey900);
 }

@@ -199,9 +199,11 @@ class LocationAutocompleteInputImplementation extends Component {
     // focuses on the autocomplete input without typing a search. This can
     // be used to reduce typing and Geocoding API calls for common
     // searches.
-    const defaultPredictions = (config.maps.search.suggestCurrentLocation
-      ? [{ id: geocoderVariant.CURRENT_LOCATION_ID, predictionPlace: {} }]
-      : []
+    const restrictCities = !!config.maps.search.restrictAutocompleteToCities;
+    const defaultPredictions = (
+      config.maps.search.suggestCurrentLocation && !restrictCities
+        ? [{ id: geocoderVariant.CURRENT_LOCATION_ID, predictionPlace: {} }]
+        : []
     ).concat(config.maps.search.defaults);
 
     return showDefaultPredictions ? defaultPredictions : fetchedPredictions;
@@ -364,8 +366,15 @@ class LocationAutocompleteInputImplementation extends Component {
     const onChange = this.props.input.onChange;
     this.setState({ fetchingPredictions: true });
 
+    const searchOpts = config.maps.search;
     return this.getGeocoder()
-      .getPlacePredictions(search, config.maps.search.countryLimit, config.localization.locale)
+      .getPlacePredictions(search, {
+        countryLimit: searchOpts.countryLimit,
+        locale: config.localization.locale,
+        restrictAutocompleteToCities: !!searchOpts.restrictAutocompleteToCities,
+        mapboxPlaceTypes: searchOpts.mapboxPlaceTypes,
+        googleIncludedPrimaryTypes: searchOpts.googleIncludedPrimaryTypes,
+      })
       .then(results => {
         const { search: currentSearch } = currentValue(this.props);
         this.setState({ fetchingPredictions: false });
@@ -635,8 +644,23 @@ class LocationAutocompleteInputImplementation extends Component {
 const LocationAutocompleteInputImpl = props => {
   const config = useConfiguration();
   const intl = useIntl();
+  const { restrictAutocompleteToCities, ...rest } = props;
 
-  return <LocationAutocompleteInputImplementation config={config} intl={intl} {...props} />;
+  const mergedConfig =
+    restrictAutocompleteToCities === true
+      ? {
+          ...config,
+          maps: {
+            ...config.maps,
+            search: {
+              ...config.maps.search,
+              restrictAutocompleteToCities: true,
+            },
+          },
+        }
+      : config;
+
+  return <LocationAutocompleteInputImplementation config={mergedConfig} intl={intl} {...rest} />;
 };
 
 export default LocationAutocompleteInputImpl;

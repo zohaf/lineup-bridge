@@ -5,11 +5,11 @@
 
   /* Reserves 48px of vertical space */
   line-height: 24px;
-  margin-top: 18px;
+  margin-top: 34px;
   margin-bottom: 18px;
 
   @media (--viewportMedium) {
-    margin-top: 8px;
+    margin-top: 24px;
     margin-bottom: 8px;
   }
 }
@@ -39,4 +39,9 @@
   @media (--viewportMedium) {
     padding: 3px 0 5px 0;
   }
+}
+
+.resetAllFiltersButton {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

@@ -1355,15 +1355,13 @@ const union = (arr1, arr2, key) => {
   return [...map.values()];
 };
 
-// For debugging, it becomes sometimes important to be able to merge and overwrite with local values
-// Note: We don't want to expose this to production by default.
-//       If you customization relies on multiple listing types or custom listing fields, you need to change this.
-const mergeDefaultTypesAndFieldsForDebugging = isDebugging => {
-  const isDev = process.env.NODE_ENV === 'development';
-  return isDebugging && isDev;
-};
+// When `configListing.js` sets `mergeDefaultTypesAndFields: true`, local `listingTypes` are unioned
+// with hosted types; for the same `listingType` id, local config wins (see `union` order below).
+// Listing fields are always merged (union) with the same override rule.
+const mergeDefaultTypesAndFieldsForDebugging = isDebugging => Boolean(isDebugging);
 
-// Note: by default, listing types and fields are only merged if explicitly set for debugging
+// Listing fields are always merged (union). Listing types merge when `mergeDefaultTypesAndFields`
+// is true in configListing.js (local overrides hosted for the same listing type id).
 const mergeListingConfig = (hostedConfig, defaultConfigs, categoriesInUse) => {
   // Listing configuration is splitted to several assets in Console
   const hostedListingTypes = restructureListingTypes(hostedConfig.listingTypes?.listingTypes);
@@ -1376,7 +1374,6 @@ const mergeListingConfig = (hostedConfig, defaultConfigs, categoriesInUse) => {
   // Merge local `configListing.js` listing fields with hosted assets so extended-data options
   // (e.g. multiline) apply when Console also defines the same field keys. Duplicate keys use
   // the local default second in `union`, so defaults override hosted for the same key.
-  // Listing types stay hosted-only unless debugging merge is enabled (avoids clobbering tests/fixtures).
   const mergeTypesAndFieldsForDebugging = mergeDefaultTypesAndFieldsForDebugging(
     defaultConfigs.listing?.mergeDefaultTypesAndFields
   );
@@ -1698,6 +1695,9 @@ const mergeMapConfig = (hostedMapConfig, defaultMapConfig) => {
 
   return {
     ...restOfDefault,
+    search: hostedMapConfig?.search
+      ? { ...(restOfDefault.search || {}), ...hostedMapConfig.search }
+      : restOfDefault.search,
     mapProvider: mapProviderPicked,
     mapboxAccessToken: mapboxAccessTokenPicked,
     googleMapsAPIKey: googleMapsAPIKeyPicked,
@@ -1815,6 +1815,11 @@ export const mergeConfig = (configAsset = {}, defaultConfigs = {}) => {
     // Include hosted footer config, if it exists
     // Note: if footer asset is not set, Footer is not rendered.
     footer: configAsset.footer,
+
+    checkoutCustomerMessageOnly:
+      typeof configAsset.checkoutCustomerMessageOnly === 'boolean'
+        ? configAsset.checkoutCustomerMessageOnly
+        : defaultConfigs.checkoutCustomerMessageOnly,
 
     // Check if all the mandatory info have been retrieved from hosted assets
     hasMandatoryConfigurations: hasMandatoryConfigs(configAsset),

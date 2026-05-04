@@ -7,6 +7,7 @@ import loadable from '@loadable/component';
 import { sendVerificationEmail, hasCurrentUserErrors } from '../../ducks/user.duck';
 import { logout, authenticationInProgress } from '../../ducks/auth.duck';
 import { manageDisableScrolling } from '../../ducks/ui.duck';
+import { queryOwnListings } from '../ManageListingsPage/ManageListingsPage.duck';
 
 const Topbar = loadable(() => import(/* webpackChunkName: "Topbar" */ './Topbar/Topbar'));
 
@@ -33,7 +34,7 @@ export const TopbarContainerComponent = props => {
 
 const mapStateToProps = state => {
   // Topbar needs isAuthenticated and isLoggedInAs
-  const { isAuthenticated, isLoggedInAs, logoutError, authScopes } = state.auth;
+  const { isAuthenticated, isLoggedInAs, logoutError, authScopes, logoutInProgress } = state.auth;
   // Topbar needs user info.
   const {
     currentUser,
@@ -54,6 +55,7 @@ const mapStateToProps = state => {
     isAuthenticated,
     isLoggedInAs,
     authScopes,
+    logoutInProgress,
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     hasGenericError,
@@ -65,6 +67,7 @@ const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
+  onQueryOwnListings: queryParams => dispatch(queryOwnListings(queryParams)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom';
 import { fetchFeaturedListings } from '../../ducks/featuredListings.duck';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { getFeaturedListingsProps } from '../../util/data';
+import { propTypes } from '../../util/types';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 const PageBuilder = loadable(() =>
@@ -36,6 +37,7 @@ export const CMSPageComponent = props => {
 CMSPageComponent.propTypes = {
   pageAssetsData: object,
   inProgress: bool,
+  error: propTypes.error,
 };
 
 const mapStateToProps = state => {
@@ -44,7 +46,13 @@ const mapStateToProps = state => {
 
   const getListingEntitiesById = listingIds => getListingsById(state, listingIds);
 
-  return { pageAssetsData, featuredListingData, getListingEntitiesById, inProgress, error };
+  return {
+    pageAssetsData,
+    featuredListingData,
+    getListingEntitiesById,
+    inProgress,
+    error,
+  };
 };
 
 const mapDispatchToProps = dispatch => ({

@@ -5,6 +5,7 @@ import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_LONG } from '../.
 import { convertCategoriesToSelectTreeOptions, constructQueryParamName } from '../../util/search';
 
 // component imports
+import { IconArrowHead } from '../../components';
 import SelectSingleFilter from './SelectSingleFilter/SelectSingleFilter';
 import SelectMultipleFilter from './SelectMultipleFilter/SelectMultipleFilter';
 import BookingDateRangeFilter from './BookingDateRangeFilter/BookingDateRangeFilter';
@@ -12,6 +13,7 @@ import KeywordFilter from './KeywordFilter/KeywordFilter';
 import PriceFilter from './PriceFilter/PriceFilter';
 import IntegerRangeFilter from './IntegerRangeFilter/IntegerRangeFilter';
 import SeatsFilter from './SeatsFilter/SeatsFilter';
+import css from './FilterComponent.module.css';
 
 /**
  * FilterComponent is used to map configured filter types
@@ -154,9 +156,18 @@ const FilterComponent = props => {
       const { scope, enumOptions, filterConfig = {} } = config;
       const { label, filterType } = filterConfig;
       const queryParamNames = [constructQueryParamName(key, scope)];
+      const isGenre = key === 'genre';
+      const labelWithIcon = isGenre ? (
+        <span className={css.labelWithIcon}>
+          <span className={css.labelText}>{label}</span>
+          <IconArrowHead direction="down" size="tiny" className={css.labelIcon} />
+        </span>
+      ) : (
+        label
+      );
       return filterType === 'SelectSingleFilter' ? (
         <SelectSingleFilter
-          label={label}
+          label={labelWithIcon}
           getAriaLabel={getAriaLabel}
           name={name}
           queryParamNames={queryParamNames}
@@ -168,7 +179,7 @@ const FilterComponent = props => {
         />
       ) : (
         <SelectMultipleFilter
-          label={label}
+          label={labelWithIcon}
           getAriaLabel={getAriaLabel}
           name={name}
           queryParamNames={queryParamNames}
@@ -176,6 +187,7 @@ const FilterComponent = props => {
           onSubmit={getHandleChangedValueFn(useHistoryPush)}
           options={enumOptions}
           schemaType={schemaType}
+          variant={isGenre ? 'genre' : null}
           {...rest}
         />
       );
@@ -184,9 +196,18 @@ const FilterComponent = props => {
       const { scope, enumOptions, filterConfig = {} } = config;
       const { label, searchMode } = filterConfig;
       const queryParamNames = [constructQueryParamName(key, scope)];
+      const isGenre = key === 'genre';
+      const labelWithIcon = isGenre ? (
+        <span className={css.labelWithIcon}>
+          <span className={css.labelText}>{label}</span>
+          <IconArrowHead direction="down" size="tiny" className={css.labelIcon} />
+        </span>
+      ) : (
+        label
+      );
       return (
         <SelectMultipleFilter
-          label={label}
+          label={labelWithIcon}
           getAriaLabel={getAriaLabel}
           name={name}
           queryParamNames={queryParamNames}
@@ -195,6 +216,7 @@ const FilterComponent = props => {
           options={enumOptions}
           schemaType={schemaType}
           searchMode={searchMode}
+          variant={isGenre ? 'genre' : null}
           {...rest}
         />
       );

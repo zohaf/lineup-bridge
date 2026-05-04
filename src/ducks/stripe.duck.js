@@ -72,6 +72,16 @@ const confirmCardPaymentPayloadCreator = (params, { rejectWithValue }) => {
   const doConfirmCardPayment = () =>
     stripe.confirmCardPayment(...args).then(response => {
       if (response.error) {
+        // eslint-disable-next-line no-console
+        console.error('stripe.confirmCardPayment error', {
+          code: response?.error?.code,
+          decline_code: response?.error?.decline_code,
+          type: response?.error?.type,
+          message: response?.error?.message,
+          payment_intent_status: response?.error?.payment_intent?.status,
+          transactionId: transactionId?.uuid,
+          hasPaymentParams: !!paymentParams,
+        });
         return Promise.reject(response);
       } else {
         return { ...response, transactionId };
@@ -84,6 +94,13 @@ const confirmCardPaymentPayloadCreator = (params, { rejectWithValue }) => {
     .then(response => {
       // Handle response.error or response.paymentIntent
       if (response.error) {
+        // eslint-disable-next-line no-console
+        console.error('stripe.retrievePaymentIntent (pre-confirm) error', {
+          code: response?.error?.code,
+          type: response?.error?.type,
+          message: response?.error?.message,
+          transactionId: transactionId?.uuid,
+        });
         return Promise.reject(response);
       } else if (STRIPE_PI_HAS_PASSED_CONFIRM.includes(response?.paymentIntent?.status)) {
         // Payment Intent has been confirmed already, move forward.
@@ -96,6 +113,12 @@ const confirmCardPaymentPayloadCreator = (params, { rejectWithValue }) => {
     .catch(err => {
       // Unwrap Stripe error.
       const e = err.error || storableError(err);
+      // eslint-disable-next-line no-console
+      console.error('confirmCardPaymentThunk rejected', {
+        transactionId: transactionId?.uuid,
+        stripeError: err?.error,
+        error: e,
+      });
 
       // Log error
       const containsPaymentIntent = err.error && err.error.payment_intent;

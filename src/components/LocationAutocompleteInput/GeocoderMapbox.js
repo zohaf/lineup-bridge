@@ -96,14 +96,28 @@ class GeocoderMapbox {
    * and an array of predictions. The format of the predictions is
    * only relevant for the `getPlaceDetails` function below.
    */
-  getPlacePredictions(search, countryLimit, locale) {
+  getPlacePredictions(search, options = {}) {
+    const {
+      countryLimit,
+      locale,
+      restrictAutocompleteToCities = false,
+      mapboxPlaceTypes,
+    } = options;
     const limitCountriesMaybe = countryLimit ? { countries: countryLimit } : {};
+    // "place" = cities, towns, villages (Mapbox Geocoding API). Excludes streets and POIs.
+    const typesMaybe =
+      restrictAutocompleteToCities && Array.isArray(mapboxPlaceTypes) && mapboxPlaceTypes.length > 0
+        ? { types: mapboxPlaceTypes }
+        : restrictAutocompleteToCities
+        ? { types: ['place'] }
+        : {};
 
     return this.getClient()
       .geocoding.forwardGeocode({
         query: search,
         limit: 5,
         ...limitCountriesMaybe,
+        ...typesMaybe,
         language: [locale],
       })
       .send()

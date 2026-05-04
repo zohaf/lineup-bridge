@@ -17,6 +17,7 @@
   padding-bottom: 24px;
   min-width: 300px;
   border-radius: var(--borderRadiusMedium);
+  box-shadow: none;
 }
 
 /* left animated "border" like hover element */

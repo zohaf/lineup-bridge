@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Import contexts and util modules
 import { FormattedMessage, intlShape } from '../../util/reactIntl';
@@ -240,7 +240,16 @@ export const loadInitialDataForStripePayments = ({
   fetchSpeculatedTransactionIfNeeded(orderParams, pageData, fetchSpeculatedTransaction);
 };
 
-const handleSubmit = (values, process, props, stripe, submitting, setSubmitting) => {
+const handleSubmit = (
+  values,
+  process,
+  props,
+  stripe,
+  submitting,
+  setSubmitting,
+  customerMessageOnly,
+  setRequestSubmitted
+) => {
   if (submitting) {
     return;
   }
@@ -264,7 +273,16 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
     setPageData,
     sessionStorageKey,
     transactionFieldConfigs = [],
+    checkoutCustomerMessageOnly,
   } = props;
+
+  const askShippingDetailsSubmit =
+    pageData?.orderData?.deliveryMethod === 'shipping' &&
+    !hasTransactionPassedPendingPayment(pageData?.transaction, process);
+  const skipStripeCardConfirmation =
+    !!checkoutCustomerMessageOnly && !askShippingDetailsSubmit;
+  const skipStripePaymentAndConfirm =
+    !!checkoutCustomerMessageOnly && !askShippingDetailsSubmit;
   const { card, message, paymentMethod: selectedPaymentMethod, formValues } = values;
   const { saveAfterOnetimePayment: saveAfterOnetimePaymentRaw } = formValues;
 
@@ -304,6 +322,8 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
     isPaymentFlowUseSavedCard: selectedPaymentFlow === USE_SAVED_CARD,
     isPaymentFlowPayAndSaveCard: selectedPaymentFlow === PAY_AND_SAVE_FOR_LATER_USE,
     setPageData,
+    skipStripeCardConfirmation,
+    skipStripePaymentAndConfirm,
   };
 
   const shippingDetails = getShippingDetailsMaybe(formValues);
@@ -334,6 +354,15 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
       const { orderId, paymentMethodSaved } = response;
       setSubmitting(false);
 
+      if (customerMessageOnly) {
+        const orderDetailsPath = pathByRouteName('OrderDetailsPage', routeConfiguration, {
+          id: orderId.uuid,
+        });
+        onSubmitCallback();
+        history.push(`${orderDetailsPath}?bookingRequestSuccess=1`);
+        return;
+      }
+
       const orderDetailsPath = pathByRouteName('OrderDetailsPage', routeConfiguration, {
         id: orderId.uuid,
       });
@@ -346,7 +375,8 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
       history.push(orderDetailsPath);
     })
     .catch(err => {
-      console.error(err);
+      // eslint-disable-next-line no-console
+      console.error('Checkout processCheckoutWithPayment failed', err);
       setSubmitting(false);
     });
 };
@@ -438,6 +468,7 @@ export const CheckoutPageWithPayment = props => {
     transactionFieldConfigs = [],
     showTransactionFields,
     config,
+    checkoutCustomerMessageOnly,
   } = props;
 
   // Since the listing data is already given from the ListingPage
@@ -544,6 +575,9 @@ export const CheckoutPageWithPayment = props => {
     orderData?.deliveryMethod === 'shipping' &&
     !hasTransactionPassedPendingPayment(existingTransaction, process);
 
+  const customerMessageOnly =
+    !!checkoutCustomerMessageOnly && !askShippingDetails;
+
   const listingLocation = listing?.attributes?.publicData?.location;
   const showPickUpLocation = isPurchase && orderData?.deliveryMethod === 'pickup';
   const showLocation = (isBooking || isNegotiation) && listingLocation?.address;
@@ -585,27 +619,33 @@ export const CheckoutPageWithPayment = props => {
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <TopbarSimplified />
       <div className={css.contentContainer}>
-        <MobileListingImage
-          listingTitle={listingTitle}
-          author={listing?.author}
-          firstImage={firstImage}
-          layoutListingImageConfig={config.layout.listingImage}
-          showListingImage={showListingImage}
-        />
-        <main className={css.orderFormContainer}>
-          <div className={css.headingContainer}>
-            <H3 as="h1" className={css.heading}>
-              {title}
-            </H3>
-            <H4 as="h2" className={css.detailsHeadingMobile}>
-              <FormattedMessage id="CheckoutPage.listingTitle" values={{ listingTitle }} />
-            </H4>
-          </div>
-          <MobileOrderBreakdown
-            speculateTransactionErrorMessage={errorMessages.speculateTransactionErrorMessage}
-            breakdown={breakdown}
-            priceVariantName={priceVariantName}
+        {customerMessageOnly ? null : (
+          <MobileListingImage
+            listingTitle={listingTitle}
+            author={listing?.author}
+            firstImage={firstImage}
+            layoutListingImageConfig={config.layout.listingImage}
+            showListingImage={showListingImage}
           />
+        )}
+        <main className={css.orderFormContainer}>
+          {customerMessageOnly ? null : (
+            <div className={css.headingContainer}>
+              <H3 as="h1" className={css.heading}>
+                {title}
+              </H3>
+              <H4 as="h2" className={css.detailsHeadingMobile}>
+                <FormattedMessage id="CheckoutPage.listingTitle" values={{ listingTitle }} />
+              </H4>
+            </div>
+          )}
+          {customerMessageOnly ? null : (
+            <MobileOrderBreakdown
+              speculateTransactionErrorMessage={errorMessages.speculateTransactionErrorMessage}
+              breakdown={breakdown}
+              priceVariantName={priceVariantName}
+            />
+          )}
           <section className={css.paymentContainer}>
             {errorMessages.initiateOrderErrorMessage}
             {errorMessages.listingNotFoundErrorMessage}
@@ -617,7 +657,16 @@ export const CheckoutPageWithPayment = props => {
               <StripePaymentForm
                 className={css.paymentForm}
                 onSubmit={values =>
-                  handleSubmit(values, process, props, stripe, submitting, setSubmitting)
+                  handleSubmit(
+                    values,
+                    process,
+                    props,
+                    stripe,
+                    submitting,
+                    setSubmitting,
+                    customerMessageOnly,
+                    () => null
+                  )
                 }
                 inProgress={submitting}
                 formId="CheckoutPagePaymentForm"
@@ -628,7 +677,7 @@ export const CheckoutPageWithPayment = props => {
                 confirmCardPaymentError={confirmCardPaymentError}
                 confirmPaymentError={confirmPaymentError}
                 hasHandledCardPayment={hasPaymentIntentUserActionsDone}
-                loadingData={!stripeCustomerFetched}
+                loadingData={customerMessageOnly ? false : !stripeCustomerFetched}
                 defaultPaymentMethod={
                   hasDefaultPaymentMethod(stripeCustomerFetched, currentUser)
                     ? currentUser.stripeCustomer.defaultPaymentMethod
@@ -651,6 +700,7 @@ export const CheckoutPageWithPayment = props => {
                 isFuzzyLocation={config.maps.fuzzy.enabled}
                 transactionFieldConfigs={transactionFieldConfigs}
                 showTransactionFields={showTransactionFields}
+                customerMessageOnly={customerMessageOnly}
               />
             ) : null}
           </section>

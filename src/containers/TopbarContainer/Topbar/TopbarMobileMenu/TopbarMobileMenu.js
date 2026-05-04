@@ -83,6 +83,7 @@ const TopbarMobileMenu = props => {
     onLogout,
     showCreateListingsLink,
     config,
+    onMyPublicProfileClick,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -167,9 +168,9 @@ const TopbarMobileMenu = props => {
     </li>
   ) : isDj ? (
     <li className={classNames(css.navigationLink, currentPageClass('ManageListingsPage'))}>
-      <NamedLink name="ManageListingsPage">
+      <InlineTextButton rootClassName={css.navigationLinkButton} onClick={onMyPublicProfileClick}>
         <FormattedMessage id="TopbarMobileMenu.myPublicProfileLink" />
-      </NamedLink>
+      </InlineTextButton>
     </li>
   ) : null;
 

@@ -207,6 +207,7 @@ const EnhancedCheckoutPage = props => {
       showListingImage={showListingImage}
       transactionFieldConfigs={transactionFieldConfigs}
       showTransactionFields={showTransactionFields}
+      checkoutCustomerMessageOnly={!!config.checkoutCustomerMessageOnly}
       {...props}
     />
   ) : (

@@ -59,3 +59,29 @@
   position: relative;
   text-decoration: line-through;
 }
+
+.pillRoot {
+  composes: marketplaceBodyFontStyles from global;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pillItem {
+  display: inline-flex;
+  margin: 0;
+}
+
+.pillLabel {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--colorGrey300);
+  border-radius: 100px;
+  line-height: 1.25;
+  font-weight: var(--fontWeightMedium);
+  color: var(--colorGrey900);
+  background-color: transparent;
+}

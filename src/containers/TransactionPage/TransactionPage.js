@@ -8,7 +8,11 @@ import appSettings from '../../config/settings.js';
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
-import { createResourceLocatorString, findRouteByRouteName } from '../../util/routes';
+import {
+  createResourceLocatorString,
+  findRouteByRouteName,
+  pathByRouteName,
+} from '../../util/routes';
 import {
   LINE_ITEM_OFFER,
   LINE_ITEM_REQUEST,
@@ -29,6 +33,7 @@ import {
   NEGOTIATION_PROCESS_NAME,
   OFFER,
   isPurchaseProcess,
+  isNegotiationProcess as isNegotiationProcessName,
   PURCHASE_PROCESS_NAME,
   isInquiryProcess,
 } from '../../transactions/transaction';
@@ -271,13 +276,6 @@ export const TransactionPageComponent = props => {
   const [counterOfferSubmitted, setCounterOfferSubmitted] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const config = useConfiguration();
-  const routeConfiguration = useRouteConfiguration();
-  const intl = useIntl();
   const {
     currentUser,
     savePaymentMethodFailed = false,
@@ -287,6 +285,7 @@ export const TransactionPageComponent = props => {
     oldestMessagePageFetched,
     fetchTransactionError,
     history,
+    location,
     messages,
     onManageDisableScrolling,
     onSendMessage,
@@ -308,6 +307,31 @@ export const TransactionPageComponent = props => {
     onInitializeCardPaymentData,
     ...restOfProps
   } = props;
+
+  const bookingRequestSuccess =
+    new URLSearchParams(location?.search || '').get('bookingRequestSuccess') === '1';
+
+  const persistedBookingRequestSuccess =
+    typeof window !== 'undefined' && params?.id
+      ? sessionStorage.getItem(`bookingRequestSuccess:${params.id}`) === '1'
+      : false;
+
+  const config = useConfiguration();
+  const routeConfiguration = useRouteConfiguration();
+  const intl = useIntl();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!bookingRequestSuccess || !params?.id) {
+      return;
+    }
+    sessionStorage.setItem(`bookingRequestSuccess:${params.id}`, '1');
+    const cleanPath = pathByRouteName('OrderDetailsPage', routeConfiguration, { id: params.id });
+    history.replace(cleanPath);
+  }, [bookingRequestSuccess, params?.id, history, routeConfiguration]);
 
   const { listing, provider, customer, booking } = transaction || {};
   const txTransitions = transaction?.attributes?.transitions || [];
@@ -345,12 +369,16 @@ export const TransactionPageComponent = props => {
     );
   };
 
-  // If payment is pending, redirect to CheckoutPage
+  // If payment is pending, redirect to CheckoutPage (skip when arriving from message-only checkout success)
+  const skipPendingPaymentRedirect =
+    bookingRequestSuccess || persistedBookingRequestSuccess;
+
   if (
     transaction?.id &&
     isTxOnPaymentPending(transaction) &&
     isCustomerRole &&
-    transaction.attributes.lineItems
+    transaction.attributes.lineItems &&
+    !skipPendingPaymentRedirect
   ) {
     // Note: we don't need to pass orderData since those are already saved to transaction.
     //       However, we could do that by extracting the values from transaction entity.
@@ -595,6 +623,27 @@ export const TransactionPageComponent = props => {
       )
     : {};
 
+  const forceMinimalFromCheckoutSuccess =
+    isCustomerRole &&
+    (bookingRequestSuccess || persistedBookingRequestSuccess) &&
+    (isBookingProcess(processName) ||
+      isPurchaseProcess(processName) ||
+      isNegotiationProcessName(processName));
+
+  const stateDataForPanel =
+    forceMinimalFromCheckoutSuccess && isDataAvailable
+      ? {
+          ...stateData,
+          minimalPostBookingRequestCustomerView: true,
+          showExtraInfo: false,
+          showActionButtons: false,
+        }
+      : stateData;
+
+  const headingTitleMessageId = forceMinimalFromCheckoutSuccess
+    ? `TransactionPage.${processName}.${transactionRole}.pending-payment.title`
+    : undefined;
+
   const hasLineItems = transaction?.attributes?.lineItems?.length > 0;
   const unitLineItem = hasLineItems
     ? transaction.attributes?.lineItems?.find(
@@ -694,7 +743,8 @@ export const TransactionPageComponent = props => {
       sendMessageError={sendMessageError}
       onSendMessage={onSendMessage}
       onOpenDisputeModal={onOpenDisputeModal}
-      stateData={stateData}
+      stateData={stateDataForPanel}
+      headingTitleMessageId={headingTitleMessageId}
       transactionRole={transactionRole}
       showBookingLocation={showBookingLocation}
       hasViewingRights={hasViewingRights}
@@ -703,11 +753,11 @@ export const TransactionPageComponent = props => {
         <ActionButtons
           containerId={containerId}
           listingTypeConfig={foundListingTypeConfig}
-          showButtons={stateData.showActionButtons}
-          primaryButtonProps={stateData?.primaryButtonProps}
-          secondaryButtonProps={stateData?.secondaryButtonProps}
-          tertiaryButtonProps={stateData?.tertiaryButtonProps}
-          actionButtonOrder={stateData?.actionButtonOrder}
+          showButtons={stateDataForPanel.showActionButtons}
+          primaryButtonProps={stateDataForPanel?.primaryButtonProps}
+          secondaryButtonProps={stateDataForPanel?.secondaryButtonProps}
+          tertiaryButtonProps={stateDataForPanel?.tertiaryButtonProps}
+          actionButtonOrder={stateDataForPanel?.actionButtonOrder}
           isListingDeleted={listingDeleted}
           isProvider={isProviderRole}
           transitions={txTransitions}
@@ -720,7 +770,7 @@ export const TransactionPageComponent = props => {
         <ActivityFeed
           messages={messages}
           transaction={transaction}
-          stateData={stateData}
+          stateData={stateDataForPanel}
           intl={intl}
           currentUser={currentUser}
           hasOlderMessages={
@@ -765,7 +815,7 @@ export const TransactionPageComponent = props => {
       orderPanel={
         <OrderPanel
           className={classNames(css.orderPanel, {
-            [css.orderPanelNextToTitle]: stateData.showDetailCardHeadings,
+            [css.orderPanelNextToTitle]: stateDataForPanel.showDetailCardHeadings,
           })}
           titleClassName={css.orderTitle}
           listing={listing}

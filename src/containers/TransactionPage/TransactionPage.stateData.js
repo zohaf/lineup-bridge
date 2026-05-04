@@ -35,6 +35,7 @@ export const stateDataShape = shape({
   showDetailCardHeadings: bool,
   showDispute: bool,
   showOrderPanel: bool,
+  minimalPostBookingRequestCustomerView: bool,
   showReviewAsFirstLink: bool,
   showReviewAsSecondLink: bool,
   showReviews: bool,

@@ -296,6 +296,7 @@ const DatePicker = props => {
     isDayBlocked = () => false,
     isBlockedBetween = () => false,
     hasFocusOnMount = true,
+    rootClassName,
   } = props;
 
   const pickerRef = useRef(null);
@@ -584,7 +585,7 @@ const DatePicker = props => {
       aria-disabled={String(disabled)}
       aria-label="Calendar"
       aria-roledescription="datepicker"
-      className={classNames(css.root, {
+      className={classNames(css.root, rootClassName, {
         [css.light]: theme === 'light',
         [css.disabled]: disabled,
       })}

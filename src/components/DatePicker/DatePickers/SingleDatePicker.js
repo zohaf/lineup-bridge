@@ -33,7 +33,8 @@ export const SingleDatePicker = props => {
     id,
     name,
     placeholderText,
-    isDayBlocked,
+    isDayBlocked = () => false,
+    isOutsideRange,
     onChange,
     value,
     readOnly,
@@ -56,6 +57,9 @@ export const SingleDatePicker = props => {
   }, [mounted, value]);
 
   const pickerId = `${id}_SingleDatePicker`;
+
+  const dayIsBlocked = day =>
+    Boolean(isOutsideRange?.(day)) || isDayBlocked(day);
 
   const classes = classNames(rootClassName || css.root, className, css.outsideClickWrapper);
   const startDateMaybe =
@@ -86,7 +90,7 @@ export const SingleDatePicker = props => {
 
     if (isValidDateString(inputStr)) {
       const d = new Date(inputStr);
-      if (isDayBlocked(d)) {
+      if (dayIsBlocked(d)) {
         setDateData({ date: dateData.date, formatted: '' });
         return;
       } else {
@@ -158,7 +162,7 @@ export const SingleDatePicker = props => {
               range={false}
               showMonthStepper={true}
               onChange={handleChange}
-              isDayBlocked={isDayBlocked}
+              isDayBlocked={dayIsBlocked}
               value={dateData.date}
               {...startDateMaybe}
               {...rest}

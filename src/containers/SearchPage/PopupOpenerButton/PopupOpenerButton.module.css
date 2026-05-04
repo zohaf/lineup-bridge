@@ -2,6 +2,7 @@
 
 .label,
 .labelSelected {
+  outline: none;
   display: inline-block;
   width: auto;
   height: 35px;
@@ -26,6 +27,12 @@
 
   &:focus,
   &:hover {
+    outline: none;
+    box-shadow: var(--boxShadowFilterButton);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
     outline: none;
     box-shadow: var(--boxShadowFilterButton);
     text-decoration: none;

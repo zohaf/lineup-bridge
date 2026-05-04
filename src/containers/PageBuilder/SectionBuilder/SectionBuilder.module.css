@@ -105,11 +105,7 @@
 }
 
 .blockContainer {
-  padding: 64px 32px 0 32px;
-
-  &:first-child {
-    padding: 0 32px;
-  }
+  /* Keep class for stable hooks; gutters are set per section (e.g. `SectionColumns.baseColumn`). */
 }
 
 .align {
@@ -162,8 +158,40 @@
   hyphens: auto;
 }
 
+/* ------------------------------ */
+/* Subtle landing hero polish     */
+/* ------------------------------ */
+
+@keyframes pbSubtleFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:global(main#main-content section[data-section-type='hero'] .pbSectionDetails h1) {
+  letter-spacing: -0.02em;
+  max-width: 22ch;
+}
+
+:global(main#main-content section[data-section-type='hero'] .pbSectionDetails p) {
+  max-width: 68ch;
+  line-height: 1.55;
+  color: var(--colorGrey700);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :global(main#main-content section[data-section-type='hero'] .pbSectionDetails) {
+    animation: pbSubtleFadeUp 520ms ease-out both;
+  }
+}
+
 /**
- * Theme: dark 
+ * Theme: dark
  * These styles are at the bottom of the file so that they overwrite rules for default "light" theme.
  */
 .darkTheme h1,
@@ -233,8 +261,139 @@
  * "How it works" landing section: black frame; fill stays --colorPageBackground from SectionContainer.
  * Set this section’s Section ID in Sharetribe Console to: how-it-works
  */
-:global(section#how-it-works) {
-  border: 1px solid var(--colorBlack);
+:global(section#how-it-works),
+:global(section[data-section-name='How it works']) {
+  /* No black frame/border */
+  border: none;
   box-sizing: border-box;
   border-radius: var(--borderRadiusMedium);
+  /* Requested height */
+  min-height: 566px;
+  /* Black section background */
+  background-color: var(--colorBlack);
+  /* Breathing room */
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+/* Make header text readable on black */
+:global(section#how-it-works .pbSectionDetails h1),
+:global(section#how-it-works .pbSectionDetails h2),
+:global(section[data-section-name='How it works'] .pbSectionDetails h1),
+:global(section[data-section-name='How it works'] .pbSectionDetails h2) {
+  color: var(--colorWhite);
+}
+
+:global(section#how-it-works .pbSectionDetails p),
+:global(section[data-section-name='How it works'] .pbSectionDetails p) {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Add white “cards” under each of the 4 columns. */
+:global(section#how-it-works .pbBlockContainer),
+:global(section[data-section-name='How it works'] .pbBlockContainer) {
+  /* Force consistent 24px gutters while keeping extra top spacing. */
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  padding-top: 32px !important;
+  /* No gutter between columns */
+  gap: 0 !important;
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+}
+
+@media (--viewportMedium) {
+  :global(section#how-it-works .pbBlockContainer),
+  :global(section[data-section-name='How it works'] .pbBlockContainer) {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/**
+ * Apply same styling for the last "columns" section on the page.
+ * (Used when the last landing section is also a 4-column section.)
+ */
+:global(main#main-content section[data-section-type='columns']:last-of-type) {
+  border: none;
+  box-sizing: border-box;
+  border-radius: var(--borderRadiusMedium);
+  min-height: 566px;
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+:global(main#main-content section[data-section-type='columns']:last-of-type .pbBlockContainer) {
+  padding-top: 32px;
+}
+
+:global(main#main-content section[data-section-type='columns']:last-of-type .pbBlockContainer > *) {
+  background-color: var(--colorWhite);
+  border-radius: var(--borderRadiusMedium);
+  padding: 18px;
+  box-shadow: var(--boxShadowLight);
+  height: 100%;
+}
+
+@media (--viewportMedium) {
+  :global(
+      main#main-content
+        section[data-section-type='columns']:last-of-type
+        .pbBlockContainer
+        > *
+    ) {
+    padding: 24px;
+  }
+}
+
+:global(section#how-it-works .pbBlockContainer > *),
+:global(section[data-section-name='How it works'] .pbBlockContainer > *) {
+  /* No fill, only outline */
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 0;
+  padding: 18px;
+  box-shadow: none;
+  height: 100%;
+  /* Left align contents inside each box (override any inner centering) */
+  text-align: left;
+}
+
+@media (--viewportMedium) {
+  :global(section#how-it-works .pbBlockContainer > *),
+  :global(section[data-section-name='How it works'] .pbBlockContainer > *) {
+    padding: 24px;
+  }
+}
+
+/* Avoid double lines between adjacent columns */
+:global(section#how-it-works .pbBlockContainer > *:not(:first-child)),
+:global(section[data-section-name='How it works'] .pbBlockContainer > *:not(:first-child)) {
+  border-left: none;
+}
+
+/* Some block content uses centered styles on inner elements; force left alignment inside these cards. */
+:global(section#how-it-works .pbBlockContainer > * *),
+:global(section[data-section-name='How it works'] .pbBlockContainer > * *) {
+  text-align: left;
+}
+
+/* Ensure card text is readable on black background */
+:global(section#how-it-works .pbBlockContainer > *),
+:global(section[data-section-name='How it works'] .pbBlockContainer > *) {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+:global(section#how-it-works .pbBlockContainer > * h1),
+:global(section#how-it-works .pbBlockContainer > * h2),
+:global(section#how-it-works .pbBlockContainer > * h3),
+:global(section#how-it-works .pbBlockContainer > * h4),
+:global(section#how-it-works .pbBlockContainer > * h5),
+:global(section#how-it-works .pbBlockContainer > * h6),
+:global(section[data-section-name='How it works'] .pbBlockContainer > * h1),
+:global(section[data-section-name='How it works'] .pbBlockContainer > * h2),
+:global(section[data-section-name='How it works'] .pbBlockContainer > * h3),
+:global(section[data-section-name='How it works'] .pbBlockContainer > * h4),
+:global(section[data-section-name='How it works'] .pbBlockContainer > * h5),
+:global(section[data-section-name='How it works'] .pbBlockContainer > * h6) {
+  color: var(--colorWhite);
 }

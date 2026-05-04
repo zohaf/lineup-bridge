@@ -64,6 +64,8 @@ const getResponsiveImageSizes = numColumns => {
 const SectionColumns = props => {
   const {
     sectionId,
+    sectionName,
+    sectionType,
     className,
     rootClassName,
     defaultClasses,
@@ -88,6 +90,8 @@ const SectionColumns = props => {
   return (
     <SectionContainer
       id={sectionId}
+      data-section-name={sectionName}
+      data-section-type={sectionType}
       className={className}
       rootClassName={rootClassName}
       appearance={appearance}

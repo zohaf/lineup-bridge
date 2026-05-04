@@ -38,6 +38,56 @@
   flex-shrink: 0;
 }
 
+.locationCity {
+  composes: formMargins;
+  flex-shrink: 0;
+}
+
+.locationAutocompleteInput {
+}
+
+.locationAutocompleteInputIcon {
+  display: none;
+}
+
+.predictionsRoot {
+  position: absolute;
+  width: 100%;
+  top: 36px;
+  left: 0;
+  background-color: var(--marketplaceColor);
+  border-bottom-left-radius: var(--borderRadius);
+  border-bottom-right-radius: var(--borderRadius);
+  box-shadow: var(--boxShadowPopup);
+  z-index: calc(var(--zIndexPopup) + 1);
+
+  @media (--viewportMedium) {
+    top: 40px;
+  }
+}
+
+.validLocation {
+}
+
+.listingFieldsGrouped {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (--viewportMedium) {
+    gap: 32px;
+  }
+}
+
+.fieldSectionTitle {
+  margin-top: 0;
+  margin-bottom: 18px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 24px;
+  }
+}
+
 .listingTypeSelect {
   margin-bottom: 24px;
 

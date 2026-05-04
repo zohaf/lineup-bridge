@@ -29,6 +29,10 @@
   border-radius: var(--borderRadiusMedium);
   width: 100%;
   height: 100%;
+  display: block;
+  object-fit: cover;
+  /* X: center (equal left/right crop). Y: top (keep top, crop bottom). */
+  object-position: 50% 0;
 }
 
 .title.lightText {
@@ -98,6 +102,10 @@
   font-weight: var(--fontWeightBold);
   color: var(--colorGrey700);
   margin: 0;
+}
+
+.titleLarge {
+  composes: textLarge from global;
 }
 
 /* ⚠️ the calculated height of this selector is hardcoded in SectionListings.js calculateCarouselHeight() as authorInfoHeight & authorInfoHeighMobile */

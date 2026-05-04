@@ -157,3 +157,15 @@
 .missingStripeKey {
   color: var(--colorFail);
 }
+
+/* Minimal checkout: Stripe card + billing stay mounted but off-screen */
+.hiddenPaymentMount {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: min(420px, 100vw);
+  height: 480px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}

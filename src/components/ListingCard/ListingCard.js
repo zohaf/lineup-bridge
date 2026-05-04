@@ -93,6 +93,8 @@ const ListingCardImage = props => {
  * @param {string?} props.renderSizes for img/srcset
  * @param {Function?} props.setActiveListing
  * @param {boolean?} props.showAuthorInfo
+ * @param {boolean?} props.showPriceInfo
+ * @param {boolean?} props.onlyShowTitle
  * @returns {JSX.Element} listing card to be used in search result panel etc.
  */
 export const ListingCard = props => {
@@ -108,6 +110,8 @@ export const ListingCard = props => {
     renderSizes,
     setActiveListing,
     showAuthorInfo = true,
+    showPriceInfo = true,
+    onlyShowTitle = false,
     lazyLoadImage = true,
   } = props;
 
@@ -178,18 +182,24 @@ export const ListingCard = props => {
         />
       )}
       <div className={css.info}>
-        {showPrice ? (
+        {showPriceInfo && showPrice ? (
           <div className={css.price} title={priceTooltip}>
             {priceMessage}
           </div>
         ) : null}
         <div className={css.mainInfo}>
-          {showListingImage && (
-            <div className={classNames(css.title, { [css.lightText]: darkMode })}>
+          {(onlyShowTitle || showListingImage) && (
+            <div
+              className={classNames(
+                css.title,
+                { [css.titleLarge]: onlyShowTitle },
+                { [css.lightText]: darkMode }
+              )}
+            >
               {titleFormatted}
             </div>
           )}
-          {showAuthorInfo ? (
+          {showAuthorInfo && !onlyShowTitle ? (
             <div className={classNames(css.authorInfo, { [css.lightText]: darkMode })}>
               {authorName}
             </div>

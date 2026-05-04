@@ -26,16 +26,31 @@ export const Link = React.forwardRef((props, ref) => {
   const { className, rootClassName, href, title, children } = props;
   const classes = classNames(rootClassName || css.link, className);
   const titleMaybe = title ? { title } : {};
-  const linkProps = { className: classes, href, children, ...titleMaybe };
+  // Allow simple per-label CTA routing without needing Console edits.
+  // E.g. two landing page CTAs can both use "/signup" but route to different preselected user types.
+  const rewrittenHref = (() => {
+    if (href !== '/signup' || typeof children !== 'string') {
+      return href;
+    }
+    const label = children.toLowerCase();
+    if (label.includes('dj')) {
+      return '/signup/dj';
+    }
+    if (label.includes('organizer') || label.includes('organiser')) {
+      return '/signup/organizer';
+    }
+    return href;
+  })();
+  const linkProps = { className: classes, href: rewrittenHref, children, ...titleMaybe };
 
   // Markdown parser (rehype-sanitize) might return undefined href
-  if (!href || !children) {
+  if (!rewrittenHref || !children) {
     return null;
   }
 
-  if (href.charAt(0) === '/') {
+  if (rewrittenHref.charAt(0) === '/') {
     // Internal link
-    const testURL = new URL('http://my.marketplace.com' + href);
+    const testURL = new URL('http://my.marketplace.com' + rewrittenHref);
     const matchedRoutes = matchPathname(testURL.pathname, routes);
     if (matchedRoutes.length > 0) {
       const found = matchedRoutes[0];

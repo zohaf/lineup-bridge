@@ -11,6 +11,12 @@
   border: none;
 }
 
+.genreFieldGroup {
+  /* Keep genre labels on one line by giving popup more width */
+  min-width: 420px;
+  max-width: 560px;
+}
+
 .fieldGroupPlain {
   margin: 0;
   padding-left: 12px;
@@ -31,6 +37,58 @@
 
 .list {
   margin: 0;
+}
+
+.twoColumnList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
+.textOptionRoot {
+  position: relative;
+  display: inline-block;
+}
+
+.textOptionInput {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.textOptionLabel,
+.textOptionLabelSelected {
+  composes: marketplaceListingAttributeFontStyles from global;
+  display: inline-block;
+  padding: 2px 0;
+  margin: 0;
+  color: var(--colorGrey700);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.textOptionLabelSelected {
+  color: var(--colorBlack);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.textOptionLabel:hover,
+.textOptionLabelSelected:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  color: var(--colorBlack);
+}
+
+.textOptionInput:focus-visible + .textOptionLabel,
+.textOptionInput:focus-visible + .textOptionLabelSelected {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
 }
 
 .item {

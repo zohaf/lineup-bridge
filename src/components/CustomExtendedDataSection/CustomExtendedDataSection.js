@@ -4,6 +4,7 @@ import { SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_TEXT, SCHEMA_TYPE_YOUTUBE } from '.
 
 import SectionDetails from './SectionDetails';
 import SectionText from './SectionText';
+import SectionLinks from './SectionLinks';
 import SectionMultiEnum from './SectionMultiEnum';
 import SectionYoutubeVideo from './SectionYoutubeVideo';
 
@@ -34,10 +35,25 @@ const CustomExtendedDataSection = props => {
     rootClassName,
   } = props;
 
+  const isUrlTextField = f => {
+    const text = f?.text;
+    return (
+      f?.schemaType === SCHEMA_TYPE_TEXT &&
+      typeof text === 'string' &&
+      (text.trim().startsWith('http://') ||
+        text.trim().startsWith('https://') ||
+        text.trim().startsWith('www.'))
+    );
+  };
+
+  const linkFields = propsForCustomFields.filter(isUrlTextField);
+  const otherFields = propsForCustomFields.filter(f => !isUrlTextField(f));
+
   return (
     <>
       <SectionDetails {...sectionDetailsProps} pickExtendedDataFields={pickExtendedDataFields} />
-      {propsForCustomFields.map(customFieldProps => {
+      <SectionLinks links={linkFields} className={className} rootClassName={rootClassName} />
+      {otherFields.map(customFieldProps => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
         return schemaType === SCHEMA_TYPE_MULTI_ENUM ? (
           <SectionMultiEnum
@@ -45,6 +61,7 @@ const CustomExtendedDataSection = props => {
             idPrefix={idPrefix}
             className={className}
             rootClassName={rootClassName}
+            pillLayout={key === 'genre'}
             {...fieldProps}
           />
         ) : schemaType === SCHEMA_TYPE_TEXT ? (

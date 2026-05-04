@@ -5,15 +5,22 @@ import classNames from 'classnames';
 
 // Import util modules
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
-import { displayDescription } from '../../../../util/configHelpers.js';
+import { displayDescription, displayLocation } from '../../../../util/configHelpers.js';
 import { useConfiguration } from '../../../../context/configurationContext.js';
-import { EXTENDED_DATA_SCHEMA_TYPES, propTypes } from '../../../../util/types';
+import { propTypes } from '../../../../util/types';
+import { isValidCurrencyForTransactionProcess } from '../../../../util/fieldHelpers';
 import {
-  isFieldForCategory,
-  isFieldForListingType,
-  isValidCurrencyForTransactionProcess,
-} from '../../../../util/fieldHelpers';
-import { maxLength, required, composeValidators } from '../../../../util/validators';
+  isGenreField,
+  isLinkField,
+} from '../../../../util/listingFieldWizardSections';
+import { getApplicableListingFieldConfigs } from '../editListingFieldHelpers';
+import {
+  maxLength,
+  required,
+  composeValidators,
+  autocompleteSearchRequired,
+  autocompletePlaceSelected,
+} from '../../../../util/validators';
 
 // Import shared components
 import {
@@ -21,12 +28,112 @@ import {
   Button,
   FieldSelect,
   FieldTextInput,
+  FieldLocationAutocompleteInput,
   CustomExtendedDataField,
+  H4,
 } from '../../../../components';
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
 
 const TITLE_MAX_LENGTH = 60;
+
+const identity = v => v;
+
+const renderListingField = (fieldConfig, formId, intl) => {
+  const { key, scope } = fieldConfig || {};
+  const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
+  return (
+    <CustomExtendedDataField
+      key={namespacedKey}
+      name={namespacedKey}
+      fieldConfig={fieldConfig}
+      defaultRequiredMessage={intl.formatMessage({
+        id: 'EditListingDetailsForm.defaultRequiredMessage',
+      })}
+      formId={formId}
+    />
+  );
+};
+
+/**
+ * Custom extended data fields grouped into Genre, Links, and any remaining fields.
+ */
+const GroupedListingFields = props => {
+  const {
+    listingType,
+    listingFieldsConfig,
+    selectedCategories,
+    formId,
+    intl,
+    additionalListingFieldsOnly,
+  } = props;
+
+  const applicable = getApplicableListingFieldConfigs(
+    listingFieldsConfig,
+    listingType,
+    selectedCategories
+  );
+
+  const genreFieldConfigs = applicable.filter(isGenreField);
+  const linkFieldConfigs = applicable.filter(isLinkField);
+  const otherFieldConfigs = applicable.filter(f => !isGenreField(f) && !isLinkField(f));
+
+  if (additionalListingFieldsOnly) {
+    if (otherFieldConfigs.length === 0) {
+      return null;
+    }
+    return (
+      <div className={css.listingFieldsGrouped}>
+        <div className={css.fieldSection}>
+          <H4 as="h2" className={css.fieldSectionTitle}>
+            <FormattedMessage id="EditListingDetailsForm.sectionAdditional" />
+          </H4>
+          {otherFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
+        </div>
+      </div>
+    );
+  }
+
+  const hasAnySection =
+    genreFieldConfigs.length > 0 ||
+    linkFieldConfigs.length > 0 ||
+    otherFieldConfigs.length > 0;
+
+  if (!hasAnySection) {
+    return null;
+  }
+
+  return (
+    <div className={css.listingFieldsGrouped}>
+      {genreFieldConfigs.length > 0 ? (
+        <div className={css.fieldSection}>
+          <H4 as="h2" className={css.fieldSectionTitle}>
+            <FormattedMessage id="EditListingDetailsForm.sectionGenre" />
+          </H4>
+          {genreFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
+        </div>
+      ) : null}
+
+      {linkFieldConfigs.length > 0 ? (
+        <div className={css.fieldSection}>
+          <H4 as="h2" className={css.fieldSectionTitle}>
+            <FormattedMessage id="EditListingDetailsForm.sectionLinks" />
+          </H4>
+          {linkFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
+        </div>
+      ) : null}
+
+      {otherFieldConfigs.length > 0 ? (
+        <div className={css.fieldSection}>
+          <H4 as="h2" className={css.fieldSectionTitle}>
+            <FormattedMessage id="EditListingDetailsForm.sectionAdditional" />
+          </H4>
+          {otherFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 // Show various error messages
 const ErrorMessage = props => {
@@ -184,39 +291,6 @@ const FieldSelectCategory = props => {
   );
 };
 
-// Add collect data for listing fields (both publicData and privateData) based on configuration
-const AddListingFields = props => {
-  const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
-  const targetCategoryIds = Object.values(selectedCategories);
-
-  const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
-    const { key, schemaType, scope } = fieldConfig || {};
-    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
-
-    const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
-    const isProviderScope = ['public', 'private'].includes(scope);
-    const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
-    const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
-
-    return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
-      ? [
-          ...pickedFields,
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-            formId={formId}
-          />,
-        ]
-      : pickedFields;
-  }, []);
-
-  return <>{fields}</>;
-};
-
 // Return configuration for given listingType
 const getListingTypeConfig = (config, listingType) => {
   return config.listing.listingTypes?.find(config => config.listingType === listingType);
@@ -279,6 +353,7 @@ const EditListingDetailsForm = props => (
         listingFieldsConfig = [],
         listingCurrency,
         values,
+        hideGenreAndLinksInProfileForm = false,
       } = formRenderProps;
 
       const intl = useIntl();
@@ -322,7 +397,19 @@ const EditListingDetailsForm = props => (
         ? allCategoriesChosen && showDescriptionMaybe
         : showDescriptionMaybe;
 
+      const showCityMaybe = listingTypeConfig && displayLocation(listingTypeConfig);
+      const showCity = hasCategories
+        ? allCategoriesChosen && showCityMaybe
+        : showCityMaybe;
+
       const showListingFields = hasCategories ? allCategoriesChosen : listingType;
+
+      const cityRequiredMessage = intl.formatMessage({
+        id: 'EditListingDetailsForm.cityRequired',
+      });
+      const cityNotRecognizedMessage = intl.formatMessage({
+        id: 'EditListingDetailsForm.cityNotRecognized',
+      });
 
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
@@ -395,13 +482,38 @@ const EditListingDetailsForm = props => (
             />
           )}
 
+          {showCity && isCompatibleCurrency && (
+            <FieldLocationAutocompleteInput
+              rootClassName={css.locationCity}
+              inputClassName={css.locationAutocompleteInput}
+              iconClassName={css.locationAutocompleteInputIcon}
+              predictionsClassName={css.predictionsRoot}
+              validClassName={css.validLocation}
+              name="location"
+              id={`${formId}location`}
+              label={intl.formatMessage({ id: 'EditListingDetailsForm.city' })}
+              placeholder={intl.formatMessage({
+                id: 'EditListingDetailsForm.cityPlaceholder',
+              })}
+              useDefaultPredictions={false}
+              format={identity}
+              valueFromForm={values.location}
+              restrictAutocompleteToCities
+              validate={composeValidators(
+                autocompleteSearchRequired(cityRequiredMessage),
+                autocompletePlaceSelected(cityNotRecognizedMessage)
+              )}
+            />
+          )}
+
           {showListingFields && isCompatibleCurrency && (
-            <AddListingFields
+            <GroupedListingFields
               listingType={listingType}
               listingFieldsConfig={listingFieldsConfig}
               selectedCategories={pickSelectedCategories(values)}
               formId={formId}
               intl={intl}
+              additionalListingFieldsOnly={hideGenreAndLinksInProfileForm}
             />
           )}
 

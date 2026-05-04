@@ -192,6 +192,8 @@ export const processCheckoutWithPayment = (orderParams, extraPaymentParams) => {
     sessionStorageKey,
     stripeCustomer,
     stripePaymentMethodId,
+    skipStripeCardConfirmation,
+    skipStripePaymentAndConfirm,
   } = extraPaymentParams;
   const storedTx = ensureTransaction(pageData.transaction);
 
@@ -208,16 +210,20 @@ export const processCheckoutWithPayment = (orderParams, extraPaymentParams) => {
     // fnParams should be { listingId, deliveryMethod?, quantity?, bookingDates?, paymentMethod?.setupPaymentMethodForSaving?, protectedData }
     const hasPaymentIntents = storedTx.attributes.protectedData?.stripePaymentIntents;
 
+    const resolvedProcessName = resolveLatestProcessName(processAlias.split('/')[0]);
+
     const isOfferPendingInNegotiationProcess =
-      resolveLatestProcessName(processAlias.split('/')[0]) === NEGOTIATION_PROCESS_NAME &&
+      resolvedProcessName === NEGOTIATION_PROCESS_NAME &&
       storedTx.attributes.state === `state/${process.states.OFFER_PENDING}`;
 
-    const requestTransition =
-      storedTx?.attributes?.lastTransition === process.transitions.INQUIRE
-        ? process.transitions.REQUEST_PAYMENT_AFTER_INQUIRY
-        : isOfferPendingInNegotiationProcess
-        ? process.transitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER
-        : process.transitions.REQUEST_PAYMENT;
+    const isInquiryInPaymentProcess =
+      storedTx?.attributes?.lastTransition === process.transitions.INQUIRE;
+
+    const requestTransition = isInquiryInPaymentProcess
+      ? process.transitions.REQUEST_PAYMENT_AFTER_INQUIRY
+      : isOfferPendingInNegotiationProcess
+      ? process.transitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER
+      : process.transitions.REQUEST_PAYMENT;
     const isPrivileged = process.isPrivileged(requestTransition);
 
     // If paymentIntent exists, order has been initiated previously.
@@ -232,6 +238,14 @@ export const processCheckoutWithPayment = (orderParams, extraPaymentParams) => {
 
     return orderPromise;
   };
+
+  // Message-only checkout: create the transaction but do not confirm PI on client
+  // and do not transition CONFIRM_PAYMENT. We treat "request created" as success.
+  if (skipStripePaymentAndConfirm) {
+    return fnRequestPayment(orderParams).then(order => {
+      return { orderId: order?.id, paymentMethodSaved: true };
+    });
+  }
 
   //////////////////////////////////
   // Step 2: pay using Stripe SDK //
@@ -252,6 +266,21 @@ export const processCheckoutWithPayment = (orderParams, extraPaymentParams) => {
       : null;
 
     const { stripe, card, billingDetails, paymentIntent } = extraPaymentParams;
+
+    // Minimal checkout (message-only): confirm PaymentIntent without collecting card on the client.
+    // Uses the same Stripe.js path as a saved card — PaymentIntent must be satisfiable server-side
+    // (e.g. amount already covered or provider-side configuration).
+    if (skipStripeCardConfirmation) {
+      const params = {
+        stripePaymentIntentClientSecret,
+        orderId: order?.id,
+        stripe,
+        paymentParams: undefined,
+      };
+      return hasPaymentIntentUserActionsDone
+        ? Promise.resolve({ transactionId: order?.id, paymentIntent })
+        : onConfirmCardPayment(params);
+    }
     const stripeElementMaybe = !isPaymentFlowUseSavedCard ? { card } : {};
 
     // Note: For basic USE_SAVED_CARD scenario, we have set it already on API side, when PaymentIntent was created.

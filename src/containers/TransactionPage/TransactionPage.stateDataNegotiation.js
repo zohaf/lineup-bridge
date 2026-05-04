@@ -386,6 +386,14 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     .cond([states.REVIEWED, _], () => {
       return { ...sharedStateData, showDetailCardHeadings: true, showReviews: true };
     })
+    .cond([states.PENDING_PAYMENT, CUSTOMER], () => {
+      return {
+        ...sharedStateData,
+        showDetailCardHeadings: true,
+        showExtraInfo: false,
+        minimalPostBookingRequestCustomerView: true,
+      };
+    })
     .default(() => {
       // Default values for other states
       return { ...sharedStateData, showDetailCardHeadings: true };

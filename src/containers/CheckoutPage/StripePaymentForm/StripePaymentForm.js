@@ -323,11 +323,12 @@ class StripePaymentForm extends Component {
         hasHandledCardPayment,
         defaultPaymentMethod,
         loadingData,
+        customerMessageOnly,
       } = this.props;
       this.stripe = window.Stripe(publishableKey);
       onStripeInitialized(this.stripe);
 
-      if (!(hasHandledCardPayment || defaultPaymentMethod || loadingData)) {
+      if (!(hasHandledCardPayment || defaultPaymentMethod || loadingData || customerMessageOnly)) {
         this.initializeStripeElement();
       }
     }
@@ -415,38 +416,21 @@ class StripePaymentForm extends Component {
     });
   }
   handleSubmit(values) {
-    const {
-      onSubmit,
-      inProgress,
-      formId,
-      hasHandledCardPayment,
-      defaultPaymentMethod,
-    } = this.props;
-    const { initialMessage } = values;
-    const { cardValueValid, paymentMethod } = this.state;
-    const hasDefaultPaymentMethod = defaultPaymentMethod?.id;
-    const selectedPaymentMethod = getPaymentMethod(paymentMethod, hasDefaultPaymentMethod);
-    const { onetimePaymentNeedsAttention } = checkOnetimePaymentFields(
-      cardValueValid,
-      selectedPaymentMethod,
-      hasDefaultPaymentMethod,
-      hasHandledCardPayment
-    );
-
-    if (inProgress || onetimePaymentNeedsAttention) {
-      // Already submitting or card value incomplete/invalid
+    const { onSubmit, inProgress, formId, defaultPaymentMethod } = this.props;
+    if (inProgress) {
       return;
     }
+
+    const { initialMessage } = values;
+    const { paymentMethod } = this.state;
+    const ensuredPm = ensurePaymentMethodCard(defaultPaymentMethod);
 
     const params = {
       message: initialMessage ? initialMessage.trim() : null,
       card: this.card,
       formId,
       formValues: values,
-      paymentMethod: getPaymentMethod(
-        paymentMethod,
-        ensurePaymentMethodCard(defaultPaymentMethod).id
-      ),
+      paymentMethod: getPaymentMethod(paymentMethod, ensuredPm.id),
     };
     onSubmit(params);
   }
@@ -464,8 +448,6 @@ class StripePaymentForm extends Component {
       initiateOrderError,
       confirmCardPaymentError,
       confirmPaymentError,
-      invalid,
-      handleSubmit,
       form: formApi,
       hasHandledCardPayment,
       defaultPaymentMethod,
@@ -497,14 +479,20 @@ class StripePaymentForm extends Component {
     const { cardValueValid, paymentMethod } = this.state;
     const hasDefaultPaymentMethod = ensuredDefaultPaymentMethod.id;
     const selectedPaymentMethod = getPaymentMethod(paymentMethod, hasDefaultPaymentMethod);
-    const { onetimePaymentNeedsAttention, showOnetimePaymentFields } = checkOnetimePaymentFields(
+    const { customerMessageOnly = false } = this.props;
+    // Minimal checkout: never show listing location/pickup (still show shipping form when required).
+    const showLocationShippingDetails =
+      !customerMessageOnly || askShippingDetails;
+    // Minimal checkout: do not mount Stripe Elements (avoids card validation errors with no UI).
+    const shouldRenderPaymentFragment =
+      !customerMessageOnly && billingDetailsNeeded && !loadingData;
+    const { showOnetimePaymentFields } = checkOnetimePaymentFields(
       cardValueValid,
       selectedPaymentMethod,
       hasDefaultPaymentMethod,
       hasHandledCardPayment
     );
 
-    const submitDisabled = invalid || onetimePaymentNeedsAttention || submitInProgress;
     const hasCardError = this.state.error && !submitInProgress;
     const hasPaymentErrors = confirmCardPaymentError || confirmPaymentError;
     const classes = classNames(rootClassName || css.root, className);
@@ -573,23 +561,39 @@ class StripePaymentForm extends Component {
     const isBookingYesNo = isBooking ? 'yes' : 'no';
 
     const showAdditionalInfoHeading =
-      showInitialMessageInput || (hasTransactionFieldConfigs && showTransactionFields);
+      !customerMessageOnly &&
+      (showInitialMessageInput ||
+        (hasTransactionFieldConfigs && showTransactionFields));
+
+    const preventFormSubmit = e => e.preventDefault();
 
     return hasStripeKey ? (
-      <Form className={classes} onSubmit={handleSubmit} enforcePagePreloadFor="OrderDetailsPage">
-        <LocationOrShippingDetails
-          askShippingDetails={askShippingDetails}
-          showPickUpLocation={showPickUpLocation}
-          showLocation={showLocation}
-          listingLocation={listingLocation}
-          isFuzzyLocation={isFuzzyLocation}
-          formApi={formApi}
-          locale={locale}
-          intl={intl}
-        />
+      <Form
+        className={classes}
+        onSubmit={preventFormSubmit}
+        enforcePagePreloadFor="OrderDetailsPage"
+      >
+        {showLocationShippingDetails ? (
+          <LocationOrShippingDetails
+            askShippingDetails={askShippingDetails}
+            showPickUpLocation={showPickUpLocation}
+            showLocation={showLocation}
+            listingLocation={listingLocation}
+            isFuzzyLocation={isFuzzyLocation}
+            formApi={formApi}
+            locale={locale}
+            intl={intl}
+          />
+        ) : null}
 
-        {billingDetailsNeeded && !loadingData ? (
-          <React.Fragment>
+        {loadingData ? (
+          <p className={css.spinner}>
+            <IconSpinner />
+          </p>
+        ) : null}
+
+        {shouldRenderPaymentFragment ? (
+          <div>
             {hasDefaultPaymentMethod ? (
               <PaymentMethodSelector
                 cardClasses={cardClasses}
@@ -654,11 +658,7 @@ class StripePaymentForm extends Component {
                 {billingAddress}
               </div>
             ) : null}
-          </React.Fragment>
-        ) : loadingData ? (
-          <p className={css.spinner}>
-            <IconSpinner />
-          </p>
+          </div>
         ) : null}
 
         {initiateOrderError ? (
@@ -670,7 +670,7 @@ class StripePaymentForm extends Component {
             <FormattedMessage id="StripePaymentForm.messageHeading" />
           </Heading>
         ) : null}
-        {hasTransactionFieldConfigs && showTransactionFields ? (
+        {hasTransactionFieldConfigs && showTransactionFields && !customerMessageOnly ? (
           <div className={css.transactionFieldsContainer}>
             {transactionFieldsProps.map(({ key, ...fieldProps }) => (
               <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
@@ -690,14 +690,15 @@ class StripePaymentForm extends Component {
           </div>
         ) : null}
         <div className={css.submitContainer}>
-          {hasPaymentErrors ? (
+          {hasPaymentErrors && !customerMessageOnly ? (
             <span className={css.errorMessage}>{paymentErrorMessage}</span>
           ) : null}
           <PrimaryButton
             className={css.submitButton}
-            type="submit"
+            type="button"
             inProgress={submitInProgress}
-            disabled={submitDisabled}
+            disabled={false}
+            onClick={() => this.handleSubmit(formApi.getState().values || {})}
           >
             {billingDetailsNeeded ? (
               <FormattedMessage
@@ -711,12 +712,14 @@ class StripePaymentForm extends Component {
               />
             )}
           </PrimaryButton>
-          <p className={css.paymentInfo}>
-            <FormattedMessage
-              id="StripePaymentForm.submitConfirmPaymentFinePrint"
-              values={{ isBooking: isBookingYesNo, name: providerDisplayName }}
-            />
-          </p>
+          {customerMessageOnly ? null : (
+            <p className={css.paymentInfo}>
+              <FormattedMessage
+                id="StripePaymentForm.submitConfirmPaymentFinePrint"
+                values={{ isBooking: isBookingYesNo, name: providerDisplayName }}
+              />
+            </p>
+          )}
         </div>
       </Form>
     ) : (
@@ -728,11 +731,13 @@ class StripePaymentForm extends Component {
 
   render() {
     const { onSubmit, ...rest } = this.props;
+
     return (
       <FinalForm
         onSubmit={this.handleSubmit}
         mutators={{ ...arrayMutators }}
         {...rest}
+        validate={() => ({})}
         render={this.paymentForm}
       />
     );

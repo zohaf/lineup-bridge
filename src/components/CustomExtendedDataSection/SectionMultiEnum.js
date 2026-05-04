@@ -13,8 +13,10 @@ const SectionMultiEnum = props => {
     className,
     rootClassName,
     showUnselectedOptions = true,
+    pillLayout = false,
   } = props;
-  const hasContent = showUnselectedOptions || selectedOptions?.length > 0;
+  const effectiveShowUnselected = pillLayout ? false : showUnselectedOptions;
+  const hasContent = effectiveShowUnselected || selectedOptions?.length > 0;
   if (!heading || !options || !hasContent) {
     return null;
   }
@@ -32,8 +34,9 @@ const SectionMultiEnum = props => {
         ariaLabel={heading}
         options={options}
         selectedOptions={selectedOptions}
-        twoColumns={options.length > 5}
-        showUnselectedOptions={showUnselectedOptions}
+        twoColumns={!pillLayout && options.length > 5}
+        showUnselectedOptions={effectiveShowUnselected}
+        pillLayout={pillLayout}
       />
     </section>
   );

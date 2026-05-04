@@ -10,6 +10,8 @@
   flex-grow: 1;
   flex-direction: column;
 
+  position: relative;
+
   padding-top: 1px;
 
   @media (--viewportMedium) {
@@ -56,6 +58,45 @@
 .timeZoneField {
   width: 100%;
 }
+
+.quickSelect {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 0;
+
+  @media (--viewportSmall) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+.quickSelectRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.quickSelectDayButton {
+  min-width: 44px;
+  min-height: 40px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-weight: var(--fontWeightSemiBold);
+  text-transform: capitalize;
+}
+
+.quickSelectDayButtonActive {
+  border-color: var(--marketplaceColor);
+  box-shadow: inset 0 0 0 1px var(--marketplaceColor);
+}
+
+.quickSelectAllButton {
+  min-height: 40px;
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
 .week {
   display: flex;
   flex-direction: column;
@@ -68,8 +109,22 @@
   }
 }
 
+/* Full-day single-seat: keep FieldArrays in DOM for submit; hide from layout */
+.weekVisuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .submitButton {
-  margin-top: auto;
+  /* ~24–32px after day / Clear all row or after hourly rows (not flex-fill; avoids huge gap in full-height modal) */
+  margin-top: 28px;
   flex-shrink: 0;
   /* Mobile phones introduce bottom-bar, for which we need to give 96px vertical space */
   padding-bottom: 96px;
