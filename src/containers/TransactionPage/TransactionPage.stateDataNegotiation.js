@@ -5,11 +5,17 @@ import {
   ConditionalResolver,
 } from '../../transactions/transaction';
 
+/** Hosted label for provider counter CTA (optional; falls back to default transition key). */
+const PROVIDER_CTA_COUNTER_OFFER_ID =
+  'TransactionPage.default-negotiation.provider.transition-counter-offer-from-request.actionButton';
+
 /**
  * Get state data against booking process for TransactionPage's UI.
  * I.e. info about showing action buttons, current state etc.
  *
  * @param {*} txInfo detials about transaction
+ * @param {Object} [txInfo.currentUser] - Used for role-specific CTA copy (e.g. DJ responding to an offer).
+ * @param {Function} [txInfo.onOpenRejectCounterOfferModal] - Opens confirm dialog before provider rejects counter-offer.
  * @param {*} processInfo  details about process
  */
 export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
@@ -17,11 +23,18 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     transaction,
     transactionRole,
     nextTransitions,
+    currentUser,
     onCheckoutRedirect,
     onMakeOfferRedirect,
     onOpenRequestChangesModal,
     onOpenMakeCounterOfferModal,
+    onOpenRejectCounterOfferModal,
+    onOpenProposeChangesModal,
+    onOpenDeclineOfferModal,
+    onOpenCustomerRejectModal,
+    onAcceptOffer,
   } = txInfo;
+  const currentUserType = currentUser?.attributes?.profile?.publicData?.userType;
   const isProviderBanned = transaction?.provider?.attributes?.banned;
   const isCustomerBanned = transaction?.provider?.attributes?.banned;
   const _ = CONDITIONAL_RESOLVER_WILDCARD;
@@ -79,22 +92,44 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
       return { ...sharedStateData, showDetailCardHeadings: true };
     })
     .cond([states.QUOTE_REQUESTED, PROVIDER], () => {
-      const overwritesForMakeOfferFromRequest = {
-        onAction: () => {
-          return onMakeOfferRedirect();
-        },
+      const acceptOverwrites = {
+        onAction: () => onAcceptOffer(null),
+        actionButtonTranslationId:
+          'OfferDetailsCard.acceptOffer',
+      };
+      const proposeOverwrites = {
+        onAction: onOpenProposeChangesModal,
+        actionButtonTranslationId:
+          'OfferDetailsCard.proposeChanges',
+      };
+      const declineOverwrites = {
+        onAction: onOpenDeclineOfferModal,
+        actionButtonTranslationId:
+          'OfferDetailsCard.declineOffer',
       };
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
-        showExtraInfo: true,
+        showExtraInfo: false,
+        showActivityFeed: false,
+        showOfferDetailsCard: true,
         showActionButtons: true,
         primaryButtonProps: actionButtonProps(
           transitions.MAKE_OFFER_FROM_REQUEST,
           PROVIDER,
-          overwritesForMakeOfferFromRequest
+          acceptOverwrites
         ),
-        secondaryButtonProps: actionButtonProps(transitions.REJECT_REQUEST, PROVIDER),
+        secondaryButtonProps: actionButtonProps(
+          transitions.REJECT_REQUEST,
+          PROVIDER,
+          declineOverwrites
+        ),
+        tertiaryButtonProps: actionButtonProps(
+          transitions.MAKE_OFFER_FROM_REQUEST,
+          PROVIDER,
+          proposeOverwrites
+        ),
+        actionButtonOrder: ['primary', 'tertiary', 'secondary'],
       };
     })
     .cond([states.QUOTE_REQUESTED, CUSTOMER], () => {
@@ -109,11 +144,18 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     .cond([states.OFFER_PENDING, CUSTOMER], () => {
       // When customer clicks on the accept button, we just redirect them to the checkout page.
       // The actual transition is handled there together with the payment
+      const isDj = currentUserType === 'dj';
+      const djAcceptCtaId = 'TransactionPage.default-negotiation.customer.djOfferPending.acceptOffer';
+      const djCounterCtaId =
+        'TransactionPage.default-negotiation.customer.djOfferPending.counterOffer';
+      const djRejectCtaId = 'TransactionPage.default-negotiation.customer.djOfferPending.rejectOffer';
+
       const overwritesForAcceptOffer = {
         onAction: () => {
           const initialValuesForCheckout = {};
           onCheckoutRedirect(initialValuesForCheckout);
         },
+        ...(isDj ? { actionButtonTranslationId: djAcceptCtaId } : {}),
       };
 
       const overwritesForMakeCounterOffer = {
@@ -133,23 +175,27 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
             action: 'hide',
           },
         ],
+        ...(isDj ? { actionButtonTranslationId: djCounterCtaId } : {}),
       };
 
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
+        showOfferDetailsCard: true,
         showActionButtons: true,
         primaryButtonProps: actionButtonProps(
           transitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER,
           CUSTOMER,
           overwritesForAcceptOffer
         ),
-        secondaryButtonProps: actionButtonProps(transitions.CUSTOMER_REJECT_OFFER, CUSTOMER),
-        tertiaryButtonProps: actionButtonProps(
-          transitions.CUSTOMER_MAKE_COUNTER_OFFER,
+        secondaryButtonProps: actionButtonProps(
+          transitions.CUSTOMER_REJECT_OFFER,
           CUSTOMER,
-          overwritesForMakeCounterOffer
+          {
+            onAction: onOpenCustomerRejectModal,
+            ...(isDj ? { actionButtonTranslationId: djRejectCtaId } : {}),
+          }
         ),
       };
     })
@@ -179,14 +225,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
-        showActionButtons: true,
-        secondaryButtonProps: actionButtonProps(transitions.PROVIDER_WITHDRAW_OFFER, PROVIDER),
-        tertiaryButtonProps: actionButtonProps(
-          transitions.UPDATE_OFFER,
-          PROVIDER,
-          overwritesForUpdateOffer
-        ),
-        actionButtonOrder: ['tertiary', 'secondary'],
+        showActionButtons: false,
       };
     })
     .cond([states.UPDATE_PENDING, CUSTOMER], () => {
@@ -250,6 +289,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
           transitions.CUSTOMER_WITHDRAW_COUNTER_OFFER,
           CUSTOMER,
           {
+            onAction: onOpenCustomerRejectModal,
             orderData: {
               actor: CUSTOMER,
             },
@@ -263,6 +303,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showActionButtons: true,
+        showOfferSummaryBlock: true,
         primaryButtonProps: actionButtonProps(transitions.PROVIDER_ACCEPT_COUNTER_OFFER, PROVIDER),
         secondaryButtonProps: actionButtonProps(
           transitions.PROVIDER_REJECT_COUNTER_OFFER,
@@ -271,11 +312,14 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
             orderData: {
               actor: PROVIDER,
             },
+            onAction: onOpenRejectCounterOfferModal,
           }
         ),
         tertiaryButtonProps: actionButtonProps(transitions.PROVIDER_MAKE_COUNTER_OFFER, PROVIDER, {
           onAction: onOpenMakeCounterOfferModal,
+          actionButtonTranslationId: PROVIDER_CTA_COUNTER_OFFER_ID,
         }),
+        actionButtonOrder: ['primary', 'tertiary', 'secondary'],
       };
     })
     .cond([states.OFFER_REJECTED, _], () => {

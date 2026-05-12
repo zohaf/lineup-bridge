@@ -7,6 +7,7 @@ import { userDisplayNameAsString } from '../../../util/data';
 import { isMobileSafari } from '../../../util/userAgent';
 import { createSlug } from '../../../util/urlHelpers';
 import { displayPrice } from '../../../util/configHelpers';
+import { NEGOTIATION_PROCESS_NAME } from '../../../transactions/transaction';
 
 import { AvatarLarge, NamedLink, UserDisplayName } from '../../../components';
 
@@ -93,6 +94,7 @@ const allowShowingExtraInfo = (showExtraInfo, transactionPartyInfo) => {
  * @param {stateDataShape} props.stateData - The state data
  * @param {boolean} props.showBookingLocation - Whether the booking location is shown
  * @param {React.ReactNode} props.activityFeed - The activity feed
+ * @param {React.ReactNode} [props.offerSummarySlot] - Offer summary (negotiation) above activity feed
  * @param {Function} props.actionButtons - The action buttons function
  * @param {React.ReactNode} props.orderBreakdown - The order breakdown
  * @param {React.ReactNode} props.orderPanel - The order panel
@@ -192,6 +194,8 @@ export class TransactionPanelComponent extends Component {
       hasViewingRights,
       transactionFieldsComponent,
       headingTitleMessageId,
+      offerSummarySlot = null,
+      offerDetailsSlot = null,
     } = this.props;
 
     const hasTransitions = transitions.length > 0;
@@ -262,7 +266,7 @@ export class TransactionPanelComponent extends Component {
               showListingImage={showListingImage}
               listingImageConfig={config.layout.listingImage}
             />
-            {isProvider ? (
+            {isProvider && stateData?.processName !== NEGOTIATION_PROCESS_NAME ? (
               <div className={css.avatarWrapperProviderDesktop}>
                 <AvatarLarge user={customer} className={css.avatarDesktop} />
               </div>
@@ -327,14 +331,20 @@ export class TransactionPanelComponent extends Component {
                   listing={listing}
                   locale={config.localization.locale}
                 />
-                <BookingLocationMaybe
-                  className={css.deliveryInfoSection}
-                  listing={listing}
-                  showBookingLocation={showBookingLocation}
-                />
+                {stateData?.processName !== NEGOTIATION_PROCESS_NAME ? (
+                  <BookingLocationMaybe
+                    className={css.deliveryInfoSection}
+                    listing={listing}
+                    showBookingLocation={showBookingLocation}
+                  />
+                ) : null}
               </div>
             ) : null}
             {minimalPostBookingSuccess ? null : (
+              <div className={css.offerSummaryMobileOnly}>{offerSummarySlot}</div>
+            )}
+            {offerDetailsSlot}
+            {minimalPostBookingSuccess || stateData?.processName === NEGOTIATION_PROCESS_NAME ? null : (
               <FeedSection
                 rootClassName={css.feedContainer}
                 hasMessages={messages.length > 0}
@@ -344,25 +354,29 @@ export class TransactionPanelComponent extends Component {
                 isConversation={isInquiryProcess}
               />
             )}
-            {minimalPostBookingSuccess ? null : showSendMessageForm ? (
-              <SendMessageForm
-                formId={this.sendMessageFormName}
-                rootClassName={css.sendMessageForm}
-                messagePlaceholder={intl.formatMessage(
-                  { id: 'TransactionPanel.sendMessagePlaceholder' },
-                  { name: otherUserDisplayNameString }
+            {minimalPostBookingSuccess || stateData?.processName === NEGOTIATION_PROCESS_NAME
+              ? null
+              : showSendMessageForm
+                ? (
+                  <SendMessageForm
+                    formId={this.sendMessageFormName}
+                    rootClassName={css.sendMessageForm}
+                    messagePlaceholder={intl.formatMessage(
+                      { id: 'TransactionPanel.sendMessagePlaceholder' },
+                      { name: otherUserDisplayNameString }
+                    )}
+                    inProgress={sendMessageInProgress}
+                    sendMessageError={sendMessageError}
+                    onFocus={this.onSendMessageFormFocus}
+                    onBlur={this.onSendMessageFormBlur}
+                    onSubmit={this.onMessageSubmit}
+                  />
+                )
+                : (
+                  <div className={css.sendingMessageNotAllowed}>
+                    <FormattedMessage id="TransactionPanel.sendingMessageNotAllowed" />
+                  </div>
                 )}
-                inProgress={sendMessageInProgress}
-                sendMessageError={sendMessageError}
-                onFocus={this.onSendMessageFormFocus}
-                onBlur={this.onSendMessageFormBlur}
-                onSubmit={this.onMessageSubmit}
-              />
-            ) : (
-              <div className={css.sendingMessageNotAllowed}>
-                <FormattedMessage id="TransactionPanel.sendingMessageNotAllowed" />
-              </div>
-            )}
 
             {stateData.showActionButtons ? (
               <>
@@ -416,6 +430,9 @@ export class TransactionPanelComponent extends Component {
                   />
                 ) : null}
 
+                {minimalPostBookingSuccess ? null : (
+                  <div className={css.offerSummaryDesktopOnly}>{offerSummarySlot}</div>
+                )}
                 {stateData.showActionButtons ? (
                   <div className={css.desktopActionButtons}>{actionButtons('desktop')}</div>
                 ) : null}

@@ -27,6 +27,20 @@ import css from './MakeOfferForm.module.css';
 
 const { Money } = sdkTypes;
 
+/**
+ * @param {string | undefined} userType - `profile.publicData.userType` from hosted user types (e.g. organizer, dj).
+ * @returns {string} react-intl message id for the submit button.
+ */
+const getSubmitButtonMessageId = userType => {
+  if (userType === 'organizer') {
+    return 'MakeOfferPage.submitButtonTextOrganizer';
+  }
+  if (userType === 'dj') {
+    return 'MakeOfferPage.submitButtonTextDj';
+  }
+  return 'MakeOfferPage.submitButtonText';
+};
+
 const getPriceValidators = (listingMinimumPriceSubUnits, marketplaceCurrency, intl) => {
   const quoteRequiredMsgId = { id: 'MakeOfferPage.quoteRequired' };
   const quoteRequiredMsg = intl.formatMessage(quoteRequiredMsgId);
@@ -43,7 +57,7 @@ const getPriceValidators = (listingMinimumPriceSubUnits, marketplaceCurrency, in
 
   return listingMinimumPriceSubUnits
     ? validators.composeValidators(quoteRequired, minQuoteRequired)
-    : priceRequired;
+    : quoteRequired;
 };
 
 const FinePrint = ({ stripeConnected }) => {
@@ -89,6 +103,7 @@ export const MakeOfferForm = props => {
   const {
     intl,
     config,
+    currentUser,
     price,
     providerDefaultMessage,
     stripeConnected,
@@ -98,6 +113,9 @@ export const MakeOfferForm = props => {
     transactionFieldInitialValues = {},
     ...restProps
   } = props;
+
+  const userType = currentUser?.attributes?.profile?.publicData?.userType;
+  const submitButtonMessageId = getSubmitButtonMessageId(userType);
 
   const providerDefaultMessageMaybe = providerDefaultMessage ? { providerDefaultMessage } : {};
   const priceMaybe = price ? { quote: price } : {};
@@ -178,9 +196,12 @@ export const MakeOfferForm = props => {
                 name="providerDefaultMessage"
                 id={formId ? `${formId}.message` : 'message'}
                 labelClassName={css.sectionHeading}
-                label={intl.formatMessage({
-                  id: 'MakeOfferPage.defaultMessageLabel',
-                })}
+                label={
+                  <>
+                    {intl.formatMessage({ id: 'MakeOfferPage.defaultMessageLabel' })}
+                    {' '}<span className={css.optional}>(optional)</span>
+                  </>
+                }
                 placeholder={intl.formatMessage(
                   {
                     id: 'MakeOfferPage.defaultMessagePlaceholder',
@@ -193,7 +214,7 @@ export const MakeOfferForm = props => {
             <div className={submitButtonWrapperClassName}>
               <ErrorMessage error={makeOfferError} />
               <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-                <FormattedMessage id="MakeOfferPage.submitButtonText" />
+                <FormattedMessage id={submitButtonMessageId} />
               </PrimaryButton>
               <FinePrint stripeConnected={stripeConnected} />
             </div>

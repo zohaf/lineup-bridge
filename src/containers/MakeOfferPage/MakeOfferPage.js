@@ -253,6 +253,7 @@ const MakeOfferPageComponent = props => {
             <MakeOfferForm
               intl={intl}
               config={config}
+              currentUser={currentUser}
               price={price}
               providerDefaultMessage={providerDefaultMessage}
               stripeConnected={stripeConnected && stripeAccountData && !requirementsMissing}

@@ -1,0 +1,29 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.modalContent {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px 24px 24px;
+}
+
+.body {
+  composes: marketplaceDefaultFontStyles from global;
+  margin: 0 0 24px 0;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

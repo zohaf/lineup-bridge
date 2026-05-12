@@ -27,6 +27,12 @@
 .input {
 }
 
+.optional {
+  font-style: italic;
+  font-weight: var(--fontWeightRegular);
+  color: var(--colorGrey500);
+}
+
 .fieldDefaultMessage {
   margin: 12px 0 24px 0;
 

@@ -49,6 +49,12 @@
   }
 }
 
+.optional {
+  font-style: italic;
+  font-weight: var(--fontWeightRegular);
+  color: var(--colorGrey500);
+}
+
 .counterOfferMessage {
   flex-shrink: 0;
   margin-top: 24px;

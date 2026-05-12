@@ -200,18 +200,24 @@ export const handleNavigateToMakeOfferPage = parameters => () => {
  * @param {Object} parameters.routes The routes object from react-router.
  * @returns {Function} A function that navigates to RequestQuotePage.
  */
-export const handleNavigateToRequestQuotePage = parameters => () => {
+export const handleNavigateToRequestQuotePage = parameters => values => {
   const { getListing, params, history, routes } = parameters;
 
   const listingId = new UUID(params.id);
   const listing = getListing(listingId);
+
+  const { bookingDate, bookingStartTime: startTime, durationHours } = values || {};
+  const searchParams =
+    bookingDate || startTime || durationHours
+      ? { bookingDate, bookingStartTime: startTime, durationHours }
+      : {};
 
   history.push(
     createResourceLocatorString(
       'RequestQuotePage',
       routes,
       { id: listing.id.uuid, slug: createSlug(listing.attributes.title) },
-      {}
+      searchParams
     )
   );
 };

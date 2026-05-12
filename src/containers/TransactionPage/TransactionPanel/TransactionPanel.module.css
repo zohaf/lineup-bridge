@@ -524,3 +524,19 @@
     margin-top: 16px;
   }
 }
+
+/* Offer summary: main column on small screens; aside (above CTAs) on large screens */
+.offerSummaryMobileOnly {
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
+.offerSummaryDesktopOnly {
+  display: none;
+
+  @media (--viewportLarge) {
+    display: block;
+    width: 100%;
+  }
+}

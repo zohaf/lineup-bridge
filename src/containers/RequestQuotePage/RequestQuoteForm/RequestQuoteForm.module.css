@@ -3,36 +3,99 @@
 .root {
 }
 
+.bookingSummary {
+  padding: 18px;
+  border: solid 1px var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorPageBackground);
+  margin-bottom: 18px;
+
+  @media (--viewportMedium) {
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+}
+
+.bookingSummaryTitle {
+  composes: marketplaceDefaultFontStyles from global;
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0 0 12px 0;
+  color: var(--colorGrey900);
+}
+
+.bookingSummaryGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bookingSummaryItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bookingSummaryLabel {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+}
+
+.bookingSummaryValue {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey900);
+}
+
 .section {
   display: flex;
   flex-direction: column;
   margin-bottom: 40px;
 }
 
-.sectionHeading {
-  composes: p from global;
-  font-weight: var(--fontWeightBold);
+.sectionTitle {
+  composes: marketplaceDefaultFontStyles from global;
+  font-weight: var(--fontWeightSemiBold);
   margin: 0 0 12px 0;
-
-  padding-top: 4px;
-  padding-bottom: 2px;
-
-  @media (--viewportMedium) {
-    margin: 0 0 0 0;
-    padding-top: 5px;
-    padding-bottom: 3px;
-  }
+  color: var(--colorGrey900);
 }
 
 .input {
 }
 
-.fieldDefaultMessage {
-  margin: 12px 0 24px 0;
+.field {
+  margin: 0 0 24px 0;
 
-  @media (--viewportMedium) {
-    margin: 16px 0 24px 0;
+  & label {
+    margin: 0 0 8px 0;
+    padding: 0;
   }
+}
+
+.fieldCompact {
+  margin-bottom: 4px;
+}
+
+.label {
+  composes: marketplaceSmallFontStyles from global;
+  font-weight: var(--fontWeightMedium);
+}
+
+.optional {
+  font-style: italic;
+  font-weight: var(--fontWeightRegular);
+  color: var(--colorGrey500);
+}
+
+.helper {
+  font-weight: var(--fontWeightHeading);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--colorGrey500);
+  margin: 0 0 24px 0;
+}
+
+.offerUnderText {
+  margin: 4px 0 0 0;
 }
 
 .finePrint {
@@ -40,11 +103,76 @@
   text-align: center;
 }
 
-.transactionFieldsContainer {
-  /* margin-top: 36px; */
-  margin-bottom: 36px;
+.dateInputRightIcon {
+  & input {
+    padding-left: 12px;
+    padding-right: 36px;
+    background-position: calc(100% - 12px) 9px;
 
-  @media (--viewportMedium) {
-    margin-bottom: 40px;
+    @media (--viewportMedium) {
+      background-position: calc(100% - 12px) 14px;
+    }
   }
+}
+
+.timePickerRow {
+  display: flex;
+  gap: 8px;
+}
+
+.timeSelect {
+  composes: marketplaceInputStyles from global;
+  flex: 1;
+}
+
+.durationInputShell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.durationInputShellError {
+  & input {
+    border-color: var(--colorFail);
+  }
+}
+
+.durationInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  padding-right: 64px;
+}
+
+.durationSuffix {
+  position: absolute;
+  right: 12px;
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  pointer-events: none;
+}
+
+.offerInputShell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.offerInputShellError {
+  & input {
+    border-color: var(--colorFail);
+  }
+}
+
+.offerInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  padding-right: 44px;
+}
+
+.offerSuffix {
+  position: absolute;
+  right: 12px;
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  pointer-events: none;
 }

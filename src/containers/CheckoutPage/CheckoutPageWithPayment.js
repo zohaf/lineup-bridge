@@ -580,7 +580,7 @@ export const CheckoutPageWithPayment = props => {
 
   const listingLocation = listing?.attributes?.publicData?.location;
   const showPickUpLocation = isPurchase && orderData?.deliveryMethod === 'pickup';
-  const showLocation = (isBooking || isNegotiation) && listingLocation?.address;
+  const showLocation = isBooking && listingLocation?.address;
 
   const providerDisplayName = isNegotiation
     ? existingTransaction?.provider?.attributes?.profile?.displayName

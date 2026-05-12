@@ -83,6 +83,86 @@
   }
 }
 
+.bookingDetails {
+  margin-top: 16px;
+}
+
+.bookingDetailsTitle {
+  composes: marketplaceDefaultFontStyles from global;
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0 0 12px 0;
+  color: var(--colorGrey900);
+}
+
+.bookingFields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bookingField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  & label {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.bookingLabel {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+}
+
+.timeInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+}
+
+.timePickerRow {
+  display: flex;
+  gap: 8px;
+}
+
+.timeSelect {
+  composes: marketplaceInputStyles from global;
+  flex: 1;
+}
+
+.durationInputShell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.durationInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  padding-right: 44px;
+}
+
+.durationSuffix {
+  position: absolute;
+  right: 12px;
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  pointer-events: none;
+}
+
+.dateInputRightIcon {
+  & input {
+    padding-left: 12px;
+    padding-right: 36px;
+    background-position: calc(100% - 12px) 9px;
+
+    @media (--viewportMedium) {
+      background-position: calc(100% - 12px) 14px;
+    }
+  }
+}
+
 .orderBreakdownHeader {
   @media (--viewportLarge) {
     margin: 0 48px;

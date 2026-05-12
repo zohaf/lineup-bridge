@@ -1,0 +1,217 @@
+@import '../../styles/customMediaQueries.css';
+
+.ownListings {
+  padding: 24px 0 0 0;
+}
+
+.ownListingsInner {
+  max-width: 848px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 30px;
+  padding-right: 30px;
+
+  @media (--viewportSmall) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+.ownListingsCards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (--viewportMedium) {
+    gap: 24px;
+  }
+}
+
+.emptyStateBox {
+  display: block;
+  width: 100%;
+
+  padding: 18px;
+  border: solid 1px var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorPageBackground);
+
+  @media (--viewportMedium) {
+    padding: 24px;
+  }
+}
+
+.emptyStateLabel {
+  composes: h4 from global;
+  margin: 0;
+  color: var(--colorGrey900);
+}
+
+.homeSection {
+  padding: 24px 0 0 0;
+}
+
+.homeInner {
+  max-width: 848px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 30px;
+  padding-right: 30px;
+
+  @media (--viewportSmall) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+.welcomeBack {
+  composes: h2 from global;
+  margin: 0 0 12px 0;
+  color: var(--colorGrey700);
+}
+
+.whatsNextTitle {
+  composes: marketplaceDefaultFontStyles from global;
+  margin: 0 0 18px 0;
+  color: var(--colorGrey900);
+}
+
+.nextCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  @media (--viewportMedium) {
+    gap: 16px;
+  }
+}
+
+.nextCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px;
+  border: solid 1px var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorPageBackground);
+  gap: 12px;
+
+  @media (--viewportMedium) {
+    padding: 24px;
+    gap: 18px;
+  }
+}
+
+.nextCardMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.nextCardTitle {
+  composes: h4 from global;
+  margin: 0 0 6px 0;
+  color: var(--colorGrey900);
+
+  @media (--viewportMedium) {
+    margin-bottom: 8px;
+  }
+}
+
+.nextCardSubtitle {
+  composes: marketplaceSmallFontStyles from global;
+  margin: 0;
+  color: var(--colorGrey700);
+}
+
+.nextCardCtaSlot {
+  flex-shrink: 0;
+}
+
+.nextCardCta {
+  composes: buttonSecondaryInline from global;
+  white-space: nowrap;
+}
+
+.offersSection {
+  margin-top: 30px;
+}
+
+.offersTitle {
+  composes: h4 from global;
+  margin: 0 0 12px 0;
+  color: var(--colorGrey900);
+}
+
+.offerCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  @media (--viewportMedium) {
+    gap: 16px;
+  }
+}
+
+.offerCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px;
+  border: solid 1px var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorPageBackground);
+  gap: 12px;
+
+  @media (--viewportMedium) {
+    padding: 24px;
+    gap: 18px;
+  }
+}
+
+.offerCardMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.offerCardTitle {
+  composes: marketplaceDefaultFontStyles from global;
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0 0 12px 0;
+  color: var(--colorGrey900);
+}
+
+.offerMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  @media (--viewportMedium) {
+    gap: 8px;
+  }
+}
+
+.offerMetaRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+.offerMetaLabel {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  min-width: 72px;
+}
+
+.offerMetaValue {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey900);
+}
+
+.offerCardCtaSlot {
+  flex-shrink: 0;
+}

@@ -32,6 +32,29 @@
   }
 }
 
+/* Desktop: sit booking block beside avatar so "Select booking details" lines up with the main-column name */
+.asideContentVisitorBooking {
+  @media (--viewportLarge) {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+}
+
+.asideContentVisitorBooking .avatar {
+  @media (--viewportLarge) {
+    margin: 0 24px 0 0;
+  }
+}
+
+.asideContentVisitorBooking .bookingStartBox {
+  @media (--viewportLarge) {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+  }
+}
+
 .avatar {
   margin: 30px 26px 29px 0;
   flex-shrink: 0;
@@ -78,6 +101,80 @@
     display: inline;
     padding: 6px 0 2px 0;
   }
+}
+
+.bookingStartBox {
+  width: 100%;
+  margin: 18px 0 0 0;
+  padding: 18px;
+  border: solid 1px var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorPageBackground);
+
+  @media (--viewportLarge) {
+    margin-top: 24px;
+    padding: 24px;
+  }
+}
+
+.bookingStartTitle {
+  composes: marketplaceDefaultFontStyles from global;
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0 0 6px 0;
+  color: var(--colorGrey900);
+}
+
+.bookingStartSubtitle {
+  composes: marketplaceSmallFontStyles from global;
+  margin: 0 0 12px 0;
+  color: var(--colorGrey700);
+}
+
+.bookingStartFields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bookingStartField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bookingStartLabel {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+}
+
+.bookingStartTimeInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+}
+
+.durationInputShell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.durationInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  padding-right: 64px;
+}
+
+.durationSuffix {
+  position: absolute;
+  right: 12px;
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  pointer-events: none;
+}
+
+.bookingStartNextButton {
+  margin-top: 12px;
+  width: 100%;
 }
 
 .desktopHeading {

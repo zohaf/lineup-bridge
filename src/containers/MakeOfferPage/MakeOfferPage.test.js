@@ -119,7 +119,7 @@ describe('MakeOfferPage', () => {
 
     // Check that the submit button is present
     expect(
-      screen.getByRole('button', { name: /MakeOfferPage\.submitButtonText/ })
+      screen.getByRole('button', { name: /MakeOfferPage\.submitButtonText(Organizer|Dj)?/ })
     ).toBeInTheDocument();
 
     // Check that the page renders without errors (basic smoke test)

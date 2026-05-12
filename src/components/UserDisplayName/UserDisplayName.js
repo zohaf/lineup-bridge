@@ -27,7 +27,10 @@ const UserDisplayName = props => {
   const userIsDeleted = hasAttributes && user.attributes.deleted;
   const userIsBanned = hasAttributes && user.attributes.banned;
   const userHasProfile = hasAttributes && user.attributes.profile;
-  const userDisplayName = userHasProfile && user.attributes.profile.displayName;
+  const artistName = userHasProfile && user.attributes.profile.publicData?.artistName;
+  const rawDisplayName = userHasProfile && user.attributes.profile.displayName;
+  const firstName = rawDisplayName ? rawDisplayName.replace(/\s\w\.?$/, '') || rawDisplayName : null;
+  const userDisplayName = artistName || firstName;
 
   const deletedUserDisplayNameInUse = deletedUserDisplayName
     ? deletedUserDisplayName

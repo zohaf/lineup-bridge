@@ -21,6 +21,7 @@ import {
 } from '../../util/types';
 import { timestampToDate } from '../../util/dates';
 import { createSlug } from '../../util/urlHelpers';
+import { userDisplayNameAsString } from '../../util/data';
 import { requireListingImage } from '../../util/configHelpers';
 
 import {
@@ -71,6 +72,11 @@ import DisputeModal from './DisputeModal/DisputeModal';
 import ReviewModal from './ReviewModal/ReviewModal';
 import RequestChangesModal from './RequestChangesModal/RequestChangesModal';
 import MakeCounterOfferModal from './MakeCounterOfferModal/MakeCounterOfferModal';
+import RejectCounterOfferConfirmModal from './RejectCounterOfferConfirmModal/RejectCounterOfferConfirmModal';
+import OfferSummaryBlock from './OfferSummaryBlock/OfferSummaryBlock';
+import OfferDetailsCard from './OfferDetailsCard/OfferDetailsCard';
+import ProposeChangesModal from './ProposeChangesModal/ProposeChangesModal';
+import DeclineOfferModal from './DeclineOfferModal/DeclineOfferModal';
 import TransactionPanel from './TransactionPanel/TransactionPanel';
 
 import {
@@ -131,7 +137,7 @@ const onChangeRequest = (
     });
 };
 
-// Submit counter offer, make transition, and send message
+// Submit counter offer, make transition, and optionally send a follow-up message
 const onMakeCounterOffer = (
   currentTransactionId,
   transitionName,
@@ -139,26 +145,36 @@ const onMakeCounterOffer = (
   transactionRole,
   currency,
   setMakeCounterOfferModalOpen,
-  setCounterOfferSubmitted
+  setCounterOfferSubmitted,
+  onSendMessage,
+  sendMessageConfig
 ) => values => {
-  const { counterOffer } = values;
+  const { counterOffer, counterOfferMessage } = values;
 
-  // First make the transition with the counter offer amount
   const params = {
     orderData: {
       actor: transactionRole,
-      offerInSubunits: counterOffer.amount, // TODO: get the actual offer in subunits
+      offerInSubunits: counterOffer.amount,
       currency,
     },
   };
 
+  const messageText =
+    typeof counterOfferMessage === 'string' ? counterOfferMessage.trim() : '';
+
   onTransition(currentTransactionId, transitionName, params)
     .then(r => {
-      setMakeCounterOfferModalOpen(false);
-      return setCounterOfferSubmitted(true);
+      if (messageText && onSendMessage) {
+        return onSendMessage(currentTransactionId, messageText, sendMessageConfig).catch(() => {});
+      }
+      return r;
     })
-    .catch(e => {
-      // Do nothing, error will be handled by the form
+    .then(() => {
+      setMakeCounterOfferModalOpen(false);
+      setCounterOfferSubmitted(true);
+    })
+    .catch(() => {
+      // Error surfaced via transitionError / form
     });
 };
 
@@ -274,6 +290,10 @@ export const TransactionPageComponent = props => {
   const [changeRequestSubmitted, setChangeRequestSubmitted] = useState(false);
   const [isMakeCounterOfferModalOpen, setMakeCounterOfferModalOpen] = useState(false);
   const [counterOfferSubmitted, setCounterOfferSubmitted] = useState(false);
+  const [isRejectCounterOfferModalOpen, setRejectCounterOfferModalOpen] = useState(false);
+  const [isProposeChangesModalOpen, setProposeChangesModalOpen] = useState(false);
+  const [isDeclineOfferModalOpen, setDeclineOfferModalOpen] = useState(false);
+  const [isCustomerRejectModalOpen, setCustomerRejectModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const {
@@ -601,6 +621,116 @@ export const TransactionPageComponent = props => {
     routes: routeConfiguration,
   });
 
+  const onOpenRejectCounterOfferModal = () => setRejectCounterOfferModalOpen(true);
+
+  // ── Accept offer handler (QUOTE_REQUESTED → make-offer-from-request at customer's price) ──
+  const onAcceptOffer = messageText => {
+    if (!transaction?.id || !process?.transitions?.MAKE_OFFER_FROM_REQUEST) return;
+
+    const protectedData = transaction?.attributes?.protectedData || {};
+    const offerAmountEuros = protectedData.offerAmount;
+    if (offerAmountEuros == null) return;
+
+    const offerInSubunits = offerAmountEuros * 100;
+    const params = {
+      orderData: {
+        actor: PROVIDER,
+        offerInSubunits,
+        currency: config.currency,
+      },
+    };
+
+    onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params)
+      .then(() => {
+        if (messageText && onSendMessage) {
+          return onSendMessage(transaction.id, messageText, config).catch(() => {});
+        }
+      })
+      .catch(() => {});
+  };
+
+  // ── Propose changes handler (QUOTE_REQUESTED → make-offer-from-request at DJ's price) ──
+  const onSubmitProposeChanges = values => {
+    if (!transaction?.id || !process?.transitions?.MAKE_OFFER_FROM_REQUEST) return;
+
+    const { proposedFee, proposedStartTime, proposedDuration, proposedFeeNotes, proposedNotes } =
+      values;
+    const feeNum = Number.parseInt(proposedFee, 10);
+    if (Number.isNaN(feeNum) || feeNum < 1) return;
+
+    const offerInSubunits = feeNum * 100;
+    const parsedDuration = Number.parseInt(proposedDuration, 10);
+
+    const proposedChanges = {
+      proposedFee: feeNum,
+    };
+    if (proposedStartTime) proposedChanges.proposedStartTime = proposedStartTime;
+    if (Number.isInteger(parsedDuration) && parsedDuration > 0) {
+      proposedChanges.proposedDuration = parsedDuration;
+    }
+    if (proposedFeeNotes) proposedChanges.proposedFeeNotes = proposedFeeNotes;
+    if (proposedNotes) proposedChanges.proposedNotes = proposedNotes;
+
+    const params = {
+      orderData: {
+        actor: PROVIDER,
+        offerInSubunits,
+        currency: config.currency,
+      },
+      protectedData: {
+        proposedChanges,
+      },
+    };
+
+    onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params)
+      .then(() => {
+        setProposeChangesModalOpen(false);
+      })
+      .catch(() => {});
+  };
+
+  // ── Decline offer handler (QUOTE_REQUESTED → reject-request) ──
+  const onConfirmDeclineOffer = ({ message } = {}) => {
+    if (!transaction?.id || !process?.transitions?.REJECT_REQUEST) return;
+
+    onTransition(transaction.id, process.transitions.REJECT_REQUEST, {})
+      .then(() => {
+        if (message) {
+          return onSendMessage(transaction.id, message);
+        }
+      })
+      .then(() => {
+        setDeclineOfferModalOpen(false);
+      })
+      .catch(() => {});
+  };
+
+  // ── Customer reject/withdraw offer handler ──
+  const onConfirmCustomerReject = ({ message } = {}) => {
+    if (!transaction?.id) return;
+
+    const isCounterOfferState = process?.transitions?.CUSTOMER_WITHDRAW_COUNTER_OFFER
+      && process.getState(transaction) === process.states.CUSTOMER_OFFER_PENDING;
+
+    const transitionKey = isCounterOfferState
+      ? 'CUSTOMER_WITHDRAW_COUNTER_OFFER'
+      : 'CUSTOMER_REJECT_OFFER';
+
+    const transition = process?.transitions?.[transitionKey];
+    if (!transition) return;
+
+    onTransition(transaction.id, transition, {})
+      .then(() => {
+        if (message) {
+          return onSendMessage(transaction.id, message);
+        }
+      })
+      .then(() => {
+        setCustomerRejectModalOpen(false);
+      })
+      .catch(() => {});
+  };
+
   const stateData = isDataAvailable
     ? getStateData(
         {
@@ -615,9 +745,15 @@ export const TransactionPageComponent = props => {
           onOpenReviewModal,
           onOpenRequestChangesModal,
           onOpenMakeCounterOfferModal,
+          onOpenRejectCounterOfferModal,
+          onOpenProposeChangesModal: () => setProposeChangesModalOpen(true),
+          onOpenDeclineOfferModal: () => setDeclineOfferModalOpen(true),
+          onOpenCustomerRejectModal: () => setCustomerRejectModalOpen(true),
+          onAcceptOffer,
           onCheckoutRedirect: handleSubmitOrderRequest,
           onMakeOfferRedirect: onMakeOffer,
           intl,
+          currentUser,
         },
         process
       )
@@ -639,6 +775,42 @@ export const TransactionPageComponent = props => {
           showActionButtons: false,
         }
       : stateData;
+
+  const onConfirmRejectCounterOffer = () => {
+    if (!transaction?.id || !process?.transitions?.PROVIDER_REJECT_COUNTER_OFFER) {
+      return;
+    }
+    onTransition(transaction.id, process.transitions.PROVIDER_REJECT_COUNTER_OFFER, {
+      orderData: { actor: PROVIDER },
+    })
+      .then(() => {
+        setRejectCounterOfferModalOpen(false);
+      })
+      .catch(() => {});
+  };
+
+  const offerSummarySlot =
+    isDataAvailable &&
+    stateDataForPanel?.showOfferSummaryBlock &&
+    transaction &&
+    listing ? (
+      <OfferSummaryBlock
+        transaction={transaction}
+        listing={listing}
+        intl={intl}
+        messages={messages}
+        currentUser={currentUser}
+      />
+    ) : null;
+
+  // ── Offer details card for DJ in QUOTE_REQUESTED (read-only; CTAs in aside) ──
+  const offerDetailsSlot =
+    isDataAvailable &&
+    stateDataForPanel?.showOfferDetailsCard &&
+    transaction &&
+    customer ? (
+      <OfferDetailsCard transaction={transaction} customer={customer} />
+    ) : null;
 
   const headingTitleMessageId = forceMinimalFromCheckoutSuccess
     ? `TransactionPage.${processName}.${transactionRole}.pending-payment.title`
@@ -749,6 +921,8 @@ export const TransactionPageComponent = props => {
       showBookingLocation={showBookingLocation}
       hasViewingRights={hasViewingRights}
       showListingImage={showListingImage}
+      offerSummarySlot={offerSummarySlot}
+      offerDetailsSlot={offerDetailsSlot}
       actionButtons={containerId => (
         <ActionButtons
           containerId={containerId}
@@ -796,19 +970,7 @@ export const TransactionPageComponent = props => {
           }
         />
       }
-      offer={
-        <Offer
-          transaction={transaction}
-          isNegotiationProcess={isNegotiationProcess}
-          transactionRole={transactionRole}
-          isRegularNegotiation={isRegularNegotiation}
-          isProviderBanned={isProviderBanned}
-          intl={intl}
-          transactionFieldsComponent={
-            <TransactionFields {...customTransactionFieldProps('provider', true)} />
-          }
-        />
-      }
+      offer={null}
       isInquiryProcess={processName === INQUIRY_PROCESS_NAME}
       config={config}
       {...orderBreakdownMaybe}
@@ -872,8 +1034,8 @@ export const TransactionPageComponent = props => {
           id: `TransactionPage.${processName}.${transactionRole}.${stateData.processState}.title`,
         },
         {
-          customerName: customer?.attributes.profile.displayName,
-          providerName: provider?.attributes.profile.displayName,
+          customerName: userDisplayNameAsString(customer, ''),
+          providerName: userDisplayNameAsString(provider, ''),
         }
       )
     : null;
@@ -956,7 +1118,9 @@ export const TransactionPageComponent = props => {
               transactionRole,
               currency,
               setMakeCounterOfferModalOpen,
-              setCounterOfferSubmitted
+              setCounterOfferSubmitted,
+              onSendMessage,
+              config
             )}
             currentOffer={currentOffer}
             counterOfferSubmitted={counterOfferSubmitted}
@@ -965,6 +1129,49 @@ export const TransactionPageComponent = props => {
             currencyConfig={currencyConfig}
           />
         ) : null}
+        {process?.transitions?.PROVIDER_REJECT_COUNTER_OFFER ? (
+          <RejectCounterOfferConfirmModal
+            id="RejectCounterOfferConfirmModal"
+            isOpen={isRejectCounterOfferModalOpen}
+            onCloseModal={() => setRejectCounterOfferModalOpen(false)}
+            focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_2_ID}`}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onConfirmReject={onConfirmRejectCounterOffer}
+            inProgress={
+              transitionInProgress === process.transitions.PROVIDER_REJECT_COUNTER_OFFER
+            }
+          />
+        ) : null}
+        <ProposeChangesModal
+          id="ProposeChangesModal"
+          isOpen={isProposeChangesModalOpen}
+          onClose={() => setProposeChangesModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onSubmit={onSubmitProposeChanges}
+          currentFee={transaction?.attributes?.protectedData?.offerAmount}
+          currentStartTime={transaction?.attributes?.protectedData?.bookingStartTime}
+          currentDuration={transaction?.attributes?.protectedData?.durationHours}
+          currentNotes={transaction?.attributes?.protectedData?.additionalNotes}
+          inProgress={
+            transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST
+          }
+        />
+        <DeclineOfferModal
+          id="DeclineOfferModal"
+          isOpen={isDeclineOfferModalOpen}
+          onClose={() => setDeclineOfferModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onConfirm={onConfirmDeclineOffer}
+          inProgress={transitionInProgress === process?.transitions?.REJECT_REQUEST}
+        />
+        <DeclineOfferModal
+          id="CustomerRejectOfferModal"
+          isOpen={isCustomerRejectModalOpen}
+          onClose={() => setCustomerRejectModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onConfirm={onConfirmCustomerReject}
+          inProgress={transitionInProgress === process?.transitions?.CUSTOMER_REJECT_OFFER}
+        />
       </LayoutSingleColumn>
     </Page>
   );

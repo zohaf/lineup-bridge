@@ -1,0 +1,136 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  composes: marketplaceModalBaseStyles from global;
+  padding-top: 70px;
+
+  @media (--viewportMedium) {
+    flex-basis: 567px;
+    min-height: 687px;
+  }
+}
+
+.modalContent {
+  flex-grow: 1;
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+.field {
+  margin-bottom: 24px;
+
+  & label {
+    margin: 0 0 8px 0;
+    padding: 0;
+  }
+}
+
+.label {
+  composes: marketplaceSmallFontStyles from global;
+  font-weight: var(--fontWeightMedium);
+}
+
+.optional {
+  font-style: italic;
+  font-weight: var(--fontWeightRegular);
+  color: var(--colorGrey500);
+}
+
+.feeInputShell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.feeInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  padding-right: 44px;
+}
+
+.feeSuffix {
+  position: absolute;
+  right: 12px;
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  pointer-events: none;
+}
+
+.timeInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+}
+
+.timePickerRow {
+  display: flex;
+  gap: 8px;
+}
+
+.timeSelect {
+  composes: marketplaceInputStyles from global;
+  flex: 1;
+}
+
+.durationInputShell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.durationInput {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  padding-right: 64px;
+}
+
+.durationSuffix {
+  position: absolute;
+  right: 12px;
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  pointer-events: none;
+}
+
+.textarea {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+}
+
+.errorPlaceholder {
+  composes: marketplaceTinyFontStyles from global;
+  color: var(--colorFail);
+  min-height: 18px;
+  margin: 4px 0 0 0;
+}
+
+.submitButton {
+  margin-top: auto;
+  margin-bottom: 96px;
+  flex-shrink: 0;
+
+  @media (--viewportMedium) {
+    display: inline-block;
+    width: 100%;
+    margin-top: 36px;
+    margin-bottom: 0;
+  }
+}
+
+.cancelLink {
+  composes: marketplaceTinyFontStyles from global;
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  color: var(--colorGrey600);
+  cursor: pointer;
+  background: none;
+  border: none;
+
+  &:hover {
+    color: var(--colorGrey900);
+  }
+}

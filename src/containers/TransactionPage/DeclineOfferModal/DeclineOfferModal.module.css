@@ -1,0 +1,71 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  composes: marketplaceModalBaseStyles from global;
+  padding-top: 70px;
+
+  @media (--viewportMedium) {
+    flex-basis: 567px;
+    min-height: auto;
+  }
+}
+
+.modalContent {
+  flex-grow: 1;
+}
+
+.title {
+  composes: marketplaceModalTitleStyles from global;
+  margin-top: 0;
+}
+
+.description {
+  composes: marketplaceBodyFontStyles from global;
+  color: var(--colorGrey700);
+  margin: 0 0 24px 0;
+}
+
+.field {
+  margin-bottom: 24px;
+
+  & label {
+    margin: 0 0 8px 0;
+    padding: 0;
+  }
+}
+
+.label {
+  composes: marketplaceSmallFontStyles from global;
+  font-weight: var(--fontWeightMedium);
+  display: block;
+}
+
+.textarea {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: auto;
+  margin-bottom: 96px;
+
+  @media (--viewportMedium) {
+    margin-top: 12px;
+    margin-bottom: 0;
+  }
+}
+
+.confirmButton {
+  background-color: var(--colorFail);
+  color: var(--colorWhite);
+
+  &:hover,
+  &:focus {
+    background-color: var(--colorFailDark);
+  }
+}

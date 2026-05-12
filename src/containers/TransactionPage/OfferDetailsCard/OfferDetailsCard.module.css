@@ -1,0 +1,141 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  margin-bottom: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.avatar {
+  flex-shrink: 0;
+}
+
+.headerText {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  margin: 0;
+}
+
+/* ── Sections ── */
+
+.section {
+  border: 1px solid var(--colorGrey100);
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 12px;
+
+  @media (--viewportMedium) {
+    padding: 24px;
+  }
+}
+
+.sectionTitle {
+  composes: marketplaceSmallFontStyles from global;
+  font-weight: var(--fontWeightSemiBold);
+  color: var(--colorGrey900);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.rowLabel {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  margin: 0;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.rowValue {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey900);
+  margin: 0;
+  text-align: right;
+  word-break: break-word;
+}
+
+.rowValueFee {
+  composes: rowValue;
+  font-weight: var(--fontWeightSemiBold);
+  font-size: 16px;
+}
+
+.descriptionBlock {
+  padding: 6px 0 0 0;
+}
+
+.descriptionLabel {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  margin: 0 0 4px 0;
+}
+
+.descriptionValue {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey900);
+  margin: 0;
+  white-space: pre-line;
+}
+
+.notProvided {
+  color: var(--colorGrey500);
+  font-style: italic;
+}
+
+/* ── Proposed changes ── */
+
+.proposedBanner {
+  composes: marketplaceSmallFontStyles from global;
+  background-color: var(--colorFail);
+  color: var(--colorWhite);
+  padding: 10px 18px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-weight: var(--fontWeightSemiBold);
+  font-size: 13px;
+}
+
+.rowValueStack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.proposedValue {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorFail);
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0;
+  font-size: 13px;
+}
+
+.descriptionLabelProposed {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorFail);
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0 0 4px 0;
+  font-size: 13px;
+}
+
+.proposedDescriptionValue {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorFail);
+  margin: 0;
+  white-space: pre-line;
+}
+

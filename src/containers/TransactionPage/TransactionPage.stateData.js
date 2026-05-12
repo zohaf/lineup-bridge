@@ -39,6 +39,9 @@ export const stateDataShape = shape({
   showReviewAsFirstLink: bool,
   showReviewAsSecondLink: bool,
   showReviews: bool,
+  showOfferSummaryBlock: bool,
+  showOfferDetailsCard: bool,
+  showActivityFeed: bool,
 });
 
 // Transitions are following process.edn format: "transition/my-transtion-name"

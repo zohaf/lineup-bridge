@@ -8,7 +8,13 @@ import { propTypes } from '../../../util/types';
 import { formatMoney } from '../../../util/currency';
 import { required } from '../../../util/validators';
 
-import { FieldCurrencyInput, Form, Modal, Button } from '../../../components';
+import {
+  FieldCurrencyInput,
+  FieldTextInput,
+  Form,
+  Modal,
+  Button,
+} from '../../../components';
 
 import IconPriceTag from './IconPriceTag';
 import css from './MakeCounterOfferModal.module.css';
@@ -55,6 +61,19 @@ const MakeCounterOfferForm = props => (
             currencyConfig={currencyConfig}
             validate={required(intl.formatMessage({ id: 'MakeCounterOfferForm.offerRequired' }))}
           />
+          <FieldTextInput
+            className={css.counterOfferMessage}
+            id={formId ? `${formId}.counterOfferMessage` : 'counterOfferMessage'}
+            name="counterOfferMessage"
+            type="textarea"
+            label={
+              <>
+                {intl.formatMessage({ id: 'MakeCounterOfferForm.messageLabel' })}
+                {' '}<span className={css.optional}>(optional)</span>
+              </>
+            }
+            placeholder={intl.formatMessage({ id: 'MakeCounterOfferForm.messagePlaceholder' })}
+          />
           <p className={css.errorPlaceholder}>{errorMessageMaybe}</p>
           <Button
             className={css.submitButton}
@@ -63,7 +82,7 @@ const MakeCounterOfferForm = props => (
             disabled={submitDisabled}
             ready={counterOfferSubmitted}
           >
-            {intl.formatMessage({ id: 'MakeCounterOfferForm.submit' })}
+            {intl.formatMessage({ id: 'MakeCounterOfferForm.submitCounter' })}
           </Button>
         </Form>
       );
@@ -75,17 +94,21 @@ const MakeCounterOfferForm = props => (
 const CounterOfferInfo = props => {
   const config = useConfiguration();
   const marketplaceName = config.marketplaceName;
-  const { onMakeCounterOffer, ...restOfProps } = props;
+  const { onMakeCounterOffer, initialValues, ...restOfProps } = props;
 
   return (
     <>
       <p className={css.modalTitle}>
-        <FormattedMessage id="MakeCounterOfferModal.title" />
+        <FormattedMessage id="MakeCounterOfferModal.titleCounter" />
       </p>
       <p className={css.modalMessage}>
         <FormattedMessage id="MakeCounterOfferModal.description" values={{ marketplaceName }} />
       </p>
-      <MakeCounterOfferForm onSubmit={onMakeCounterOffer} {...restOfProps} />
+      <MakeCounterOfferForm
+        onSubmit={onMakeCounterOffer}
+        initialValues={initialValues}
+        {...restOfProps}
+      />
     </>
   );
 };
@@ -148,6 +171,10 @@ const MakeCounterOfferModal = props => {
         counterOfferSubmitted={counterOfferSubmitted}
         intl={intl}
         currencyConfig={currencyConfig}
+        initialValues={{
+          counterOffer: currentOffer,
+          counterOfferMessage: '',
+        }}
       />
     </Modal>
   );

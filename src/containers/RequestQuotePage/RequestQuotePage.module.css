@@ -60,6 +60,20 @@
   }
 }
 
+.helperText {
+  composes: marketplaceSmallFontStyles from global;
+  margin: 0 0 16px 0;
+  color: var(--colorGrey700);
+
+  @media (--viewportMedium) {
+    margin-bottom: 18px;
+  }
+
+  @media (--viewportLarge) {
+    margin-bottom: 18px;
+  }
+}
+
 .locationHeading {
   composes: p from global;
   font-weight: var(--fontWeightBold);

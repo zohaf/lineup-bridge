@@ -5,7 +5,7 @@ import { useIntl } from '../../../util/reactIntl';
 import { getStartOf } from '../../../util/dates';
 import { allowCustomerCounterOffer, allowProviderUpdateOffer } from '../../../util/configHelpers';
 
-import { PrimaryButton, SecondaryButton, Button } from '../../../components';
+import { PrimaryButton, SecondaryButton } from '../../../components';
 
 import css from './ActionButtons.module.css';
 
@@ -172,8 +172,6 @@ const ActionButtons = props => {
   // Additional data passed for the button status calculation
   const extraData = { transitions, timeZone, intl, listingTypeConfig, isCounterpartyInactive };
 
-  const buttonsDisabled = primaryButtonProps?.inProgress || secondaryButtonProps?.inProgress;
-
   const primaryErrorMessage = primaryButtonProps?.error ? (
     <p className={css.actionError}>{primaryButtonProps?.errorText}</p>
   ) : null;
@@ -193,10 +191,15 @@ const ActionButtons = props => {
   const isVisible = (actionButtonName, buttonStatus) =>
     actionButtonOrder.includes(actionButtonName) && !buttonStatus.hidden;
 
-  const hasMultipleButtons =
-    isVisible('primary', primaryButtonStatus) &&
-    isVisible('secondary', secondaryButtonStatus) &&
-    isVisible('tertiary', tertiaryButtonStatus);
+  const visiblePrimary =
+    !!primaryButtonProps && isVisible('primary', primaryButtonStatus);
+  const visibleSecondary =
+    !!secondaryButtonProps && isVisible('secondary', secondaryButtonStatus);
+  const visibleTertiary =
+    !!tertiaryButtonProps && isVisible('tertiary', tertiaryButtonStatus);
+  const visibleButtonCount =
+    (visiblePrimary ? 1 : 0) + (visibleSecondary ? 1 : 0) + (visibleTertiary ? 1 : 0);
+  const hasMultipleButtons = visibleButtonCount > 1;
   const renderingOrder =
     hasMultipleButtons || containerId === 'desktop'
       ? actionButtonOrder
@@ -216,13 +219,17 @@ const ActionButtons = props => {
       >
         {renderingOrder.map(buttonType => {
           if (buttonType === 'primary') {
+            if (!primaryButtonProps) {
+              return null;
+            }
             const { disabled, reason, hidden } = primaryButtonStatus;
-            return primaryButtonProps && hasValidData && !hidden ? (
+            const primaryDisabled = disabled || !!primaryButtonProps.inProgress;
+            return hasValidData && !hidden ? (
               <div className={css.actionButtonWrapper} key={buttonType}>
                 <PrimaryButton
                   id={`${containerId}_${ACTION_BUTTON_1_ID}`}
                   inProgress={primaryButtonProps.inProgress}
-                  disabled={buttonsDisabled || disabled}
+                  disabled={primaryDisabled}
                   onClick={primaryButtonProps.onAction}
                 >
                   {primaryButtonProps.buttonText}
@@ -233,12 +240,13 @@ const ActionButtons = props => {
           }
           if (buttonType === 'secondary') {
             const { disabled, reason, hidden } = secondaryButtonStatus;
+            const secondaryDisabled = disabled || !!secondaryButtonProps?.inProgress;
             return secondaryButtonProps && hasValidData && !hidden ? (
               <div className={css.actionButtonWrapper} key={buttonType}>
                 <SecondaryButton
                   id={`${containerId}_${ACTION_BUTTON_2_ID}`}
                   inProgress={secondaryButtonProps?.inProgress}
-                  disabled={buttonsDisabled || disabled}
+                  disabled={secondaryDisabled}
                   onClick={secondaryButtonProps.onAction}
                 >
                   {secondaryButtonProps.buttonText}
@@ -249,16 +257,17 @@ const ActionButtons = props => {
           }
           if (buttonType === 'tertiary') {
             const { disabled, reason, hidden } = tertiaryButtonStatus;
+            const tertiaryDisabled = disabled || !!tertiaryButtonProps?.inProgress;
             return tertiaryButtonProps && hasValidData && !hidden ? (
               <div className={css.actionButtonWrapper} key={buttonType}>
-                <Button
+                <SecondaryButton
                   id={`${containerId}_${ACTION_BUTTON_3_ID}`}
                   inProgress={tertiaryButtonProps?.inProgress}
-                  disabled={buttonsDisabled || disabled}
+                  disabled={tertiaryDisabled}
                   onClick={tertiaryButtonProps.onAction}
                 >
                   {tertiaryButtonProps.buttonText}
-                </Button>
+                </SecondaryButton>
                 {disabled && <div className={css.finePrint}>{reason}</div>}
               </div>
             ) : null;

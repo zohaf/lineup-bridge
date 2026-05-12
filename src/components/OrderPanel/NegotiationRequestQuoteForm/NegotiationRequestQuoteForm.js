@@ -9,7 +9,6 @@ import { Form, PrimaryButton } from '../..';
 import css from './NegotiationRequestQuoteForm.module.css';
 
 const renderForm = formRenderProps => {
-  // FormRenderProps from final-form
   const {
     formId,
     className,
@@ -23,10 +22,15 @@ const renderForm = formRenderProps => {
 
   return (
     <Form id={formId} onSubmit={handleSubmit} className={classes}>
-      <div className={css.submitButton}>
+      <div className={css.startBox}>
+        <div className={css.startTitle}>
+          <FormattedMessage id="NegotiationRequestQuoteForm.ctaLabel" />
+        </div>
+
         <PrimaryButton type="submit">
-          <FormattedMessage id="NegotiationRequestQuoteForm.ctaButton" />
+          <FormattedMessage id="NegotiationRequestQuoteForm.nextCta" />
         </PrimaryButton>
+
         <FinePrint
           payoutDetailsWarning={payoutDetailsWarning}
           isOwnListing={isOwnListing}
@@ -38,8 +42,7 @@ const renderForm = formRenderProps => {
 };
 
 /**
- * A form to redirect user to the MakeOfferPage. It can be used to initialize the page if needed.
- * Note: by default, the form just shows a submit button.
+ * Simple form that redirects the user to the RequestQuotePage (offer builder).
  *
  * @component
  * @param {Object} props

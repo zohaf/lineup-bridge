@@ -329,7 +329,9 @@ const makeTransitionPayloadCreator = (
       bodyParams: {
         id: txId,
         transition: transitionName,
-        params: {}, // NOTE: lineItems and metadata are included on the server-side.
+        params: {
+          ...(params?.protectedData ? { protectedData: params.protectedData } : {}),
+        },
       },
       queryParams: {
         expand: true,

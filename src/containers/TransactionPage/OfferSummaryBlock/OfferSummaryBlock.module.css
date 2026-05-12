@@ -1,0 +1,48 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  margin: 18px 0 12px 0;
+  padding: 18px;
+  border-radius: 8px;
+  border: 1px solid var(--colorGrey100);
+  background-color: var(--colorWhite);
+
+  @media (--viewportMedium) {
+    margin: 24px 0 12px 0;
+    padding: 24px;
+  }
+
+  @media (--viewportLarge) {
+    margin: 0 0 16px 0;
+  }
+}
+
+.title {
+  composes: h4 from global;
+  margin: 0 0 12px 0;
+}
+
+.price {
+  composes: h2 from global;
+  margin: 0 0 12px 0;
+}
+
+.detailLine {
+  composes: marketplaceDefaultFontStyles from global;
+  color: var(--colorGrey700);
+  margin: 0 0 6px 0;
+}
+
+.messagePreview {
+  composes: marketplaceSmallFontStyles from global;
+  color: var(--colorGrey700);
+  margin: 12px 0 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--colorGrey100);
+}
+
+.messagePreviewLabel {
+  composes: marketplaceTinyFontStyles from global;
+  color: var(--colorGrey500);
+  margin: 0 0 4px 0;
+}

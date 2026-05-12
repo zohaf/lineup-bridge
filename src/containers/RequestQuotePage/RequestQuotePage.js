@@ -35,7 +35,6 @@ import { H3, ErrorMessage, NamedRedirect, Page, TopbarSimplified } from '../../c
 import HeadingDetails from './HeadingDetails.js';
 import DetailsSideCard from './DetailsSideCard/DetailsSideCard.js';
 import MobileListingImage from './MobileListingImage/MobileListingImage.js';
-import LocationDetails from './LocationDetails/LocationDetails.js';
 import RequestQuoteForm from './RequestQuoteForm/RequestQuoteForm.js';
 
 import { requestQuote } from './RequestQuotePage.duck.js';
@@ -59,7 +58,8 @@ const getTransactionTypeData = (listingType, unitTypeInPublicData, config) => {
   return unitTypeInPublicData ? { unitType: unitTypeInPublicData, ...rest } : {};
 };
 
-const handleSubmit = (submitting, setSubmitting, props, transactionFieldConfigs) => values => {
+const handleSubmit =
+  (submitting, setSubmitting, props, transactionFieldConfigs) => values => {
   if (submitting) {
     return;
   }
@@ -67,18 +67,61 @@ const handleSubmit = (submitting, setSubmitting, props, transactionFieldConfigs)
 
   const { history, config, routeConfiguration, listing, onRequestQuote, onSubmitCallback } = props;
 
-  const { customerDefaultMessage } = values;
+  const {
+    bookingDate,
+    bookingStartTime,
+    durationHours,
+    eventName,
+    eventType,
+    expectedAttendance,
+    venueName,
+    eventLocation,
+    description,
+    offerAmount,
+    travelIncluded,
+    accommodationIncluded,
+    includedDetails,
+    technicalSetup,
+    additionalNotes,
+  } = values || {};
 
   const { listingType, transactionProcessAlias, unitType } = listing?.attributes?.publicData || {};
 
-  // These are the inquiry parameters for the (one and only) transition
+  const parsedDuration = Number.parseInt(durationHours, 10);
+  const parsedAttendance = Number.parseInt(expectedAttendance, 10);
+
+  // SingleDatePicker returns a Date object — serialize to ISO date string for the API
+  const bookingDateStr =
+    bookingDate instanceof Date
+      ? bookingDate.toISOString().slice(0, 10)
+      : typeof bookingDate === 'string' && bookingDate.length > 0
+        ? bookingDate
+        : null;
+
+  const protectedData = {
+    bookingStartTime: bookingStartTime || '',
+    eventName: eventName || '',
+    eventType: eventType || '',
+    venueName: venueName || '',
+    eventLocation: eventLocation || '',
+    description: description || '',
+    travelIncluded: travelIncluded || '',
+    accommodationIncluded: accommodationIncluded || '',
+    ...getTransactionTypeData(listingType, unitType, config),
+    ...pickTransactionFieldsData(values, 'protected', true, transactionFieldConfigs),
+  };
+
+  if (bookingDateStr) protectedData.bookingDate = bookingDateStr;
+  if (Number.isInteger(parsedDuration) && parsedDuration > 0) protectedData.durationHours = parsedDuration;
+  if (Number.isInteger(parsedAttendance) && parsedAttendance > 0) protectedData.expectedAttendance = parsedAttendance;
+  if (offerAmount != null && offerAmount !== '') protectedData.offerAmount = Number.parseInt(offerAmount, 10);
+  if (includedDetails) protectedData.includedDetails = includedDetails;
+  if (technicalSetup) protectedData.technicalSetup = technicalSetup;
+  if (additionalNotes) protectedData.additionalNotes = additionalNotes;
+
   const requestQuoteParams = {
     listingId: listing?.id,
-    protectedData: {
-      ...(customerDefaultMessage ? { customerDefaultMessage } : {}),
-      ...getTransactionTypeData(listingType, unitType, config),
-      ...pickTransactionFieldsData(values, 'protected', true, transactionFieldConfigs),
-    },
+    protectedData,
   };
 
   // This makes a single transition directly to the API endpoint
@@ -143,6 +186,9 @@ const RequestQuotePageComponent = props => {
             <H3 as="h1" className={css.heading}>
               {pageTitle}
             </H3>
+            <p className={css.helperText}>
+              {intl.formatMessage({ id: 'RequestQuotePage.helperText' })}
+            </p>
             <HeadingDetails
               listing={listing}
               listingTitle={listingTitle}
@@ -152,13 +198,6 @@ const RequestQuotePageComponent = props => {
             />
           </div>
 
-          <LocationDetails
-            showLocation={true}
-            listingLocation={publicData?.location}
-            intl={intl}
-            sectionHeadingClassName={css.locationHeading}
-          />
-
           <section className={css.paymentContainer}>
             <RequestQuoteForm
               intl={intl}
@@ -167,7 +206,6 @@ const RequestQuotePageComponent = props => {
               onSubmit={onSubmit}
               errorMessageComponent={ErrorMessage}
               requestQuoteError={requestQuoteError}
-              transactionFieldConfigs={transactionFieldConfigs}
             />
           </section>
         </main>
@@ -175,7 +213,6 @@ const RequestQuotePageComponent = props => {
         <DetailsSideCard
           listing={listing}
           listingTitle={listingTitle}
-          author={listing?.author}
           showListingImage={showListingImage}
           firstImage={firstImage}
           layoutListingImageConfig={config.layout.listingImage}

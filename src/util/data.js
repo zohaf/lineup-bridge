@@ -407,13 +407,18 @@ export const ensurePaymentMethodCard = stripePaymentMethod => {
  * @return {String} display name that can be rendered in the UI
  */
 export const userDisplayNameAsString = (user, defaultUserDisplayName) => {
-  const hasDisplayName = user?.attributes?.profile?.displayName;
-
-  if (hasDisplayName) {
-    return user.attributes.profile.displayName;
-  } else {
-    return defaultUserDisplayName || '';
+  const artistName = user?.attributes?.profile?.publicData?.artistName;
+  if (artistName) {
+    return artistName;
   }
+
+  const hasDisplayName = user?.attributes?.profile?.displayName;
+  if (hasDisplayName) {
+    const dn = user.attributes.profile.displayName;
+    return dn.replace(/\s\w\.?$/, '') || dn;
+  }
+
+  return defaultUserDisplayName || '';
 };
 
 /**

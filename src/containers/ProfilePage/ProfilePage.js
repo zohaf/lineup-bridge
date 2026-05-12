@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { useHistory } from 'react-router-dom';
 
 import { useConfiguration } from '../../context/configurationContext';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { REVIEW_TYPE_OF_PROVIDER, REVIEW_TYPE_OF_CUSTOMER, propTypes } from '../../util/types';
 import {
@@ -38,6 +40,7 @@ import {
   Page,
   AvatarLarge,
   NamedLink,
+  PrimaryButton,
   ListingCard,
   Reviews,
   ButtonTabNavHorizontal,
@@ -50,15 +53,61 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 
+import SingleDatePicker from '../../components/DatePicker/DatePickers/SingleDatePicker';
+import { createResourceLocatorString } from '../../util/routes';
+import { createSlug } from '../../util/urlHelpers';
+
 import css from './ProfilePage.module.css';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
 export const AsideContent = props => {
-  const { user, displayName, showLinkToContactDetailsPage } = props;
+  const { user, displayName, showLinkToContactDetailsPage, isCurrentUser, listings = [] } = props;
+  const intl = useIntl();
+  const history = useHistory();
+  const routes = useRouteConfiguration();
+
+  const firstListing = Array.isArray(listings) && listings.length > 0 ? listings[0] : null;
+
+  const [bookingDate, setBookingDate] = useState(null);
+  const [bookingStartTime, setBookingStartTime] = useState('');
+  const [durationHours, setDurationHours] = useState('');
+
+  const durationParsed = useMemo(() => {
+    const trimmed = typeof durationHours === 'string' ? durationHours.trim() : `${durationHours}`;
+    const n = parseInt(trimmed, 10);
+    return Number.isInteger(n) && String(n) === trimmed && n > 0 ? n : null;
+  }, [durationHours]);
+
+  const hasValidTime = /^\d{2}:\d{2}$/.test(bookingStartTime);
+  const canProceed =
+    !!firstListing?.id && bookingDate instanceof Date && hasValidTime && !!durationParsed;
+
+  const onNext = () => {
+    if (!canProceed) {
+      return;
+    }
+
+    const bookingDateISO = bookingDate.toISOString().slice(0, 10);
+    const slug = createSlug(firstListing.attributes?.title || 'listing');
+
+    const nextPath = createResourceLocatorString(
+      'RequestQuotePage',
+      routes,
+      { id: firstListing.id.uuid, slug },
+      { bookingDate: bookingDateISO, bookingStartTime, durationHours: durationParsed }
+    );
+
+    history.push(nextPath);
+  };
+
   return (
-    <div className={css.asideContent}>
+    <div
+      className={classNames(css.asideContent, {
+        [css.asideContentVisitorBooking]: !isCurrentUser,
+      })}
+    >
       <AvatarLarge className={css.avatar} user={user} disableProfileLink />
       <H2 as="h1" className={css.mobileHeading}>
         {displayName ? (
@@ -74,6 +123,75 @@ export const AsideContent = props => {
             <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
           </NamedLink>
         </>
+      ) : null}
+
+      {!isCurrentUser ? (
+        <div className={css.bookingStartBox}>
+          <div className={css.bookingStartTitle}>
+            <FormattedMessage id="ProfilePage.bookingRequest.ctaLabel" />
+          </div>
+          <p className={css.bookingStartSubtitle}>
+            <FormattedMessage id="ProfilePage.bookingRequest.subtitle" />
+          </p>
+
+          <div className={css.bookingStartFields}>
+            <div className={css.bookingStartField}>
+              <label className={css.bookingStartLabel} htmlFor="profileBookingDate">
+                <FormattedMessage id="ProfilePage.bookingRequest.dateLabel" />
+              </label>
+              <SingleDatePicker
+                id="profileBookingDate"
+                value={bookingDate}
+                onChange={setBookingDate}
+                placeholderText={intl.formatMessage({ id: 'ProfilePage.bookingRequest.datePlaceholder' })}
+              />
+            </div>
+
+            <div className={css.bookingStartField}>
+              <label className={css.bookingStartLabel} htmlFor="profileBookingStartTime">
+                <FormattedMessage id="ProfilePage.bookingRequest.startTimeLabel" />
+              </label>
+              <input
+                id="profileBookingStartTime"
+                className={css.bookingStartTimeInput}
+                type="time"
+                step={60}
+                value={bookingStartTime}
+                onChange={e => setBookingStartTime(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className={css.bookingStartField}>
+              <label className={css.bookingStartLabel} htmlFor="profileBookingDurationHours">
+                <FormattedMessage id="ProfilePage.bookingRequest.durationLabel" />
+              </label>
+              <div className={css.durationInputShell}>
+                <input
+                  id="profileBookingDurationHours"
+                  className={css.durationInput}
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={durationHours}
+                  onChange={e => setDurationHours(e.target.value)}
+                  required
+                />
+                <span className={css.durationSuffix} aria-hidden="true">
+                  {durationParsed === 1 ? (
+                    <FormattedMessage id="ProfilePage.bookingRequest.hour" />
+                  ) : (
+                    <FormattedMessage id="ProfilePage.bookingRequest.hours" />
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <PrimaryButton className={css.bookingStartNextButton} onClick={onNext} disabled={!canProceed}>
+            <FormattedMessage id="ProfilePage.bookingRequest.nextCta" />
+          </PrimaryButton>
+        </div>
       ) : null}
     </div>
   );
@@ -472,6 +590,8 @@ export const ProfilePageComponent = props => {
             user={profileUser}
             showLinkToContactDetailsPage={mounted && isCurrentUser}
             displayName={displayName}
+            isCurrentUser={mounted && isCurrentUser}
+            listings={rest?.listings}
           />
         }
         footer={<FooterContainer />}
