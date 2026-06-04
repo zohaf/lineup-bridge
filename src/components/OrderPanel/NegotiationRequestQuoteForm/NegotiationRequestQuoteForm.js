@@ -23,10 +23,6 @@ const renderForm = formRenderProps => {
   return (
     <Form id={formId} onSubmit={handleSubmit} className={classes}>
       <div className={css.startBox}>
-        <div className={css.startTitle}>
-          <FormattedMessage id="NegotiationRequestQuoteForm.ctaLabel" />
-        </div>
-
         <PrimaryButton type="submit">
           <FormattedMessage id="NegotiationRequestQuoteForm.nextCta" />
         </PrimaryButton>

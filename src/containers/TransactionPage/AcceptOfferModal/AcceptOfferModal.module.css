@@ -1,0 +1,53 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  composes: marketplaceModalBaseStyles from global;
+  padding-top: 70px;
+
+  @media (--viewportMedium) {
+    flex-basis: 567px;
+    min-height: auto;
+  }
+}
+
+.modalContent {
+  flex-grow: 1;
+}
+
+.title {
+  composes: marketplaceModalTitleStyles from global;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.field {
+  margin-bottom: 24px;
+}
+
+.visuallyHidden {
+  composes: visuallyHidden from global;
+}
+
+.textarea {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: auto;
+  margin-bottom: 96px;
+
+  @media (--viewportMedium) {
+    margin-top: 12px;
+    margin-bottom: 0;
+  }
+}
+
+.confirmButton {
+  composes: buttonPrimary from global;
+}

@@ -33,8 +33,11 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     onOpenDeclineOfferModal,
     onOpenCustomerRejectModal,
     onAcceptOffer,
+    onOpenAcceptOfferModal,
+    onOpenAcceptCounterOfferModal,
   } = txInfo;
   const currentUserType = currentUser?.attributes?.profile?.publicData?.userType;
+  const isDjUser = currentUserType === 'dj';
   const isProviderBanned = transaction?.provider?.attributes?.banned;
   const isCustomerBanned = transaction?.provider?.attributes?.banned;
   const _ = CONDITIONAL_RESOLVER_WILDCARD;
@@ -93,7 +96,9 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     })
     .cond([states.QUOTE_REQUESTED, PROVIDER], () => {
       const acceptOverwrites = {
-        onAction: () => onAcceptOffer(null),
+        onAction: isDjUser
+          ? onOpenAcceptOfferModal
+          : () => onAcceptOffer(null),
         actionButtonTranslationId:
           'OfferDetailsCard.acceptOffer',
       };
@@ -304,7 +309,11 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showExtraInfo: true,
         showActionButtons: true,
         showOfferSummaryBlock: true,
-        primaryButtonProps: actionButtonProps(transitions.PROVIDER_ACCEPT_COUNTER_OFFER, PROVIDER),
+        primaryButtonProps: actionButtonProps(transitions.PROVIDER_ACCEPT_COUNTER_OFFER, PROVIDER, {
+          ...(isDjUser && onOpenAcceptCounterOfferModal
+            ? { onAction: onOpenAcceptCounterOfferModal }
+            : {}),
+        }),
         secondaryButtonProps: actionButtonProps(
           transitions.PROVIDER_REJECT_COUNTER_OFFER,
           PROVIDER,

@@ -5,7 +5,11 @@ import { richText } from '../../util/richText';
 import { ExternalLink } from '../../components';
 import IconSocialMediaFacebook from '../IconSocialMediaFacebook/IconSocialMediaFacebook';
 import IconSocialMediaInstagram from '../IconSocialMediaInstagram/IconSocialMediaInstagram';
-
+import {
+  IconSocialMediaResidentAdvisor,
+  IconSocialMediaSoundCloud,
+  IconSocialMediaSpotify,
+} from './SocialLinkIcons';
 import css from './CustomExtendedDataSection.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
@@ -35,12 +39,12 @@ const SectionText = props => {
     if (h.includes('facebook')) return { label: 'Facebook', Icon: IconSocialMediaFacebook };
     if (h.includes('insta')) return { label: 'Instagram', Icon: IconSocialMediaInstagram };
     if (h.includes('bandcamp')) return { label: 'Bandcamp', Icon: null };
-    if (h.includes('spotify')) return { label: 'Spotify', Icon: null };
-    if (h.includes('soundcloud')) return { label: 'SoundCloud', Icon: null };
+    if (h.includes('spotify')) return { label: 'Spotify', Icon: IconSocialMediaSpotify };
+    if (h.includes('soundcloud')) return { label: 'SoundCloud', Icon: IconSocialMediaSoundCloud };
     if (h.includes('youtube')) return { label: 'YouTube', Icon: null };
     if (h.includes('tiktok')) return { label: 'TikTok', Icon: null };
     if (h.includes('resident advisor') || h === 'ra' || h.includes(' ra')) {
-      return { label: 'RA', Icon: null };
+      return { label: 'RA', Icon: IconSocialMediaResidentAdvisor };
     }
 
     // Fallback: show the configured heading as the label (no title/heading above).

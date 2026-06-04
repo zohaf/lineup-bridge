@@ -77,6 +77,7 @@ import OfferSummaryBlock from './OfferSummaryBlock/OfferSummaryBlock';
 import OfferDetailsCard from './OfferDetailsCard/OfferDetailsCard';
 import ProposeChangesModal from './ProposeChangesModal/ProposeChangesModal';
 import DeclineOfferModal from './DeclineOfferModal/DeclineOfferModal';
+import AcceptOfferModal from './AcceptOfferModal/AcceptOfferModal';
 import TransactionPanel from './TransactionPanel/TransactionPanel';
 
 import {
@@ -293,6 +294,8 @@ export const TransactionPageComponent = props => {
   const [isRejectCounterOfferModalOpen, setRejectCounterOfferModalOpen] = useState(false);
   const [isProposeChangesModalOpen, setProposeChangesModalOpen] = useState(false);
   const [isDeclineOfferModalOpen, setDeclineOfferModalOpen] = useState(false);
+  const [isAcceptOfferModalOpen, setAcceptOfferModalOpen] = useState(false);
+  const [acceptOfferModalMode, setAcceptOfferModalMode] = useState(null);
   const [isCustomerRejectModalOpen, setCustomerRejectModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -623,13 +626,30 @@ export const TransactionPageComponent = props => {
 
   const onOpenRejectCounterOfferModal = () => setRejectCounterOfferModalOpen(true);
 
+  const closeAcceptOfferModal = () => {
+    setAcceptOfferModalOpen(false);
+    setAcceptOfferModalMode(null);
+  };
+
+  const onOpenAcceptOfferModal = () => {
+    setAcceptOfferModalMode('quote');
+    setAcceptOfferModalOpen(true);
+  };
+
+  const onOpenAcceptCounterOfferModal = () => {
+    setAcceptOfferModalMode('counter');
+    setAcceptOfferModalOpen(true);
+  };
+
   // ── Accept offer handler (QUOTE_REQUESTED → make-offer-from-request at customer's price) ──
   const onAcceptOffer = messageText => {
-    if (!transaction?.id || !process?.transitions?.MAKE_OFFER_FROM_REQUEST) return;
+    if (!transaction?.id || !process?.transitions?.MAKE_OFFER_FROM_REQUEST) {
+      return Promise.resolve();
+    }
 
     const protectedData = transaction?.attributes?.protectedData || {};
     const offerAmountEuros = protectedData.offerAmount;
-    if (offerAmountEuros == null) return;
+    if (offerAmountEuros == null) return Promise.resolve();
 
     const offerInSubunits = offerAmountEuros * 100;
     const params = {
@@ -640,11 +660,38 @@ export const TransactionPageComponent = props => {
       },
     };
 
-    onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params)
+    return onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params)
       .then(() => {
         if (messageText && onSendMessage) {
           return onSendMessage(transaction.id, messageText, config).catch(() => {});
         }
+      });
+  };
+
+  const onConfirmAcceptOffer = ({ message } = {}) => {
+    const note = message?.trim();
+
+    if (acceptOfferModalMode === 'counter') {
+      if (!transaction?.id || !process?.transitions?.PROVIDER_ACCEPT_COUNTER_OFFER) return;
+
+      onTransition(transaction.id, process.transitions.PROVIDER_ACCEPT_COUNTER_OFFER, {
+        orderData: { actor: PROVIDER },
+      })
+        .then(() => {
+          if (note && onSendMessage) {
+            return onSendMessage(transaction.id, note, config).catch(() => {});
+          }
+        })
+        .then(() => {
+          closeAcceptOfferModal();
+        })
+        .catch(() => {});
+      return;
+    }
+
+    onAcceptOffer(note || null)
+      .then(() => {
+        closeAcceptOfferModal();
       })
       .catch(() => {});
   };
@@ -750,6 +797,8 @@ export const TransactionPageComponent = props => {
           onOpenDeclineOfferModal: () => setDeclineOfferModalOpen(true),
           onOpenCustomerRejectModal: () => setCustomerRejectModalOpen(true),
           onAcceptOffer,
+          onOpenAcceptOfferModal,
+          onOpenAcceptCounterOfferModal,
           onCheckoutRedirect: handleSubmitOrderRequest,
           onMakeOfferRedirect: onMakeOffer,
           intl,
@@ -1154,6 +1203,17 @@ export const TransactionPageComponent = props => {
           currentNotes={transaction?.attributes?.protectedData?.additionalNotes}
           inProgress={
             transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST
+          }
+        />
+        <AcceptOfferModal
+          id="AcceptOfferModal"
+          isOpen={isAcceptOfferModalOpen}
+          onClose={closeAcceptOfferModal}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onConfirm={onConfirmAcceptOffer}
+          inProgress={
+            transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST ||
+            transitionInProgress === process?.transitions?.PROVIDER_ACCEPT_COUNTER_OFFER
           }
         />
         <DeclineOfferModal

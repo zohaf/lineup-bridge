@@ -83,6 +83,11 @@
 
 .socialIcon {
   flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--colorGrey700);
+  fill: var(--colorGrey700);
+  object-fit: contain;
 }
 
 .sectionLinks {

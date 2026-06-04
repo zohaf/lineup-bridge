@@ -43,6 +43,21 @@ import css from './RequestQuotePage.module.css';
 
 const { UUID } = sdkTypes;
 
+/** Derive set length in whole hours from HH:mm start/end (end may be after midnight). */
+const computeDurationHours = (startTime, endTime) => {
+  if (!startTime || !endTime) return null;
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  if ([sh, sm, eh, em].some(Number.isNaN)) return null;
+
+  let startMins = sh * 60 + sm;
+  let endMins = eh * 60 + em;
+  if (endMins <= startMins) endMins += 24 * 60;
+  const diffMins = endMins - startMins;
+  if (diffMins <= 0) return null;
+  return Math.max(1, Math.ceil(diffMins / 60));
+};
+
 const getProcessName = listing => {
   const processName = listing?.id
     ? listing?.attributes?.publicData?.transactionProcessAlias?.split('/')[0]
@@ -70,25 +85,27 @@ const handleSubmit =
   const {
     bookingDate,
     bookingStartTime,
+    bookingEndTime,
+    setStartTime,
     durationHours,
+    setTimeNeeded,
     eventName,
     eventType,
     expectedAttendance,
     venueName,
     eventLocation,
-    description,
     offerAmount,
     travelIncluded,
     accommodationIncluded,
     includedDetails,
-    technicalSetup,
-    additionalNotes,
+    deckSetup,
+    boothMonitorsAvailable,
   } = values || {};
 
   const { listingType, transactionProcessAlias, unitType } = listing?.attributes?.publicData || {};
 
-  const parsedDuration = Number.parseInt(durationHours, 10);
   const parsedAttendance = Number.parseInt(expectedAttendance, 10);
+  const parsedDuration = Number.parseInt(durationHours, 10);
 
   // SingleDatePicker returns a Date object — serialize to ISO date string for the API
   const bookingDateStr =
@@ -99,12 +116,11 @@ const handleSubmit =
         : null;
 
   const protectedData = {
-    bookingStartTime: bookingStartTime || '',
     eventName: eventName || '',
     eventType: eventType || '',
     venueName: venueName || '',
     eventLocation: eventLocation || '',
-    description: description || '',
+    setTimeNeeded: setTimeNeeded || '',
     travelIncluded: travelIncluded || '',
     accommodationIncluded: accommodationIncluded || '',
     ...getTransactionTypeData(listingType, unitType, config),
@@ -112,13 +128,20 @@ const handleSubmit =
   };
 
   if (bookingDateStr) protectedData.bookingDate = bookingDateStr;
-  if (Number.isInteger(parsedDuration) && parsedDuration > 0) protectedData.durationHours = parsedDuration;
+  if (bookingStartTime) protectedData.bookingStartTime = bookingStartTime;
+  if (bookingEndTime) protectedData.bookingEndTime = bookingEndTime;
+  if (setStartTime) protectedData.setStartTime = setStartTime;
+  if (Number.isInteger(parsedDuration) && parsedDuration > 0) {
+    protectedData.durationHours = parsedDuration;
+  } else if (bookingStartTime && bookingEndTime) {
+    const computed = computeDurationHours(bookingStartTime, bookingEndTime);
+    if (computed) protectedData.durationHours = computed;
+  }
   if (Number.isInteger(parsedAttendance) && parsedAttendance > 0) protectedData.expectedAttendance = parsedAttendance;
   if (offerAmount != null && offerAmount !== '') protectedData.offerAmount = Number.parseInt(offerAmount, 10);
   if (includedDetails) protectedData.includedDetails = includedDetails;
-  if (technicalSetup) protectedData.technicalSetup = technicalSetup;
-  if (additionalNotes) protectedData.additionalNotes = additionalNotes;
-
+  if (Array.isArray(deckSetup) && deckSetup.length > 0) protectedData.deckSetup = deckSetup;
+  if (boothMonitorsAvailable) protectedData.boothMonitorsAvailable = boothMonitorsAvailable;
   const requestQuoteParams = {
     listingId: listing?.id,
     protectedData,
@@ -201,7 +224,6 @@ const RequestQuotePageComponent = props => {
           <section className={css.paymentContainer}>
             <RequestQuoteForm
               intl={intl}
-              config={config}
               authorDisplayName={userDisplayNameAsString(listing?.author, '')}
               onSubmit={onSubmit}
               errorMessageComponent={ErrorMessage}

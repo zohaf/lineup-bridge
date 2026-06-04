@@ -16,10 +16,3 @@
     margin-top: 0;
   }
 }
-
-.startTitle {
-  composes: marketplaceDefaultFontStyles from global;
-  font-weight: var(--fontWeightSemiBold);
-  margin: 0 0 18px 0;
-  color: var(--colorGrey900);
-}

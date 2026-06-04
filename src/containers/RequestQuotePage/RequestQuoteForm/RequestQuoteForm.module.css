@@ -3,15 +3,23 @@
 .root {
 }
 
-.bookingSummary {
-  padding: 18px;
-  border: solid 1px var(--colorGrey100);
+/* Reusable card shell for grouped form sections */
+.sectionCard {
+  border: 1px solid var(--colorGrey100);
   border-radius: 8px;
-  background-color: var(--colorPageBackground);
-  margin-bottom: 18px;
+  padding: 18px;
+  background-color: var(--colorWhite);
 
   @media (--viewportMedium) {
     padding: 24px;
+  }
+}
+
+.bookingSummary {
+  composes: sectionCard;
+  margin-bottom: 18px;
+
+  @media (--viewportMedium) {
     margin-bottom: 24px;
   }
 }
@@ -47,15 +55,20 @@
 }
 
 .section {
+  composes: sectionCard;
   display: flex;
   flex-direction: column;
-  margin-bottom: 40px;
+  margin-bottom: 16px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 24px;
+  }
 }
 
 .sectionTitle {
   composes: marketplaceDefaultFontStyles from global;
   font-weight: var(--fontWeightSemiBold);
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
   color: var(--colorGrey900);
 }
 
@@ -81,9 +94,49 @@
 }
 
 .optional {
-  font-style: italic;
   font-weight: var(--fontWeightRegular);
   color: var(--colorGrey500);
+}
+
+.multiSelect {
+  composes: marketplaceInputStyles from global;
+  width: 100%;
+  min-height: 120px;
+  padding: 8px 12px;
+}
+
+.deckSetupField {
+  margin-bottom: 0;
+}
+
+.deckSetupField legend {
+  font-weight: var(--fontWeightMedium);
+  font-size: 14px;
+  line-height: 24px;
+  margin: 0 0 8px 0;
+  padding: 0;
+  display: block;
+}
+
+.deckSetupField ul {
+  margin: 0;
+}
+
+.deckSetupField li {
+  padding: 0;
+  page-break-inside: avoid;
+}
+
+/* Default checkbox variant: visible box + tick when selected */
+.deckSetupField label {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+.boothMonitorsField {
+  margin-top: 16px;
 }
 
 .helper {

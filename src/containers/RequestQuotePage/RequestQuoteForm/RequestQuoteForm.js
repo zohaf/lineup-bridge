@@ -1,17 +1,18 @@
 import React from 'react';
 import { Form as FinalForm, Field } from 'react-final-form';
+import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 
 // Import contexts and util modules
 import { FormattedMessage, intlShape } from '../../../util/reactIntl.js';
 import { propTypes } from '../../../util/types.js';
 import * as validators from '../../../util/validators.js';
-
 // Import shared components
 import {
   Form,
   FieldTextInput,
   FieldSelect,
+  FieldCheckboxGroup,
   PrimaryButton,
   ValidationError,
 } from '../../../components/index.js';
@@ -29,27 +30,135 @@ const splitTime = value => {
   return { h: h || '', m: m || '' };
 };
 
-const joinTime = (h, m) => {
-  if (!h) return '';
-  return `${h}:${m || '00'}`;
+const DEFAULT_START_HOUR = '23';
+const DEFAULT_END_HOUR = '09';
+const DEFAULT_MINUTE = '00';
+
+const joinTime = (h, m, defaultHour = DEFAULT_START_HOUR) => {
+  const hour = h || defaultHour;
+  return `${hour}:${m || DEFAULT_MINUTE}`;
 };
 
-const durationHoursValidators = intl =>
-  validators.composeValidators(
-    validators.required(intl.formatMessage({ id: 'NegotiationRequestQuoteForm.durationRequired' })),
-    value => {
-      const trimmed = typeof value === 'string' ? value.trim() : `${value}`;
-      const n = parseInt(trimmed, 10);
-      if (Number.isNaN(n) || String(n) !== trimmed || n < 1) {
-        return intl.formatMessage({ id: 'NegotiationRequestQuoteForm.durationInvalid' });
-      }
-      return undefined;
-    }
+const joinTimeOptional = (h, m) => {
+  if (!h) return '';
+  return `${h}:${m || DEFAULT_MINUTE}`;
+};
+
+const durationHoursValidatorsOptional = intl => value => {
+  if (value == null || value === '') return undefined;
+  const trimmed = typeof value === 'string' ? value.trim() : `${value}`;
+  const n = Number.parseInt(trimmed, 10);
+  if (Number.isNaN(n) || String(n) !== trimmed || n < 1) {
+    return intl.formatMessage({ id: 'NegotiationRequestQuoteForm.durationInvalid' });
+  }
+  return undefined;
+};
+
+const optionalLabel = (label, css) => (
+  <>
+    {label} <span className={css.optional}>(optional)</span>
+  </>
+);
+
+const DECK_SETUP_OPTION_KEYS = [
+  'cdj_2000',
+  'cdj_3000',
+  'vinyl_turntables',
+  'pioneer_djm',
+  'allen_heath',
+  'other',
+];
+
+const getDeckSetupOptions = intl =>
+  DECK_SETUP_OPTION_KEYS.map(key => ({
+    key,
+    label: intl.formatMessage({ id: `RequestQuoteForm.deckSetup.${key}` }),
+  }));
+
+/**
+ * Hour + minute selects for start/end time fields.
+ */
+const TimeSelectField = props => {
+  const {
+    input,
+    meta,
+    fid,
+    label,
+    defaultHour = DEFAULT_START_HOUR,
+    name,
+    css: styles,
+    allowEmpty = false,
+  } = props;
+
+  const { h, m } = splitTime(input.value);
+  const hour = allowEmpty ? h : h || defaultHour;
+  const minute = allowEmpty ? m || DEFAULT_MINUTE : m || DEFAULT_MINUTE;
+  const hourId = fid(`${name}H`);
+  const minuteId = fid(`${name}M`);
+
+  const handleHourChange = e => {
+    const nextHour = e.target.value;
+    input.onChange(
+      allowEmpty ? joinTimeOptional(nextHour, minute) : joinTime(nextHour, minute, defaultHour)
+    );
+  };
+
+  const handleMinuteChange = e => {
+    const nextMinute = e.target.value;
+    const effectiveHour = hour || defaultHour;
+    input.onChange(
+      allowEmpty
+        ? joinTimeOptional(effectiveHour, nextMinute)
+        : joinTime(effectiveHour, nextMinute, defaultHour)
+    );
+  };
+
+  return (
+    <div className={styles.field}>
+      <label className={styles.label} htmlFor={hourId}>
+        {label}
+      </label>
+      <div className={styles.timePickerRow}>
+        <select
+          id={hourId}
+          className={styles.timeSelect}
+          value={allowEmpty ? h : hour}
+          onChange={handleHourChange}
+          onBlur={input.onBlur}
+        >
+          {allowEmpty ? (
+            <option value="" disabled>
+              HH
+            </option>
+          ) : null}
+          {HOURS.map(v => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))}
+        </select>
+        <select
+          id={minuteId}
+          className={styles.timeSelect}
+          value={minute}
+          onChange={handleMinuteChange}
+          onBlur={input.onBlur}
+        >
+          {MINUTES.map(v => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))}
+        </select>
+      </div>
+      <ValidationError fieldMeta={meta} />
+    </div>
   );
+};
 
 /**
  * Form for the customer to send an offer (quote request) to a DJ.
- * Structured in sections: Event details, Set details, Fee & logistics, Technical notes.
+ * Structured in sections: Event details, Set details, Fee & logistics, Technical setup.
  *
  * @param {Object} props
  * @param {intlShape} props.intl
@@ -65,9 +174,17 @@ export const RequestQuoteForm = props => {
     ...restProps
   } = props;
 
+  const deckSetupOptions = getDeckSetupOptions(intl);
+
   return (
     <FinalForm
-      initialValues={{}}
+      mutators={{ ...arrayMutators }}
+      initialValues={{
+        deckSetup: [],
+        bookingStartTime: `${DEFAULT_START_HOUR}:${DEFAULT_MINUTE}`,
+        bookingEndTime: `${DEFAULT_END_HOUR}:${DEFAULT_MINUTE}`,
+        setStartTime: `${DEFAULT_START_HOUR}:${DEFAULT_MINUTE}`,
+      }}
       onSubmit={onSubmit}
       {...restProps}
       render={formRenderProps => {
@@ -126,23 +243,109 @@ export const RequestQuoteForm = props => {
                 name="eventName"
                 id={fid('eventName')}
                 labelClassName={css.label}
-                label={intl.formatMessage({ id: 'RequestQuoteForm.eventNameLabel' })}
-                placeholder={intl.formatMessage({ id: 'RequestQuoteForm.eventNamePlaceholder' })}
-                validate={validators.required(
-                  intl.formatMessage({ id: 'RequestQuoteForm.eventNameRequired' })
+                label={optionalLabel(
+                  intl.formatMessage({ id: 'RequestQuoteForm.eventNameLabel' }),
+                  css
                 )}
+                placeholder={intl.formatMessage({ id: 'RequestQuoteForm.eventNamePlaceholder' })}
+              />
+
+              <Field
+                name="bookingDate"
+                validate={validators.required(
+                  intl.formatMessage({ id: 'RequestQuoteForm.dateRequired' })
+                )}
+              >
+                {({ input, meta }) => (
+                  <div className={css.field}>
+                    <label className={css.label} htmlFor={fid('bookingDate')}>
+                      <FormattedMessage id="RequestQuoteForm.dateLabel" />
+                    </label>
+                    <SingleDatePicker
+                      id={fid('bookingDate')}
+                      value={input.value || null}
+                      onChange={input.onChange}
+                      placeholderText={intl.formatMessage({
+                        id: 'RequestQuoteForm.datePlaceholder',
+                      })}
+                      inputClassName={css.dateInputRightIcon}
+                    />
+                    <ValidationError fieldMeta={meta} />
+                  </div>
+                )}
+              </Field>
+
+              <Field
+                name="bookingStartTime"
+                validate={validators.required(
+                  intl.formatMessage({ id: 'RequestQuoteForm.eventStartTimeRequired' })
+                )}
+              >
+                {({ input, meta }) => (
+                  <TimeSelectField
+                    input={input}
+                    meta={meta}
+                    fid={fid}
+                    name="bookingStartTime"
+                    defaultHour={DEFAULT_START_HOUR}
+                    label={intl.formatMessage({ id: 'RequestQuoteForm.eventStartTimeLabel' })}
+                    css={css}
+                  />
+                )}
+              </Field>
+
+              <Field
+                name="bookingEndTime"
+                validate={validators.required(
+                  intl.formatMessage({ id: 'RequestQuoteForm.eventEndTimeRequired' })
+                )}
+              >
+                {({ input, meta }) => (
+                  <TimeSelectField
+                    input={input}
+                    meta={meta}
+                    fid={fid}
+                    name="bookingEndTime"
+                    defaultHour={DEFAULT_END_HOUR}
+                    label={intl.formatMessage({ id: 'RequestQuoteForm.eventEndTimeLabel' })}
+                    css={css}
+                  />
+                )}
+              </Field>
+
+              <FieldTextInput
+                className={css.field}
+                type="number"
+                name="expectedAttendance"
+                id={fid('expectedAttendance')}
+                labelClassName={css.label}
+                label={optionalLabel(
+                  intl.formatMessage({ id: 'RequestQuoteForm.expectedAttendanceLabel' }),
+                  css
+                )}
+                placeholder={intl.formatMessage({
+                  id: 'RequestQuoteForm.expectedAttendancePlaceholder',
+                })}
+                onWheel={e => {
+                  if (e.target === document.activeElement) {
+                    e.target.blur();
+                    setTimeout(() => {
+                      e.target.focus();
+                    }, 0);
+                  }
+                }}
               />
 
               <FieldSelect
                 className={css.field}
                 name="eventType"
                 id={fid('eventType')}
-                label={intl.formatMessage({ id: 'RequestQuoteForm.eventTypeLabel' })}
-                validate={validators.required(
-                  intl.formatMessage({ id: 'RequestQuoteForm.eventTypeRequired' })
+                label={optionalLabel(
+                  intl.formatMessage({ id: 'RequestQuoteForm.eventTypeLabel' }),
+                  css
                 )}
               >
-                <option value="" disabled>
+                <option value="">
                   {intl.formatMessage({ id: 'RequestQuoteForm.selectPlaceholder' })}
                 </option>
                 <option value="club_night">
@@ -173,36 +376,6 @@ export const RequestQuoteForm = props => {
                   {intl.formatMessage({ id: 'RequestQuoteForm.eventType.boatParty' })}
                 </option>
               </FieldSelect>
-
-              <FieldTextInput
-                className={css.field}
-                type="number"
-                name="expectedAttendance"
-                id={fid('expectedAttendance')}
-                labelClassName={css.label}
-                label={intl.formatMessage({ id: 'RequestQuoteForm.expectedAttendanceLabel' })}
-                placeholder={intl.formatMessage({
-                  id: 'RequestQuoteForm.expectedAttendancePlaceholder',
-                })}
-                validate={validators.required(
-                  intl.formatMessage({ id: 'RequestQuoteForm.expectedAttendanceRequired' })
-                )}
-              />
-
-              <FieldTextInput
-                className={css.field}
-                type="textarea"
-                name="description"
-                id={fid('description')}
-                labelClassName={css.label}
-                label={intl.formatMessage({ id: 'RequestQuoteForm.eventDescriptionLabel' })}
-                placeholder={intl.formatMessage({
-                  id: 'RequestQuoteForm.eventDescriptionPlaceholder',
-                })}
-                validate={validators.required(
-                  intl.formatMessage({ id: 'RequestQuoteForm.eventDescriptionRequired' })
-                )}
-              />
             </div>
 
             {/* ── Set details ── */}
@@ -211,91 +384,65 @@ export const RequestQuoteForm = props => {
                 <FormattedMessage id="RequestQuoteForm.sectionSetDetails" />
               </h3>
 
-              <Field
-                name="bookingDate"
+              <FieldSelect
+                className={css.field}
+                name="setTimeNeeded"
+                id={fid('setTimeNeeded')}
+                label={intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeededLabel' })}
                 validate={validators.required(
-                  intl.formatMessage({ id: 'NegotiationRequestQuoteForm.dateRequired' })
+                  intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeededRequired' })
                 )}
               >
+                <option value="" disabled>
+                  {intl.formatMessage({ id: 'RequestQuoteForm.selectPlaceholder' })}
+                </option>
+                <option value="opening">
+                  {intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeeded.opening' })}
+                </option>
+                <option value="supporting">
+                  {intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeeded.supporting' })}
+                </option>
+                <option value="peak_time">
+                  {intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeeded.peakTime' })}
+                </option>
+                <option value="closing">
+                  {intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeeded.closing' })}
+                </option>
+                <option value="all_night">
+                  {intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeeded.allNight' })}
+                </option>
+              </FieldSelect>
+
+              <Field name="setStartTime">
                 {({ input, meta }) => (
-                  <div className={css.field}>
-                    <label className={css.label} htmlFor={fid('bookingDate')}>
-                      <FormattedMessage id="NegotiationRequestQuoteForm.dateLabel" />
-                    </label>
-                    <SingleDatePicker
-                      id={fid('bookingDate')}
-                      value={input.value || null}
-                      onChange={input.onChange}
-                      placeholderText={intl.formatMessage({
-                        id: 'NegotiationRequestQuoteForm.datePlaceholder',
-                      })}
-                      inputClassName={css.dateInputRightIcon}
-                    />
-                    <ValidationError fieldMeta={meta} />
-                  </div>
+                  <TimeSelectField
+                    input={input}
+                    meta={meta}
+                    fid={fid}
+                    name="setStartTime"
+                    defaultHour={DEFAULT_START_HOUR}
+                    label={optionalLabel(
+                      intl.formatMessage({ id: 'RequestQuoteForm.setStartTimeLabel' }),
+                      css
+                    )}
+                    css={css}
+                  />
                 )}
               </Field>
 
-              <Field
-                name="bookingStartTime"
-                validate={validators.required(
-                  intl.formatMessage({ id: 'NegotiationRequestQuoteForm.timeRequired' })
-                )}
-              >
-                {({ input, meta }) => {
-                  const { h, m } = splitTime(input.value);
-                  return (
-                    <div className={css.field}>
-                      <label className={css.label} htmlFor={fid('bookingStartTimeH')}>
-                        <FormattedMessage id="NegotiationRequestQuoteForm.timeLabel" />
-                      </label>
-                      <div className={css.timePickerRow}>
-                        <select
-                          id={fid('bookingStartTimeH')}
-                          className={css.timeSelect}
-                          value={h}
-                          onChange={e => input.onChange(joinTime(e.target.value, m))}
-                          onBlur={input.onBlur}
-                        >
-                          <option value="" disabled>
-                            HH
-                          </option>
-                          {HOURS.map(v => (
-                            <option key={v} value={v}>
-                              {v}
-                            </option>
-                          ))}
-                        </select>
-                        <select
-                          id={fid('bookingStartTimeM')}
-                          className={css.timeSelect}
-                          value={m || '00'}
-                          onChange={e => input.onChange(joinTime(h, e.target.value))}
-                          onBlur={input.onBlur}
-                        >
-                          {MINUTES.map(v => (
-                            <option key={v} value={v}>
-                              {v}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <ValidationError fieldMeta={meta} />
-                    </div>
-                  );
-                }}
-              </Field>
-
-              <Field name="durationHours" validate={durationHoursValidators(intl)}>
+              <Field name="durationHours" validate={durationHoursValidatorsOptional(intl)}>
                 {({ input, meta }) => {
                   const trimmed =
                     typeof input.value === 'string' ? input.value.trim() : `${input.value}`;
-                  const n = parseInt(trimmed, 10);
+                  const n = Number.parseInt(trimmed, 10);
                   const plural = Number.isInteger(n) && n === 1 ? 'hour' : 'hours';
                   return (
                     <div className={css.field}>
                       <label className={css.label} htmlFor={fid('durationHours')}>
-                        <FormattedMessage id="NegotiationRequestQuoteForm.durationLabel" />
+                        {optionalLabel(
+                          intl.formatMessage({ id: 'RequestQuoteForm.setDurationLabel' }),
+                          css
+                        )}
                       </label>
                       <div
                         className={classNames(css.durationInputShell, {
@@ -311,7 +458,6 @@ export const RequestQuoteForm = props => {
                           step={1}
                           placeholder="2"
                           autoComplete="off"
-                          required
                         />
                         <span className={css.durationSuffix} aria-hidden="true">
                           <FormattedMessage id={`NegotiationRequestQuoteForm.${plural}`} />
@@ -435,43 +581,43 @@ export const RequestQuoteForm = props => {
               />
             </div>
 
-            {/* ── Technical notes ── */}
+            {/* ── Technical setup ── */}
             <div className={css.section}>
               <h3 className={css.sectionTitle}>
-                <FormattedMessage id="RequestQuoteForm.sectionTechnicalNotes" />
+                <FormattedMessage id="RequestQuoteForm.sectionTechnicalSetup" />
               </h3>
 
-              <FieldTextInput
-                className={css.field}
-                type="text"
-                name="technicalSetup"
-                id={fid('technicalSetup')}
-                labelClassName={css.label}
-                label={intl.formatMessage({ id: 'RequestQuoteForm.technicalSetupLabel' })}
-                placeholder={intl.formatMessage({
-                  id: 'RequestQuoteForm.technicalSetupPlaceholder',
-                })}
-                validate={validators.required(
-                  intl.formatMessage({ id: 'RequestQuoteForm.technicalSetupRequired' })
+              <FieldCheckboxGroup
+                className={classNames(css.field, css.deckSetupField)}
+                id={fid('deckSetup')}
+                name="deckSetup"
+                label={intl.formatMessage({ id: 'RequestQuoteForm.deckSetupLabel' })}
+                options={deckSetupOptions}
+                twoColumns
+                validate={validators.nonEmptyArray(
+                  intl.formatMessage({ id: 'RequestQuoteForm.deckSetupRequired' })
                 )}
               />
 
-              <FieldTextInput
-                className={css.field}
-                type="textarea"
-                name="additionalNotes"
-                id={fid('additionalNotes')}
-                labelClassName={css.label}
-                label={
-                  <>
-                    {intl.formatMessage({ id: 'RequestQuoteForm.technicalNotesLabel' })}
-                    {' '}<span className={css.optional}>(optional)</span>
-                  </>
-                }
-                placeholder={intl.formatMessage({
-                  id: 'RequestQuoteForm.technicalNotesPlaceholder',
-                })}
-              />
+              <FieldSelect
+                className={classNames(css.field, css.boothMonitorsField)}
+                name="boothMonitorsAvailable"
+                id={fid('boothMonitorsAvailable')}
+                label={intl.formatMessage({ id: 'RequestQuoteForm.boothMonitorsLabel' })}
+                validate={validators.required(
+                  intl.formatMessage({ id: 'RequestQuoteForm.boothMonitorsRequired' })
+                )}
+              >
+                <option value="" disabled>
+                  {intl.formatMessage({ id: 'RequestQuoteForm.selectPlaceholder' })}
+                </option>
+                <option value="yes">
+                  {intl.formatMessage({ id: 'RequestQuoteForm.yes' })}
+                </option>
+                <option value="no">
+                  {intl.formatMessage({ id: 'RequestQuoteForm.no' })}
+                </option>
+              </FieldSelect>
             </div>
 
             <div className={submitButtonWrapperClassName}>

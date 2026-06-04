@@ -23,7 +23,9 @@ const OfferDetailsCard = props => {
   const {
     bookingDate,
     bookingStartTime,
+    bookingEndTime,
     durationHours,
+    setTimeNeeded,
     eventName,
     eventType,
     expectedAttendance,
@@ -34,8 +36,9 @@ const OfferDetailsCard = props => {
     travelIncluded,
     accommodationIncluded,
     includedDetails,
+    deckSetup,
+    boothMonitorsAvailable,
     technicalSetup,
-    additionalNotes,
     proposedChanges,
   } = protectedData;
 
@@ -63,6 +66,55 @@ const OfferDetailsCard = props => {
     return notProvided;
   };
 
+  const formatSetTimeNeeded = val => {
+    if (!val) return notProvided;
+    const keyByValue = {
+      opening: 'OfferDetailsCard.setTimeNeeded.opening',
+      supporting: 'OfferDetailsCard.setTimeNeeded.supporting',
+      peak_time: 'OfferDetailsCard.setTimeNeeded.peakTime',
+      closing: 'OfferDetailsCard.setTimeNeeded.closing',
+      all_night: 'OfferDetailsCard.setTimeNeeded.allNight',
+    };
+    const messageId = keyByValue[val];
+    return messageId
+      ? intl.formatMessage({ id: messageId })
+      : val;
+  };
+
+  const formatDeckSetup = keys => {
+    if (!Array.isArray(keys) || keys.length === 0) return null;
+    return keys
+      .map(key =>
+        intl.formatMessage({
+          id: `RequestQuoteForm.deckSetup.${key}`,
+          defaultMessage: key.replace(/_/g, ' '),
+        })
+      )
+      .join(', ');
+  };
+
+  const formatSoundSystem = val => {
+    if (!val) return notProvided;
+    const keyByValue = {
+      funktion_one: 'RequestQuoteForm.soundSystem.funktionOne',
+      void: 'RequestQuoteForm.soundSystem.void',
+      d_and_b: 'RequestQuoteForm.soundSystem.dAndB',
+      l_acoustics: 'RequestQuoteForm.soundSystem.lAcoustics',
+      other: 'RequestQuoteForm.soundSystem.other',
+    };
+    const messageId = keyByValue[val];
+    return messageId ? intl.formatMessage({ id: messageId }) : val;
+  };
+
+  const deckSetupDisplay = formatDeckSetup(deckSetup);
+  const hasTechnicalSection =
+    deckSetupDisplay ||
+    boothMonitorsAvailable ||
+    soundSystem ||
+    technicalSetup ||
+    additionalNotes ||
+    proposedChanges?.proposedNotes;
+
   const ProposedValue = ({ children }) => (
     <span className={css.proposedValue}>{children}</span>
   );
@@ -87,6 +139,14 @@ const OfferDetailsCard = props => {
           </span>
           <span className={css.rowValue}>{formatDate(bookingDate)}</span>
         </div>
+        {setTimeNeeded ? (
+          <div className={css.row}>
+            <span className={css.rowLabel}>
+              <FormattedMessage id="OfferDetailsCard.setTimeNeeded" />
+            </span>
+            <span className={css.rowValue}>{formatSetTimeNeeded(setTimeNeeded)}</span>
+          </div>
+        ) : null}
         <div className={css.row}>
           <span className={css.rowLabel}>
             <FormattedMessage id="OfferDetailsCard.startTime" />
@@ -104,37 +164,43 @@ const OfferDetailsCard = props => {
             ) : null}
           </div>
         </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.duration" />
-          </span>
-          <div className={css.rowValueStack}>
-            <span className={css.rowValue}>
-              {durationHours ? (
+        {bookingEndTime ? (
+          <div className={css.row}>
+            <span className={css.rowLabel}>
+              <FormattedMessage id="OfferDetailsCard.endTime" />
+            </span>
+            <span className={css.rowValue}>{bookingEndTime}</span>
+          </div>
+        ) : null}
+        {durationHours ? (
+          <div className={css.row}>
+            <span className={css.rowLabel}>
+              <FormattedMessage id="OfferDetailsCard.duration" />
+            </span>
+            <div className={css.rowValueStack}>
+              <span className={css.rowValue}>
                 <FormattedMessage
                   id="OfferDetailsCard.durationValue"
                   values={{ hours: durationHours }}
                 />
-              ) : (
-                notProvided
-              )}
-            </span>
-            {proposedChanges?.proposedDuration &&
-              proposedChanges.proposedDuration !== durationHours ? (
-              <ProposedValue>
-                <FormattedMessage
-                  id="OfferDetailsCard.proposedLabel"
-                  values={{
-                    value: intl.formatMessage(
-                      { id: 'OfferDetailsCard.durationValue' },
-                      { hours: proposedChanges.proposedDuration }
-                    ),
-                  }}
-                />
-              </ProposedValue>
-            ) : null}
+              </span>
+              {proposedChanges?.proposedDuration &&
+                proposedChanges.proposedDuration !== durationHours ? (
+                <ProposedValue>
+                  <FormattedMessage
+                    id="OfferDetailsCard.proposedLabel"
+                    values={{
+                      value: intl.formatMessage(
+                        { id: 'OfferDetailsCard.durationValue' },
+                        { hours: proposedChanges.proposedDuration }
+                      ),
+                    }}
+                  />
+                </ProposedValue>
+              ) : null}
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
 
       {/* Event details */}
@@ -243,13 +309,20 @@ const OfferDetailsCard = props => {
         ) : null}
       </div>
 
-      {/* Technical notes */}
-      {technicalSetup || additionalNotes || proposedChanges?.proposedNotes ? (
+      {/* Technical setup */}
+      {hasTechnicalSection ? (
         <div className={css.section}>
           <h3 className={css.sectionTitle}>
-            <FormattedMessage id="OfferDetailsCard.sectionTechnicalNotes" />
+            <FormattedMessage id="OfferDetailsCard.sectionTechnicalSetup" />
           </h3>
-          {technicalSetup ? (
+          {deckSetupDisplay ? (
+            <div className={css.row}>
+              <span className={css.rowLabel}>
+                <FormattedMessage id="OfferDetailsCard.deckSetup" />
+              </span>
+              <span className={css.rowValue}>{deckSetupDisplay}</span>
+            </div>
+          ) : technicalSetup ? (
             <div className={css.row}>
               <span className={css.rowLabel}>
                 <FormattedMessage id="OfferDetailsCard.technicalSetup" />
@@ -257,12 +330,12 @@ const OfferDetailsCard = props => {
               <span className={css.rowValue}>{technicalSetup}</span>
             </div>
           ) : null}
-          {additionalNotes ? (
-            <div className={css.descriptionBlock}>
-              <p className={css.descriptionLabel}>
-                <FormattedMessage id="OfferDetailsCard.technicalNotes" />
-              </p>
-              <p className={css.descriptionValue}>{additionalNotes}</p>
+          {boothMonitorsAvailable ? (
+            <div className={css.row}>
+              <span className={css.rowLabel}>
+                <FormattedMessage id="OfferDetailsCard.boothMonitors" />
+              </span>
+              <span className={css.rowValue}>{formatYesNo(boothMonitorsAvailable)}</span>
             </div>
           ) : null}
           {proposedChanges?.proposedNotes ? (
