@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "builds": [
+    {
+      "src": "public/landing.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/landing.html"
+    }
+  ]
+}
