@@ -198,12 +198,13 @@ export const RequestQuoteForm = props => {
           formId,
           handleSubmit,
           inProgress,
-          invalid,
+          submitting,
+          submitFailed,
         } = formRenderProps;
 
         const classes = classNames(rootClassName || css.root, className);
-        const submitInProgress = inProgress;
-        const submitDisabled = invalid || submitInProgress;
+        const submitInProgress = inProgress || submitting;
+        const submitDisabled = submitInProgress;
         const fid = name => (formId ? `${formId}.${name}` : name);
 
         return (
@@ -407,7 +408,8 @@ export const RequestQuoteForm = props => {
                       </label>
                       <div
                         className={classNames(css.durationInputShell, {
-                          [css.durationInputShellError]: meta.touched && meta.invalid,
+                          [css.durationInputShellError]:
+                            (meta.touched || submitFailed) && meta.invalid,
                         })}
                       >
                         <input
@@ -469,7 +471,7 @@ export const RequestQuoteForm = props => {
 
               <Field name="offerAmount" validate={composeOfferValidators(intl)}>
                 {({ input, meta }) => {
-                  const showError = meta.touched && (meta.error || meta.submitError);
+                  const showError = (meta.touched || submitFailed) && (meta.error || meta.submitError);
                   return (
                     <div className={css.field}>
                       <label className={css.label} htmlFor={fid('offerAmount')}>
@@ -477,7 +479,7 @@ export const RequestQuoteForm = props => {
                       </label>
                       <div
                         className={classNames(css.offerInputShell, {
-                          [css.offerInputShellError]: meta.touched && meta.invalid,
+                          [css.offerInputShellError]: (meta.touched || submitFailed) && meta.invalid,
                         })}
                       >
                         <input
