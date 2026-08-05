@@ -1,5 +1,5 @@
 .code {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-family: var(--fontFamilyCode);
   font-size: 90%;
   padding: 0.2rem 0.5rem;
   margin: 0 0.2rem;

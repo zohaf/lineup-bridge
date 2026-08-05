@@ -132,13 +132,18 @@ const isHomeTopbarLink = link => {
     return true;
   }
   const h = (link.href || '').trim();
-  const stripped = h.replace(/\/+$/, '') || '/';
-  return (
-    h === '/p/home' ||
-    h === 'p/home' ||
-    stripped === '/p/home' ||
-    stripped === '/'
-  );
+  if (!h) {
+    return false;
+  }
+
+  try {
+    const normalizedHref = h.startsWith('http://') || h.startsWith('https://') ? h : `http://x${h.startsWith('/') ? h : `/${h}`}`;
+    const parsed = new URL(normalizedHref);
+    const normalizedPath = (parsed.pathname || '').replace(/\/+$/, '') || '/';
+    return normalizedPath === '/p/home' || normalizedPath === '/';
+  } catch (e) {
+    return false;
+  }
 };
 
 const normalizeTopbarLinkText = link => {
@@ -298,7 +303,10 @@ const TopbarComponent = props => {
   // Home (/p/home) in the top bar only when logged in — not on signup/login flows for guests.
   const customLinksFilteredForAuth = isEffectivelyAuthenticated
     ? customLinksResolved
-    : customLinksResolved.filter(link => !isHomeTopbarLink(link));
+    : customLinksResolved.filter(
+        link =>
+          !isHomeTopbarLink(link) && String(link.text || '').trim().toLowerCase() !== 'home'
+      );
 
   const customLinksForTopbar = isLandingUnauthenticated ? [] : customLinksFilteredForAuth;
 

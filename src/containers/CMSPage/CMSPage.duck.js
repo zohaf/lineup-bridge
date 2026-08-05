@@ -4,6 +4,7 @@ import { fetchCurrentUser } from '../../ducks/user.duck';
 import { loadData as loadInboxData } from '../InboxPage/InboxPage.duck';
 import { queryOwnListings } from '../ManageListingsPage/ManageListingsPage.duck';
 import { createImageVariantConfig } from '../../util/sdkLoader';
+import { getCurrentUserTypeRoles } from '../../util/userHelpers';
 
 /**
  * CMS pages load hosted JSON. For `home`, also load inbox orders and own listings for the
@@ -37,13 +38,18 @@ export const loadData = (params, search, config) => async (dispatch, getState) =
 
   await dispatch(fetchCurrentUser());
 
-  const { isAuthenticated } = getState().auth || {};
+  const state = getState();
+  const { isAuthenticated } = state.auth || {};
   if (!isAuthenticated) {
     return;
   }
 
+  const currentUser = state.user?.currentUser;
+  const roles = getCurrentUserTypeRoles(config, currentUser);
+  const inboxTab = roles?.provider && !roles?.customer ? 'sales' : 'orders';
+
   await Promise.all([
-    dispatch(loadInboxData({ tab: 'orders' }, '')),
+    dispatch(loadInboxData({ tab: inboxTab }, '')),
     dispatch(
       queryOwnListings({
         page: 1,

@@ -103,7 +103,8 @@
   width: calc(100% - 26px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .actionBarContainerForNoListingImage {
@@ -128,14 +129,105 @@
   /* Action bar prevents the image click events going to the parent and
    should not show a pointer */
   cursor: initial;
-  border-radius: var(--borderRadiusMedium);
+  width: min(100%, 560px);
+  max-width: 560px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  color: var(--colorGrey700);
+
+  @media (--viewportMedium) {
+    padding: 20px 22px;
+  }
 
   &.actionBarNoBorderRadiusOnMobile {
-    border-radius: 0;
+    border-radius: 20px;
     @media (--viewportMedium) {
-      border-radius: var(--borderRadiusMedium);
+      border-radius: 20px;
     }
   }
+}
+
+.actionBarForHeroLayout.actionBar,
+.actionBarForHeroLayout.actionBarWithCTAEnabled {
+  width: min(100%, 560px);
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 10px 12px;
+}
+
+.actionBarForHeroLayout .ownListingText,
+.actionBarForHeroLayout .closedListingText {
+  margin: 0;
+  color: var(--colorGrey700);
+  text-align: left;
+  flex: 1 1 auto;
+}
+
+.actionBarForHeroLayout .ownListingTextPendingApproval,
+.actionBarForHeroLayout .missingPayoutDetailsText {
+  color: var(--colorAttentionDark);
+}
+
+.actionBarForHeroLayout .linkContainer,
+.actionBarForHeroLayout .noShrink,
+.actionBarForHeroLayout .payoutDetailsWarning {
+  width: auto;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.actionBarForHeroLayout .addPayoutDetails,
+.actionBarForHeroLayout .editListingLink,
+.actionBarForHeroLayout .actionBarCTA {
+  margin: 0;
+  min-height: 44px;
+  white-space: nowrap;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 74, 74, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--colorGrey700);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.actionBarForHeroLayout .addPayoutDetails {
+  margin-left: auto;
+}
+
+.actionBarForHeroLayout .addPayoutDetails:hover,
+.actionBarForHeroLayout .editListingLink:hover,
+.actionBarForHeroLayout .actionBarCTA:hover,
+.actionBarForHeroLayout .addPayoutDetails:focus,
+.actionBarForHeroLayout .editListingLink:focus,
+.actionBarForHeroLayout .actionBarCTA:focus {
+  background: var(--colorWhite);
+  color: var(--colorBlack);
+  border-color: rgba(74, 74, 74, 0.18);
+  text-decoration: none;
+}
+
+.actionBarForHeroLayout .actionBarCTA {
+  margin: 0;
+}
+
+.actionBarForHeroLayout .editIcon {
+  margin-top: 0;
 }
 
 .actionBarCTA {

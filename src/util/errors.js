@@ -75,6 +75,15 @@ export const isTooManyRequestsError = error => error?.status === 429;
 export const isSignupEmailTakenError = error => hasErrorWithCode(error, ERROR_CODE_EMAIL_TAKEN);
 
 /**
+ * Check if signup failed because the account exists but is still in
+ * pending-approval flow, or the user otherwise lacks permission due to
+ * pending-approval restrictions.
+ */
+export const isSignupPendingApprovalConflictError = error =>
+  hasErrorWithCode(error, ERROR_CODE_USER_PENDING_APPROVAL) ||
+  hasErrorWithCode(error, ERROR_CODE_PERMISSION_DENIED_PENDING_APPROVAL);
+
+/**
  * Check if the given API error (from `sdk.currentuser.changeEmail()`) is
  * due to the email address already being in use.
  */

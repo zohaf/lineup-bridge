@@ -26,6 +26,8 @@ const OfferDetailsCard = props => {
     bookingEndTime,
     durationHours,
     setTimeNeeded,
+    previousDj,
+    headliner,
     eventName,
     eventType,
     expectedAttendance,
@@ -201,6 +203,20 @@ const OfferDetailsCard = props => {
             </div>
           </div>
         ) : null}
+        {previousDj ? (
+          <div className={css.row}>
+            <span className={css.rowLabel}>
+              <FormattedMessage id="OfferDetailsCard.previousDj" />
+            </span>
+            <span className={css.rowValue}>{previousDj}</span>
+          </div>
+        ) : null}
+        <div className={css.row}>
+          <span className={css.rowLabel}>
+            <FormattedMessage id="OfferDetailsCard.headliner" />
+          </span>
+          <span className={css.rowValue}>{headliner || notProvided}</span>
+        </div>
       </div>
 
       {/* Event details */}

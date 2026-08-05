@@ -108,7 +108,7 @@ describe('RequestQuotePage', () => {
     expect(screen.getByText('listing-id title')).toBeInTheDocument();
 
     // Check that the message textarea is present
-    expect(screen.getByLabelText(/RequestQuotePage\.defaultMessageLabel/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/RequestQuoteForm\.additionalNotesLabel/)).toBeInTheDocument();
 
     // Check that the submit button is present
     expect(

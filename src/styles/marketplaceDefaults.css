@@ -1,5 +1,6 @@
 @import '../assets/sanitize.css';
 @import './customMediaQueries.css';
+@import './typography.css';
 
 /* ================ Custom Properties aka CSS variables ================ */
 
@@ -86,19 +87,18 @@
   --colorStatusFinalState: var(--colorGrey600);
 
   /* ================ Font ================ */
-  /* Body: Suisse Intl Book (450). Headings: Rhymes Display Light (300). Files: public/fonts/ */
-  --fontFamily: 'Suisse Intl', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  --fontFamilyHeading: 'Rhymes Display', Georgia, 'Times New Roman', serif;
-  --fontWeightHeading: 300;
-  --fontWeightBody: 450;
+  /* Body: Suisse Intl. Headings: Rhymes Display. Shared via typography.css. */
+  --fontFamily: var(--fontFamilyBody);
+  --fontFamilyHeading: var(--fontFamilyHeading);
+  --fontWeightHeading: var(--fontWeightHeading);
+  --fontWeightBody: var(--fontWeightBody);
 
-  --fontWeightRegular: 450;
-  --fontWeightMedium: 500;
-  --fontWeightSemiBold: 600;
-  --fontWeightBold: 700;
-  --fontWeightHeavy: 800;
-  --fontWeightBlack: 900;
+  --fontWeightRegular: var(--fontWeightRegular);
+  --fontWeightMedium: var(--fontWeightMedium);
+  --fontWeightSemiBold: var(--fontWeightSemiBold);
+  --fontWeightBold: var(--fontWeightBold);
+  --fontWeightHeavy: var(--fontWeightHeavy);
+  --fontWeightBlack: var(--fontWeightBlack);
 
   --fontWeightHighlightEmail: var(--fontWeightBold);
 

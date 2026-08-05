@@ -57,7 +57,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.accepted.status
@@ -125,7 +125,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.canceled.status
@@ -193,7 +193,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.delivered.status
@@ -224,7 +224,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
     </a>
   </div>
   <a
-    class="itemLink"
+    class="itemLink itemUnread"
     href="/sale/id-booking-CONFIRM_PAYMENT-sale"
   >
     <div
@@ -265,7 +265,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.preauthorized.status
@@ -333,7 +333,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.declined.status
@@ -401,7 +401,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.expired.status
@@ -469,7 +469,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -537,7 +537,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.payment-expired.status
@@ -605,7 +605,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -673,7 +673,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -731,7 +731,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.inquiry.status
@@ -799,7 +799,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.accepted.status
@@ -867,7 +867,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.delivered.status
@@ -935,7 +935,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.declined.status
@@ -1003,7 +1003,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.pending-payment.status
@@ -1071,7 +1071,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.pending-payment.status
@@ -1139,7 +1139,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed-by-customer.status
@@ -1207,7 +1207,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed-by-provider.status
@@ -1275,7 +1275,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -1343,7 +1343,7 @@ exports[`InboxPage InboxItem: default-booking process with "day" check booking: 
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -1411,7 +1411,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.accepted.status
@@ -1479,7 +1479,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.canceled.status
@@ -1547,7 +1547,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.delivered.status
@@ -1615,7 +1615,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.preauthorized.status
@@ -1683,7 +1683,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.declined.status
@@ -1751,7 +1751,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.expired.status
@@ -1819,7 +1819,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -1887,7 +1887,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.payment-expired.status
@@ -1955,7 +1955,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -2023,7 +2023,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -2081,7 +2081,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.inquiry.status
@@ -2149,7 +2149,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.accepted.status
@@ -2217,7 +2217,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.delivered.status
@@ -2285,7 +2285,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-booking.declined.status
@@ -2353,7 +2353,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.pending-payment.status
@@ -2421,7 +2421,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-booking.pending-payment.status
@@ -2489,7 +2489,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed-by-customer.status
@@ -2557,7 +2557,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed-by-provider.status
@@ -2625,7 +2625,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -2693,7 +2693,7 @@ exports[`InboxPage InboxItem: default-booking process with "hour" check booking:
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-booking.reviewed.status
@@ -2751,7 +2751,7 @@ exports[`InboxPage InboxItem: default-inquiry process with "inquiry" item check 
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-inquiry.free-inquiry.status
@@ -2809,7 +2809,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.completed.status
@@ -2867,7 +2867,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -2925,7 +2925,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.completed.status
@@ -2983,7 +2983,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.canceled.status
@@ -3041,7 +3041,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.canceled.status
@@ -3099,7 +3099,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.offer-accepted.status
@@ -3157,7 +3157,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.customer-offer-pending.status
@@ -3215,7 +3215,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.offer-rejected.status
@@ -3273,7 +3273,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.offer-rejected.status
@@ -3331,7 +3331,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -3389,7 +3389,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.delivered.status
@@ -3447,7 +3447,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.delivered.status
@@ -3505,7 +3505,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.reviewed.status
@@ -3563,7 +3563,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.payment-expired.status
@@ -3621,7 +3621,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.reviewed.status
@@ -3679,7 +3679,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.reviewed.status
@@ -3737,7 +3737,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.inquiry.status
@@ -3795,7 +3795,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -3853,7 +3853,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -3911,7 +3911,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -3969,7 +3969,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.completed.status
@@ -4027,7 +4027,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -4085,7 +4085,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.canceled.status
@@ -4143,7 +4143,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.canceled.status
@@ -4201,7 +4201,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.canceled.status
@@ -4259,7 +4259,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.delivered.status
@@ -4317,7 +4317,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.delivered.status
@@ -4375,7 +4375,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.offer-rejected.status
@@ -4433,7 +4433,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.offer-rejected.status
@@ -4491,7 +4491,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.request-rejected.status
@@ -4549,7 +4549,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.changes-requested.status
@@ -4607,7 +4607,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -4665,7 +4665,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -4723,7 +4723,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.offer-pending.status
@@ -4781,7 +4781,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.offer-rejected.status
@@ -4839,7 +4839,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.offer-rejected.status
@@ -4897,7 +4897,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.request-rejected.status
@@ -4955,7 +4955,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.changes-requested.status
@@ -5013,7 +5013,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.pending-payment.status
@@ -5071,7 +5071,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.quote-requested.status
@@ -5129,7 +5129,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.reviewed-by-customer.status
@@ -5187,7 +5187,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.reviewed-by-provider.status
@@ -5245,7 +5245,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.reviewed.status
@@ -5303,7 +5303,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-negotiation.reviewed.status
@@ -5361,7 +5361,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.update-pending.status
@@ -5419,7 +5419,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-negotiation.update-pending.status
@@ -5477,7 +5477,7 @@ exports[`InboxPage InboxItem: default-negotiation process with "request" check n
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-negotiation.request-rejected.status
@@ -5508,7 +5508,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" InboxItem wit
     </a>
   </div>
   <a
-    class="itemLink"
+    class="itemLink itemUnread"
     href="/sale/oneItem-sale"
   >
     <div
@@ -5539,7 +5539,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" InboxItem wit
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.purchased.status
@@ -5601,7 +5601,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-purchase.canceled.status
@@ -5663,7 +5663,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-purchase.canceled.status
@@ -5725,7 +5725,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.completed.status
@@ -5787,7 +5787,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.received.status
@@ -5849,7 +5849,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-purchase.canceled.status
@@ -5911,7 +5911,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-purchase.canceled.status
@@ -5942,7 +5942,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
     </a>
   </div>
   <a
-    class="itemLink"
+    class="itemLink itemUnread"
     href="/sale/id-purchase-CONFIRM_PAYMENT-sale"
   >
     <div
@@ -5977,7 +5977,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.purchased.status
@@ -6039,7 +6039,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-purchase.disputed.status
@@ -6101,7 +6101,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.reviewed.status
@@ -6163,7 +6163,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-purchase.payment-expired.status
@@ -6225,7 +6225,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.reviewed.status
@@ -6287,7 +6287,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.reviewed.status
@@ -6345,7 +6345,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.inquiry.status
@@ -6407,7 +6407,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.delivered.status
@@ -6469,7 +6469,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.received.status
@@ -6531,7 +6531,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.received.status
@@ -6593,7 +6593,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.received.status
@@ -6655,7 +6655,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneRejected"
       >
         <span>
           InboxPage.default-purchase.disputed.status
@@ -6717,7 +6717,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.delivered.status
@@ -6779,7 +6779,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.pending-payment.status
@@ -6841,7 +6841,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateTonePending"
       >
         <span>
           InboxPage.default-purchase.pending-payment.status
@@ -6903,7 +6903,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateActionNeeded"
+        class="stateName stateActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.reviewed-by-customer.status
@@ -6965,7 +6965,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateNoActionNeeded"
+        class="stateName stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.reviewed-by-provider.status
@@ -7027,7 +7027,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.reviewed.status
@@ -7089,7 +7089,7 @@ exports[`InboxPage InboxItem: default-purchase process with "item" check purchas
       class="itemState"
     >
       <div
-        class="stateName stateConcluded stateNoActionNeeded"
+        class="stateName stateConcluded stateNoActionNeeded stateToneAccepted"
       >
         <span>
           InboxPage.default-purchase.reviewed.status

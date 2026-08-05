@@ -89,8 +89,9 @@ const handleSubmit =
     setStartTime,
     durationHours,
     setTimeNeeded,
+    previousDj,
+    headliner,
     eventName,
-    eventType,
     expectedAttendance,
     venueName,
     eventLocation,
@@ -117,10 +118,10 @@ const handleSubmit =
 
   const protectedData = {
     eventName: eventName || '',
-    eventType: eventType || '',
     venueName: venueName || '',
     eventLocation: eventLocation || '',
     setTimeNeeded: setTimeNeeded || '',
+    headliner: headliner || '',
     travelIncluded: travelIncluded || '',
     accommodationIncluded: accommodationIncluded || '',
     ...getTransactionTypeData(listingType, unitType, config),
@@ -131,6 +132,7 @@ const handleSubmit =
   if (bookingStartTime) protectedData.bookingStartTime = bookingStartTime;
   if (bookingEndTime) protectedData.bookingEndTime = bookingEndTime;
   if (setStartTime) protectedData.setStartTime = setStartTime;
+  if (previousDj) protectedData.previousDj = previousDj;
   if (Number.isInteger(parsedDuration) && parsedDuration > 0) {
     protectedData.durationHours = parsedDuration;
   } else if (bookingStartTime && bookingEndTime) {

@@ -1,0 +1,21 @@
+/* Shared typography tokens for the app */
+
+:root {
+  --fontFamilyBody: 'Suisse Intl', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --fontFamilyHeading: 'Rhymes Display', Georgia, 'Times New Roman', serif;
+  --fontFamilyCode: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+
+  --fontFamily: var(--fontFamilyBody);
+  --fontWeightHeading: 300;
+  --fontWeightBody: 450;
+  --fontWeightRegular: 450;
+  --fontWeightMedium: 500;
+  --fontWeightSemiBold: 600;
+  --fontWeightBold: 700;
+  --fontWeightHeavy: 800;
+  --fontWeightBlack: 900;
+  --fontWeightHighlightEmail: var(--fontWeightBold);
+}
+
+/* Add real local font files to public/fonts later if you want true self-hosting. */

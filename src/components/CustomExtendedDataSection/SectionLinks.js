@@ -8,6 +8,7 @@ import {
   IconSocialMediaResidentAdvisor,
   IconSocialMediaSoundCloud,
   IconSocialMediaSpotify,
+  IconSocialMediaWebsite,
 } from './SocialLinkIcons';
 import css from './CustomExtendedDataSection.module.css';
 
@@ -26,6 +27,9 @@ const linkConfFromHeading = heading => {
   }
   if (normalizedHeading.includes('youtube')) return { label: 'YouTube', Icon: null };
   if (normalizedHeading.includes('tiktok')) return { label: 'TikTok', Icon: null };
+  if (normalizedHeading.includes('website') || normalizedHeading.includes('web site')) {
+    return { label: 'Website', Icon: IconSocialMediaWebsite };
+  }
   if (normalizedHeading.includes('resident advisor') || normalizedHeading === 'ra') {
     return { label: 'RA', Icon: IconSocialMediaResidentAdvisor };
   }

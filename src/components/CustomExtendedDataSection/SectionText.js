@@ -9,6 +9,7 @@ import {
   IconSocialMediaResidentAdvisor,
   IconSocialMediaSoundCloud,
   IconSocialMediaSpotify,
+  IconSocialMediaWebsite,
 } from './SocialLinkIcons';
 import css from './CustomExtendedDataSection.module.css';
 
@@ -43,6 +44,9 @@ const SectionText = props => {
     if (h.includes('soundcloud')) return { label: 'SoundCloud', Icon: IconSocialMediaSoundCloud };
     if (h.includes('youtube')) return { label: 'YouTube', Icon: null };
     if (h.includes('tiktok')) return { label: 'TikTok', Icon: null };
+    if (h.includes('website') || h.includes('web site')) {
+      return { label: 'Website', Icon: IconSocialMediaWebsite };
+    }
     if (h.includes('resident advisor') || h === 'ra' || h.includes(' ra')) {
       return { label: 'RA', Icon: IconSocialMediaResidentAdvisor };
     }

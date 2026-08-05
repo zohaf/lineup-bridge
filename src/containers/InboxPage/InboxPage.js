@@ -42,11 +42,10 @@ import {
   NotificationBadge,
   Page,
   PaginationLinks,
-  TabNav,
   IconSpinner,
   TimeRange,
   UserDisplayName,
-  LayoutSideNavigation,
+  LayoutSingleColumn,
 } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
@@ -56,6 +55,34 @@ import InboxSearchForm from './InboxSearchForm/InboxSearchForm';
 
 import { stateDataShape, getStateData } from './InboxPage.stateData';
 import css from './InboxPage.module.css';
+
+const getStatusToneClass = (processState, cssModule) => {
+  const state = String(processState || '').toLowerCase();
+  if (!state) {
+    return '';
+  }
+
+  if (
+    state.includes('reject') ||
+    state.includes('declin') ||
+    state.includes('cancel') ||
+    state.includes('disput') ||
+    state.includes('expire')
+  ) {
+    return cssModule.stateToneRejected;
+  }
+
+  if (
+    state.includes('accept') ||
+    state.includes('complete') ||
+    state.includes('review') ||
+    state.includes('confirm')
+  ) {
+    return cssModule.stateToneAccepted;
+  }
+
+  return cssModule.stateTonePending;
+};
 
 // Check if the transaction line-items use booking-related units
 const getUnitLineItem = lineItems => {
@@ -181,17 +208,20 @@ export const InboxItem = props => {
   const otherUser = isCustomer ? provider : customer;
   const otherUserDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
   const isOtherUserBanned = otherUser.attributes.banned;
+  const isUnreadActivity = isSaleNotification || isOrderNotification;
+  const statusToneClass = getStatusToneClass(processState, css);
 
-  const rowNotificationDot =
-    isSaleNotification || isOrderNotification ? <div className={css.notificationDot} /> : null;
+  const rowNotificationDot = isUnreadActivity ? <div className={css.notificationDot} /> : null;
 
   const linkClasses = classNames(css.itemLink, {
     [css.bannedUserLink]: isOtherUserBanned,
+    [css.itemUnread]: isUnreadActivity,
   });
   const stateClasses = classNames(css.stateName, {
     [css.stateConcluded]: isFinal,
     [css.stateActionNeeded]: actionNeeded,
     [css.stateNoActionNeeded]: !actionNeeded,
+    [statusToneClass]: !!statusToneClass,
   });
 
   return (
@@ -280,9 +310,7 @@ export const InboxPageComponent = props => {
 
   const isOrders = tab === 'orders';
   const hasNoResults = !fetchInProgress && transactions.length === 0 && !fetchOrdersOrSalesError;
-  const ordersTitle = intl.formatMessage({ id: 'InboxPage.ordersTitle' });
-  const salesTitle = intl.formatMessage({ id: 'InboxPage.salesTitle' });
-  const title = isOrders ? ordersTitle : salesTitle;
+  const title = 'Activity';
   const search = parse(location.search);
 
   const pickType = lt => conf => conf.listingType === lt;
@@ -335,112 +363,63 @@ export const InboxPageComponent = props => {
   const hasTransactions =
     !fetchInProgress && hasOrderOrSaleTransactions(transactions, isOrders, currentUser);
 
-  const ordersTabMaybe = isCustomerUserType
-    ? [
-        {
-          text: (
-            <span>
-              <FormattedMessage id="InboxPage.ordersTabTitle" />
-              {customerNotificationCount > 0 ? (
-                <NotificationBadge count={customerNotificationCount} />
-              ) : null}
-            </span>
-          ),
-          selected: isOrders,
-          linkProps: {
-            name: 'InboxPage',
-            params: { tab: 'orders' },
-          },
-        },
-      ]
-    : [];
-
-  const salesTabMaybe = isProviderUserType
-    ? [
-        {
-          text: (
-            <span>
-              <FormattedMessage id="InboxPage.salesTabTitle" />
-              {providerNotificationCount > 0 ? (
-                <NotificationBadge count={providerNotificationCount} />
-              ) : null}
-            </span>
-          ),
-          selected: !isOrders,
-          linkProps: {
-            name: 'InboxPage',
-            params: { tab: 'sales' },
-          },
-        },
-      ]
-    : [];
-
-  const tabs = [...ordersTabMaybe, ...salesTabMaybe];
-
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
-      <LayoutSideNavigation
-        sideNavClassName={css.navigation}
+      <LayoutSingleColumn
         topbar={
           <TopbarContainer
             mobileRootClassName={css.mobileTopbar}
             desktopClassName={css.desktopTopbar}
           />
         }
-        sideNav={
-          <>
-            <H2 as="h1" className={css.title}>
-              <FormattedMessage id="InboxPage.title" />
-            </H2>
-            <TabNav
-              rootClassName={css.tabs}
-              tabRootClassName={css.tab}
-              tabs={tabs}
-              ariaLabel={intl.formatMessage({ id: 'InboxPage.screenreader.sidenav' })}
-            />{' '}
-          </>
-        }
         footer={<FooterContainer />}
       >
-        <InboxSearchForm
-          onSubmit={() => {}}
-          onSelect={handleSortSelect(tab, routeConfiguration, history)}
-          intl={intl}
-          tab={tab}
-          routeConfiguration={routeConfiguration}
-          history={history}
-        />
-        {fetchOrdersOrSalesError ? (
-          <p className={css.error}>
-            <FormattedMessage id="InboxPage.fetchFailed" />
-          </p>
-        ) : null}
-        <ul className={css.itemList}>
-          {!fetchInProgress ? (
-            transactions.map(toTxItem)
-          ) : (
-            <li className={css.listItemsLoading}>
-              <IconSpinner />
-            </li>
-          )}
-          {hasNoResults ? (
-            <li key="noResults" className={css.noResults}>
-              <FormattedMessage
-                id={isOrders ? 'InboxPage.noOrdersFound' : 'InboxPage.noSalesFound'}
-              />
-            </li>
-          ) : null}
-        </ul>
-        {hasTransactions && pagination && pagination.totalPages > 1 ? (
-          <PaginationLinks
-            className={css.pagination}
-            pageName="InboxPage"
-            pagePathParams={params}
-            pageSearchParams={search}
-            pagination={pagination}
+        <div className={css.contentInner}>
+          <div className={css.contentHeader}>
+            <H2 as="h1" className={css.contentTitle}>
+              {title}
+            </H2>
+          </div>
+          <InboxSearchForm
+            onSubmit={() => {}}
+            onSelect={handleSortSelect(tab, routeConfiguration, history)}
+            intl={intl}
+            tab={tab}
+            routeConfiguration={routeConfiguration}
+            history={history}
           />
-        ) : null}
-      </LayoutSideNavigation>
+          {fetchOrdersOrSalesError ? (
+            <p className={css.error}>
+              <FormattedMessage id="InboxPage.fetchFailed" />
+            </p>
+          ) : null}
+          <ul className={css.itemList}>
+            {!fetchInProgress ? (
+              transactions.map(toTxItem)
+            ) : (
+              <li className={css.listItemsLoading}>
+                <IconSpinner />
+              </li>
+            )}
+            {hasNoResults ? (
+              <li key="noResults" className={css.noResults}>
+                <FormattedMessage
+                  id={isOrders ? 'InboxPage.noOrdersFound' : 'InboxPage.noSalesFound'}
+                />
+              </li>
+            ) : null}
+          </ul>
+          {hasTransactions && pagination && pagination.totalPages > 1 ? (
+            <PaginationLinks
+              className={css.pagination}
+              pageName="InboxPage"
+              pagePathParams={params}
+              pageSearchParams={search}
+              pagination={pagination}
+            />
+          ) : null}
+        </div>
+      </LayoutSingleColumn>
     </Page>
   );
 };

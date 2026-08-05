@@ -57,6 +57,16 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
   );
 };
 
+const FindDjLink = () => {
+  return (
+    <NamedLink id="find-dj-link" name="SearchPage" className={css.topbarLink}>
+      <span className={css.topbarLinkLabel}>
+        <FormattedMessage id="TopbarDesktop.findDjLink" />
+      </span>
+    </NamedLink>
+  );
+};
+
 const ProfileMenu = ({
   currentPage,
   currentUser,
@@ -72,7 +82,6 @@ const ProfileMenu = ({
   };
 
   const roles = getCurrentUserTypeRoles(config, currentUser);
-  const isEventOrganizer = roles?.customer && !roles?.provider;
   const isDj = roles?.provider && !roles?.customer;
 
   return (
@@ -86,17 +95,7 @@ const ProfileMenu = ({
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
-        {isEventOrganizer ? (
-          <MenuItem key="SearchPage">
-            <NamedLink
-              className={classNames(css.menuLink, currentPageClass('SearchPage'))}
-              name="SearchPage"
-            >
-              <span className={css.menuItemBorder} />
-              <FormattedMessage id="TopbarDesktop.findDjLink" />
-            </NamedLink>
-          </MenuItem>
-        ) : isDj ? (
+        {isDj ? (
           <MenuItem key="ManageListingsPage">
             <InlineTextButton
               rootClassName={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
@@ -195,6 +194,10 @@ const TopbarDesktop = props => {
     />
   ) : null;
 
+  const roles = getCurrentUserTypeRoles(config, currentUser);
+  const showFindDjLink = authenticatedOnClientSide && roles?.customer && !roles?.provider;
+  const findDjLinkMaybe = showFindDjLink ? <FindDjLink /> : null;
+
   const signupLinkMaybe = isAuthenticatedOrJustHydrated ? null : <SignupLink />;
   const loginLinkMaybe = isAuthenticatedOrJustHydrated ? null : <LoginLink />;
 
@@ -239,6 +242,7 @@ const TopbarDesktop = props => {
       />
 
       {inboxLinkMaybe}
+      {findDjLinkMaybe}
       {profileMenuMaybe}
       {signupLinkMaybe}
       {loginLinkMaybe}

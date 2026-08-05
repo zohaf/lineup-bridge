@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Redirect } from 'react-router-dom';
@@ -16,6 +16,7 @@ import { propTypes } from '../../util/types';
 import { ensureCurrentUser, getFeaturedListingsProps } from '../../util/data';
 import {
   isSignupEmailTakenError,
+  isSignupPendingApprovalConflictError,
   isTooManyEmailVerificationRequestsError,
 } from '../../util/errors';
 import { pickUserFieldsData, addScopePrefix } from '../../util/userHelpers';
@@ -207,6 +208,8 @@ export const AuthenticationForms = props => {
     },
   ];
 
+  const formErrorRef = useRef(null);
+
   const handleSubmitSignup = values => {
     const { userType, email, password, fname, lname, displayName, ...rest } = values;
     const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
@@ -278,6 +281,8 @@ export const AuthenticationForms = props => {
     <div className={css.error}>
       {isSignupEmailTakenError(signupError) ? (
         <FormattedMessage id="AuthenticationPage.signupFailedEmailAlreadyTaken" />
+      ) : isSignupPendingApprovalConflictError(signupError) ? (
+        <FormattedMessage id="AuthenticationPage.signupFailedPendingApproval" />
       ) : (
         <FormattedMessage id="AuthenticationPage.signupFailed" />
       )}
@@ -293,6 +298,12 @@ export const AuthenticationForms = props => {
       ? signupErrorMessage
       : null;
 
+  useEffect(() => {
+    if (loginOrSignupError && formErrorRef.current) {
+      formErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [loginOrSignupError]);
+
   const ariaLabel = `${intl.formatMessage({
     id: 'AuthenticationPage.signupLinkText',
   })} & ${intl.formatMessage({ id: 'AuthenticationPage.loginLinkText' })}`;
@@ -300,7 +311,7 @@ export const AuthenticationForms = props => {
   return (
     <div className={css.content}>
       <LinkTabNavHorizontal className={css.tabs} tabs={tabs} ariaLabel={ariaLabel} />
-      {loginOrSignupError}
+      {loginOrSignupError ? <div ref={formErrorRef}>{loginOrSignupError}</div> : null}
 
       {isLogin ? (
         <LoginForm className={css.loginForm} onSubmit={submitLogin} inProgress={authInProgress} />
@@ -398,6 +409,8 @@ const ConfirmIdProviderInfoForm = props => {
     <div className={css.error}>
       {isSignupEmailTakenError(confirmError) ? (
         <FormattedMessage id="AuthenticationPage.signupFailedEmailAlreadyTaken" />
+      ) : isSignupPendingApprovalConflictError(confirmError) ? (
+        <FormattedMessage id="AuthenticationPage.signupFailedPendingApproval" />
       ) : (
         <FormattedMessage id="AuthenticationPage.signupFailed" />
       )}

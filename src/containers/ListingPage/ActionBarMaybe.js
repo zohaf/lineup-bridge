@@ -13,7 +13,6 @@ import {
 } from '../../util/types';
 
 import { NamedLink, ExternalLink } from '../../components';
-import EditIcon from './EditIcon';
 
 import css from './ListingPage.module.css';
 
@@ -103,7 +102,6 @@ export const ActionBarMaybe = props => {
           <FormattedMessage id="ListingPage.addPayoutDetailsMessage" />
         </p>
         <NamedLink className={css.addPayoutDetails} name="StripePayoutPage">
-          <EditIcon className={css.editIcon} />
           <FormattedMessage id="ListingPage.addPayoutDetails" />
         </NamedLink>
       </div>
@@ -143,7 +141,6 @@ export const ActionBarMaybe = props => {
             name="EditListingPage"
             params={editParams}
           >
-            <EditIcon className={css.editIcon} />
             <FormattedMessage id={message} />
           </NamedLink>
           <CTAButtonMaybe

@@ -152,16 +152,12 @@ describe('InboxPage', () => {
         initialState,
       });
 
-      await waitFor(() => {
-        // Has links to orders tab
-        const ordersTabTitle = screen.getByRole('link', { name: 'InboxPage.ordersTabTitle' });
-        expect(ordersTabTitle).toBeInTheDocument();
-        expect(ordersTabTitle.getAttribute('href')).toContain('/inbox/orders');
+      expect(screen.queryByText(/As a customer/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/As a provider/i)).not.toBeInTheDocument();
 
-        // Has links to sales tab
-        const salesTabTitle = screen.getByRole('link', { name: 'InboxPage.salesTabTitle' });
-        expect(salesTabTitle).toBeInTheDocument();
-        expect(salesTabTitle.getAttribute('href')).toContain('/inbox/sales');
+      await waitFor(() => {
+        expect(screen.queryByRole('link', { name: /orders/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: /sales/i })).not.toBeInTheDocument();
 
         // Has 2 items
         const items = screen.queryAllByRole('link', { name: /listing1/i });
@@ -250,15 +246,8 @@ describe('InboxPage', () => {
       });
 
       await waitFor(() => {
-        // Has links to orders tab
-        const ordersTabTitle = screen.getByRole('link', { name: 'InboxPage.ordersTabTitle' });
-        expect(ordersTabTitle).toBeInTheDocument();
-        expect(ordersTabTitle.getAttribute('href')).toContain('/inbox/orders');
-
-        // Has links to sales tab
-        const salesTabTitle = screen.getByRole('link', { name: 'InboxPage.salesTabTitle' });
-        expect(salesTabTitle).toBeInTheDocument();
-        expect(salesTabTitle.getAttribute('href')).toContain('/inbox/sales');
+        expect(screen.queryByRole('link', { name: /orders/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: /sales/i })).not.toBeInTheDocument();
 
         // Has 2 items
         const items = screen.queryAllByRole('link', { name: /listing1/i });

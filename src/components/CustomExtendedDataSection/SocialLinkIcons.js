@@ -59,3 +59,27 @@ export const IconSocialMediaResidentAdvisor = props => {
     </svg>
   );
 };
+
+export const IconSocialMediaWebsite = props => {
+  const { className } = props;
+
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M1.8 8h12.4M8 1.8c2 1.7 3.1 3.9 3.1 6.2S10 12.5 8 14.2M8 1.8C6 3.5 4.9 5.7 4.9 8s1.1 4.5 3.1 6.2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};

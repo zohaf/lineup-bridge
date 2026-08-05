@@ -106,8 +106,11 @@ export const error = (e, code, data) => {
 
     printAPIErrorsAsConsoleTable(apiErrors);
   } else {
-    console.error(e);
-    console.error('Error code:', code, 'data:', data);
+    console.error(`App error (${code})`, {
+      error: e,
+      data,
+      apiErrors,
+    });
     printAPIErrorsAsConsoleTable(apiErrors);
   }
 };

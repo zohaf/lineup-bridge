@@ -1,5 +1,6 @@
 import React from 'react';
 import loadable from '@loadable/component';
+import { useHistory } from 'react-router-dom';
 
 import { bool, object } from 'prop-types';
 import { arrayOf } from 'prop-types';
@@ -10,6 +11,7 @@ import { withRouter } from 'react-router-dom';
 import { fetchFeaturedListings } from '../../ducks/featuredListings.duck';
 import { getMarketplaceEntities, getListingsById } from '../../ducks/marketplaceData.duck';
 import { useConfiguration } from '../../context/configurationContext';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import {
   ensurePaymentMethodCard,
   ensureStripeCustomer,
@@ -18,8 +20,14 @@ import {
 } from '../../util/data';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { formatMoney } from '../../util/currency';
-import { propTypes } from '../../util/types';
-import { getCurrentUserTypeRoles } from '../../util/userHelpers';
+import { LISTING_STATE_DRAFT, propTypes } from '../../util/types';
+import { getCurrentUserTypeRoles, isUserAuthorized } from '../../util/userHelpers';
+import {
+  LISTING_PAGE_PARAM_TYPE_DRAFT,
+  LISTING_PAGE_PARAM_TYPE_EDIT,
+  createSlug,
+} from '../../util/urlHelpers';
+import { pathByRouteName } from '../../util/routes';
 import { getOwnListingsById } from '../ManageListingsPage/ManageListingsPage.duck';
 import ManageListingCard from '../ManageListingsPage/ManageListingCard/ManageListingCard';
 import { NamedLink } from '../../components';
@@ -27,6 +35,7 @@ import {
   resolveLatestProcessName,
   isNegotiationProcess,
   TX_TRANSITION_ACTOR_CUSTOMER,
+  TX_TRANSITION_ACTOR_PROVIDER,
 } from '../../transactions/transaction';
 import { states as negotiationStates } from '../../transactions/transactionProcessNegotiation';
 import { getStateData } from '../InboxPage/InboxPage.stateData';
@@ -37,6 +46,34 @@ const PageBuilder = loadable(() =>
 );
 
 import css from './CMSPage.module.css';
+
+const getStatusToneClass = (processState, cssModule) => {
+  const state = String(processState || '').toLowerCase();
+  if (!state) {
+    return '';
+  }
+
+  if (
+    state.includes('reject') ||
+    state.includes('declin') ||
+    state.includes('cancel') ||
+    state.includes('disput') ||
+    state.includes('expire')
+  ) {
+    return cssModule.offerCardStatusRejected;
+  }
+
+  if (
+    state.includes('accept') ||
+    state.includes('complete') ||
+    state.includes('review') ||
+    state.includes('confirm')
+  ) {
+    return cssModule.offerCardStatusAccepted;
+  }
+
+  return cssModule.offerCardStatusPending;
+};
 
 export const CMSPageComponent = props => {
   const {
@@ -66,7 +103,13 @@ export const CMSPageComponent = props => {
         mainContentBefore={
           isHomePage && currentUser ? (
             <>
-              <HomeNextSteps currentUser={currentUser} transactions={transactions} />
+              <HomeNextSteps
+                currentUser={currentUser}
+                transactions={transactions}
+                ownListings={ownListings}
+                ownListingsLoaded={ownListingsLoaded}
+                routeConfiguration={props.routeConfiguration}
+              />
               <OwnListingsSummary
                 ownListings={ownListings}
                 ownListingsLoaded={ownListingsLoaded}
@@ -95,14 +138,22 @@ CMSPageComponent.defaultProps = {
 };
 
 const HomeNextSteps = props => {
-  const { currentUser, transactions = [] } = props;
+  const {
+    currentUser,
+    transactions = [],
+    ownListings = [],
+    ownListingsLoaded,
+  } = props;
   const config = useConfiguration();
+  const routeConfiguration = useRouteConfiguration() || [];
   const intl = useIntl();
+  const history = useHistory();
 
   const displayName = userDisplayNameAsString(currentUser, '');
   const roles = getCurrentUserTypeRoles(config, currentUser);
   const isOrganizer = roles?.customer && !roles?.provider;
   const isDj = roles?.provider && !roles?.customer;
+  const isApproved = isUserAuthorized(currentUser);
 
   const ensuredStripeCustomer = ensureStripeCustomer(currentUser?.stripeCustomer);
   const ensuredDefaultPaymentMethod = ensurePaymentMethodCard(
@@ -112,9 +163,45 @@ const HomeNextSteps = props => {
     !!ensuredStripeCustomer?.attributes?.stripeCustomerId && !!ensuredDefaultPaymentMethod?.id;
 
   const hasPayoutDetails = !!currentUser?.attributes?.stripeConnected;
+  const hasOwnListings = ownListingsLoaded && ownListings.length > 0;
+  const firstOwnListing = hasOwnListings ? ownListings[0] : null;
+  const firstOwnListingId = firstOwnListing?.id?.uuid;
+  const firstOwnListingTitle = firstOwnListing?.attributes?.title || '';
+  const firstOwnListingSlug =
+    firstOwnListing?.attributes?.slug || createSlug(firstOwnListingTitle || 'listing');
+  const firstOwnListingState = firstOwnListing?.attributes?.state;
+  const firstOwnListingEditType =
+    firstOwnListingState === LISTING_STATE_DRAFT
+      ? LISTING_PAGE_PARAM_TYPE_DRAFT
+      : LISTING_PAGE_PARAM_TYPE_EDIT;
 
   const showCompletePaymentCard =
     (isOrganizer && !hasDefaultPaymentMethod) || (isDj && !hasPayoutDetails);
+  const activityTab = isDj ? 'sales' : 'orders';
+  const inboxPath =
+    routeConfiguration.length > 0
+      ? pathByRouteName('InboxPage', routeConfiguration, { tab: activityTab })
+      : null;
+
+  const handleOpenInbox = () => {
+    if (inboxPath) {
+      history.push(inboxPath);
+    }
+  };
+
+  const handleOpenInboxKeyDown = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleOpenInbox();
+    }
+  };
+
+  const djPrimaryCardTitleId = hasOwnListings
+    ? 'Home.manageListingTitleDj'
+    : 'Home.createListingTitleDj';
+  const djPrimaryCardSubtitleId = hasOwnListings
+    ? 'Home.manageListingSubtitleDj'
+    : 'Home.createListingSubtitleDj';
 
   const offerTxs = isOrganizer
     ? (transactions || [])
@@ -128,7 +215,56 @@ const HomeNextSteps = props => {
           );
         })
         .slice(0, 6)
+    : isDj
+    ? (transactions || [])
+        .filter(tx => {
+          const processName = resolveLatestProcessName(tx?.attributes?.processName);
+          return (
+            isNegotiationProcess(processName) &&
+            tx?.provider?.id?.uuid &&
+            currentUser?.id?.uuid &&
+            tx.provider.id.uuid === currentUser.id.uuid
+          );
+        })
+        .slice(0, 6)
     : [];
+
+  if (!isApproved) {
+    const pendingApprovalTitleId = isDj
+      ? 'Home.pendingApprovalTitleDj'
+      : 'Home.pendingApprovalTitleOrganizer';
+    const pendingApprovalMessageId = isDj
+      ? 'Home.pendingApprovalMessageDj'
+      : 'Home.pendingApprovalMessageOrganizer';
+    const pendingApprovalCtaName = isDj ? 'StripePayoutPage' : 'PaymentMethodsPage';
+    const pendingApprovalCtaId = isDj ? 'Home.pendingApprovalCtaDj' : 'Home.pendingApprovalCtaOrganizer';
+
+    return (
+      <section className={css.homeSection}>
+        <div className={css.homeInner}>
+          <p className={css.welcomeBack}>
+            <FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />
+          </p>
+
+          <div className={css.pendingApprovalCard}>
+            <div className={css.pendingApprovalMain}>
+              <div className={css.pendingApprovalTitle}>
+                <FormattedMessage id={pendingApprovalTitleId} />
+              </div>
+              <div className={css.pendingApprovalMessage}>
+                <FormattedMessage id={pendingApprovalMessageId} />
+              </div>
+            </div>
+            <div className={css.pendingApprovalCtaSlot}>
+              <NamedLink className={css.pendingApprovalCta} name={pendingApprovalCtaName}>
+                <FormattedMessage id={pendingApprovalCtaId} />
+              </NamedLink>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={css.homeSection}>
@@ -146,9 +282,7 @@ const HomeNextSteps = props => {
               <div className={css.nextCardTitle}>
                 <FormattedMessage
                   id={
-                    isOrganizer
-                      ? 'Home.completePaymentDetailsTitleOrganizer'
-                      : 'Home.completePaymentDetailsTitleDj'
+                    isOrganizer ? 'Home.completePaymentDetailsTitleOrganizer' : djPrimaryCardTitleId
                   }
                 />
               </div>
@@ -157,13 +291,13 @@ const HomeNextSteps = props => {
                   id={
                     isOrganizer
                       ? 'Home.completePaymentDetailsSubtitleOrganizer'
-                      : 'Home.completePaymentDetailsSubtitleDj'
+                      : djPrimaryCardSubtitleId
                   }
                 />
               </div>
             </div>
             <div className={css.nextCardCtaSlot}>
-              {showCompletePaymentCard ? (
+              {isOrganizer && showCompletePaymentCard ? (
                 <NamedLink
                   className={css.nextCardCta}
                   name={isOrganizer ? 'PaymentMethodsPage' : 'StripePayoutPage'}
@@ -171,10 +305,35 @@ const HomeNextSteps = props => {
                   <FormattedMessage id="Home.ctaAdd" />
                 </NamedLink>
               ) : null}
+              {isDj && hasOwnListings && firstOwnListingId ? (
+                <NamedLink
+                  className={css.nextCardCta}
+                  name="EditListingPage"
+                  params={{
+                    id: firstOwnListingId,
+                    slug: firstOwnListingSlug,
+                    type: firstOwnListingEditType,
+                    tab: 'details',
+                  }}
+                >
+                  <FormattedMessage id="Home.ctaEditListing" />
+                </NamedLink>
+              ) : null}
+              {isDj && !hasOwnListings ? (
+                <NamedLink className={css.nextCardCta} name="NewListingPage">
+                  <FormattedMessage id="Home.ctaCreateListing" />
+                </NamedLink>
+              ) : null}
             </div>
           </div>
 
-          <div className={css.nextCard}>
+          <div
+            className={`${css.nextCard} ${inboxPath ? css.nextCardClickable : ''}`}
+            role={inboxPath ? 'link' : undefined}
+            tabIndex={inboxPath ? 0 : -1}
+            onClick={handleOpenInbox}
+            onKeyDown={handleOpenInboxKeyDown}
+          >
             <div className={css.nextCardMain}>
               <div className={css.nextCardTitle}>
                 <FormattedMessage id="Home.viewMessagesTitle" />
@@ -184,28 +343,33 @@ const HomeNextSteps = props => {
               </div>
             </div>
             <div className={css.nextCardCtaSlot}>
-              <NamedLink className={css.nextCardCta} name="InboxPage" params={{ tab: 'orders' }}>
+              <NamedLink className={css.nextCardCta} name="InboxPage" params={{ tab: activityTab }}>
                 <FormattedMessage id="Home.ctaView" />
               </NamedLink>
             </div>
           </div>
         </div>
 
-        {isOrganizer && offerTxs.length > 0 ? (
+        {(isOrganizer || isDj) && offerTxs.length > 0 ? (
           <div className={css.offersSection}>
             <h3 className={css.offersTitle}>
               <FormattedMessage id="Home.offersTitle" />
             </h3>
             <div className={css.offerCards}>
               {offerTxs.map(tx => {
-                const providerName = userDisplayNameAsString(tx?.provider, '');
+                const isCustomerView = isOrganizer;
+                const otherParty = isCustomerView ? tx?.provider : tx?.customer;
+                const otherPartyName = userDisplayNameAsString(otherParty, '');
                 const date = tx?.attributes?.lastTransitionedAt;
                 const money = tx?.attributes?.payinTotal;
+                const transactionRole = isCustomerView
+                  ? TX_TRANSITION_ACTOR_CUSTOMER
+                  : TX_TRANSITION_ACTOR_PROVIDER;
                 let stateData = {};
                 try {
                   stateData = getStateData({
                     transaction: tx,
-                    transactionRole: TX_TRANSITION_ACTOR_CUSTOMER,
+                    transactionRole,
                     intl,
                   });
                 } catch (e) {
@@ -216,19 +380,44 @@ const HomeNextSteps = props => {
                 const statusId = pName && pState ? `InboxPage.${pName}.${pState}.status` : null;
                 const showPayCta =
                   isNegotiationProcess(pName) && pState === negotiationStates.PENDING_PAYMENT;
+                const statusTone = getStatusToneClass(pState, css);
+                const detailPageName = isCustomerView ? 'OrderDetailsPage' : 'SaleDetailsPage';
+                const detailPagePath =
+                  routeConfiguration.length > 0
+                    ? pathByRouteName(detailPageName, routeConfiguration, {
+                        id: tx.id.uuid,
+                      })
+                    : null;
+
+                const handleOpenOffer = () => {
+                  if (detailPagePath) {
+                    history.push(detailPagePath);
+                  }
+                };
+
+                const handleOfferKeyDown = e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleOpenOffer();
+                  }
+                };
 
                 return (
-                  <div key={tx.id.uuid} className={css.offerCard}>
+                  <div
+                    key={tx.id.uuid}
+                    className={`${css.offerCard} ${showPayCta ? css.offerCardAction : ''} ${detailPagePath ? css.offerCardClickable : ''}`}
+                    role={detailPagePath ? 'link' : undefined}
+                    tabIndex={detailPagePath ? 0 : -1}
+                    onClick={handleOpenOffer}
+                    onKeyDown={handleOfferKeyDown}
+                  >
                     <div className={css.offerCardMain}>
-                      <div className={css.offerCardTitle}>
-                        <FormattedMessage id="Home.offerTo" values={{ name: providerName }} />
-                      </div>
-                      <div className={css.offerMeta}>
-                        <div className={css.offerMetaRow}>
-                          <span className={css.offerMetaLabel}>
-                            <FormattedMessage id="Home.offerDateLabel" />
-                          </span>
-                          <span className={css.offerMetaValue}>
+                      <div className={css.offerCardHeader}>
+                        <div className={css.offerCardTitle}>
+                          <FormattedMessage id="Home.offerFrom" values={{ name: otherPartyName }} />
+                        </div>
+                        <div className={css.offerCardRight}>
+                          <div className={css.offerCardDate}>
                             {date
                               ? intl.formatDate(date, {
                                   month: 'short',
@@ -236,37 +425,37 @@ const HomeNextSteps = props => {
                                   year: 'numeric',
                                 })
                               : '—'}
-                          </span>
+                          </div>
+                          <div className={css.offerCardStatusRow}>
+                            <div
+                              className={[css.offerCardStatus, statusTone]
+                                .filter(Boolean)
+                                .join(' ')}
+                            >
+                              {statusId ? (
+                                <FormattedMessage id={statusId} values={{ transactionRole }} />
+                              ) : (
+                                '—'
+                              )}
+                            </div>
+                            {showPayCta && isCustomerView ? (
+                              <NamedLink
+                                className={css.nextCardCta}
+                                name="OrderDetailsPage"
+                                params={{ id: tx.id.uuid }}
+                              >
+                                <FormattedMessage id="Home.ctaPay" />
+                              </NamedLink>
+                            ) : null}
+                          </div>
                         </div>
-                        <div className={css.offerMetaRow}>
-                          <span className={css.offerMetaLabel}>
-                            <FormattedMessage id="Home.offerPriceLabel" />
-                          </span>
-                          <span className={css.offerMetaValue}>
-                            {money ? formatMoney(intl, money) : '—'}
-                          </span>
-                        </div>
-                        <div className={css.offerMetaRow}>
-                          <span className={css.offerMetaLabel}>
-                            <FormattedMessage id="Home.offerStatusLabel" />
-                          </span>
-                          <span className={css.offerMetaValue}>
-                            {statusId ? <FormattedMessage id={statusId} /> : '—'}
-                          </span>
+                      </div>
+                      <div className={css.offerCardMeta}>
+                        <div className={css.offerCardPrice}>
+                          {money ? formatMoney(intl, money) : '—'}
                         </div>
                       </div>
                     </div>
-                    {showPayCta ? (
-                      <div className={css.offerCardCtaSlot}>
-                        <NamedLink
-                          className={css.nextCardCta}
-                          name="OrderDetailsPage"
-                          params={{ id: tx.id.uuid }}
-                        >
-                          <FormattedMessage id="Home.ctaPay" />
-                        </NamedLink>
-                      </div>
-                    ) : null}
                   </div>
                 );
               })}
@@ -279,7 +468,13 @@ const HomeNextSteps = props => {
 };
 
 const OwnListingsSummary = props => {
-  const { ownListings = [], ownListingsLoaded } = props;
+  const { ownListings = [], ownListingsLoaded, currentUser } = props;
+  const config = useConfiguration();
+  const roles = getCurrentUserTypeRoles(config, currentUser);
+  const isDj = roles?.provider && !roles?.customer;
+  if (isDj) {
+    return null;
+  }
   const hasOwnListings = ownListingsLoaded && ownListings.length > 0;
   const hasNoOwnListings = ownListingsLoaded && ownListings.length === 0;
   const noop = () => null;
@@ -314,7 +509,7 @@ const OwnListingsSummary = props => {
               />
             ))}
           </div>
-        ) : hasNoOwnListings ? (
+        ) : hasNoOwnListings && isDj ? (
           <NamedLink className={css.emptyStateBox} name="NewListingPage">
             <span className={css.emptyStateLabel}>
               <FormattedMessage id="ManageListingsPage.createPublicProfile" />

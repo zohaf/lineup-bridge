@@ -148,21 +148,6 @@ const ProposeChangesForm = props => {
               }}
             </Field>
 
-            {/* Fees and logistic notes */}
-            <FieldTextInput
-              className={css.field}
-              id="proposeChanges-feeNotes"
-              name="proposedFeeNotes"
-              type="textarea"
-              label={
-                <>
-                  {intl.formatMessage({ id: 'ProposeChangesModal.feeNotesLabel' })}
-                  {' '}<span className={css.optional}>(optional)</span>
-                </>
-              }
-              placeholder={intl.formatMessage({ id: 'ProposeChangesModal.feeNotesPlaceholder' })}
-            />
-
             {/* Technical notes */}
             <FieldTextInput
               className={css.field}
@@ -171,11 +156,10 @@ const ProposeChangesForm = props => {
               type="textarea"
               label={
                 <>
-                  {intl.formatMessage({ id: 'ProposeChangesModal.notesLabel' })}
+                  {intl.formatMessage({ id: 'ProposeChangesModal.additionalNoteLabel' })}
                   {' '}<span className={css.optional}>(optional)</span>
                 </>
               }
-              placeholder={intl.formatMessage({ id: 'ProposeChangesModal.notesPlaceholder' })}
             />
 
             {submitError ? (
@@ -206,11 +190,10 @@ const ProposeChangesForm = props => {
  * @param {boolean} props.isOpen
  * @param {Function} props.onClose
  * @param {Function} props.onManageDisableScrolling
- * @param {Function} props.onSubmit - Called with { proposedFee, proposedStartTime, proposedDuration, proposedFeeNotes, proposedNotes }.
+ * @param {Function} props.onSubmit - Called with { proposedFee, proposedStartTime, proposedDuration, proposedNotes }.
  * @param {number} [props.currentFee] - Pre-fill fee from customer's offer.
  * @param {string} [props.currentStartTime] - Pre-fill start time from customer's offer.
  * @param {number} [props.currentDuration] - Pre-fill duration from customer's offer.
- * @param {string} [props.currentFeeNotes] - Pre-fill fee/logistics notes.
  * @param {string} [props.currentNotes] - Pre-fill technical notes.
  * @param {boolean} [props.inProgress]
  */
@@ -226,7 +209,6 @@ const ProposeChangesModal = props => {
     currentFee,
     currentStartTime,
     currentDuration,
-    currentFeeNotes,
     currentNotes,
     inProgress = false,
   } = props;
@@ -237,7 +219,6 @@ const ProposeChangesModal = props => {
     proposedFee: currentFee != null ? String(currentFee) : '',
     proposedStartTime: currentStartTime || '',
     proposedDuration: currentDuration != null ? String(currentDuration) : '',
-    proposedFeeNotes: currentFeeNotes || '',
     proposedNotes: currentNotes || '',
   };
 

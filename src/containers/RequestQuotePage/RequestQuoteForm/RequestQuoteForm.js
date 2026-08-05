@@ -44,15 +44,18 @@ const joinTimeOptional = (h, m) => {
   return `${h}:${m || DEFAULT_MINUTE}`;
 };
 
-const durationHoursValidatorsOptional = intl => value => {
-  if (value == null || value === '') return undefined;
-  const trimmed = typeof value === 'string' ? value.trim() : `${value}`;
-  const n = Number.parseInt(trimmed, 10);
-  if (Number.isNaN(n) || String(n) !== trimmed || n < 1) {
-    return intl.formatMessage({ id: 'NegotiationRequestQuoteForm.durationInvalid' });
-  }
-  return undefined;
-};
+const durationHoursValidators = intl =>
+  validators.composeValidators(
+    validators.required(intl.formatMessage({ id: 'NegotiationRequestQuoteForm.durationRequired' })),
+    value => {
+      const trimmed = typeof value === 'string' ? value.trim() : `${value}`;
+      const n = Number.parseInt(trimmed, 10);
+      if (Number.isNaN(n) || String(n) !== trimmed || n < 1) {
+        return intl.formatMessage({ id: 'NegotiationRequestQuoteForm.durationInvalid' });
+      }
+      return undefined;
+    }
+  );
 
 const optionalLabel = (label, css) => (
   <>
@@ -319,13 +322,13 @@ export const RequestQuoteForm = props => {
                 name="expectedAttendance"
                 id={fid('expectedAttendance')}
                 labelClassName={css.label}
-                label={optionalLabel(
-                  intl.formatMessage({ id: 'RequestQuoteForm.expectedAttendanceLabel' }),
-                  css
-                )}
+                label={intl.formatMessage({ id: 'RequestQuoteForm.expectedAttendanceLabel' })}
                 placeholder={intl.formatMessage({
                   id: 'RequestQuoteForm.expectedAttendancePlaceholder',
                 })}
+                validate={validators.required(
+                  intl.formatMessage({ id: 'RequestQuoteForm.expectedAttendanceRequired' })
+                )}
                 onWheel={e => {
                   if (e.target === document.activeElement) {
                     e.target.blur();
@@ -335,47 +338,6 @@ export const RequestQuoteForm = props => {
                   }
                 }}
               />
-
-              <FieldSelect
-                className={css.field}
-                name="eventType"
-                id={fid('eventType')}
-                label={optionalLabel(
-                  intl.formatMessage({ id: 'RequestQuoteForm.eventTypeLabel' }),
-                  css
-                )}
-              >
-                <option value="">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.selectPlaceholder' })}
-                </option>
-                <option value="club_night">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.clubNight' })}
-                </option>
-                <option value="day_party">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.dayParty' })}
-                </option>
-                <option value="afterparty">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.afterparty' })}
-                </option>
-                <option value="showcase">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.showcase' })}
-                </option>
-                <option value="open_air">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.openAir' })}
-                </option>
-                <option value="warehouse_event">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.warehouseEvent' })}
-                </option>
-                <option value="day_festival">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.dayFestival' })}
-                </option>
-                <option value="multi_day_festival">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.multiDayFestival' })}
-                </option>
-                <option value="boat_party">
-                  {intl.formatMessage({ id: 'RequestQuoteForm.eventType.boatParty' })}
-                </option>
-              </FieldSelect>
             </div>
 
             {/* ── Set details ── */}
@@ -413,7 +375,12 @@ export const RequestQuoteForm = props => {
                 </option>
               </FieldSelect>
 
-              <Field name="setStartTime">
+              <Field
+                name="setStartTime"
+                validate={validators.required(
+                  intl.formatMessage({ id: 'RequestQuoteForm.setStartTimeRequired' })
+                )}
+              >
                 {({ input, meta }) => (
                   <TimeSelectField
                     input={input}
@@ -421,16 +388,13 @@ export const RequestQuoteForm = props => {
                     fid={fid}
                     name="setStartTime"
                     defaultHour={DEFAULT_START_HOUR}
-                    label={optionalLabel(
-                      intl.formatMessage({ id: 'RequestQuoteForm.setStartTimeLabel' }),
-                      css
-                    )}
+                    label={intl.formatMessage({ id: 'RequestQuoteForm.setStartTimeLabel' })}
                     css={css}
                   />
                 )}
               </Field>
 
-              <Field name="durationHours" validate={durationHoursValidatorsOptional(intl)}>
+              <Field name="durationHours" validate={durationHoursValidators(intl)}>
                 {({ input, meta }) => {
                   const trimmed =
                     typeof input.value === 'string' ? input.value.trim() : `${input.value}`;
@@ -439,10 +403,7 @@ export const RequestQuoteForm = props => {
                   return (
                     <div className={css.field}>
                       <label className={css.label} htmlFor={fid('durationHours')}>
-                        {optionalLabel(
-                          intl.formatMessage({ id: 'RequestQuoteForm.setDurationLabel' }),
-                          css
-                        )}
+                        {intl.formatMessage({ id: 'RequestQuoteForm.setDurationLabel' })}
                       </label>
                       <div
                         className={classNames(css.durationInputShell, {
@@ -468,6 +429,36 @@ export const RequestQuoteForm = props => {
                   );
                 }}
               </Field>
+
+              <FieldTextInput
+                className={classNames(css.field, css.fieldCompact)}
+                type="text"
+                name="previousDj"
+                id={fid('previousDj')}
+                labelClassName={css.label}
+                label={optionalLabel(
+                  intl.formatMessage({ id: 'RequestQuoteForm.previousDjLabel' }),
+                  css
+                )}
+              />
+              <div className={css.helper}>
+                <FormattedMessage id="RequestQuoteForm.previousDjHelper" />
+              </div>
+
+              <FieldTextInput
+                className={classNames(css.field, css.fieldCompact)}
+                type="text"
+                name="headliner"
+                id={fid('headliner')}
+                labelClassName={css.label}
+                label={optionalLabel(
+                  intl.formatMessage({ id: 'RequestQuoteForm.headlinerLabel' }),
+                  css
+                )}
+              />
+              <div className={css.helper}>
+                <FormattedMessage id="RequestQuoteForm.headlinerHelper" />
+              </div>
             </div>
 
             {/* ── Fee & logistics ── */}
@@ -495,9 +486,17 @@ export const RequestQuoteForm = props => {
                           type="number"
                           min={1}
                           step={1}
-                          placeholder="800"
+                          placeholder="1000"
                           className={css.offerInput}
                           autoComplete="off"
+                          onWheel={e => {
+                            if (e.target === document.activeElement) {
+                              e.target.blur();
+                              setTimeout(() => {
+                                e.target.focus();
+                              }, 0);
+                            }
+                          }}
                         />
                         <span className={css.offerSuffix} aria-hidden="true">
                           €
@@ -563,22 +562,6 @@ export const RequestQuoteForm = props => {
                 <FormattedMessage id="RequestQuoteForm.accommodationIncludedHelper" />
               </div>
 
-              <FieldTextInput
-                className={css.field}
-                type="textarea"
-                name="includedDetails"
-                id={fid('includedDetails')}
-                labelClassName={css.label}
-                label={
-                  <>
-                    {intl.formatMessage({ id: 'RequestQuoteForm.additionalInclusionsLabel' })}
-                    {' '}<span className={css.optional}>(optional)</span>
-                  </>
-                }
-                placeholder={intl.formatMessage({
-                  id: 'RequestQuoteForm.additionalInclusionsPlaceholder',
-                })}
-              />
             </div>
 
             {/* ── Technical setup ── */}
@@ -618,6 +601,22 @@ export const RequestQuoteForm = props => {
                   {intl.formatMessage({ id: 'RequestQuoteForm.no' })}
                 </option>
               </FieldSelect>
+            </div>
+
+            <div className={css.section}>
+              <FieldTextInput
+                className={css.field}
+                type="textarea"
+                name="includedDetails"
+                id={fid('includedDetails')}
+                labelClassName={css.label}
+                label={
+                  <>
+                    {intl.formatMessage({ id: 'RequestQuoteForm.additionalNotesLabel' })}
+                    {' '}<span className={css.optional}>(optional)</span>
+                  </>
+                }
+              />
             </div>
 
             <div className={submitButtonWrapperClassName}>

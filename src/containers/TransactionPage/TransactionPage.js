@@ -700,8 +700,7 @@ export const TransactionPageComponent = props => {
   const onSubmitProposeChanges = values => {
     if (!transaction?.id || !process?.transitions?.MAKE_OFFER_FROM_REQUEST) return;
 
-    const { proposedFee, proposedStartTime, proposedDuration, proposedFeeNotes, proposedNotes } =
-      values;
+    const { proposedFee, proposedStartTime, proposedDuration, proposedNotes } = values;
     const feeNum = Number.parseInt(proposedFee, 10);
     if (Number.isNaN(feeNum) || feeNum < 1) return;
 
@@ -715,7 +714,6 @@ export const TransactionPageComponent = props => {
     if (Number.isInteger(parsedDuration) && parsedDuration > 0) {
       proposedChanges.proposedDuration = parsedDuration;
     }
-    if (proposedFeeNotes) proposedChanges.proposedFeeNotes = proposedFeeNotes;
     if (proposedNotes) proposedChanges.proposedNotes = proposedNotes;
 
     const params = {

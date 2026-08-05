@@ -66,13 +66,7 @@ const stripeErrorTranslation = (intl, stripeError) => {
   });
 };
 
-const stripeElementsOptions = {
-  fonts: [
-    {
-      cssSrc: 'https://fonts.googleapis.com/css?family=Inter',
-    },
-  ],
-};
+const stripeElementsOptions = {};
 
 // card (being a Stripe Elements component), can have own styling passed to it.
 // However, its internal width-calculation seems to break if font-size is too big
@@ -80,7 +74,7 @@ const stripeElementsOptions = {
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 const cardStyles = {
   base: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", Helvetica, Arial, sans-serif',
+    fontFamily: 'Suisse Intl, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
     fontSize: isMobile ? '14px' : '16px',
     fontSmoothing: 'antialiased',
     lineHeight: '24px',
