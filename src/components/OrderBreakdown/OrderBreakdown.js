@@ -43,6 +43,7 @@ export const OrderBreakdownComponent = props => {
     timeZone,
     currency,
     marketplaceName,
+    isNegotiation = false,
     intl,
   } = props;
 
@@ -113,7 +114,12 @@ export const OrderBreakdownComponent = props => {
         timeZone={timeZone}
       />
 
-      <LineItemBasePriceMaybe lineItems={lineItems} code={lineItemUnitType} intl={intl} />
+      <LineItemBasePriceMaybe
+        lineItems={lineItems}
+        code={lineItemUnitType}
+        isNegotiation={isNegotiation}
+        intl={intl}
+      />
       <LineItemShippingFeeMaybe lineItems={lineItems} intl={intl} />
       <LineItemPickupFeeMaybe lineItems={lineItems} intl={intl} />
       <LineItemUnknownItemsMaybe lineItems={lineItems} isProvider={isProvider} intl={intl} />
@@ -124,6 +130,7 @@ export const OrderBreakdownComponent = props => {
         userRole={userRole}
         intl={intl}
         marketplaceCurrency={currency}
+        hideSubTotal={isNegotiation}
       />
       <LineItemRefundMaybe lineItems={lineItems} intl={intl} marketplaceCurrency={currency} />
 
@@ -153,7 +160,12 @@ export const OrderBreakdownComponent = props => {
         intl={intl}
       />
 
-      <LineItemTotalPrice transaction={transaction} isProvider={isProvider} intl={intl} />
+      <LineItemTotalPrice
+        transaction={transaction}
+        isProvider={isProvider}
+        isNegotiation={isNegotiation}
+        intl={intl}
+      />
 
       {hasCommissionLineItem ? (
         <span className={css.feeInfo}>

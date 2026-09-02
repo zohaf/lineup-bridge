@@ -24,7 +24,7 @@ import css from './OrderBreakdown.module.css';
  * @returns {JSX.Element}
  */
 const LineItemBasePriceMaybe = props => {
-  const { lineItems, code, intl } = props;
+  const { lineItems, code, intl, isNegotiation = false } = props;
   const isNightly = code === LINE_ITEM_NIGHT;
   const isDaily = code === LINE_ITEM_DAY;
   const isHourly = code === LINE_ITEM_HOUR;
@@ -42,7 +42,9 @@ const LineItemBasePriceMaybe = props => {
     : isRequest
     ? 'OrderBreakdown.baseUnitRequest'
     : isOffer
-    ? 'OrderBreakdown.baseUnitOffer'
+    ? isNegotiation
+      ? 'OrderBreakdown.negotiationPerformanceFee'
+      : 'OrderBreakdown.baseUnitOffer'
     : 'OrderBreakdown.baseUnitQuantity';
 
   // Find correct line-item for given code prop.

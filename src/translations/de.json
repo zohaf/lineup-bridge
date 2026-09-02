@@ -1759,5 +1759,13 @@
   "OfferDetailsCard.deckSetup": "Deck setup",
   "OfferDetailsCard.boothMonitors": "Booth monitors available",
   "OfferDetailsCard.soundSystem": "Sound system",
-  "OfferDetailsCard.additionalNotes": "Additional notes"
+  "OfferDetailsCard.additionalNotes": "Additional notes",
+  "MakeCounterOfferForm.performanceFeeLabel": "Gage",
+  "MakeCounterOfferForm.submitFinal": "Finales Angebot machen",
+  "MakeCounterOfferModal.titleFinal": "Finales Angebot machen",
+  "OrderBreakdown.negotiationPerformanceFee": "Gage",
+  "OrderBreakdown.negotiationTotal": "Gesamtzahlung",
+  "TransactionPage.default-negotiation.customer.finalOffer": "Finales Angebot machen",
+  "TransactionPage.default-negotiation.customer.rejectCounterOffer": "Gegenangebot ablehnen",
+  "TransactionPanel.default-negotiation.paymentSummaryTitle": "Zahlungsübersicht"
 }

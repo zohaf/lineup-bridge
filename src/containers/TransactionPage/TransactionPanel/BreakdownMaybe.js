@@ -3,12 +3,19 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../util/reactIntl';
 import { H6 } from '../../../components';
+import { NEGOTIATION_PROCESS_NAME } from '../../../transactions/transaction';
 
 import css from './TransactionPanel.module.css';
 
 // Functional component as a helper to build OrderBreakdown
 const BreakdownMaybe = props => {
-  const { className, rootClassName, orderBreakdown, processName, priceVariantName } = props;
+    const {
+      className,
+      rootClassName,
+      orderBreakdown,
+      processName,
+      priceVariantName,
+    } = props;
   const classes = classNames(rootClassName || css.breakdownMaybe, className);
 
   return orderBreakdown ? (
@@ -20,7 +27,13 @@ const BreakdownMaybe = props => {
       ) : null}
 
       <H6 as="h3" className={css.orderBreakdownTitle}>
-        <FormattedMessage id={`TransactionPanel.${processName}.orderBreakdownTitle`} />
+          <FormattedMessage
+            id={
+              processName === NEGOTIATION_PROCESS_NAME
+                ? 'TransactionPanel.default-negotiation.paymentSummaryTitle'
+                : `TransactionPanel.${processName}.orderBreakdownTitle`
+            }
+          />
       </H6>
       <hr className={css.totalDivider} />
       {orderBreakdown}

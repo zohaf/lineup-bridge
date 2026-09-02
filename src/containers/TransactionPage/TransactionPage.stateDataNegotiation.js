@@ -5,10 +5,6 @@ import {
   ConditionalResolver,
 } from '../../transactions/transaction';
 
-/** Hosted label for provider counter CTA (optional; falls back to default transition key). */
-const PROVIDER_CTA_COUNTER_OFFER_ID =
-  'TransactionPage.default-negotiation.provider.transition-counter-offer-from-request.actionButton';
-
 /**
  * Get state data against booking process for TransactionPage's UI.
  * I.e. info about showing action buttons, current state etc.
@@ -51,6 +47,9 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     actionButtonProps,
     leaveReviewProps,
   } = processInfo;
+  const hasCustomerFinalOffer = transaction?.attributes?.transitions?.some(
+    transition => transition.transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER
+  );
 
   // These overwrite the default transition messages on the ActivityFeed component.
   // The defaults are tied to the process state.
@@ -154,6 +153,10 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
       const djCounterCtaId =
         'TransactionPage.default-negotiation.customer.djOfferPending.counterOffer';
       const djRejectCtaId = 'TransactionPage.default-negotiation.customer.djOfferPending.rejectOffer';
+      const customerFinalOfferCtaId =
+        'TransactionPage.default-negotiation.customer.finalOffer';
+      const customerRejectCounterOfferCtaId =
+        'TransactionPage.default-negotiation.customer.rejectCounterOffer';
 
       const overwritesForAcceptOffer = {
         onAction: () => {
@@ -180,7 +183,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
             action: 'hide',
           },
         ],
-        ...(isDj ? { actionButtonTranslationId: djCounterCtaId } : {}),
+        actionButtonTranslationId: isDj ? djCounterCtaId : customerFinalOfferCtaId,
       };
 
       return {
@@ -194,14 +197,26 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
           CUSTOMER,
           overwritesForAcceptOffer
         ),
-        secondaryButtonProps: actionButtonProps(
-          transitions.CUSTOMER_REJECT_OFFER,
-          CUSTOMER,
-          {
-            onAction: onOpenCustomerRejectModal,
-            ...(isDj ? { actionButtonTranslationId: djRejectCtaId } : {}),
-          }
-        ),
+        ...(hasCustomerFinalOffer
+          ? {}
+          : {
+              secondaryButtonProps: actionButtonProps(
+                transitions.CUSTOMER_REJECT_OFFER,
+                CUSTOMER,
+                {
+                  onAction: onOpenCustomerRejectModal,
+                  actionButtonTranslationId: isDj
+                    ? djRejectCtaId
+                    : customerRejectCounterOfferCtaId,
+                }
+              ),
+              tertiaryButtonProps: actionButtonProps(
+                transitions.CUSTOMER_MAKE_COUNTER_OFFER,
+                CUSTOMER,
+                overwritesForMakeCounterOffer
+              ),
+            }),
+              actionButtonOrder: ['primary', 'tertiary', 'secondary'],
       };
     })
     .cond([states.OFFER_PENDING, PROVIDER], () => {
@@ -324,11 +339,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
             onAction: onOpenRejectCounterOfferModal,
           }
         ),
-        tertiaryButtonProps: actionButtonProps(transitions.PROVIDER_MAKE_COUNTER_OFFER, PROVIDER, {
-          onAction: onOpenMakeCounterOfferModal,
-          actionButtonTranslationId: PROVIDER_CTA_COUNTER_OFFER_ID,
-        }),
-        actionButtonOrder: ['primary', 'tertiary', 'secondary'],
+        actionButtonOrder: ['primary', 'secondary'],
       };
     })
     .cond([states.OFFER_REJECTED, _], () => {

@@ -69,7 +69,7 @@ const hasCommission = (lineItems, userRole) => {
  * @returns {JSX.Element}
  */
 const LineItemSubTotalMaybe = props => {
-  const { lineItems, code, userRole, intl, marketplaceCurrency } = props;
+  const { lineItems, code, userRole, intl, marketplaceCurrency, hideSubTotal = false } = props;
 
   const refund = lineItems.find(item => item.code === code && item.reversal);
 
@@ -83,7 +83,7 @@ const LineItemSubTotalMaybe = props => {
 
   const formattedSubTotal = subTotalLineItems.length > 0 ? formatMoney(intl, subTotal) : null;
 
-  return formattedSubTotal && showSubTotal ? (
+  return formattedSubTotal && showSubTotal && !hideSubTotal ? (
     <>
       <hr className={css.totalDivider} />
       <div className={css.subTotalLineItem}>

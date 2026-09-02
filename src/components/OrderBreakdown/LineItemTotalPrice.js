@@ -17,7 +17,7 @@ import css from './OrderBreakdown.module.css';
  * @returns {JSX.Element}
  */
 const LineItemTotalPrice = props => {
-  const { transaction, isProvider, intl } = props;
+  const { transaction, isProvider, isNegotiation = false, intl } = props;
   const processName = resolveLatestProcessName(transaction?.attributes?.processName);
   if (!processName) {
     return null;
@@ -36,7 +36,9 @@ const LineItemTotalPrice = props => {
   const totalLabel = isProvider ? (
     <FormattedMessage id={providerTotalMessageId} />
   ) : (
-    <FormattedMessage id="OrderBreakdown.total" />
+    <FormattedMessage
+      id={isNegotiation ? 'OrderBreakdown.negotiationTotal' : 'OrderBreakdown.total'}
+    />
   );
 
   const totalPrice = isProvider

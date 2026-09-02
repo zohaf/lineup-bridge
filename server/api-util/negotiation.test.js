@@ -2,12 +2,78 @@ const {
   isIntentionToMakeOffer,
   isIntentionToMakeCounterOffer,
   isIntentionToRevokeCounterOffer,
+  hasCustomerFinalOffer,
+  throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer,
   throwErrorIfNegotiationOfferHasInvalidHistory,
   getAmountFromPreviousOffer,
   addOfferToMetadata,
 } = require('./negotiation');
 
 describe('negotiation utils', () => {
+  describe('hasCustomerFinalOffer(transitions)', () => {
+    it('returns false before the customer submits a final offer', () => {
+      expect(
+        hasCustomerFinalOffer([
+          { transition: 'transition/request-quote', by: 'customer' },
+          { transition: 'transition/make-offer-from-request', by: 'provider' },
+        ])
+      ).toBe(false);
+    });
+
+    it('returns true after the customer submits a final offer', () => {
+      expect(
+        hasCustomerFinalOffer([
+          { transition: 'transition/request-quote', by: 'customer' },
+          { transition: 'transition/make-offer-from-request', by: 'provider' },
+          { transition: 'transition/customer-make-counter-offer', by: 'customer' },
+        ])
+      ).toBe(true);
+    });
+
+    it('returns false for missing or invalid transition data', () => {
+      expect(hasCustomerFinalOffer()).toBe(false);
+      expect(hasCustomerFinalOffer([])).toBe(false);
+    });
+  });
+
+  describe('throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer', () => {
+    const transitionsWithFinalOffer = [
+      { transition: 'transition/request-quote', by: 'customer' },
+      { transition: 'transition/make-offer-from-request', by: 'provider' },
+      { transition: 'transition/customer-make-counter-offer', by: 'customer' },
+    ];
+
+    it('allows the provider to accept or reject the final offer', () => {
+      expect(() =>
+        throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer(
+          'transition/provider-accept-counter-offer',
+          transitionsWithFinalOffer
+        )
+      ).not.toThrow();
+      expect(() =>
+        throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer(
+          'transition/provider-reject-counter-offer',
+          transitionsWithFinalOffer
+        )
+      ).not.toThrow();
+    });
+
+    it('rejects another customer or provider offer', () => {
+      expect(() =>
+        throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer(
+          'transition/customer-make-counter-offer',
+          transitionsWithFinalOffer
+        )
+      ).toThrow('No further offers are allowed after the customer final offer');
+      expect(() =>
+        throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer(
+          'transition/provider-make-counter-offer',
+          transitionsWithFinalOffer
+        )
+      ).toThrow('No further offers are allowed after the customer final offer');
+    });
+  });
+
   describe('isIntentionToMakeOffer(offerInSubunits, transitionName)', () => {
     describe('valid make offer transitions', () => {
       it('should return true for make-offer transition with positive offer', () => {

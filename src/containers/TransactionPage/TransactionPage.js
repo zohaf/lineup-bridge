@@ -900,6 +900,7 @@ export const TransactionPageComponent = props => {
             {...txBookingMaybe}
             currency={config.currency}
             marketplaceName={config.marketplaceName}
+            isNegotiation={processName === NEGOTIATION_PROCESS_NAME}
           />
         ),
       }
@@ -1174,6 +1175,7 @@ export const TransactionPageComponent = props => {
             counterOfferInProgress={counterOffers.includes(transitionInProgress)}
             counterOfferError={transitionError}
             currencyConfig={currencyConfig}
+            isFinalOffer={transactionRole === CUSTOMER}
           />
         ) : null}
         {process?.transitions?.PROVIDER_REJECT_COUNTER_OFFER ? (

@@ -28,6 +28,13 @@ const offerTransitionsInNegotiationProcess = [
   ...revokeCounterOfferTransitions,
 ];
 
+const customerFinalOfferTransition = 'transition/customer-make-counter-offer';
+const transitionsBlockedAfterCustomerFinalOffer = [
+  customerFinalOfferTransition,
+  'transition/provider-make-counter-offer',
+  ...updateOfferTransitions,
+];
+
 /**
  * @typedef {Object} NegotiationOffer
  * @property {string} transition - The transition name that was triggered to make this offer
@@ -85,6 +92,36 @@ exports.isIntentionToUpdateOffer = (offerInSubunits, transitionName) => {
  */
 exports.isIntentionToRevokeCounterOffer = transitionName => {
   return revokeCounterOfferTransitions.includes(transitionName);
+};
+
+/**
+ * Returns whether the customer has submitted the final business offer.
+ *
+ * @param {Array<TransitionRecord>} transitions
+ * @returns {boolean}
+ */
+exports.hasCustomerFinalOffer = transitions => {
+  return Array.isArray(transitions)
+    ? transitions.some(t => t.transition === customerFinalOfferTransition)
+    : false;
+};
+
+/**
+ * Throws when a new priced offer is attempted after the customer's final offer.
+ *
+ * @param {string} transitionName
+ * @param {Array<TransitionRecord>} transitions
+ */
+exports.throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer = (transitionName, transitions) => {
+  if (
+    exports.hasCustomerFinalOffer(transitions) &&
+    transitionsBlockedAfterCustomerFinalOffer.includes(transitionName)
+  ) {
+    const error = new Error('No further offers are allowed after the customer final offer');
+    error.status = 400;
+    error.statusText = 'No further offers are allowed after the customer final offer';
+    throw error;
+  }
 };
 
 const filterRelevantTransitions = (transitions, relevantTransitions) => {

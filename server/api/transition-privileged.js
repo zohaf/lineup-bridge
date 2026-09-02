@@ -7,6 +7,7 @@ const {
   isIntentionToMakeOffer,
   isIntentionToRevokeCounterOffer,
   isIntentionToUpdateOffer,
+  throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer,
   throwErrorIfNegotiationOfferHasInvalidHistory,
 } = require('../api-util/negotiation');
 const {
@@ -134,6 +135,7 @@ module.exports = (req, res) => {
 
       // Check if the transition is related to negotiation offers and if the offers are valid
       throwErrorIfNegotiationOfferHasInvalidHistory(transitionName, existingOffers, transitions);
+      throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer(transitionName, transitions);
 
       const currency =
         transaction.attributes.payinTotal?.currency ||

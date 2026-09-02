@@ -36,6 +36,7 @@ const MakeCounterOfferForm = props => (
         counterOfferInProgress,
         currencyConfig,
         currentOffer,
+        isFinalOffer,
       } = fieldRenderProps;
 
       const errorMessageMaybe = counterOfferError ? (
@@ -53,7 +54,11 @@ const MakeCounterOfferForm = props => (
             className={css.counterOffer}
             id={formId ? `${formId}.counterOffer` : 'counterOffer'}
             name="counterOffer"
-            label={intl.formatMessage({ id: 'MakeCounterOfferForm.offerLabel' })}
+            label={intl.formatMessage({
+              id: isFinalOffer
+                ? 'MakeCounterOfferForm.performanceFeeLabel'
+                : 'MakeCounterOfferForm.offerLabel',
+            })}
             placeholder={intl.formatMessage(
               { id: 'MakeCounterOfferForm.offerPlaceholder' },
               { currentOffer: currentOfferFormatted }
@@ -66,12 +71,7 @@ const MakeCounterOfferForm = props => (
             id={formId ? `${formId}.counterOfferMessage` : 'counterOfferMessage'}
             name="counterOfferMessage"
             type="textarea"
-            label={
-              <>
-                {intl.formatMessage({ id: 'MakeCounterOfferForm.messageLabel' })}
-                {' '}<span className={css.optional}>(optional)</span>
-              </>
-            }
+            label={intl.formatMessage({ id: 'MakeCounterOfferForm.messageLabel' })}
             placeholder={intl.formatMessage({ id: 'MakeCounterOfferForm.messagePlaceholder' })}
           />
           <p className={css.errorPlaceholder}>{errorMessageMaybe}</p>
@@ -82,7 +82,11 @@ const MakeCounterOfferForm = props => (
             disabled={submitDisabled}
             ready={counterOfferSubmitted}
           >
-            {intl.formatMessage({ id: 'MakeCounterOfferForm.submitCounter' })}
+            {intl.formatMessage({
+              id: isFinalOffer
+                ? 'MakeCounterOfferForm.submitFinal'
+                : 'MakeCounterOfferForm.submitCounter',
+            })}
           </Button>
         </Form>
       );
@@ -94,12 +98,14 @@ const MakeCounterOfferForm = props => (
 const CounterOfferInfo = props => {
   const config = useConfiguration();
   const marketplaceName = config.marketplaceName;
-  const { onMakeCounterOffer, initialValues, ...restOfProps } = props;
+  const { onMakeCounterOffer, initialValues, isFinalOffer, ...restOfProps } = props;
 
   return (
     <>
       <p className={css.modalTitle}>
-        <FormattedMessage id="MakeCounterOfferModal.titleCounter" />
+        <FormattedMessage
+          id={isFinalOffer ? 'MakeCounterOfferModal.titleFinal' : 'MakeCounterOfferModal.titleCounter'}
+        />
       </p>
       <p className={css.modalMessage}>
         <FormattedMessage id="MakeCounterOfferModal.description" values={{ marketplaceName }} />
@@ -148,6 +154,7 @@ const MakeCounterOfferModal = props => {
     counterOfferError,
     currencyConfig,
     currentOffer,
+    isFinalOffer = false,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
@@ -169,12 +176,14 @@ const MakeCounterOfferModal = props => {
         counterOfferInProgress={counterOfferInProgress}
         counterOfferError={counterOfferError}
         counterOfferSubmitted={counterOfferSubmitted}
+        isFinalOffer={isFinalOffer}
         intl={intl}
         currencyConfig={currencyConfig}
         initialValues={{
           counterOffer: currentOffer,
           counterOfferMessage: '',
         }}
+        isFinalOffer={isFinalOffer}
       />
     </Modal>
   );
