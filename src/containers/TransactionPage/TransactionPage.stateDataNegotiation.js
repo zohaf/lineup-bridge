@@ -323,7 +323,6 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showActionButtons: true,
-        showOfferSummaryBlock: true,
         primaryButtonProps: actionButtonProps(transitions.PROVIDER_ACCEPT_COUNTER_OFFER, PROVIDER, {
           ...(isDjUser && onOpenAcceptCounterOfferModal
             ? { onAction: onOpenAcceptCounterOfferModal }

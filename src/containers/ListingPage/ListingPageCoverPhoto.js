@@ -443,7 +443,7 @@ export const ListingPageComponent = props => {
                   <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
                 </H4>
               }
-              payoutDetailsWarning={payoutDetailsWarning}
+              payoutDetailsWarning={isOwnListing ? null : payoutDetailsWarning}
               author={ensuredAuthor}
               hideListingTitleInPanel
               hideOrderPanelAuthor

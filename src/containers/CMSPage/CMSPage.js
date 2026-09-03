@@ -1,6 +1,5 @@
 import React from 'react';
 import loadable from '@loadable/component';
-import { useHistory } from 'react-router-dom';
 
 import { bool, object } from 'prop-types';
 import { arrayOf } from 'prop-types';
@@ -13,14 +12,12 @@ import { getMarketplaceEntities, getListingsById } from '../../ducks/marketplace
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import {
-  ensurePaymentMethodCard,
-  ensureStripeCustomer,
   getFeaturedListingsProps,
   userDisplayNameAsString,
 } from '../../util/data';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { formatMoney } from '../../util/currency';
-import { LISTING_STATE_DRAFT, propTypes } from '../../util/types';
+import { LISTING_STATE_DRAFT, LISTING_STATE_PUBLISHED, propTypes } from '../../util/types';
 import { getCurrentUserTypeRoles, isUserAuthorized } from '../../util/userHelpers';
 import {
   LISTING_PAGE_PARAM_TYPE_DRAFT,
@@ -147,7 +144,6 @@ const HomeNextSteps = props => {
   const config = useConfiguration();
   const routeConfiguration = useRouteConfiguration() || [];
   const intl = useIntl();
-  const history = useHistory();
 
   const displayName = userDisplayNameAsString(currentUser, '');
   const roles = getCurrentUserTypeRoles(config, currentUser);
@@ -155,15 +151,10 @@ const HomeNextSteps = props => {
   const isDj = roles?.provider && !roles?.customer;
   const isApproved = isUserAuthorized(currentUser);
 
-  const ensuredStripeCustomer = ensureStripeCustomer(currentUser?.stripeCustomer);
-  const ensuredDefaultPaymentMethod = ensurePaymentMethodCard(
-    ensuredStripeCustomer?.defaultPaymentMethod
-  );
-  const hasDefaultPaymentMethod =
-    !!ensuredStripeCustomer?.attributes?.stripeCustomerId && !!ensuredDefaultPaymentMethod?.id;
-
   const hasPayoutDetails = !!currentUser?.attributes?.stripeConnected;
   const hasOwnListings = ownListingsLoaded && ownListings.length > 0;
+  const hasPublishedProfile =
+    ownListingsLoaded && ownListings.some(listing => listing?.attributes?.state === LISTING_STATE_PUBLISHED);
   const firstOwnListing = hasOwnListings ? ownListings[0] : null;
   const firstOwnListingId = firstOwnListing?.id?.uuid;
   const firstOwnListingTitle = firstOwnListing?.attributes?.title || '';
@@ -174,27 +165,6 @@ const HomeNextSteps = props => {
     firstOwnListingState === LISTING_STATE_DRAFT
       ? LISTING_PAGE_PARAM_TYPE_DRAFT
       : LISTING_PAGE_PARAM_TYPE_EDIT;
-
-  const showCompletePaymentCard =
-    (isOrganizer && !hasDefaultPaymentMethod) || (isDj && !hasPayoutDetails);
-  const activityTab = isDj ? 'sales' : 'orders';
-  const inboxPath =
-    routeConfiguration.length > 0
-      ? pathByRouteName('InboxPage', routeConfiguration, { tab: activityTab })
-      : null;
-
-  const handleOpenInbox = () => {
-    if (inboxPath) {
-      history.push(inboxPath);
-    }
-  };
-
-  const handleOpenInboxKeyDown = e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleOpenInbox();
-    }
-  };
 
   const djPrimaryCardTitleId = hasOwnListings
     ? 'Home.manageListingTitleDj'
@@ -236,7 +206,7 @@ const HomeNextSteps = props => {
     const pendingApprovalMessageId = isDj
       ? 'Home.pendingApprovalMessageDj'
       : 'Home.pendingApprovalMessageOrganizer';
-    const pendingApprovalCtaName = isDj ? 'StripePayoutPage' : 'PaymentMethodsPage';
+    const pendingApprovalCtaName = isDj ? 'StripePayoutPage' : 'SearchPage';
     const pendingApprovalCtaId = isDj ? 'Home.pendingApprovalCtaDj' : 'Home.pendingApprovalCtaOrganizer';
 
     return (
@@ -272,17 +242,23 @@ const HomeNextSteps = props => {
         <p className={css.welcomeBack}>
           <FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />
         </p>
-        <h2 className={css.whatsNextTitle}>
-          <FormattedMessage id="Home.whatsNext" />
-        </h2>
-
-        <div className={css.nextCards}>
+        {(isOrganizer && offerTxs.length === 0) ||
+        (isDj && (!hasPublishedProfile || !hasPayoutDetails)) ? (
+          <>
+            <h2 className={css.whatsNextTitle}>
+              <FormattedMessage id="Home.whatsNext" />
+            </h2>
+            <div className={css.nextCards}>
           <div className={css.nextCard}>
             <div className={css.nextCardMain}>
               <div className={css.nextCardTitle}>
                 <FormattedMessage
                   id={
-                    isOrganizer ? 'Home.completePaymentDetailsTitleOrganizer' : djPrimaryCardTitleId
+                    isOrganizer
+                      ? 'Home.findNextDjTitle'
+                      : hasPublishedProfile
+                      ? djPrimaryCardTitleId
+                      : 'Home.approvedProfileTitleDj'
                   }
                 />
               </div>
@@ -290,22 +266,21 @@ const HomeNextSteps = props => {
                 <FormattedMessage
                   id={
                     isOrganizer
-                      ? 'Home.completePaymentDetailsSubtitleOrganizer'
-                      : djPrimaryCardSubtitleId
+                      ? 'Home.findNextDjSubtitle'
+                      : hasPublishedProfile
+                      ? djPrimaryCardSubtitleId
+                      : 'Home.approvedProfileSubtitleDj'
                   }
                 />
               </div>
             </div>
             <div className={css.nextCardCtaSlot}>
-              {isOrganizer && showCompletePaymentCard ? (
-                <NamedLink
-                  className={css.nextCardCta}
-                  name={isOrganizer ? 'PaymentMethodsPage' : 'StripePayoutPage'}
-                >
-                  <FormattedMessage id="Home.ctaAdd" />
+              {isOrganizer ? (
+                <NamedLink className={css.nextCardCta} name="SearchPage">
+                  <FormattedMessage id="Home.findDjCta" />
                 </NamedLink>
               ) : null}
-              {isDj && hasOwnListings && firstOwnListingId ? (
+              {isDj && hasPublishedProfile && hasOwnListings && firstOwnListingId ? (
                 <NamedLink
                   className={css.nextCardCta}
                   name="EditListingPage"
@@ -319,41 +294,44 @@ const HomeNextSteps = props => {
                   <FormattedMessage id="Home.ctaEditListing" />
                 </NamedLink>
               ) : null}
-              {isDj && !hasOwnListings ? (
+              {isDj && !hasPublishedProfile ? (
                 <NamedLink className={css.nextCardCta} name="NewListingPage">
-                  <FormattedMessage id="Home.ctaCreateListing" />
+                  <FormattedMessage id="Home.createProfileCtaDj" />
                 </NamedLink>
               ) : null}
             </div>
           </div>
 
-          <div
-            className={`${css.nextCard} ${inboxPath ? css.nextCardClickable : ''}`}
-            role={inboxPath ? 'link' : undefined}
-            tabIndex={inboxPath ? 0 : -1}
-            onClick={handleOpenInbox}
-            onKeyDown={handleOpenInboxKeyDown}
-          >
-            <div className={css.nextCardMain}>
-              <div className={css.nextCardTitle}>
-                <FormattedMessage id="Home.viewMessagesTitle" />
+          {isDj && !hasPayoutDetails ? (
+            <div className={css.nextCard}>
+              <div className={css.nextCardMain}>
+                <div className={css.nextCardTitle}>
+                  <FormattedMessage
+                    id={offerTxs.length > 0 ? 'Home.blockedBookingTitleDj' : 'Home.completePayoutTitleDj'}
+                  />
+                </div>
+                <div className={css.nextCardSubtitle}>
+                  <FormattedMessage
+                    id={offerTxs.length > 0 ? 'Home.blockedBookingSubtitleDj' : 'Home.profileReadyPayoutSubtitleDj'}
+                  />
+                </div>
               </div>
-              <div className={css.nextCardSubtitle}>
-                <FormattedMessage id="Home.viewMessagesSubtitle" />
+              <div className={css.nextCardCtaSlot}>
+                <NamedLink className={css.nextCardCta} name="StripePayoutPage">
+                  <FormattedMessage id="Home.pendingApprovalCtaDj" />
+                </NamedLink>
               </div>
             </div>
-            <div className={css.nextCardCtaSlot}>
-              <NamedLink className={css.nextCardCta} name="InboxPage" params={{ tab: activityTab }}>
-                <FormattedMessage id="Home.ctaView" />
-              </NamedLink>
+          ) : null}
+
             </div>
-          </div>
-        </div>
+          </>
+        ) : null}
 
         {(isOrganizer || isDj) && offerTxs.length > 0 ? (
           <div className={css.offersSection}>
             <h3 className={css.offersTitle}>
-              <FormattedMessage id="Home.offersTitle" />
+              <FormattedMessage id="Home.activityTitle" />
             </h3>
             <div className={css.offerCards}>
               {offerTxs.map(tx => {

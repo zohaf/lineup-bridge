@@ -95,7 +95,7 @@ export const ActionBarMaybe = props => {
   const approvalToPublishOptions =
     config?.accessControl?.listings?.requireApprovalToPublishOptions?.callToAction || {};
 
-  if (isOwnListing && showNoPayoutDetailsSet) {
+  if (isOwnListing && showNoPayoutDetailsSet && (isPendingApproval || isDraft)) {
     return (
       <div className={classes}>
         <p className={classNames(css.ownListingText, css.missingPayoutDetailsText)}>
@@ -106,7 +106,7 @@ export const ActionBarMaybe = props => {
         </NamedLink>
       </div>
     );
-  } else if (isOwnListing) {
+  } else if (isOwnListing && (isPendingApproval || isDraft || isClosed)) {
     let ownListingTextTranslationId = 'ListingPage.ownListing';
 
     if (isPendingApproval) {

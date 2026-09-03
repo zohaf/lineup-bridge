@@ -493,7 +493,7 @@ export const TransactionPageComponent = props => {
   // Open make counter offer modal
   // This is called from action buttons
   const onOpenMakeCounterOfferModal = () => {
-    setMakeCounterOfferModalOpen(true);
+    setProposeChangesModalOpen(true);
   };
 
   // Submit review and close the review modal
@@ -698,7 +698,11 @@ export const TransactionPageComponent = props => {
 
   // ── Propose changes handler (QUOTE_REQUESTED → make-offer-from-request at DJ's price) ──
   const onSubmitProposeChanges = values => {
-    if (!transaction?.id || !process?.transitions?.MAKE_OFFER_FROM_REQUEST) return;
+    const transitionName =
+      transactionRole === CUSTOMER
+        ? process?.transitions?.CUSTOMER_MAKE_COUNTER_OFFER
+        : process?.transitions?.MAKE_OFFER_FROM_REQUEST;
+    if (!transaction?.id || !transitionName) return;
 
     const { proposedFee, proposedStartTime, proposedDuration, proposedNotes } = values;
     const feeNum = Number.parseInt(proposedFee, 10);
@@ -718,7 +722,7 @@ export const TransactionPageComponent = props => {
 
     const params = {
       orderData: {
-        actor: PROVIDER,
+        actor: transactionRole,
         offerInSubunits,
         currency: config.currency,
       },
@@ -727,7 +731,7 @@ export const TransactionPageComponent = props => {
       },
     };
 
-    onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params)
+    onTransition(transaction.id, transitionName, params)
       .then(() => {
         setProposeChangesModalOpen(false);
       })
@@ -1201,8 +1205,12 @@ export const TransactionPageComponent = props => {
           currentStartTime={transaction?.attributes?.protectedData?.bookingStartTime}
           currentDuration={transaction?.attributes?.protectedData?.durationHours}
           currentNotes={transaction?.attributes?.protectedData?.additionalNotes}
+          isFinalOffer={transactionRole === CUSTOMER}
           inProgress={
-            transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST
+            transitionInProgress ===
+            (transactionRole === CUSTOMER
+              ? process?.transitions?.CUSTOMER_MAKE_COUNTER_OFFER
+              : process?.transitions?.MAKE_OFFER_FROM_REQUEST)
           }
         />
         <AcceptOfferModal

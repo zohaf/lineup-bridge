@@ -334,10 +334,16 @@ const TopbarComponent = props => {
   };
 
   const handleMyPublicProfileClick = () => {
-    const homePath = pathByRouteName('CMSPage', routeConfiguration, { pageId: 'home' });
+    const publicProfilePath = currentUser?.id?.uuid
+      ? createResourceLocatorString(
+          'ProfilePage',
+          routeConfiguration,
+          { id: currentUser.id.uuid },
+          {}
+        )
+      : null;
 
     // Pick "best" listing: published > pendingApproval > draft.
-    // If none, keep the user on /p/home (where the create listing CTA exists).
     return onQueryOwnListings({ page: 1, perPage: 20 })
       .then(response => {
         const listings = response?.data?.data || [];
@@ -349,9 +355,9 @@ const TopbarComponent = props => {
         const chosen = firstPublished || firstPending || firstDraft;
 
         const url = chosen ? createOwnListingURL(chosen) : null;
-        history.push(url || homePath);
+        history.push(url || publicProfilePath);
       })
-      .catch(() => history.push(homePath));
+      .catch(() => history.push(publicProfilePath));
   };
 
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;

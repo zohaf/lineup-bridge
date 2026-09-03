@@ -82,6 +82,7 @@
 
 .userTypeButton {
   composes: buttonSecondary from global;
+  background: transparent;
   width: 100%;
   min-height: 48px;
 }

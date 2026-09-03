@@ -172,7 +172,9 @@ const ProposeChangesForm = props => {
               inProgress={inProgress}
               disabled={submitDisabled}
             >
-              <FormattedMessage id="ProposeChangesModal.submit" />
+              <FormattedMessage
+                id={isFinalOffer ? 'ProposeChangesModal.finalOfferSubmit' : 'ProposeChangesModal.submit'}
+              />
             </Button>
           </Form>
         );
@@ -210,6 +212,7 @@ const ProposeChangesModal = props => {
     currentStartTime,
     currentDuration,
     currentNotes,
+    isFinalOffer = false,
     inProgress = false,
   } = props;
 
@@ -233,7 +236,9 @@ const ProposeChangesModal = props => {
       usePortal
     >
       <h2 className={css.modalTitle}>
-        <FormattedMessage id="ProposeChangesModal.title" />
+        <FormattedMessage
+          id={isFinalOffer ? 'ProposeChangesModal.finalOfferTitle' : 'ProposeChangesModal.title'}
+        />
       </h2>
       <ProposeChangesForm
         onSubmit={onSubmit}
