@@ -160,8 +160,7 @@ const onMakeCounterOffer = (
     },
   };
 
-  const messageText =
-    typeof counterOfferMessage === 'string' ? counterOfferMessage.trim() : '';
+  const messageText = typeof counterOfferMessage === 'string' ? counterOfferMessage.trim() : '';
 
   onTransition(currentTransactionId, transitionName, params)
     .then(r => {
@@ -393,8 +392,7 @@ export const TransactionPageComponent = props => {
   };
 
   // If payment is pending, redirect to CheckoutPage (skip when arriving from message-only checkout success)
-  const skipPendingPaymentRedirect =
-    bookingRequestSuccess || persistedBookingRequestSuccess;
+  const skipPendingPaymentRedirect = bookingRequestSuccess || persistedBookingRequestSuccess;
 
   if (
     transaction?.id &&
@@ -493,7 +491,7 @@ export const TransactionPageComponent = props => {
   // Open make counter offer modal
   // This is called from action buttons
   const onOpenMakeCounterOfferModal = () => {
-    setProposeChangesModalOpen(true);
+    setMakeCounterOfferModalOpen(true);
   };
 
   // Submit review and close the review modal
@@ -660,12 +658,13 @@ export const TransactionPageComponent = props => {
       },
     };
 
-    return onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params)
-      .then(() => {
+    return onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params).then(
+      () => {
         if (messageText && onSendMessage) {
           return onSendMessage(transaction.id, messageText, config).catch(() => {});
         }
-      });
+      }
+    );
   };
 
   const onConfirmAcceptOffer = ({ message } = {}) => {
@@ -698,11 +697,7 @@ export const TransactionPageComponent = props => {
 
   // ── Propose changes handler (QUOTE_REQUESTED → make-offer-from-request at DJ's price) ──
   const onSubmitProposeChanges = values => {
-    const transitionName =
-      transactionRole === CUSTOMER
-        ? process?.transitions?.CUSTOMER_MAKE_COUNTER_OFFER
-        : process?.transitions?.MAKE_OFFER_FROM_REQUEST;
-    if (!transaction?.id || !transitionName) return;
+    if (!transaction?.id || !process?.transitions?.MAKE_OFFER_FROM_REQUEST) return;
 
     const { proposedFee, proposedStartTime, proposedDuration, proposedNotes } = values;
     const feeNum = Number.parseInt(proposedFee, 10);
@@ -722,7 +717,7 @@ export const TransactionPageComponent = props => {
 
     const params = {
       orderData: {
-        actor: transactionRole,
+        actor: PROVIDER,
         offerInSubunits,
         currency: config.currency,
       },
@@ -731,7 +726,7 @@ export const TransactionPageComponent = props => {
       },
     };
 
-    onTransition(transaction.id, transitionName, params)
+    onTransition(transaction.id, process.transitions.MAKE_OFFER_FROM_REQUEST, params)
       .then(() => {
         setProposeChangesModalOpen(false);
       })
@@ -758,8 +753,9 @@ export const TransactionPageComponent = props => {
   const onConfirmCustomerReject = ({ message } = {}) => {
     if (!transaction?.id) return;
 
-    const isCounterOfferState = process?.transitions?.CUSTOMER_WITHDRAW_COUNTER_OFFER
-      && process.getState(transaction) === process.states.CUSTOMER_OFFER_PENDING;
+    const isCounterOfferState =
+      process?.transitions?.CUSTOMER_WITHDRAW_COUNTER_OFFER &&
+      process.getState(transaction) === process.states.CUSTOMER_OFFER_PENDING;
 
     const transitionKey = isCounterOfferState
       ? 'CUSTOMER_WITHDRAW_COUNTER_OFFER'
@@ -841,10 +837,7 @@ export const TransactionPageComponent = props => {
   };
 
   const offerSummarySlot =
-    isDataAvailable &&
-    stateDataForPanel?.showOfferSummaryBlock &&
-    transaction &&
-    listing ? (
+    isDataAvailable && stateDataForPanel?.showOfferSummaryBlock && transaction && listing ? (
       <OfferSummaryBlock
         transaction={transaction}
         listing={listing}
@@ -856,10 +849,7 @@ export const TransactionPageComponent = props => {
 
   // ── Offer details card for DJ in QUOTE_REQUESTED (read-only; CTAs in aside) ──
   const offerDetailsSlot =
-    isDataAvailable &&
-    stateDataForPanel?.showOfferDetailsCard &&
-    transaction &&
-    customer ? (
+    isDataAvailable && stateDataForPanel?.showOfferDetailsCard && transaction && customer ? (
       <OfferDetailsCard transaction={transaction} customer={customer} />
     ) : null;
 
@@ -1190,9 +1180,7 @@ export const TransactionPageComponent = props => {
             focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_2_ID}`}
             onManageDisableScrolling={onManageDisableScrolling}
             onConfirmReject={onConfirmRejectCounterOffer}
-            inProgress={
-              transitionInProgress === process.transitions.PROVIDER_REJECT_COUNTER_OFFER
-            }
+            inProgress={transitionInProgress === process.transitions.PROVIDER_REJECT_COUNTER_OFFER}
           />
         ) : null}
         <ProposeChangesModal
@@ -1205,13 +1193,7 @@ export const TransactionPageComponent = props => {
           currentStartTime={transaction?.attributes?.protectedData?.bookingStartTime}
           currentDuration={transaction?.attributes?.protectedData?.durationHours}
           currentNotes={transaction?.attributes?.protectedData?.additionalNotes}
-          isFinalOffer={transactionRole === CUSTOMER}
-          inProgress={
-            transitionInProgress ===
-            (transactionRole === CUSTOMER
-              ? process?.transitions?.CUSTOMER_MAKE_COUNTER_OFFER
-              : process?.transitions?.MAKE_OFFER_FROM_REQUEST)
-          }
+          inProgress={transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST}
         />
         <AcceptOfferModal
           id="AcceptOfferModal"

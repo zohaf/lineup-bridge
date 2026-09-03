@@ -11,10 +11,7 @@ import { fetchFeaturedListings } from '../../ducks/featuredListings.duck';
 import { getMarketplaceEntities, getListingsById } from '../../ducks/marketplaceData.duck';
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
-import {
-  getFeaturedListingsProps,
-  userDisplayNameAsString,
-} from '../../util/data';
+import { getFeaturedListingsProps, userDisplayNameAsString } from '../../util/data';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { formatMoney } from '../../util/currency';
 import { LISTING_STATE_DRAFT, LISTING_STATE_PUBLISHED, propTypes } from '../../util/types';
@@ -82,6 +79,7 @@ export const CMSPageComponent = props => {
     ownListings,
     ownListingsLoaded,
     transactions,
+    history,
   } = props;
   const pageId = params.pageId || props.pageId;
   const isHomePage = String(pageId).toLowerCase() === 'home';
@@ -106,6 +104,7 @@ export const CMSPageComponent = props => {
                 ownListings={ownListings}
                 ownListingsLoaded={ownListingsLoaded}
                 routeConfiguration={props.routeConfiguration}
+                history={history}
               />
               <OwnListingsSummary
                 ownListings={ownListings}
@@ -135,12 +134,7 @@ CMSPageComponent.defaultProps = {
 };
 
 const HomeNextSteps = props => {
-  const {
-    currentUser,
-    transactions = [],
-    ownListings = [],
-    ownListingsLoaded,
-  } = props;
+  const { currentUser, transactions = [], ownListings = [], ownListingsLoaded, history } = props;
   const config = useConfiguration();
   const routeConfiguration = useRouteConfiguration() || [];
   const intl = useIntl();
@@ -154,7 +148,8 @@ const HomeNextSteps = props => {
   const hasPayoutDetails = !!currentUser?.attributes?.stripeConnected;
   const hasOwnListings = ownListingsLoaded && ownListings.length > 0;
   const hasPublishedProfile =
-    ownListingsLoaded && ownListings.some(listing => listing?.attributes?.state === LISTING_STATE_PUBLISHED);
+    ownListingsLoaded &&
+    ownListings.some(listing => listing?.attributes?.state === LISTING_STATE_PUBLISHED);
   const firstOwnListing = hasOwnListings ? ownListings[0] : null;
   const firstOwnListingId = firstOwnListing?.id?.uuid;
   const firstOwnListingTitle = firstOwnListing?.attributes?.title || '';
@@ -207,7 +202,9 @@ const HomeNextSteps = props => {
       ? 'Home.pendingApprovalMessageDj'
       : 'Home.pendingApprovalMessageOrganizer';
     const pendingApprovalCtaName = isDj ? 'StripePayoutPage' : 'SearchPage';
-    const pendingApprovalCtaId = isDj ? 'Home.pendingApprovalCtaDj' : 'Home.pendingApprovalCtaOrganizer';
+    const pendingApprovalCtaId = isDj
+      ? 'Home.pendingApprovalCtaDj'
+      : 'Home.pendingApprovalCtaOrganizer';
 
     return (
       <section className={css.homeSection}>
@@ -249,81 +246,88 @@ const HomeNextSteps = props => {
               <FormattedMessage id="Home.whatsNext" />
             </h2>
             <div className={css.nextCards}>
-          <div className={css.nextCard}>
-            <div className={css.nextCardMain}>
-              <div className={css.nextCardTitle}>
-                <FormattedMessage
-                  id={
-                    isOrganizer
-                      ? 'Home.findNextDjTitle'
-                      : hasPublishedProfile
-                      ? djPrimaryCardTitleId
-                      : 'Home.approvedProfileTitleDj'
-                  }
-                />
-              </div>
-              <div className={css.nextCardSubtitle}>
-                <FormattedMessage
-                  id={
-                    isOrganizer
-                      ? 'Home.findNextDjSubtitle'
-                      : hasPublishedProfile
-                      ? djPrimaryCardSubtitleId
-                      : 'Home.approvedProfileSubtitleDj'
-                  }
-                />
-              </div>
-            </div>
-            <div className={css.nextCardCtaSlot}>
-              {isOrganizer ? (
-                <NamedLink className={css.nextCardCta} name="SearchPage">
-                  <FormattedMessage id="Home.findDjCta" />
-                </NamedLink>
-              ) : null}
-              {isDj && hasPublishedProfile && hasOwnListings && firstOwnListingId ? (
-                <NamedLink
-                  className={css.nextCardCta}
-                  name="EditListingPage"
-                  params={{
-                    id: firstOwnListingId,
-                    slug: firstOwnListingSlug,
-                    type: firstOwnListingEditType,
-                    tab: 'details',
-                  }}
-                >
-                  <FormattedMessage id="Home.ctaEditListing" />
-                </NamedLink>
-              ) : null}
-              {isDj && !hasPublishedProfile ? (
-                <NamedLink className={css.nextCardCta} name="NewListingPage">
-                  <FormattedMessage id="Home.createProfileCtaDj" />
-                </NamedLink>
-              ) : null}
-            </div>
-          </div>
-
-          {isDj && !hasPayoutDetails ? (
-            <div className={css.nextCard}>
-              <div className={css.nextCardMain}>
-                <div className={css.nextCardTitle}>
-                  <FormattedMessage
-                    id={offerTxs.length > 0 ? 'Home.blockedBookingTitleDj' : 'Home.completePayoutTitleDj'}
-                  />
+              <div className={css.nextCard}>
+                <div className={css.nextCardMain}>
+                  <div className={css.nextCardTitle}>
+                    <FormattedMessage
+                      id={
+                        isOrganizer
+                          ? 'Home.findNextDjTitle'
+                          : hasPublishedProfile
+                          ? djPrimaryCardTitleId
+                          : 'Home.approvedProfileTitleDj'
+                      }
+                    />
+                  </div>
+                  <div className={css.nextCardSubtitle}>
+                    <FormattedMessage
+                      id={
+                        isOrganizer
+                          ? 'Home.findNextDjSubtitle'
+                          : hasPublishedProfile
+                          ? djPrimaryCardSubtitleId
+                          : 'Home.approvedProfileSubtitleDj'
+                      }
+                    />
+                  </div>
                 </div>
-                <div className={css.nextCardSubtitle}>
-                  <FormattedMessage
-                    id={offerTxs.length > 0 ? 'Home.blockedBookingSubtitleDj' : 'Home.profileReadyPayoutSubtitleDj'}
-                  />
+                <div className={css.nextCardCtaSlot}>
+                  {isOrganizer ? (
+                    <NamedLink className={css.nextCardCta} name="SearchPage">
+                      <FormattedMessage id="Home.findDjCta" />
+                    </NamedLink>
+                  ) : null}
+                  {isDj && hasPublishedProfile && hasOwnListings && firstOwnListingId ? (
+                    <NamedLink
+                      className={css.nextCardCta}
+                      name="EditListingPage"
+                      params={{
+                        id: firstOwnListingId,
+                        slug: firstOwnListingSlug,
+                        type: firstOwnListingEditType,
+                        tab: 'details',
+                      }}
+                    >
+                      <FormattedMessage id="Home.ctaEditListing" />
+                    </NamedLink>
+                  ) : null}
+                  {isDj && !hasPublishedProfile ? (
+                    <NamedLink className={css.nextCardCta} name="NewListingPage">
+                      <FormattedMessage id="Home.createProfileCtaDj" />
+                    </NamedLink>
+                  ) : null}
                 </div>
               </div>
-              <div className={css.nextCardCtaSlot}>
-                <NamedLink className={css.nextCardCta} name="StripePayoutPage">
-                  <FormattedMessage id="Home.pendingApprovalCtaDj" />
-                </NamedLink>
-              </div>
-            </div>
-          ) : null}
 
+              {isDj && !hasPayoutDetails ? (
+                <div className={css.nextCard}>
+                  <div className={css.nextCardMain}>
+                    <div className={css.nextCardTitle}>
+                      <FormattedMessage
+                        id={
+                          offerTxs.length > 0
+                            ? 'Home.blockedBookingTitleDj'
+                            : 'Home.completePayoutTitleDj'
+                        }
+                      />
+                    </div>
+                    <div className={css.nextCardSubtitle}>
+                      <FormattedMessage
+                        id={
+                          offerTxs.length > 0
+                            ? 'Home.blockedBookingSubtitleDj'
+                            : 'Home.profileReadyPayoutSubtitleDj'
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className={css.nextCardCtaSlot}>
+                    <NamedLink className={css.nextCardCta} name="StripePayoutPage">
+                      <FormattedMessage id="Home.pendingApprovalCtaDj" />
+                    </NamedLink>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </>
         ) : null}
@@ -383,7 +387,9 @@ const HomeNextSteps = props => {
                 return (
                   <div
                     key={tx.id.uuid}
-                    className={`${css.offerCard} ${showPayCta ? css.offerCardAction : ''} ${detailPagePath ? css.offerCardClickable : ''}`}
+                    className={`${css.offerCard} ${showPayCta ? css.offerCardAction : ''} ${
+                      detailPagePath ? css.offerCardClickable : ''
+                    }`}
                     role={detailPagePath ? 'link' : undefined}
                     tabIndex={detailPagePath ? 0 : -1}
                     onClick={handleOpenOffer}

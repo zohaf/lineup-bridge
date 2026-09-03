@@ -29,13 +29,7 @@ const ProposeChangesForm = props => {
     <FinalForm
       {...props}
       render={fieldRenderProps => {
-        const {
-          handleSubmit,
-          invalid,
-          submitting,
-          submitError,
-          inProgress,
-        } = fieldRenderProps;
+        const { handleSubmit, invalid, submitting, submitError, inProgress } = fieldRenderProps;
 
         const submitDisabled = invalid || submitting || inProgress;
 
@@ -60,7 +54,9 @@ const ProposeChangesForm = props => {
                         className={css.feeInput}
                         autoComplete="off"
                       />
-                      <span className={css.feeSuffix} aria-hidden="true">€</span>
+                      <span className={css.feeSuffix} aria-hidden="true">
+                        €
+                      </span>
                     </div>
                     {showError ? <ValidationError fieldMeta={meta} /> : null}
                   </div>
@@ -93,7 +89,11 @@ const ProposeChangesForm = props => {
                         <option value="">HH</option>
                         {Array.from({ length: 24 }, (_, i) => {
                           const v = String(i).padStart(2, '0');
-                          return <option key={v} value={v}>{v}</option>;
+                          return (
+                            <option key={v} value={v}>
+                              {v}
+                            </option>
+                          );
                         })}
                       </select>
                       <select
@@ -108,7 +108,9 @@ const ProposeChangesForm = props => {
                         onBlur={input.onBlur}
                       >
                         {['00', '15', '30', '45'].map(v => (
-                          <option key={v} value={v}>{v}</option>
+                          <option key={v} value={v}>
+                            {v}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -156,15 +158,13 @@ const ProposeChangesForm = props => {
               type="textarea"
               label={
                 <>
-                  {intl.formatMessage({ id: 'ProposeChangesModal.additionalNoteLabel' })}
-                  {' '}<span className={css.optional}>(optional)</span>
+                  {intl.formatMessage({ id: 'ProposeChangesModal.additionalNoteLabel' })}{' '}
+                  <span className={css.optional}>(optional)</span>
                 </>
               }
             />
 
-            {submitError ? (
-              <p className={css.errorPlaceholder}>{submitError}</p>
-            ) : null}
+            {submitError ? <p className={css.errorPlaceholder}>{submitError}</p> : null}
 
             <Button
               className={css.submitButton}
@@ -172,9 +172,7 @@ const ProposeChangesForm = props => {
               inProgress={inProgress}
               disabled={submitDisabled}
             >
-              <FormattedMessage
-                id={isFinalOffer ? 'ProposeChangesModal.finalOfferSubmit' : 'ProposeChangesModal.submit'}
-              />
+              <FormattedMessage id="ProposeChangesModal.submit" />
             </Button>
           </Form>
         );

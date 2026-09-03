@@ -212,7 +212,7 @@ const makeOfferPayloadCreator = (
   const handleError = e => {
     const listingId = bodyParams?.params?.listingId?.uuid;
     const listingIdMaybe = listingId ? { listingId } : {};
-    const transactionIdMaybe = transactionId ? { transactionId: transactionId.uuid } : {};
+    const transactionIdMaybe = transactionId ? { transactionId } : {};
     log.error(e, 'initiate-negotiation-failed', {
       ...transactionIdMaybe,
       ...listingIdMaybe,
