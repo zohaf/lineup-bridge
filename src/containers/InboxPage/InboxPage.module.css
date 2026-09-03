@@ -152,6 +152,7 @@
 .item {
   display: flex;
   flex-direction: row;
+  width: 100%;
 }
 
 .itemAvatar {
@@ -172,6 +173,7 @@
 
 .itemLink {
   flex: 1;
+  width: 100%;
 
   /* Layout */
   display: inline-grid;
@@ -307,16 +309,6 @@
   }
 }
 
-.itemState .stateName {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--colorGrey100);
-  background-color: var(--colorGrey50);
-  font-weight: var(--fontWeightSemiBold);
-}
-
 .pagination {
   margin: 24px 0 0 0;
 }
@@ -342,20 +334,14 @@
 
 .stateTonePending {
   color: var(--colorAttentionDark);
-  background-color: var(--colorAttentionSubtle);
-  border-color: rgba(255, 170, 0, 0.24);
 }
 
 .stateToneRejected {
   color: var(--colorFailDark);
-  background-color: var(--colorFailSubtle);
-  border-color: rgba(231, 0, 11, 0.16);
 }
 
 .stateToneAccepted {
   color: var(--colorSuccessDark);
-  background-color: var(--colorSuccessSubtle);
-  border-color: rgba(19, 128, 65, 0.16);
 }
 
 .bookingActionNeeded {

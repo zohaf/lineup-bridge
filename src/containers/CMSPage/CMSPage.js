@@ -41,34 +41,6 @@ const PageBuilder = loadable(() =>
 
 import css from './CMSPage.module.css';
 
-const getStatusToneClass = (processState, cssModule) => {
-  const state = String(processState || '').toLowerCase();
-  if (!state) {
-    return '';
-  }
-
-  if (
-    state.includes('reject') ||
-    state.includes('declin') ||
-    state.includes('cancel') ||
-    state.includes('disput') ||
-    state.includes('expire')
-  ) {
-    return cssModule.offerCardStatusRejected;
-  }
-
-  if (
-    state.includes('accept') ||
-    state.includes('complete') ||
-    state.includes('review') ||
-    state.includes('confirm')
-  ) {
-    return cssModule.offerCardStatusAccepted;
-  }
-
-  return cssModule.offerCardStatusPending;
-};
-
 export const CMSPageComponent = props => {
   const {
     params,
@@ -343,7 +315,6 @@ const HomeNextSteps = props => {
                 const otherParty = isCustomerView ? tx?.provider : tx?.customer;
                 const otherPartyName = userDisplayNameAsString(otherParty, '');
                 const date = tx?.attributes?.lastTransitionedAt;
-                const money = tx?.attributes?.payinTotal;
                 const transactionRole = isCustomerView
                   ? TX_TRANSITION_ACTOR_CUSTOMER
                   : TX_TRANSITION_ACTOR_PROVIDER;
@@ -359,10 +330,8 @@ const HomeNextSteps = props => {
                 }
                 const pName = resolveLatestProcessName(tx?.attributes?.processName);
                 const pState = stateData?.processState;
-                const statusId = pName && pState ? `InboxPage.${pName}.${pState}.status` : null;
                 const showPayCta =
                   isNegotiationProcess(pName) && pState === negotiationStates.PENDING_PAYMENT;
-                const statusTone = getStatusToneClass(pState, css);
                 const detailPageName = isCustomerView ? 'OrderDetailsPage' : 'SaleDetailsPage';
                 const detailPagePath =
                   routeConfiguration.length > 0
@@ -410,19 +379,8 @@ const HomeNextSteps = props => {
                                 })
                               : '—'}
                           </div>
-                          <div className={css.offerCardStatusRow}>
-                            <div
-                              className={[css.offerCardStatus, statusTone]
-                                .filter(Boolean)
-                                .join(' ')}
-                            >
-                              {statusId ? (
-                                <FormattedMessage id={statusId} values={{ transactionRole }} />
-                              ) : (
-                                '—'
-                              )}
-                            </div>
-                            {showPayCta && isCustomerView ? (
+                          {showPayCta && isCustomerView ? (
+                            <div className={css.offerCardStatusRow}>
                               <NamedLink
                                 className={css.nextCardCta}
                                 name="OrderDetailsPage"
@@ -430,13 +388,15 @@ const HomeNextSteps = props => {
                               >
                                 <FormattedMessage id="Home.ctaPay" />
                               </NamedLink>
-                            ) : null}
-                          </div>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                       <div className={css.offerCardMeta}>
                         <div className={css.offerCardPrice}>
-                          {money ? formatMoney(intl, money) : '—'}
+                          {tx?.attributes?.payinTotal
+                            ? formatMoney(intl, tx.attributes.payinTotal)
+                            : '—'}
                         </div>
                       </div>
                     </div>
