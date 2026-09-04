@@ -396,6 +396,135 @@ export const getTransitionsWithMatchingOffers = (transitions, offers) => {
   return transitions;
 };
 
+const pricedOfferTransitions = [
+  ...makeOfferTransitions,
+  ...updateOfferTransitions,
+  ...counterOfferTransitions,
+];
+
+/**
+ * Return the latest priced business offer, including the initial customer offer.
+ *
+ * @param {Object} transaction
+ * @returns {{ amount: number, by: string, transition: string }|null}
+ */
+export const getLatestBusinessOffer = transaction => {
+  const attributes = transaction?.attributes || {};
+  const metadataOffers = Array.isArray(attributes.metadata?.offers)
+    ? attributes.metadata.offers
+    : [];
+  const latestMetadataOffer = metadataOffers
+    .filter(
+      offer =>
+        pricedOfferTransitions.includes(offer?.transition) &&
+        Number.isFinite(Number(offer?.offerInSubunits))
+    )
+    .at(-1);
+
+  if (latestMetadataOffer) {
+    return {
+      amount: Number(latestMetadataOffer.offerInSubunits),
+      by: latestMetadataOffer.by,
+      transition: latestMetadataOffer.transition,
+    };
+  }
+
+  const initialOfferAmount = Number(attributes.protectedData?.offerAmount);
+  const hasInitialOffer = (attributes.transitions || []).some(
+    transition => transition.transition === transitions.REQUEST_QUOTE
+  );
+
+  return hasInitialOffer && Number.isFinite(initialOfferAmount)
+    ? {
+        amount: initialOfferAmount * 100,
+        by: 'customer',
+        transition: transitions.REQUEST_QUOTE,
+      }
+    : null;
+};
+
+export const getBusinessOfferType = transition => {
+  if (transition === transitions.REQUEST_QUOTE) {
+    return 'initial-offer';
+  }
+  if (transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER) {
+    return 'final-offer';
+  }
+  if (pricedOfferTransitions.includes(transition)) {
+    return 'counter-offer';
+  }
+  return null;
+};
+
+const getBusinessState = (latestAction, latestOffer, processState) => {
+  const transition = latestAction?.transition;
+  const hasFinalOffer = latestOffer?.transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER;
+
+  if (
+    transition === transitions.PROVIDER_ACCEPT_COUNTER_OFFER &&
+    hasFinalOffer
+  ) {
+    return 'final-offer-accepted';
+  }
+  if (transition === transitions.PROVIDER_REJECT_COUNTER_OFFER && hasFinalOffer) {
+    return 'final-offer-rejected';
+  }
+  if (transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER) {
+    return 'final-offer-pending';
+  }
+  if (
+    [
+      transitions.MAKE_OFFER,
+      transitions.MAKE_OFFER_AFTER_INQUIRY,
+      transitions.MAKE_OFFER_FROM_REQUEST,
+      transitions.PROVIDER_MAKE_COUNTER_OFFER,
+    ].includes(transition)
+  ) {
+    return 'counter-offer-pending';
+  }
+  if (transition === transitions.REQUEST_QUOTE) {
+    return 'initial-offer-pending';
+  }
+  if (
+    [transitions.CUSTOMER_REJECT_OFFER, transitions.CUSTOMER_WITHDRAW_COUNTER_OFFER].includes(
+      transition
+    )
+  ) {
+    return 'offer-rejected';
+  }
+  if (transition === transitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER) {
+    return 'payment-pending';
+  }
+  if (transition === transitions.CONFIRM_PAYMENT) {
+    return 'offer-accepted';
+  }
+
+  return processState || null;
+};
+
+/**
+ * Return the offer, latest action, and current business state for a negotiation.
+ *
+ * @param {Object} transaction
+ * @returns {{ latestBusinessOffer: Object|null, latestBusinessAction: Object|null, currentBusinessState: Object }}
+ */
+export const getNegotiationSummary = transaction => {
+  const attributes = transaction?.attributes || {};
+  const latestBusinessAction = (attributes.transitions || []).at(-1) || null;
+  const processState = attributes.state || null;
+  const latestBusinessOffer = getLatestBusinessOffer(transaction);
+
+  return {
+    latestBusinessOffer,
+    latestBusinessOfferType: getBusinessOfferType(latestBusinessOffer?.transition),
+    latestBusinessAction,
+    currentBusinessState: {
+      processState,
+      businessState: getBusinessState(latestBusinessAction, latestBusinessOffer, processState),
+    },
+  };
+};
+
 // Check if a transition is the kind that should be rendered
 // when showing transition history (e.g. ActivityFeed)
 // The first transition and most of the expiration transitions made by system are not relevant

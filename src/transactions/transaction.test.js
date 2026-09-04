@@ -8,6 +8,128 @@ import {
   ConditionalResolver,
   getProcess,
 } from './transaction';
+import {
+  getBusinessOfferType,
+  getNegotiationSummary,
+  transitions as negotiationTransitions,
+} from './transactionProcessNegotiation';
+
+describe('getNegotiationSummary', () => {
+  const transactionWith = (transitions, offers = [], state = 'state/offer-pending') => ({
+    attributes: {
+      state,
+      transitions,
+      protectedData: { offerAmount: 500 },
+      metadata: { offers },
+    },
+  });
+
+  const offer = (transition, by, offerInSubunits) => ({ transition, by, offerInSubunits });
+
+  it('returns the initial offer and initial pending state', () => {
+    const transaction = transactionWith([
+      { transition: negotiationTransitions.REQUEST_QUOTE, by: 'customer' },
+    ], [], 'state/quote-requested');
+    const summary = getNegotiationSummary(transaction);
+
+    expect(summary.latestBusinessOffer).toEqual({
+      amount: 50000,
+      by: 'customer',
+      transition: negotiationTransitions.REQUEST_QUOTE,
+    });
+    expect(summary.latestBusinessOfferType).toBe('initial-offer');
+    expect(summary.latestBusinessAction.transition).toBe(negotiationTransitions.REQUEST_QUOTE);
+    expect(summary.currentBusinessState).toEqual({
+      processState: 'state/quote-requested',
+      businessState: 'initial-offer-pending',
+    });
+  });
+
+  it('keeps the initial offer when payment totals are unavailable', () => {
+    const transaction = transactionWith([
+      { transition: negotiationTransitions.REQUEST_QUOTE, by: 'customer' },
+    ]);
+
+    expect(getNegotiationSummary(transaction).latestBusinessOffer).toEqual({
+      amount: 50000,
+      by: 'customer',
+      transition: negotiationTransitions.REQUEST_QUOTE,
+    });
+  });
+
+  it('distinguishes the EO final offer from the DJ accepting it', () => {
+    const offers = [
+      offer(negotiationTransitions.MAKE_OFFER_FROM_REQUEST, 'provider', 60000),
+      offer(negotiationTransitions.CUSTOMER_MAKE_COUNTER_OFFER, 'customer', 70000),
+    ];
+    const finalOffer = transactionWith(
+      [
+        { transition: negotiationTransitions.REQUEST_QUOTE, by: 'customer' },
+        { transition: negotiationTransitions.MAKE_OFFER_FROM_REQUEST, by: 'provider' },
+        { transition: negotiationTransitions.CUSTOMER_MAKE_COUNTER_OFFER, by: 'customer' },
+      ],
+      offers,
+      'state/customer-offer-pending'
+    );
+    const accepted = transactionWith(
+      [...finalOffer.attributes.transitions, {
+        transition: negotiationTransitions.PROVIDER_ACCEPT_COUNTER_OFFER,
+        by: 'provider',
+      }],
+      offers,
+      'state/offer-pending'
+    );
+
+    expect(getNegotiationSummary(finalOffer).currentBusinessState.businessState).toBe(
+      'final-offer-pending'
+    );
+    expect(getNegotiationSummary(finalOffer).latestBusinessOfferType).toBe('final-offer');
+    expect(getNegotiationSummary(accepted)).toMatchObject({
+      latestBusinessOffer: { amount: 70000, by: 'customer' },
+      latestBusinessAction: {
+        transition: negotiationTransitions.PROVIDER_ACCEPT_COUNTER_OFFER,
+        by: 'provider',
+      },
+      currentBusinessState: {
+        processState: 'state/offer-pending',
+        businessState: 'final-offer-accepted',
+      },
+    });
+    expect(getNegotiationSummary(accepted).latestBusinessOfferType).toBe('final-offer');
+  });
+
+  it('keeps the latest offer when the final offer is rejected or payment starts', () => {
+    const offers = [
+      offer(negotiationTransitions.MAKE_OFFER_FROM_REQUEST, 'provider', 60000),
+      offer(negotiationTransitions.CUSTOMER_MAKE_COUNTER_OFFER, 'customer', 70000),
+    ];
+    const rejected = transactionWith(
+      [{ transition: negotiationTransitions.PROVIDER_REJECT_COUNTER_OFFER, by: 'provider' }],
+      offers,
+      'state/offer-pending'
+    );
+    const payment = transactionWith(
+      [{ transition: negotiationTransitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER, by: 'customer' }],
+      offers,
+      'state/pending-payment'
+    );
+
+    expect(getNegotiationSummary(rejected)).toMatchObject({
+      latestBusinessOffer: { amount: 70000, by: 'customer' },
+      currentBusinessState: { businessState: 'final-offer-rejected' },
+    });
+    expect(getNegotiationSummary(payment)).toMatchObject({
+      latestBusinessOffer: { amount: 70000, by: 'customer' },
+      currentBusinessState: { businessState: 'payment-pending' },
+    });
+  });
+
+  it('classifies provider offers as counter offers', () => {
+    expect(getBusinessOfferType(negotiationTransitions.MAKE_OFFER_FROM_REQUEST)).toBe(
+      'counter-offer'
+    );
+  });
+});
 
 describe('transaction utils for default-purchase', () => {
   const process = getProcess('default-purchase');

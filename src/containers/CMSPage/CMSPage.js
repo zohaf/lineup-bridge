@@ -16,6 +16,7 @@ import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { formatMoney } from '../../util/currency';
 import { LISTING_STATE_DRAFT, LISTING_STATE_PUBLISHED, propTypes } from '../../util/types';
 import { getCurrentUserTypeRoles, isUserAuthorized } from '../../util/userHelpers';
+import { types as sdkTypes } from '../../util/sdkLoader';
 import {
   LISTING_PAGE_PARAM_TYPE_DRAFT,
   LISTING_PAGE_PARAM_TYPE_EDIT,
@@ -31,7 +32,10 @@ import {
   TX_TRANSITION_ACTOR_CUSTOMER,
   TX_TRANSITION_ACTOR_PROVIDER,
 } from '../../transactions/transaction';
-import { states as negotiationStates } from '../../transactions/transactionProcessNegotiation';
+import {
+  getNegotiationSummary,
+  states as negotiationStates,
+} from '../../transactions/transactionProcessNegotiation';
 import { getStateData } from '../InboxPage/InboxPage.stateData';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
@@ -40,6 +44,7 @@ const PageBuilder = loadable(() =>
 );
 
 import css from './CMSPage.module.css';
+const { Money } = sdkTypes;
 
 export const CMSPageComponent = props => {
   const {
@@ -314,6 +319,22 @@ const HomeNextSteps = props => {
                 const isCustomerView = isOrganizer;
                 const otherParty = isCustomerView ? tx?.provider : tx?.customer;
                 const otherPartyName = userDisplayNameAsString(otherParty, '');
+                const negotiationSummary = getNegotiationSummary(tx);
+                const latestOffer = negotiationSummary.latestBusinessOffer;
+                const offerCurrency =
+                  tx?.attributes?.payinTotal?.currency ||
+                  tx?.listing?.attributes?.price?.currency ||
+                  config?.currency;
+                const latestOfferIsFromCurrentUser =
+                  latestOffer?.by ===
+                  (isCustomerView ? TX_TRANSITION_ACTOR_CUSTOMER : TX_TRANSITION_ACTOR_PROVIDER);
+                const offerTitlePrefix =
+                  negotiationSummary.latestBusinessOfferType === 'final-offer'
+                    ? 'Home.finalOffer'
+                    : negotiationSummary.latestBusinessOfferType === 'counter-offer'
+                    ? 'Home.counterOffer'
+                    : 'Home.offer';
+                const offerTitleId = `${offerTitlePrefix}${latestOfferIsFromCurrentUser ? 'To' : 'From'}`;
                 const date = tx?.attributes?.lastTransitionedAt;
                 const transactionRole = isCustomerView
                   ? TX_TRANSITION_ACTOR_CUSTOMER
@@ -367,7 +388,7 @@ const HomeNextSteps = props => {
                     <div className={css.offerCardMain}>
                       <div className={css.offerCardHeader}>
                         <div className={css.offerCardTitle}>
-                          <FormattedMessage id="Home.offerFrom" values={{ name: otherPartyName }} />
+                          <FormattedMessage id={offerTitleId} values={{ name: otherPartyName }} />
                         </div>
                         <div className={css.offerCardRight}>
                           <div className={css.offerCardDate}>
@@ -394,7 +415,12 @@ const HomeNextSteps = props => {
                       </div>
                       <div className={css.offerCardMeta}>
                         <div className={css.offerCardPrice}>
-                          {tx?.attributes?.payinTotal
+                          {latestOffer?.amount != null && offerCurrency
+                            ? formatMoney(
+                                intl,
+                                new Money(latestOffer.amount, offerCurrency)
+                              )
+                            : tx?.attributes?.payinTotal
                             ? formatMoney(intl, tx.attributes.payinTotal)
                             : '—'}
                         </div>
