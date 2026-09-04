@@ -145,8 +145,16 @@ const HomeNextSteps = props => {
     ? 'Home.manageListingSubtitleDj'
     : 'Home.createListingSubtitleDj';
 
+  const sortByLatestAction = txs =>
+    [...txs].sort((left, right) => {
+      const leftTime = new Date(left?.attributes?.lastTransitionedAt || 0).getTime();
+      const rightTime = new Date(right?.attributes?.lastTransitionedAt || 0).getTime();
+      return rightTime - leftTime;
+    });
+
   const offerTxs = isOrganizer
-    ? (transactions || [])
+    ? sortByLatestAction(
+        (transactions || [])
         .filter(tx => {
           const processName = resolveLatestProcessName(tx?.attributes?.processName);
           return (
@@ -156,9 +164,10 @@ const HomeNextSteps = props => {
             tx.customer.id.uuid === currentUser.id.uuid
           );
         })
-        .slice(0, 6)
+        ).slice(0, 6)
     : isDj
-    ? (transactions || [])
+      ? sortByLatestAction(
+        (transactions || [])
         .filter(tx => {
           const processName = resolveLatestProcessName(tx?.attributes?.processName);
           return (
@@ -168,7 +177,7 @@ const HomeNextSteps = props => {
             tx.provider.id.uuid === currentUser.id.uuid
           );
         })
-        .slice(0, 6)
+      ).slice(0, 6)
     : [];
 
   if (!isApproved) {
