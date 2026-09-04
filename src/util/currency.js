@@ -258,6 +258,14 @@ export const formatMoney = (intl, value) => {
   return intl.formatNumber(valueAsNumber, numberFormatOptions);
 };
 
+export const formatMoneyWithoutCents = (intl, value) => {
+  if (!(value instanceof Money)) {
+    throw new Error('Value must be a Money type');
+  }
+
+  return formatCurrencyMajorUnit(intl, value.currency, Math.round(convertMoneyToNumber(value)));
+};
+
 /**
  * Format the given major-unit string value as currency. E.g. "10" -> "$10".
  *

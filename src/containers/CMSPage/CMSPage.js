@@ -13,7 +13,7 @@ import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { getFeaturedListingsProps, userDisplayNameAsString } from '../../util/data';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
-import { formatMoney } from '../../util/currency';
+import { formatMoney, formatMoneyWithoutCents } from '../../util/currency';
 import { LISTING_STATE_DRAFT, LISTING_STATE_PUBLISHED, propTypes } from '../../util/types';
 import { getCurrentUserTypeRoles, isUserAuthorized } from '../../util/userHelpers';
 import { types as sdkTypes } from '../../util/sdkLoader';
@@ -416,7 +416,7 @@ const HomeNextSteps = props => {
                       <div className={css.offerCardMeta}>
                         <div className={css.offerCardPrice}>
                           {latestOffer?.amount != null && offerCurrency
-                            ? formatMoney(
+                            ? formatMoneyWithoutCents(
                                 intl,
                                 new Money(latestOffer.amount, offerCurrency)
                               )

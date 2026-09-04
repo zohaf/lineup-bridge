@@ -4,7 +4,8 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { types as sdkTypes } from '../../../util/sdkLoader';
 import { useConfiguration } from '../../../context/configurationContext';
-import { formatMoney } from '../../../util/currency';
+import { formatMoneyWithoutCents } from '../../../util/currency';
+import { userDisplayNameAsString } from '../../../util/data';
 import { richText } from '../../../util/richText';
 import { formatDateWithProximity } from '../../../util/dates';
 import { propTypes } from '../../../util/types';
@@ -15,6 +16,7 @@ import {
   TX_TRANSITION_ACTOR_OPERATOR,
   TX_TRANSITION_ACTOR_SYSTEM,
 } from '../../../transactions/transaction';
+import { getBusinessOfferType } from '../../../transactions/transactionProcessNegotiation';
 
 import { Avatar, InlineTextButton, ReviewRating, UserDisplayName } from '../../../components';
 
@@ -130,6 +132,7 @@ const TransitionMessage = props => {
     deliveryMethod,
     listingTitle,
     negotiationOffer = '-',
+    negotiationOfferTitle,
     ownRole,
     otherUsersName,
     onOpenReviewModal,
@@ -138,6 +141,10 @@ const TransitionMessage = props => {
   const { processName, processState, showReviewAsFirstLink, showReviewAsSecondLink } = stateData;
   const stateStatus = nextState === processState ? 'current' : 'past';
   const transitionName = transition.transition;
+
+  if (negotiationOfferTitle && negotiationOffer !== '-') {
+    return `${negotiationOfferTitle} ${negotiationOffer}`;
+  }
 
   // actor: 'you', 'system', 'operator', or display name of the other party
   const actor =
@@ -372,9 +379,21 @@ export const ActivityFeed = props => {
       const ownRole = getUserTxRole(currentUser.id, transaction);
       const otherUser = ownRole === TX_TRANSITION_ACTOR_PROVIDER ? customer : provider;
 
-      const offerInSubunits = transition.offerInSubunits;
+      const offerInSubunits =
+        transition.offerInSubunits ??
+        (transitionName === process.transitions.REQUEST_QUOTE
+          ? Number(transaction.attributes?.protectedData?.offerAmount) * 100
+          : null);
       const negotiationOffer = offerInSubunits
-        ? formatMoney(intl, new Money(offerInSubunits, currency))
+        ? formatMoneyWithoutCents(intl, new Money(offerInSubunits, currency))
+        : null;
+      const businessOfferType = getBusinessOfferType(transitionName);
+      const isOfferFromCurrentUser = transition.by === ownRole;
+      const offerTitleId = businessOfferType
+        ? `Home.${businessOfferType === 'final-offer' ? 'finalOffer' : businessOfferType === 'counter-offer' ? 'counterOffer' : 'offer'}${isOfferFromCurrentUser ? 'To' : 'From'}`
+        : null;
+      const negotiationOfferTitle = offerTitleId
+        ? intl.formatMessage({ id: offerTitleId }, { name: userDisplayNameAsString(otherUser, '') })
         : null;
 
       transitionComponent = (
@@ -388,6 +407,7 @@ export const ActivityFeed = props => {
               deliveryMethod={transaction.attributes?.protectedData?.deliveryMethod || 'none'}
               listingTitle={listingTitle}
               negotiationOffer={negotiationOffer}
+              negotiationOfferTitle={negotiationOfferTitle}
               ownRole={ownRole}
               otherUsersName={<UserDisplayName user={otherUser} intl={intl} />}
               onOpenReviewModal={onOpenReviewModal}
