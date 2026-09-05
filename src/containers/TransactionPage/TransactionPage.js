@@ -850,7 +850,11 @@ export const TransactionPageComponent = props => {
   // ── Offer details card for DJ in QUOTE_REQUESTED (read-only; CTAs in aside) ──
   const offerDetailsSlot =
     isDataAvailable && stateDataForPanel?.showOfferDetailsCard && transaction && customer ? (
-      <OfferDetailsCard transaction={transaction} customer={customer} />
+      <OfferDetailsCard
+        transaction={transaction}
+        customer={customer}
+        showProposedChanges={!stateDataForPanel.showAgreedOfferDetails}
+      />
     ) : null;
 
   const headingTitleMessageId = forceMinimalFromCheckoutSuccess
@@ -1092,9 +1096,10 @@ export const TransactionPageComponent = props => {
     >
       <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.root}>{panel}</div>
-        <ReviewModal
-          id="ReviewOrderModal"
-          isOpen={isReviewModalOpen}
+        {!isNegotiationProcess && (
+          <ReviewModal
+            id="ReviewOrderModal"
+            isOpen={isReviewModalOpen}
           focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_1_ID}`}
           onCloseModal={() => setReviewModalOpen(false)}
           onManageDisableScrolling={onManageDisableScrolling}
@@ -1103,8 +1108,9 @@ export const TransactionPageComponent = props => {
           reviewSent={reviewSubmitted}
           sendReviewInProgress={sendReviewInProgress}
           sendReviewError={sendReviewError}
-          marketplaceName={config.marketplaceName}
-        />
+            marketplaceName={config.marketplaceName}
+          />
+        )}
         {process?.transitions?.DISPUTE ? (
           <DisputeModal
             id="DisputeOrderModal"

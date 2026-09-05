@@ -344,7 +344,7 @@ export class TransactionPanelComponent extends Component {
             {minimalPostBookingSuccess ? null : (
               <div className={css.offerSummaryMobileOnly}>{offerSummarySlot}</div>
             )}
-            {offerDetailsSlot}
+            {offerDetailsSlot ? <div className={css.offerDetailsSlot}>{offerDetailsSlot}</div> : null}
             {minimalPostBookingSuccess || stateData?.processName === NEGOTIATION_PROCESS_NAME ? null : (
               <FeedSection
                 rootClassName={css.feedContainer}

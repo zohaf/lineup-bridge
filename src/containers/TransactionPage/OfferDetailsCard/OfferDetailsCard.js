@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
+import { getLatestBusinessOffer } from '../../../transactions/transactionProcessNegotiation';
 import css from './OfferDetailsCard.module.css';
 
 /**
@@ -15,6 +16,7 @@ import css from './OfferDetailsCard.module.css';
 const OfferDetailsCard = props => {
   const { transaction, customer } = props;
 
+  const { showProposedChanges = true } = props;
   const intl = useIntl();
 
   const protectedData = transaction?.attributes?.protectedData || {};
@@ -44,13 +46,24 @@ const OfferDetailsCard = props => {
     proposedChanges,
   } = protectedData;
 
-  const hasProposedChanges = proposedChanges && Object.keys(proposedChanges).length > 0;
-
   const notProvided = (
     <span className={css.notProvided}>
       <FormattedMessage id="OfferDetailsCard.notProvided" />
     </span>
   );
+
+  const latestBusinessOffer = getLatestBusinessOffer(transaction);
+  const latestOfferAmount = latestBusinessOffer?.amount
+    ? latestBusinessOffer.amount / 100
+    : offerAmount;
+  const displayedBookingStartTime = !showProposedChanges
+    ? proposedChanges?.proposedStartTime || bookingStartTime
+    : bookingStartTime;
+  const displayedDurationHours = !showProposedChanges
+    ? proposedChanges?.proposedDuration || durationHours
+    : durationHours;
+  const hasProposedChanges =
+    showProposedChanges && proposedChanges && Object.keys(proposedChanges).length > 0;
 
   const formatDate = dateStr => {
     if (!dateStr) return notProvided;
@@ -154,9 +167,10 @@ const OfferDetailsCard = props => {
             <FormattedMessage id="OfferDetailsCard.startTime" />
           </span>
           <div className={css.rowValueStack}>
-            <span className={css.rowValue}>{bookingStartTime || notProvided}</span>
-            {proposedChanges?.proposedStartTime &&
-              proposedChanges.proposedStartTime !== bookingStartTime ? (
+            <span className={css.rowValue}>{displayedBookingStartTime || notProvided}</span>
+            {showProposedChanges &&
+            proposedChanges?.proposedStartTime &&
+            proposedChanges.proposedStartTime !== bookingStartTime ? (
               <ProposedValue>
                 <FormattedMessage
                   id="OfferDetailsCard.proposedLabel"
@@ -183,10 +197,11 @@ const OfferDetailsCard = props => {
               <span className={css.rowValue}>
                 <FormattedMessage
                   id="OfferDetailsCard.durationValue"
-                  values={{ hours: durationHours }}
+                  values={{ hours: displayedDurationHours }}
                 />
               </span>
-              {proposedChanges?.proposedDuration &&
+              {showProposedChanges &&
+              proposedChanges?.proposedDuration &&
                 proposedChanges.proposedDuration !== durationHours ? (
                 <ProposedValue>
                   <FormattedMessage
@@ -282,9 +297,10 @@ const OfferDetailsCard = props => {
           </span>
           <div className={css.rowValueStack}>
             <span className={css.rowValueFee}>
-              {offerAmount != null ? `€${offerAmount}` : notProvided}
+              {latestOfferAmount != null ? `€${latestOfferAmount}` : notProvided}
             </span>
-            {proposedChanges?.proposedFee &&
+            {showProposedChanges &&
+            proposedChanges?.proposedFee &&
               proposedChanges.proposedFee !== offerAmount ? (
               <ProposedValue>
                 <FormattedMessage
@@ -315,7 +331,7 @@ const OfferDetailsCard = props => {
             <p className={css.descriptionValue}>{includedDetails}</p>
           </div>
         ) : null}
-        {proposedChanges?.proposedFeeNotes ? (
+        {showProposedChanges && proposedChanges?.proposedFeeNotes ? (
           <div className={css.descriptionBlock}>
             <p className={css.descriptionLabelProposed}>
               <FormattedMessage id="OfferDetailsCard.proposedFeeNotes" />
@@ -354,7 +370,7 @@ const OfferDetailsCard = props => {
               <span className={css.rowValue}>{formatYesNo(boothMonitorsAvailable)}</span>
             </div>
           ) : null}
-          {proposedChanges?.proposedNotes ? (
+          {showProposedChanges && proposedChanges?.proposedNotes ? (
             <div className={css.descriptionBlock}>
               <p className={css.descriptionLabelProposed}>
                 <FormattedMessage id="OfferDetailsCard.proposedTechnicalNotes" />

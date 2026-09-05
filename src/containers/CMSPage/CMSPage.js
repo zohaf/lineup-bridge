@@ -56,6 +56,7 @@ export const CMSPageComponent = props => {
     ownListings,
     ownListingsLoaded,
     transactions,
+    transactionsLoaded,
     history,
   } = props;
   const pageId = params.pageId || props.pageId;
@@ -78,6 +79,7 @@ export const CMSPageComponent = props => {
               <HomeNextSteps
                 currentUser={currentUser}
                 transactions={transactions}
+                transactionsLoaded={transactionsLoaded}
                 ownListings={ownListings}
                 ownListingsLoaded={ownListingsLoaded}
                 routeConfiguration={props.routeConfiguration}
@@ -104,14 +106,23 @@ CMSPageComponent.propTypes = {
   ownListings: arrayOf(propTypes.ownListing),
   ownListingsLoaded: bool,
   transactions: arrayOf(propTypes.transaction),
+  transactionsLoaded: bool,
 };
 
 CMSPageComponent.defaultProps = {
   transactions: [],
+  transactionsLoaded: false,
 };
 
 const HomeNextSteps = props => {
-  const { currentUser, transactions = [], ownListings = [], ownListingsLoaded, history } = props;
+  const {
+    currentUser,
+    transactions = [],
+    transactionsLoaded,
+    ownListings = [],
+    ownListingsLoaded,
+    history,
+  } = props;
   const config = useConfiguration();
   const routeConfiguration = useRouteConfiguration() || [];
   const intl = useIntl();
@@ -154,8 +165,7 @@ const HomeNextSteps = props => {
 
   const offerTxs = isOrganizer
     ? sortByLatestAction(
-        (transactions || [])
-        .filter(tx => {
+        (transactions || []).filter(tx => {
           const processName = resolveLatestProcessName(tx?.attributes?.processName);
           return (
             isNegotiationProcess(processName) &&
@@ -164,11 +174,10 @@ const HomeNextSteps = props => {
             tx.customer.id.uuid === currentUser.id.uuid
           );
         })
-        ).slice(0, 6)
+      ).slice(0, 6)
     : isDj
-      ? sortByLatestAction(
-        (transactions || [])
-        .filter(tx => {
+    ? sortByLatestAction(
+        (transactions || []).filter(tx => {
           const processName = resolveLatestProcessName(tx?.attributes?.processName);
           return (
             isNegotiationProcess(processName) &&
@@ -225,7 +234,7 @@ const HomeNextSteps = props => {
         <p className={css.welcomeBack}>
           <FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />
         </p>
-        {(isOrganizer && offerTxs.length === 0) ||
+        {(isOrganizer && transactionsLoaded && offerTxs.length === 0) ||
         (isDj && (!hasPublishedProfile || !hasPayoutDetails)) ? (
           <>
             <h2 className={css.whatsNextTitle}>
@@ -343,7 +352,9 @@ const HomeNextSteps = props => {
                     : negotiationSummary.latestBusinessOfferType === 'counter-offer'
                     ? 'Home.counterOffer'
                     : 'Home.offer';
-                const offerTitleId = `${offerTitlePrefix}${latestOfferIsFromCurrentUser ? 'To' : 'From'}`;
+                const offerTitleId = `${offerTitlePrefix}${
+                  latestOfferIsFromCurrentUser ? 'To' : 'From'
+                }`;
                 const date = tx?.attributes?.lastTransitionedAt;
                 const transactionRole = isCustomerView
                   ? TX_TRANSITION_ACTOR_CUSTOMER
@@ -429,16 +440,6 @@ const HomeNextSteps = props => {
                                 })
                               : '—'}
                           </div>
-                          <div
-                            className={`${css.offerCardStatus} ${
-                              needsUserAction ? css.offerCardStatusPending : css.offerCardStatusAccepted
-                            }`}
-                          >
-                            <FormattedMessage
-                              id={activityStatusId}
-                              values={{ name: otherPartyName }}
-                            />
-                          </div>
                           {showPayCta && isCustomerView ? (
                             <div className={css.offerCardStatusRow}>
                               <NamedLink
@@ -462,6 +463,18 @@ const HomeNextSteps = props => {
                             : tx?.attributes?.payinTotal
                             ? formatMoney(intl, tx.attributes.payinTotal)
                             : '—'}
+                        </div>
+                        <div
+                          className={`${css.offerCardStatus} ${
+                            needsUserAction
+                              ? css.offerCardStatusPending
+                              : css.offerCardStatusAccepted
+                          }`}
+                        >
+                          <FormattedMessage
+                            id={activityStatusId}
+                            values={{ name: otherPartyName }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -536,6 +549,7 @@ const mapStateToProps = state => {
   const { currentUser } = state.user || {};
   const { transactionRefs = [] } = state.InboxPage || {};
   const transactions = getMarketplaceEntities(state, transactionRefs);
+  const transactionsLoaded = !!state.InboxPage?.pagination;
 
   const manageListings = state.ManageListingsPage || {};
   const pagination = manageListings.pagination;
@@ -557,6 +571,7 @@ const mapStateToProps = state => {
     ownListings,
     ownListingsLoaded,
     transactions,
+    transactionsLoaded,
   };
 };
 

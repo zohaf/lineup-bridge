@@ -138,7 +138,13 @@ const TransitionMessage = props => {
     onOpenReviewModal,
     intl,
   } = props;
-  const { processName, processState, showReviewAsFirstLink, showReviewAsSecondLink } = stateData;
+  const {
+    processName,
+    processState,
+    suppressReviewUi,
+    showReviewAsFirstLink,
+    showReviewAsSecondLink,
+  } = stateData;
   const stateStatus = nextState === processState ? 'current' : 'past';
   const transitionName = transition.transition;
 
@@ -154,11 +160,11 @@ const TransitionMessage = props => {
       ? transition.by
       : otherUsersName;
 
-  const reviewLink = showReviewAsFirstLink ? (
+  const reviewLink = !suppressReviewUi && showReviewAsFirstLink ? (
     <InlineTextButton onClick={onOpenReviewModal} rootClassName={css.reviewLink}>
       <FormattedMessage id="TransactionPage.ActivityFeed.reviewLink" values={{ otherUsersName }} />
     </InlineTextButton>
-  ) : showReviewAsSecondLink ? (
+  ) : !suppressReviewUi && showReviewAsSecondLink ? (
     <InlineTextButton onClick={onOpenReviewModal} rootClassName={css.reviewLink}>
       <FormattedMessage
         id="TransactionPage.ActivityFeed.reviewAsSecondLink"

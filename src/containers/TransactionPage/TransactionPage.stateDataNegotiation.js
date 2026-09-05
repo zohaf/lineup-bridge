@@ -4,6 +4,7 @@ import {
   CONDITIONAL_RESOLVER_WILDCARD,
   ConditionalResolver,
 } from '../../transactions/transaction';
+import { getNegotiationSummary } from '../../transactions/transactionProcessNegotiation';
 
 /**
  * Get state data against booking process for TransactionPage's UI.
@@ -45,11 +46,9 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     transitions,
     isCustomer,
     actionButtonProps,
-    leaveReviewProps,
   } = processInfo;
-  const hasCustomerFinalOffer = transaction?.attributes?.transitions?.some(
-    transition => transition.transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER
-  );
+  const negotiationSummary = getNegotiationSummary(transaction);
+  const hasCustomerFinalOffer = negotiationSummary.latestBusinessOfferType === 'final-offer';
   const latestTransition = transaction?.attributes?.transitions?.at(-1)?.transition;
   const isDjFinalOfferAccepted =
     isDjUser &&
@@ -59,6 +58,15 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     isDjUser &&
     hasCustomerFinalOffer &&
     latestTransition === transitions.PROVIDER_REJECT_COUNTER_OFFER;
+  const isCustomerFinalOfferAccepted =
+    transactionRole === CUSTOMER &&
+    hasCustomerFinalOffer &&
+    latestTransition === transitions.PROVIDER_ACCEPT_COUNTER_OFFER;
+  const finalOfferResponseMessage = isDjFinalOfferAccepted
+    ? 'TransactionPage.ActivityFeed.default-negotiation.final-offer-accepted'
+    : isDjFinalOfferRejected
+    ? 'TransactionPage.ActivityFeed.default-negotiation.final-offer-rejected'
+    : null;
 
   // These overwrite the default transition messages on the ActivityFeed component.
   // The defaults are tied to the process state.
@@ -66,6 +74,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     {
       transition: transitions.PROVIDER_ACCEPT_COUNTER_OFFER,
       translationId:
+        finalOfferResponseMessage ||
         'TransactionPage.ActivityFeed.default-negotiation.transition.provider-accept-counter-offer',
     },
     {
@@ -76,6 +85,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     {
       transition: transitions.PROVIDER_REJECT_COUNTER_OFFER,
       translationId:
+        finalOfferResponseMessage ||
         'TransactionPage.ActivityFeed.default-negotiation.transition.provider-reject-counter-offer',
     },
     {
@@ -87,6 +97,16 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     processName,
     processState,
     transitionMessages,
+    suppressReviewUi: true,
+  };
+
+  const terminalOutcome = {
+    headingTitleMessageId: `TransactionPage.default-negotiation.${
+      transactionRole === CUSTOMER ? 'customer' : 'provider'
+    }.booking-complete.title`,
+    extraInfoMessageId: `TransactionPage.default-negotiation.${
+      transactionRole === CUSTOMER ? 'customer' : 'provider'
+    }.booking-complete.extraInfo`,
   };
 
   return new ConditionalResolver([processState, transactionRole])
@@ -104,21 +124,16 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     })
     .cond([states.QUOTE_REQUESTED, PROVIDER], () => {
       const acceptOverwrites = {
-        onAction: isDjUser
-          ? onOpenAcceptOfferModal
-          : () => onAcceptOffer(null),
-        actionButtonTranslationId:
-          'OfferDetailsCard.acceptOffer',
+        onAction: isDjUser ? onOpenAcceptOfferModal : () => onAcceptOffer(null),
+        actionButtonTranslationId: 'OfferDetailsCard.acceptOffer',
       };
       const proposeOverwrites = {
         onAction: onOpenProposeChangesModal,
-        actionButtonTranslationId:
-          'OfferDetailsCard.proposeChanges',
+        actionButtonTranslationId: 'OfferDetailsCard.proposeChanges',
       };
       const declineOverwrites = {
         onAction: onOpenDeclineOfferModal,
-        actionButtonTranslationId:
-          'OfferDetailsCard.declineOffer',
+        actionButtonTranslationId: 'OfferDetailsCard.declineOffer',
       };
       return {
         ...sharedStateData,
@@ -158,12 +173,13 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
       // When customer clicks on the accept button, we just redirect them to the checkout page.
       // The actual transition is handled there together with the payment
       const isDj = currentUserType === 'dj';
-      const djAcceptCtaId = 'TransactionPage.default-negotiation.customer.djOfferPending.acceptOffer';
+      const djAcceptCtaId =
+        'TransactionPage.default-negotiation.customer.djOfferPending.acceptOffer';
       const djCounterCtaId =
         'TransactionPage.default-negotiation.customer.djOfferPending.counterOffer';
-      const djRejectCtaId = 'TransactionPage.default-negotiation.customer.djOfferPending.rejectOffer';
-      const customerFinalOfferCtaId =
-        'TransactionPage.default-negotiation.customer.finalOffer';
+      const djRejectCtaId =
+        'TransactionPage.default-negotiation.customer.djOfferPending.rejectOffer';
+      const customerFinalOfferCtaId = 'TransactionPage.default-negotiation.customer.finalOffer';
       const customerRejectCounterOfferCtaId =
         'TransactionPage.default-negotiation.customer.rejectCounterOffer';
 
@@ -200,6 +216,15 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showOfferDetailsCard: true,
+        showAgreedOfferDetails: true,
+        ...(isCustomerFinalOfferAccepted
+          ? {
+              headingTitleMessageId:
+                'TransactionPage.default-negotiation.customer.finalOfferAccepted.title',
+              extraInfoMessageId:
+                'TransactionPage.default-negotiation.customer.finalOfferAccepted.extraInfo',
+            }
+          : {}),
         showActionButtons: true,
         primaryButtonProps: actionButtonProps(
           transitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER,
@@ -209,23 +234,17 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         ...(hasCustomerFinalOffer
           ? {}
           : {
-              secondaryButtonProps: actionButtonProps(
-                transitions.CUSTOMER_REJECT_OFFER,
-                CUSTOMER,
-                {
-                  onAction: onOpenCustomerRejectModal,
-                  actionButtonTranslationId: isDj
-                    ? djRejectCtaId
-                    : customerRejectCounterOfferCtaId,
-                }
-              ),
+              secondaryButtonProps: actionButtonProps(transitions.CUSTOMER_REJECT_OFFER, CUSTOMER, {
+                onAction: onOpenCustomerRejectModal,
+                actionButtonTranslationId: isDj ? djRejectCtaId : customerRejectCounterOfferCtaId,
+              }),
               tertiaryButtonProps: actionButtonProps(
                 transitions.CUSTOMER_MAKE_COUNTER_OFFER,
                 CUSTOMER,
                 overwritesForMakeCounterOffer
               ),
             }),
-              actionButtonOrder: ['primary', 'tertiary', 'secondary'],
+        actionButtonOrder: ['primary', 'tertiary', 'secondary'],
       };
     })
     .cond([states.OFFER_PENDING, PROVIDER], () => {
@@ -254,6 +273,8 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
+        showOfferDetailsCard: isDjFinalOfferAccepted,
+        showAgreedOfferDetails: isDjFinalOfferAccepted,
         showActionButtons: false,
         ...(isDjFinalOfferAccepted || isDjFinalOfferRejected
           ? {
@@ -341,18 +362,16 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
+        showOfferDetailsCard: true,
+        showAgreedOfferDetails: true,
         showActionButtons: true,
-        primaryButtonProps: actionButtonProps(
-          transitions.PROVIDER_ACCEPT_COUNTER_OFFER,
-          PROVIDER,
-          {
-            ...(isDjUser && onOpenAcceptCounterOfferModal
-              ? { onAction: onOpenAcceptCounterOfferModal }
-              : {}),
-            actionButtonTranslationId:
-              'TransactionPage.default-negotiation.provider.finalOffer.accept',
-          }
-        ),
+        primaryButtonProps: actionButtonProps(transitions.PROVIDER_ACCEPT_COUNTER_OFFER, PROVIDER, {
+          ...(isDjUser && onOpenAcceptCounterOfferModal
+            ? { onAction: onOpenAcceptCounterOfferModal }
+            : {}),
+          actionButtonTranslationId:
+            'TransactionPage.default-negotiation.provider.finalOffer.accept',
+        }),
         secondaryButtonProps: actionButtonProps(
           transitions.PROVIDER_REJECT_COUNTER_OFFER,
           PROVIDER,
@@ -372,13 +391,21 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
       return { ...sharedStateData, showDetailCardHeadings: true, showBreakDown: false };
     })
     .cond([states.OFFER_ACCEPTED, CUSTOMER], () => {
-      return { ...sharedStateData, showDetailCardHeadings: true, showExtraInfo: true };
+      return {
+        ...sharedStateData,
+        showDetailCardHeadings: true,
+        showExtraInfo: true,
+        showOfferDetailsCard: true,
+        showAgreedOfferDetails: true,
+      };
     })
     .cond([states.OFFER_ACCEPTED, PROVIDER], () => {
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
+        showOfferDetailsCard: true,
+        showAgreedOfferDetails: true,
         showActionButtons: true,
         primaryButtonProps: actionButtonProps(transitions.DELIVER, PROVIDER),
       };
@@ -413,6 +440,8 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
+        showOfferDetailsCard: true,
+        showAgreedOfferDetails: true,
         showActionButtons: true,
         primaryButtonProps: actionButtonProps(transitions.ACCEPT_DELIVERABLE, CUSTOMER),
         secondaryButtonProps: actionButtonProps(
@@ -427,6 +456,8 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
+        showOfferDetailsCard: true,
+        showAgreedOfferDetails: true,
         // showActionButtons: true,
       };
     })
@@ -450,37 +481,41 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
-        showReviewAsFirstLink: true,
-        showActionButtons: true,
-        primaryButtonProps: leaveReviewProps,
+        showExtraInfo: true,
+        ...terminalOutcome,
       };
     })
     .cond([states.REVIEWED_BY_PROVIDER, CUSTOMER], () => {
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
-        showReviewAsSecondLink: true,
-        showActionButtons: true,
-        primaryButtonProps: leaveReviewProps,
+        showExtraInfo: true,
+        ...terminalOutcome,
       };
     })
     .cond([states.REVIEWED_BY_CUSTOMER, PROVIDER], () => {
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
-        showReviewAsSecondLink: true,
-        showActionButtons: true,
-        primaryButtonProps: leaveReviewProps,
+        showExtraInfo: true,
+        ...terminalOutcome,
       };
     })
     .cond([states.REVIEWED, _], () => {
-      return { ...sharedStateData, showDetailCardHeadings: true, showReviews: true };
+      return {
+        ...sharedStateData,
+        showDetailCardHeadings: true,
+        showExtraInfo: true,
+        ...terminalOutcome,
+      };
     })
     .cond([states.PENDING_PAYMENT, CUSTOMER], () => {
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: false,
+        showOfferDetailsCard: true,
+        showAgreedOfferDetails: true,
         minimalPostBookingRequestCustomerView: true,
       };
     })

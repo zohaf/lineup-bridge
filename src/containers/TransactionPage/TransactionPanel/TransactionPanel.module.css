@@ -300,6 +300,10 @@
   }
 }
 
+.offerDetailsSlot {
+  margin-top: 24px;
+}
+
 /* AddressLinkMaybe subcomponent */
 .address {
   composes: h5 from global;
