@@ -360,6 +360,26 @@ const HomeNextSteps = props => {
                 }
                 const pName = resolveLatestProcessName(tx?.attributes?.processName);
                 const pState = stateData?.processState;
+                const currentUserActor = isCustomerView
+                  ? TX_TRANSITION_ACTOR_CUSTOMER
+                  : TX_TRANSITION_ACTOR_PROVIDER;
+                const latestActionActor = negotiationSummary.latestBusinessAction?.by;
+                const finalOfferOutcome = ['final-offer-accepted', 'final-offer-rejected'].includes(
+                  negotiationSummary.currentBusinessState?.businessState
+                );
+                const finalOfferAccepted =
+                  negotiationSummary.currentBusinessState?.businessState === 'final-offer-accepted';
+                const needsUserAction =
+                  !finalOfferOutcome && latestActionActor !== currentUserActor;
+                const activityStatusId = needsUserAction
+                  ? 'Home.activityNeedsYourAction'
+                  : finalOfferOutcome && latestActionActor !== currentUserActor
+                  ? finalOfferAccepted
+                    ? 'Home.activityFinalOfferAccepted'
+                    : 'Home.activityFinalOfferRejected'
+                  : latestActionActor === currentUserActor
+                  ? 'Home.activityYouResponded'
+                  : 'Home.activityWaitingForOtherParty';
                 const showPayCta =
                   isNegotiationProcess(pName) && pState === negotiationStates.PENDING_PAYMENT;
                 const detailPageName = isCustomerView ? 'OrderDetailsPage' : 'SaleDetailsPage';
@@ -408,6 +428,16 @@ const HomeNextSteps = props => {
                                   year: 'numeric',
                                 })
                               : '—'}
+                          </div>
+                          <div
+                            className={`${css.offerCardStatus} ${
+                              needsUserAction ? css.offerCardStatusPending : css.offerCardStatusAccepted
+                            }`}
+                          >
+                            <FormattedMessage
+                              id={activityStatusId}
+                              values={{ name: otherPartyName }}
+                            />
                           </div>
                           {showPayCta && isCustomerView ? (
                             <div className={css.offerCardStatusRow}>

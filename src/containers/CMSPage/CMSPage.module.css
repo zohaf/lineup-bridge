@@ -328,6 +328,10 @@
   align-self: center;
 }
 
+.offerCardStatusRow .offerCardStatus {
+  margin-left: 10px;
+}
+
 .offerCardStatusPending {
   color: var(--colorAttentionDark);
   background-color: var(--colorAttentionSubtle);
