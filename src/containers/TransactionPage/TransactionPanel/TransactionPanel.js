@@ -287,7 +287,8 @@ export class TransactionPanelComponent extends Component {
               listingId={listing?.id?.uuid}
               listingTitle={listingTitle}
               listingDeleted={listingDeleted}
-              titleMessageId={headingTitleMessageId}
+              titleMessageId={stateData.headingTitleMessageId || headingTitleMessageId}
+              extraInfoMessageId={stateData.extraInfoMessageId}
             />
 
             {requestQuote}

@@ -50,6 +50,15 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
   const hasCustomerFinalOffer = transaction?.attributes?.transitions?.some(
     transition => transition.transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER
   );
+  const latestTransition = transaction?.attributes?.transitions?.at(-1)?.transition;
+  const isDjFinalOfferAccepted =
+    isDjUser &&
+    hasCustomerFinalOffer &&
+    latestTransition === transitions.PROVIDER_ACCEPT_COUNTER_OFFER;
+  const isDjFinalOfferRejected =
+    isDjUser &&
+    hasCustomerFinalOffer &&
+    latestTransition === transitions.PROVIDER_REJECT_COUNTER_OFFER;
 
   // These overwrite the default transition messages on the ActivityFeed component.
   // The defaults are tied to the process state.
@@ -246,6 +255,16 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showActionButtons: false,
+        ...(isDjFinalOfferAccepted || isDjFinalOfferRejected
+          ? {
+              headingTitleMessageId: `TransactionPage.default-negotiation.provider.finalOffer.${
+                isDjFinalOfferAccepted ? 'accepted' : 'rejected'
+              }.title`,
+              extraInfoMessageId: `TransactionPage.default-negotiation.provider.finalOffer.${
+                isDjFinalOfferAccepted ? 'accepted' : 'rejected'
+              }.extraInfo`,
+            }
+          : {}),
       };
     })
     .cond([states.UPDATE_PENDING, CUSTOMER], () => {
