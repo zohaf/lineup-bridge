@@ -15,7 +15,6 @@ import {
   ExternalLink,
   InlineTextButton,
   NamedLink,
-  NotificationBadge,
 } from '../../../../components';
 
 import css from './TopbarMobileMenu.module.css';
@@ -76,9 +75,7 @@ const TopbarMobileMenu = props => {
   const {
     isAuthenticated,
     currentPage,
-    inboxTab,
     currentUser,
-    notificationCount = 0,
     customLinks,
     onLogout,
     showCreateListingsLink,
@@ -147,11 +144,6 @@ const TopbarMobileMenu = props => {
     );
   }
 
-  const notificationCountBadge =
-    notificationCount > 0 ? (
-      <NotificationBadge className={css.notificationBadge} count={notificationCount} />
-    ) : null;
-
   const displayName = user.attributes.profile.firstName;
   const currentPageClass = page => {
     const isAccountSettingsPage =
@@ -186,12 +178,6 @@ const TopbarMobileMenu = props => {
         </InlineTextButton>
 
         <ul className={css.accountLinksWrapper}>
-          <li className={classNames(css.inbox, currentPageClass(`InboxPage:${inboxTab}`))}>
-            <NamedLink name="InboxPage" params={{ tab: inboxTab }}>
-              <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-              {notificationCountBadge}
-            </NamedLink>
-          </li>
           {primaryAccountLinkMaybe}
           <li className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}>
             <NamedLink name="AccountSettingsPage">

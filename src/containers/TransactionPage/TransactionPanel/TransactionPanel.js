@@ -22,6 +22,7 @@ import DeliveryInfoMaybe from './DeliveryInfoMaybe';
 import BookingLocationMaybe from './BookingLocationMaybe';
 import DiminishedActionButtonMaybe from './DiminishedActionButtonMaybe';
 import PanelHeading from './PanelHeading';
+import FeedSection from './FeedSection';
 
 import css from './TransactionPanel.module.css';
 
@@ -343,6 +344,16 @@ export class TransactionPanelComponent extends Component {
               <div className={css.offerSummaryMobileOnly}>{offerSummarySlot}</div>
             )}
             {offerDetailsSlot}
+            {minimalPostBookingSuccess || stateData?.processName === NEGOTIATION_PROCESS_NAME ? null : (
+              <FeedSection
+                rootClassName={css.feedContainer}
+                hasMessages={messages.length > 0}
+                hasTransitions={hasTransitions}
+                fetchMessagesError={fetchMessagesError}
+                activityFeed={activityFeed}
+                isConversation={isInquiryProcess}
+              />
+            )}
             {minimalPostBookingSuccess || stateData?.processName === NEGOTIATION_PROCESS_NAME
               ? null
               : showSendMessageForm

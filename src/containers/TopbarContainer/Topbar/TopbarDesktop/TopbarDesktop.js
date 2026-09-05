@@ -40,23 +40,6 @@ const LoginLink = () => {
   );
 };
 
-const InboxLink = ({ notificationCount, inboxTab }) => {
-  const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
-  return (
-    <NamedLink
-      id="inbox-link"
-      className={css.topbarLink}
-      name="InboxPage"
-      params={{ tab: inboxTab }}
-    >
-      <span className={css.topbarLinkLabel}>
-        <FormattedMessage id="TopbarDesktop.inbox" />
-        {notificationDot}
-      </span>
-    </NamedLink>
-  );
-};
-
 const FindDjLink = () => {
   return (
     <NamedLink id="find-dj-link" name="SearchPage" className={css.topbarLink}>
@@ -155,7 +138,6 @@ const TopbarDesktop = props => {
     currentUser,
     currentPage,
     rootClassName,
-    notificationCount = 0,
     intl,
     isAuthenticated,
     onLogout,
@@ -164,7 +146,6 @@ const TopbarDesktop = props => {
     initialSearchFormValues = {},
     showSearchForm,
     showCreateListingsLink,
-    inboxTab,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -178,10 +159,6 @@ const TopbarDesktop = props => {
 
   const giveSpaceForSearch = customLinks == null || customLinks?.length === 0;
   const classes = classNames(rootClassName || css.root, className);
-
-  const inboxLinkMaybe = authenticatedOnClientSide ? (
-    <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
-  ) : null;
 
   const profileMenuMaybe = authenticatedOnClientSide ? (
     <ProfileMenu
@@ -241,7 +218,6 @@ const TopbarDesktop = props => {
         showCreateListingsLink={showCreateListingsLink}
       />
 
-      {inboxLinkMaybe}
       {findDjLinkMaybe}
       {profileMenuMaybe}
       {signupLinkMaybe}
