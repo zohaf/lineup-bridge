@@ -1493,6 +1493,8 @@
   "TransactionPage.default-negotiation.provider.offer-pending.title": "Du hast ein Angebot angenommen.",
   "TransactionPage.default-negotiation.provider.offer-rejected.title": "Das Angebot wurde abgelehnt.",
   "TransactionPage.default-negotiation.provider.pending-payment.title": "Die Zahlung wurde noch nicht bestätigt.",
+  "TransactionPage.default-negotiation.provider.finalOffer.accept": "Letztes Angebot annehmen",
+  "TransactionPage.default-negotiation.provider.finalOffer.reject": "Letztes Angebot ablehnen",
   "TransactionPage.default-negotiation.provider.quote-requested.extraInfo": "",
   "TransactionPage.default-negotiation.provider.quote-requested.title": "{customerName} hat eine Buchungsanfrage gesendet",
   "TransactionPage.default-negotiation.provider.request-rejected.title": "Die Anfrage wurde abgelehnt.",

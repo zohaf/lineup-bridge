@@ -1475,6 +1475,8 @@
   "TransactionPage.default-negotiation.provider.offer-pending.title": "You just accepted an offer.",
   "TransactionPage.default-negotiation.provider.offer-rejected.title": "The offer was rejected.",
   "TransactionPage.default-negotiation.provider.pending-payment.title": "Payment hasn't been confirmed yet.",
+  "TransactionPage.default-negotiation.provider.finalOffer.accept": "Accept final offer",
+  "TransactionPage.default-negotiation.provider.finalOffer.reject": "Reject final offer",
   "TransactionPage.default-negotiation.provider.quote-requested.extraInfo": "",
   "TransactionPage.default-negotiation.provider.quote-requested.title": "{customerName} sent a booking request",
   "TransactionPage.default-negotiation.provider.request-rejected.title": "The request was rejected.",

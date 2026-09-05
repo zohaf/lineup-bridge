@@ -1495,6 +1495,8 @@
   "TransactionPage.default-negotiation.provider.offer-pending.title": "Acabas de aceptar una oferta.",
   "TransactionPage.default-negotiation.provider.offer-rejected.title": "La oferta fue rechazada.",
   "TransactionPage.default-negotiation.provider.pending-payment.title": "El pago aún no ha sido confirmado.",
+  "TransactionPage.default-negotiation.provider.finalOffer.accept": "Aceptar la oferta final",
+  "TransactionPage.default-negotiation.provider.finalOffer.reject": "Rechazar la oferta final",
   "TransactionPage.default-negotiation.provider.quote-requested.extraInfo": "",
   "TransactionPage.default-negotiation.provider.quote-requested.title": "{customerName} envió una solicitud de reserva",
   "TransactionPage.default-negotiation.provider.request-rejected.title": "La solicitud fue rechazada.",

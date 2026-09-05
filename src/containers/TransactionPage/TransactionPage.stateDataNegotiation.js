@@ -323,11 +323,17 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showActionButtons: true,
-        primaryButtonProps: actionButtonProps(transitions.PROVIDER_ACCEPT_COUNTER_OFFER, PROVIDER, {
-          ...(isDjUser && onOpenAcceptCounterOfferModal
-            ? { onAction: onOpenAcceptCounterOfferModal }
-            : {}),
-        }),
+        primaryButtonProps: actionButtonProps(
+          transitions.PROVIDER_ACCEPT_COUNTER_OFFER,
+          PROVIDER,
+          {
+            ...(isDjUser && onOpenAcceptCounterOfferModal
+              ? { onAction: onOpenAcceptCounterOfferModal }
+              : {}),
+            actionButtonTranslationId:
+              'TransactionPage.default-negotiation.provider.finalOffer.accept',
+          }
+        ),
         secondaryButtonProps: actionButtonProps(
           transitions.PROVIDER_REJECT_COUNTER_OFFER,
           PROVIDER,
@@ -336,6 +342,8 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
               actor: PROVIDER,
             },
             onAction: onOpenRejectCounterOfferModal,
+            actionButtonTranslationId:
+              'TransactionPage.default-negotiation.provider.finalOffer.reject',
           }
         ),
         actionButtonOrder: ['primary', 'secondary'],
