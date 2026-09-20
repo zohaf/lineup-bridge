@@ -161,6 +161,14 @@ const onMakeCounterOffer = (
   };
 
   const messageText = typeof counterOfferMessage === 'string' ? counterOfferMessage.trim() : '';
+  if (transactionRole === PROVIDER) {
+    params.protectedData = {
+      proposedChanges: {
+        proposedFee: counterOffer.amount / 100,
+        ...(messageText ? { proposedNotes: messageText } : {}),
+      },
+    };
+  }
 
   onTransition(currentTransactionId, transitionName, params)
     .then(r => {

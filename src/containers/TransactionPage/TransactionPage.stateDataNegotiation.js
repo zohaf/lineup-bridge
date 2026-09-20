@@ -52,8 +52,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
   const latestBusinessOffer = negotiationSummary.latestBusinessOffer;
   const customerViewingProviderCounterOffer =
     transactionRole === CUSTOMER &&
-    latestBusinessOffer?.by === PROVIDER.toLowerCase() &&
-    latestBusinessOffer?.transition === transitions.PROVIDER_MAKE_COUNTER_OFFER &&
+    latestBusinessOffer?.by === PROVIDER &&
     latestBusinessOfferType === 'counter-offer';
   const hasCustomerFinalOffer = latestBusinessOfferType === 'final-offer';
   const latestTransition = transaction?.attributes?.transitions?.at(-1)?.transition;

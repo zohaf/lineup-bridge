@@ -4,7 +4,6 @@ import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import {
   getBusinessOfferType,
   getLatestBusinessOffer,
-  transitions,
 } from '../../../transactions/transactionProcessNegotiation';
 import css from './OfferDetailsCard.module.css';
 
@@ -60,9 +59,7 @@ const OfferDetailsCard = props => {
   const latestBusinessOffer = getLatestBusinessOffer(transaction);
   const latestBusinessOfferType = getBusinessOfferType(latestBusinessOffer?.transition);
   const isReceivedDjCounterOffer =
-    latestBusinessOffer?.by === 'provider' &&
-    latestBusinessOffer?.transition === transitions.PROVIDER_MAKE_COUNTER_OFFER &&
-    latestBusinessOfferType === 'counter-offer';
+    latestBusinessOffer?.by === 'provider' && latestBusinessOfferType === 'counter-offer';
   const latestOfferAmount = latestBusinessOffer?.amount
     ? latestBusinessOffer.amount / 100
     : offerAmount;

@@ -101,6 +101,7 @@
    :actor :actor.role/provider,
    :actions
    [{:name :action/privileged-set-line-items}
+    {:name :action/update-protected-data}
     {:name :action/privileged-update-metadata}],
    :privileged? true}
   {:name :transition/provider-accept-counter-offer,
