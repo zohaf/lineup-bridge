@@ -3,21 +3,20 @@
 /* Desktop */
 .root {
   width: 100%;
-  min-height: var(--topbarHeightDesktop);
-  height: var(--topbarHeightDesktop);
+  height: auto;
 
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 12px;
+  padding: 12px;
 
   background-color: var(--colorPageBackground);
   box-shadow: none;
 
   @media (--viewportLarge) {
-    padding: 0 24px;
+    padding: 12px 24px;
   }
 }
 
@@ -51,9 +50,10 @@
   margin: 0 !important;
 }
 
-/* Half-height logo in header */
+/* Match the footer logo size on desktop. */
 .topbarLogoImageHalf {
-  max-height: calc(var(--topbarHeightDesktop) / 2) !important;
+  max-height: 96px !important;
+  max-width: 247px !important;
   width: auto;
 }
 

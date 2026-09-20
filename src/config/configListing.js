@@ -53,6 +53,23 @@
  *   - requiredMessage (optional):    Message for those fields, which are mandatory.
  */
 export const listingFields = [
+  {
+    key: 'genre',
+    scope: 'public',
+    schemaType: 'multi-enum',
+    enumOptions: [{ option: 'melodic-techno', label: 'Melodic techno' }],
+    filterConfig: {
+      showFilter: true,
+      group: 'primary',
+    },
+    showConfig: {
+      label: 'Genre',
+    },
+    saveConfig: {
+      label: 'Genre',
+      isRequired: false,
+    },
+  },
   // {
   //   "scope": "public",
   //   "label": "Gears",
@@ -222,7 +239,7 @@ export const listingFields = [
       isDetail: true,
     },
     saveConfig: {
-      label: 'Website',
+      label: 'Website (optional)',
       placeholderMessage: 'https://your-site.com',
       isRequired: false,
       multiline: false,
@@ -237,7 +254,7 @@ export const listingFields = [
       isDetail: true,
     },
     saveConfig: {
-      label: 'Spotify',
+      label: 'Spotify (optional)',
       placeholderMessage: 'https://open.spotify.com/artist/...',
       isRequired: false,
       multiline: false,
@@ -254,7 +271,7 @@ export const listingFields = [
     saveConfig: {
       label: 'Resident Advisor',
       placeholderMessage: 'https://ra.co/dj/...',
-      isRequired: false,
+      isRequired: true,
       multiline: false,
     },
   },
@@ -267,7 +284,7 @@ export const listingFields = [
       isDetail: true,
     },
     saveConfig: {
-      label: 'SoundCloud',
+      label: 'SoundCloud (optional)',
       placeholderMessage: 'https://soundcloud.com/...',
       isRequired: false,
       multiline: false,
@@ -282,7 +299,7 @@ export const listingFields = [
       isDetail: true,
     },
     saveConfig: {
-      label: 'Instagram',
+      label: 'Instagram (optional)',
       placeholderMessage: '@handle or profile URL',
       isRequired: false,
       multiline: false,

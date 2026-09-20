@@ -128,13 +128,11 @@
 .feeInfo {
   composes: marketplaceTinyFontStyles from global;
   flex-shrink: 0;
-  margin: 0;
+  margin: 24px 0 0;
   color: var(--colorGrey600);
-  padding-top: 4px;
-  padding-bottom: 14px;
+  padding: 0;
+}
 
-  @media (--viewportMedium) {
-    padding-top: 11px;
-    padding-bottom: 21px;
-  }
+.feeInfo + .feeInfo {
+  margin-top: 8px;
 }

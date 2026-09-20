@@ -514,7 +514,7 @@ export class SearchPageComponent extends Component {
 
     const resultsSearchFields = {
       categories: false,
-      dateRange: true,
+      dateRange: false,
       keywordSearch: isKeywordSearch,
       locationSearch: !isKeywordSearch,
     };

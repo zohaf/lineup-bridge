@@ -1,7 +1,11 @@
 import React from 'react';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
-import { getLatestBusinessOffer } from '../../../transactions/transactionProcessNegotiation';
+import {
+  getBusinessOfferType,
+  getLatestBusinessOffer,
+  transitions,
+} from '../../../transactions/transactionProcessNegotiation';
 import css from './OfferDetailsCard.module.css';
 
 /**
@@ -53,6 +57,11 @@ const OfferDetailsCard = props => {
   );
 
   const latestBusinessOffer = getLatestBusinessOffer(transaction);
+  const latestBusinessOfferType = getBusinessOfferType(latestBusinessOffer?.transition);
+  const isReceivedDjCounterOffer =
+    latestBusinessOffer?.by === 'provider' &&
+    latestBusinessOffer?.transition === transitions.MAKE_OFFER_FROM_REQUEST &&
+    latestBusinessOfferType === 'counter-offer';
   const latestOfferAmount = latestBusinessOffer?.amount
     ? latestBusinessOffer.amount / 100
     : offerAmount;
@@ -62,8 +71,7 @@ const OfferDetailsCard = props => {
   const displayedDurationHours = !showProposedChanges
     ? proposedChanges?.proposedDuration || durationHours
     : durationHours;
-  const hasProposedChanges =
-    showProposedChanges && proposedChanges && Object.keys(proposedChanges).length > 0;
+  const hasProposedChanges = showProposedChanges && isReceivedDjCounterOffer;
 
   const formatDate = dateStr => {
     if (!dateStr) return notProvided;

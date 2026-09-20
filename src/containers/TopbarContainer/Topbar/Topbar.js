@@ -342,6 +342,12 @@ const TopbarComponent = props => {
           {}
         )
       : null;
+    const newPublicProfilePath = createResourceLocatorString(
+      'NewListingPage',
+      routeConfiguration,
+      {},
+      {}
+    );
 
     // Pick "best" listing: published > pendingApproval > draft.
     return onQueryOwnListings({ page: 1, perPage: 20 })
@@ -355,9 +361,9 @@ const TopbarComponent = props => {
         const chosen = firstPublished || firstPending || firstDraft;
 
         const url = chosen ? createOwnListingURL(chosen) : null;
-        history.push(url || publicProfilePath);
+        history.push(url || newPublicProfilePath || publicProfilePath);
       })
-      .catch(() => history.push(publicProfilePath));
+        .catch(() => history.push(newPublicProfilePath || publicProfilePath));
   };
 
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;

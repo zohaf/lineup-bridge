@@ -5,7 +5,8 @@
 
   /* Top Bar's drop shadow should always be visible */
   z-index: var(--zIndexTopbar);
-  position: relative;
+  position: sticky;
+  top: 0;
 }
 
 /* Skip to main content link - visually hidden until focused */
@@ -68,15 +69,15 @@
   margin: 0 !important;
 }
 
-/* Half-size logo in mobile header (< viewportLarge) */
+/* Match the footer logo size in the mobile header. */
 .topbarMobileLogoHalf {
-  max-height: calc(var(--topbarHeight) / 2) !important;
+  max-height: 48px !important;
   width: auto;
 }
 
 @media (--viewportMedium) {
   .topbarMobileLogoHalf {
-    max-height: calc(var(--topbarHeightDesktop) / 2) !important;
+    max-height: 96px !important;
   }
 }
 

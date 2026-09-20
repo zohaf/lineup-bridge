@@ -48,14 +48,15 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     actionButtonProps,
   } = processInfo;
   const negotiationSummary = getNegotiationSummary(transaction);
-  const hasCustomerFinalOffer = negotiationSummary.latestBusinessOfferType === 'final-offer';
+  const latestBusinessOfferType = negotiationSummary.latestBusinessOfferType;
+  const hasCustomerFinalOffer = latestBusinessOfferType === 'final-offer';
   const latestTransition = transaction?.attributes?.transitions?.at(-1)?.transition;
   const isDjFinalOfferAccepted =
-    isDjUser &&
+    transactionRole === PROVIDER &&
     hasCustomerFinalOffer &&
     latestTransition === transitions.PROVIDER_ACCEPT_COUNTER_OFFER;
   const isDjFinalOfferRejected =
-    isDjUser &&
+    transactionRole === PROVIDER &&
     hasCustomerFinalOffer &&
     latestTransition === transitions.PROVIDER_REJECT_COUNTER_OFFER;
   const isCustomerFinalOfferAccepted =
@@ -276,6 +277,14 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showOfferDetailsCard: isDjFinalOfferAccepted,
         showAgreedOfferDetails: isDjFinalOfferAccepted,
         showActionButtons: false,
+        ...(latestBusinessOfferType === 'counter-offer'
+          ? {
+              headingTitleMessageId:
+                'TransactionPage.default-negotiation.provider.counterOfferSent.title',
+              extraInfoMessageId:
+                'TransactionPage.default-negotiation.provider.counterOfferSent.extraInfo',
+            }
+          : {}),
         ...(isDjFinalOfferAccepted || isDjFinalOfferRejected
           ? {
               headingTitleMessageId: `TransactionPage.default-negotiation.provider.finalOffer.${
@@ -327,6 +336,14 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showActionButtons: true,
+        ...(hasCustomerFinalOffer
+          ? {
+              headingTitleMessageId:
+                'TransactionPage.default-negotiation.customer.finalOfferPending.title',
+              extraInfoMessageId:
+                'TransactionPage.default-negotiation.customer.finalOfferPending.extraInfo',
+            }
+          : {}),
         secondaryButtonProps: actionButtonProps(
           transitions.PROVIDER_WITHDRAW_FROM_UPDATE_PENDING,
           PROVIDER

@@ -1380,13 +1380,52 @@ const mergeListingConfig = (hostedConfig, defaultConfigs, categoriesInUse) => {
   const listingTypes = mergeTypesAndFieldsForDebugging
     ? union(hostedListingTypes, defaultListingTypes, 'listingType')
     : hostedListingTypes;
-  const listingFields = union(hostedListingFields, defaultListingFields, 'key');
+  const listingFields = union(hostedListingFields, defaultListingFields, 'key').map(field => {
+    if (field.key !== 'genre') {
+      return field;
+    }
+
+    const hostedGenreField = hostedListingFields.find(hostedField => hostedField.key === 'genre');
+    const defaultGenreField = defaultListingFields.find(defaultField => defaultField.key === 'genre');
+    const enumOptions = [
+      ...(hostedGenreField?.enumOptions || []),
+      ...(defaultGenreField?.enumOptions || []),
+    ]
+      .filter(option => !/experimental/i.test(`${option.option} ${option.label}`))
+      .filter(
+        (option, index, options) =>
+          options.findIndex(candidate => candidate.option === option.option) === index
+      )
+      .sort((first, second) =>
+        `${first.label}`.localeCompare(`${second.label}`, undefined, { sensitivity: 'base' })
+      );
+
+    return {
+      ...(hostedGenreField || field),
+      enumOptions,
+    };
+  });
+
+  const linkFieldOrder = new Map([
+    ['residentAdvisorProfile', 0],
+    ['website', 1],
+    ['soundcloud', 2],
+    ['spotify', 3],
+    ['instagram', 4],
+  ]);
+  const orderedLinkFields = listingFields
+    .filter(field => linkFieldOrder.has(field.key))
+    .sort((first, second) => linkFieldOrder.get(first.key) - linkFieldOrder.get(second.key));
+  let linkFieldIndex = 0;
+  const orderedListingFields = listingFields.map(field =>
+    linkFieldOrder.has(field.key) ? orderedLinkFields[linkFieldIndex++] : field
+  );
 
   const listingTypesInUse = listingTypes.map(lt => `${lt.listingType}`);
 
   return {
     ...rest,
-    listingFields: validListingFields(listingFields, listingTypesInUse, categoriesInUse),
+    listingFields: validListingFields(orderedListingFields, listingTypesInUse, categoriesInUse),
     listingTypes: validListingTypes(listingTypes),
     enforceValidListingType: defaultConfigs.listing.enforceValidListingType,
   };

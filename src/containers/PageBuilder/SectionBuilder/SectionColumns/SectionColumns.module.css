@@ -21,8 +21,11 @@
 
 .twoColumns {
   composes: baseColumn;
+  max-width: 1000px;
+  gap: 40px;
+  padding: 0 24px;
   @media (--viewportMedium) {
-    grid-template-columns: repeat(2, calc((100% - 32px) / 2));
+    grid-template-columns: repeat(2, calc((100% - 40px) / 2));
   }
 }
 .threeColumns {

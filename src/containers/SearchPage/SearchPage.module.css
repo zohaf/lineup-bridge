@@ -30,9 +30,9 @@
 
   @media (--viewportMedium) {
     position: relative;
-    padding-top: var(--topbarHeightDesktop);
-    min-height: calc(100vh - var(--topbarHeightDesktop));
-    scroll-margin-top: var(--topbarHeightDesktop);
+    padding-top: 120px;
+    min-height: calc(100vh - 120px);
+    scroll-margin-top: 120px;
   }
 }
 

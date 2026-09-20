@@ -328,21 +328,10 @@
 
 :global(main#main-content section[data-section-type='columns']:last-of-type .pbBlockContainer > *) {
   background-color: var(--colorWhite);
-  border-radius: var(--borderRadiusMedium);
-  padding: 18px;
+  border-radius: 12px;
+  padding: 40px 32px;
   box-shadow: var(--boxShadowLight);
   height: 100%;
-}
-
-@media (--viewportMedium) {
-  :global(
-      main#main-content
-        section[data-section-type='columns']:last-of-type
-        .pbBlockContainer
-        > *
-    ) {
-    padding: 24px;
-  }
 }
 
 :global(section#how-it-works .pbBlockContainer > *),

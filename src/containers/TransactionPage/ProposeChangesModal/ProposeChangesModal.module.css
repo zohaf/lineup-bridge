@@ -115,7 +115,7 @@
   @media (--viewportMedium) {
     display: inline-block;
     width: 100%;
-    margin-top: 36px;
+    margin-top: 24px;
     margin-bottom: 0;
   }
 }

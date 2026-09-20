@@ -15,6 +15,7 @@ const pageDataLoadingAPI = getPageDataLoadingAPI();
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
+const ContactPage = loadable(() => import(/* webpackChunkName: "ContactPage" */ '../containers/ContactPage/ContactPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
 const DjProfileGuidelinesPage = loadable(() => import(/* webpackChunkName: "DjProfileGuidelinesPage" */ '../containers/DjProfileGuidelinesPage/DjProfileGuidelinesPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
@@ -68,19 +69,24 @@ const RedirectToLandingPage = () => <NamedRedirect name="LandingPage" />;
 const routeConfiguration = (layoutConfig, accessControlConfig) => {
   const isSearchPageWithMap = layoutConfig.searchPage?.variantType === 'map';
   const SearchPage = isSearchPageWithMap ? SearchPageWithMap : SearchPageWithGrid;
-  const ListingPage = layoutConfig.listingPage?.variantType === 'carousel' 
-    ? ListingPageCarousel 
+  const ListingPage = layoutConfig.listingPage?.variantType === 'carousel'
+    ? ListingPageCarousel
     : ListingPageCoverPhoto;
 
   const isPrivateMarketplace = accessControlConfig?.marketplace?.private === true;
   const authForPrivateMarketplace = isPrivateMarketplace ? { auth: true } : {};
-  
+
   return [
     {
       path: '/',
       name: 'LandingPage',
       component: LandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
+    },
+    {
+      path: '/p/contact',
+      name: 'ContactPage',
+      component: ContactPage,
     },
     {
       path: '/p/:pageId',

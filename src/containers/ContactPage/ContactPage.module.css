@@ -1,0 +1,43 @@
+@import '../../styles/customMediaQueries.css';
+
+.page :global(section#contact .sectionDetails),
+.page :global(section#contact .pbBlockContainer) {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: 12%;
+}
+
+.page :global(section#contact .sectionDetails) {
+  text-align: center;
+}
+
+.page :global(section#contact .pbSectionTitle) {
+  font-size: 32px;
+  line-height: 1.33;
+}
+
+.page :global(section#contact .pbSectionTitle),
+.page :global(section#contact .pbSectionDescription),
+.page :global(section#contact .pbBlockContainer) {
+  justify-self: center;
+  text-align: center;
+}
+
+.page :global(section#contact .pbBlockContainer) {
+  padding-left: 0;
+  padding-right: 0;
+  text-align: center;
+}
+
+.page :global(section#contact .pbBlockContainer p) {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+@media (--viewportMedium) {
+  .page :global(section#contact .sectionDetails),
+  .page :global(section#contact .pbBlockContainer) {
+    margin-right: 16%;
+  }
+}

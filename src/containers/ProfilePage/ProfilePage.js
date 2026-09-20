@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
-import { REVIEW_TYPE_OF_PROVIDER, REVIEW_TYPE_OF_CUSTOMER, propTypes } from '../../util/types';
+import { propTypes } from '../../util/types';
 import {
   NO_ACCESS_PAGE_USER_PENDING_APPROVAL,
   NO_ACCESS_PAGE_VIEW_LISTINGS,
@@ -34,7 +34,6 @@ import { richText } from '../../util/richText';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import {
-  Heading,
   H2,
   H4,
   Page,
@@ -42,8 +41,6 @@ import {
   NamedLink,
   PrimaryButton,
   ListingCard,
-  Reviews,
-  ButtonTabNavHorizontal,
   LayoutSideNavigation,
   NamedRedirect,
   CustomExtendedDataSection,
@@ -59,7 +56,6 @@ import { createSlug } from '../../util/urlHelpers';
 
 import css from './ProfilePage.module.css';
 
-const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
 export const AsideContent = props => {
@@ -69,6 +65,17 @@ export const AsideContent = props => {
   const routes = useRouteConfiguration();
 
   const firstListing = Array.isArray(listings) && listings.length > 0 ? listings[0] : null;
+  const editPublicProfileLink = firstListing
+    ? {
+        name: 'EditListingPage',
+        params: {
+          id: firstListing.id.uuid,
+          slug: createSlug(firstListing.attributes?.title || 'listing'),
+          type: 'edit',
+          tab: 'details',
+        },
+      }
+    : { name: 'NewListingPage' };
 
   const [bookingDate, setBookingDate] = useState(null);
   const [bookingStartTime, setBookingStartTime] = useState('');
@@ -116,10 +123,18 @@ export const AsideContent = props => {
       </H2>
       {showLinkToContactDetailsPage ? (
         <>
-          <NamedLink className={css.editLinkMobile} name="ContactDetailsPage">
+          <NamedLink
+            className={css.editLinkMobile}
+            name={editPublicProfileLink.name}
+            params={editPublicProfileLink.params}
+          >
             <FormattedMessage id="ProfilePage.editProfileLinkMobile" />
           </NamedLink>
-          <NamedLink className={css.editLinkDesktop} name="ContactDetailsPage">
+          <NamedLink
+            className={css.editLinkDesktop}
+            name={editPublicProfileLink.name}
+            params={editPublicProfileLink.params}
+          >
             <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
           </NamedLink>
         </>
@@ -197,110 +212,6 @@ export const AsideContent = props => {
   );
 };
 
-export const ReviewsErrorMaybe = props => {
-  const { queryReviewsError } = props;
-  return queryReviewsError ? (
-    <p className={css.error}>
-      <FormattedMessage id="ProfilePage.loadingReviewsFailed" />
-    </p>
-  ) : null;
-};
-
-export const MobileReviews = props => {
-  const { reviews, queryReviewsError } = props;
-  const reviewsOfProvider = reviews.filter(r => r.attributes.type === REVIEW_TYPE_OF_PROVIDER);
-  const reviewsOfCustomer = reviews.filter(r => r.attributes.type === REVIEW_TYPE_OF_CUSTOMER);
-  return (
-    <div className={css.mobileReviews}>
-      <H4 as="h2" className={css.mobileReviewsTitle}>
-        <FormattedMessage
-          id="ProfilePage.reviewsFromMyCustomersTitle"
-          values={{ count: reviewsOfProvider.length }}
-        />
-      </H4>
-      <ReviewsErrorMaybe queryReviewsError={queryReviewsError} />
-      <Reviews reviews={reviewsOfProvider} />
-      <H4 as="h2" className={css.mobileReviewsTitle}>
-        <FormattedMessage
-          id="ProfilePage.reviewsAsACustomerTitle"
-          values={{ count: reviewsOfCustomer.length }}
-        />
-      </H4>
-      <ReviewsErrorMaybe queryReviewsError={queryReviewsError} />
-      <Reviews reviews={reviewsOfCustomer} />
-    </div>
-  );
-};
-
-export const DesktopReviews = props => {
-  const { reviews, queryReviewsError, userTypeRoles, intl } = props;
-  const { customer: isCustomerUserType, provider: isProviderUserType } = userTypeRoles;
-
-  const initialReviewState = !isProviderUserType
-    ? REVIEW_TYPE_OF_CUSTOMER
-    : REVIEW_TYPE_OF_PROVIDER;
-  const [showReviewsType, setShowReviewsType] = useState(initialReviewState);
-
-  const reviewsOfProvider = reviews.filter(r => r.attributes.type === REVIEW_TYPE_OF_PROVIDER);
-  const reviewsOfCustomer = reviews.filter(r => r.attributes.type === REVIEW_TYPE_OF_CUSTOMER);
-  const isReviewTypeProviderSelected = showReviewsType === REVIEW_TYPE_OF_PROVIDER;
-  const isReviewTypeCustomerSelected = showReviewsType === REVIEW_TYPE_OF_CUSTOMER;
-  const providerReviewsMaybe = isProviderUserType
-    ? [
-        {
-          text: (
-            <Heading as="h3" rootClassName={css.desktopReviewsTitle}>
-              <FormattedMessage
-                id="ProfilePage.reviewsFromMyCustomersTitle"
-                values={{ count: reviewsOfProvider.length }}
-              />
-            </Heading>
-          ),
-          selected: isReviewTypeProviderSelected,
-          onClick: () => setShowReviewsType(REVIEW_TYPE_OF_PROVIDER),
-        },
-      ]
-    : [];
-
-  const customerReviewsMaybe = isCustomerUserType
-    ? [
-        {
-          text: (
-            <Heading as="h3" rootClassName={css.desktopReviewsTitle}>
-              <FormattedMessage
-                id="ProfilePage.reviewsAsACustomerTitle"
-                values={{ count: reviewsOfCustomer.length }}
-              />
-            </Heading>
-          ),
-          selected: isReviewTypeCustomerSelected,
-          onClick: () => setShowReviewsType(REVIEW_TYPE_OF_CUSTOMER),
-        },
-      ]
-    : [];
-  const desktopReviewTabs = [...providerReviewsMaybe, ...customerReviewsMaybe];
-
-  return (
-    <div className={css.desktopReviews}>
-      <div className={css.desktopReviewsWrapper}>
-        <ButtonTabNavHorizontal
-          className={css.desktopReviewsTabNav}
-          tabs={desktopReviewTabs}
-          ariaLabel={intl.formatMessage({ id: 'ProfilePage.screenreader.reviewsNav' })}
-        />
-
-        <ReviewsErrorMaybe queryReviewsError={queryReviewsError} />
-
-        {isReviewTypeProviderSelected ? (
-          <Reviews reviews={reviewsOfProvider} />
-        ) : (
-          <Reviews reviews={reviewsOfCustomer} />
-        )}
-      </div>
-    </div>
-  );
-};
-
 export const CustomUserFields = props => {
   const { publicData, metadata, userFieldConfig, intl } = props;
 
@@ -360,34 +271,19 @@ export const CustomUserFields = props => {
 };
 
 export const MainContent = props => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const {
     userShowError,
     bio,
     displayName,
     listings,
     queryListingsError,
-    reviews = [],
-    queryReviewsError,
     publicData,
     metadata,
     userFieldConfig,
     intl,
-    hideReviews,
-    userTypeRoles,
   } = props;
 
   const hasListings = listings.length > 0;
-  const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;
-  const isMobileLayout =
-    mounted && hasMatchMedia
-      ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
-      : true;
-
   const hasBio = !!bio;
   const bioWithLinks = richText(bio, {
     linkify: true,
@@ -436,20 +332,6 @@ export const MainContent = props => {
           </ul>
         </div>
       ) : null}
-      {hideReviews ? null : isMobileLayout ? (
-        <MobileReviews
-          reviews={reviews}
-          queryReviewsError={queryReviewsError}
-          userTypeRoles={userTypeRoles}
-        />
-      ) : (
-        <DesktopReviews
-          reviews={reviews}
-          queryReviewsError={queryReviewsError}
-          userTypeRoles={userTypeRoles}
-          intl={intl}
-        />
-      )}
     </div>
   );
 };
@@ -466,8 +348,6 @@ export const MainContent = props => {
  * @param {propTypes.error} props.userShowError - The user show error
  * @param {propTypes.error} props.queryListingsError - The query listings error
  * @param {Array<propTypes.listing|propTypes.ownListing>} props.listings - The listings
- * @param {Array<propTypes.review>} props.reviews - The reviews
- * @param {propTypes.error} props.queryReviewsError - The query reviews error
  * @returns {JSX.Element} ProfilePageComponent
  */
 export const ProfilePageComponent = props => {
@@ -604,9 +484,7 @@ export const ProfilePageComponent = props => {
           publicData={publicData}
           metadata={metadata}
           userFieldConfig={userFields}
-          hideReviews={hasNoViewingRightsOnPrivateMarketplace}
           intl={intl}
-          userTypeRoles={userTypeRoles}
           {...rest}
         />
       </LayoutSideNavigation>
@@ -621,8 +499,6 @@ const mapStateToProps = state => {
     userShowError,
     queryListingsError,
     userListingRefs,
-    reviews = [],
-    queryReviewsError,
   } = state.ProfilePage;
   const userMatches = getMarketplaceEntities(state, [{ type: 'user', id: userId }]);
   const user = userMatches.length === 1 ? userMatches[0] : null;
@@ -640,8 +516,6 @@ const mapStateToProps = state => {
     userShowError,
     queryListingsError,
     listings: getMarketplaceEntities(state, userListingRefs),
-    reviews,
-    queryReviewsError,
   };
 };
 

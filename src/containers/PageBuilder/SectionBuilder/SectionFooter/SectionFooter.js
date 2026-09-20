@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import { LinkedLogo, NamedLink } from '../../../../components';
 
 import { FormattedMessage } from '../../../../util/reactIntl';
@@ -9,27 +8,7 @@ import BlockBuilder from '../../BlockBuilder';
 import SectionContainer from '../SectionContainer';
 import css from './SectionFooter.module.css';
 
-// The number of columns (numberOfColumns) affects styling
-
-const GRID_CONFIG = [
-  { contentCss: css.contentCol1, gridCss: css.gridCol1 },
-  { contentCss: css.contentCol2, gridCss: css.gridCol2 },
-  { contentCss: css.contentCol3, gridCss: css.gridCol3 },
-  { contentCss: css.contentCol4, gridCss: css.gridCol4 },
-];
 const MAX_MOBILE_SCREEN_WIDTH = 1024;
-
-const getIndex = numberOfColumns => numberOfColumns - 1;
-
-const getContentCss = numberOfColumns => {
-  const contentConfig = GRID_CONFIG[getIndex(numberOfColumns)];
-  return contentConfig ? contentConfig.contentCss : GRID_CONFIG[0].contentCss;
-};
-
-const getGridCss = numberOfColumns => {
-  const contentConfig = GRID_CONFIG[getIndex(numberOfColumns)];
-  return contentConfig ? contentConfig.gridCss : GRID_CONFIG[0].gridCss;
-};
 
 /**
  * @typedef {Object} SocialMediaLinkConfig
@@ -75,8 +54,6 @@ const SectionFooter = props => {
     sectionId,
     className,
     rootClassName,
-    numberOfColumns = 1,
-    socialMediaLinks = [],
     slogan,
     appearance,
     copyright,
@@ -89,14 +66,6 @@ const SectionFooter = props => {
   // E.g. { h1: { component: MyAwesomeHeader } }
   const fieldComponents = options?.fieldComponents;
   const fieldOptions = { fieldComponents };
-  const linksWithBlockId = socialMediaLinks?.map(sml => {
-    return {
-      ...sml,
-      blockId: sml.link.platform,
-    };
-  });
-
-  const showSocialMediaLinks = socialMediaLinks?.length > 0;
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;
   const isMobileLayout = hasMatchMedia
     ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
@@ -116,54 +85,35 @@ const SectionFooter = props => {
       options={fieldOptions}
     >
       <div className={css.footer}>
-        <div className={classNames(css.content, getContentCss(numberOfColumns))}>
-          <div className={css.brandingColumn}>
-            <div>
-              <LinkedLogo
-                rootClassName={css.logoLink}
-                logoClassName={css.logoWrapper}
-                logoImageClassName={css.logoImage}
-                linkToExternalSite={linkLogoToExternalSite}
-                layout={logoLayout}
-              />
-            </div>
-            <div className={css.sloganMobile}>
-              <Field data={slogan} className={css.slogan} />
-            </div>
+        <div className={css.logoRow}>
+          <LinkedLogo
+            rootClassName={css.logoLink}
+            logoClassName={css.logoWrapper}
+            logoImageClassName={css.logoImage}
+            linkToExternalSite={linkLogoToExternalSite}
+            layout={logoLayout}
+          />
+          <Field data={slogan} className={css.slogan} />
+        </div>
+        <div className={css.footerMetaRow}>
+          <div className={css.legalColumn}>
+            <BlockBuilder
+              blocks={blocks}
+              sectionId={sectionId}
+              options={options}
+              rootClassName={css.footerBlock}
+              textClassName={css.footerBlockText}
+            />
           </div>
-          <div className={classNames(css.grid, getGridCss(numberOfColumns))}>
-            <BlockBuilder blocks={blocks} sectionId={sectionId} options={options} />
-            <div className={css.footerContactLinkMobileWrap}>
-              <NamedLink
-                name="CMSPage"
-                params={{ pageId: 'contact' }}
-                className={css.footerContactLink}
-              >
-                <FormattedMessage id="SectionFooter.contactUs" />
-              </NamedLink>
-            </div>
-          </div>
-          <div className={css.detailsInfo}>
-            {showSocialMediaLinks ? (
-              <div className={css.icons}>
-                <BlockBuilder blocks={linksWithBlockId} sectionId={sectionId} options={options} />
-              </div>
-            ) : null}
-            <div className={css.copyrightMobileWrap}>
-              <Field data={copyright} className={css.copyright} />
-            </div>
-          </div>
-          <div className={css.footerMetaRow}>
-            <Field data={slogan} className={css.slogan} />
+          <div className={css.contactColumn}>
             <NamedLink
-              name="CMSPage"
-              params={{ pageId: 'contact' }}
+              name="ContactPage"
               className={css.footerContactLink}
             >
               <FormattedMessage id="SectionFooter.contactUs" />
             </NamedLink>
-            <Field data={copyright} className={css.copyright} />
           </div>
+          <Field data={copyright} className={css.copyright} />
         </div>
       </div>
     </SectionContainer>

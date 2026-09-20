@@ -227,13 +227,41 @@ exports.transactionLineItems = (listing, orderData, providerCommission, customer
     includeFor: ['customer', 'provider'],
   };
 
+  const customerCommissionLineItems = getCustomerCommissionMaybe(
+    customerCommission,
+    order,
+    currency
+  );
+  const customerCommissionLineItem = customerCommissionLineItems[0];
+  const customerCommissionAmount = customerCommissionLineItem
+    ? customerCommissionLineItem.quantity != null
+      ? customerCommissionLineItem.unitPrice.amount * customerCommissionLineItem.quantity
+      : Math.round(
+          (customerCommissionLineItem.unitPrice.amount * customerCommissionLineItem.percentage) /
+            100
+        )
+    : 0;
+  const vatAmount = Math.round(customerCommissionAmount * 0.21);
+  const vatLineItems =
+    vatAmount > 0
+      ? [
+          {
+            code: 'line-item/vat',
+            unitPrice: new Money(vatAmount, currency),
+            quantity: 1,
+            includeFor: ['customer'],
+          },
+        ]
+      : [];
+
   // Let's keep the base price (order) as first line item and provider and customer commissions as last.
   // Note: the order matters only if OrderBreakdown component doesn't recognize line-item.
   const lineItems = [
     order,
     ...extraLineItems,
     ...getProviderCommissionMaybe(providerCommission, order, currency),
-    ...getCustomerCommissionMaybe(customerCommission, order, currency),
+    ...customerCommissionLineItems,
+    ...vatLineItems,
   ];
 
   return lineItems;

@@ -3,7 +3,6 @@ import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import { PROFILE_PAGE_PENDING_APPROVAL_VARIANT } from '../../util/urlHelpers';
-import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers';
 
@@ -95,36 +94,6 @@ export const queryUserListings = (userId, config, ownProfileOnly = false) => dis
   return dispatch(queryUserListingsThunk({ userId, config, ownProfileOnly }));
 };
 
-//////////////////////////
-// Query User's Reviews //
-//////////////////////////
-const queryUserReviewsPayloadCreator = ({ userId }, { rejectWithValue, extra: sdk }) => {
-  return sdk.reviews
-    .query({
-      subject_id: userId,
-      state: 'public',
-      include: ['author', 'author.profileImage'],
-      'fields.image': ['variants.square-small', 'variants.square-small2x'],
-    })
-    .then(response => {
-      const reviews = denormalisedResponseEntities(response);
-      return reviews;
-    })
-    .catch(e => {
-      return rejectWithValue(storableError(e));
-    });
-};
-
-export const queryUserReviewsThunk = createAsyncThunk(
-  'ProfilePage/queryUserReviews',
-  queryUserReviewsPayloadCreator
-);
-
-// Backward compatible wrapper for the thunk
-export const queryUserReviews = userId => dispatch => {
-  return dispatch(queryUserReviewsThunk({ userId }));
-};
-
 // ================ Slice ================ //
 
 const initialState = {
@@ -132,8 +101,6 @@ const initialState = {
   userListingRefs: [],
   userShowError: null,
   queryListingsError: null,
-  reviews: [],
-  queryReviewsError: null,
 };
 
 const profilePageSlice = createSlice({
@@ -172,17 +139,6 @@ const profilePageSlice = createSlice({
         state.userListingRefs = [];
         state.queryListingsError = storableError(action.payload);
       })
-      // queryUserReviews cases
-      .addCase(queryUserReviewsThunk.pending, state => {
-        state.queryReviewsError = null;
-      })
-      .addCase(queryUserReviewsThunk.fulfilled, (state, action) => {
-        state.reviews = action.payload;
-      })
-      .addCase(queryUserReviewsThunk.rejected, (state, action) => {
-        state.reviews = [];
-        state.queryReviewsError = action.payload;
-      });
   },
 });
 
@@ -213,7 +169,6 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         return Promise.all([
           dispatch(showUser(userId, config)),
           dispatch(queryUserListings(userId, config)),
-          dispatch(queryUserReviews(userId)),
         ]);
       } else if (isCurrentUser(userId, currentUser)) {
         // Handle a scenario, where user (in pending-approval state)
@@ -255,6 +210,5 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
     dispatch(showUser(userId, config)),
     dispatch(queryUserListings(userId, config)),
-    dispatch(queryUserReviews(userId)),
   ]);
 };

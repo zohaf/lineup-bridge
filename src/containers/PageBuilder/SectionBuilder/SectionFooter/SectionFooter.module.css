@@ -16,8 +16,7 @@
   width: 100%;
   max-width: none;
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 32px;
+  gap: 24px;
   margin: 0;
   /* Same horizontal inset as `TopbarDesktop.module.css` `.root` */
   /* ~32px from last footer content to viewport bottom */
@@ -28,6 +27,14 @@
     padding-right: 24px;
     padding-bottom: 32px;
   }
+}
+
+.logoRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  justify-content: center;
 }
 
 .footer ul {
@@ -41,57 +48,39 @@
   padding-left: 12px;
 }
 
-.content {
-  display: grid;
-  /* Don't center the whole footer content block; align to container edges */
-  justify-content: stretch;
-  justify-items: stretch;
-  align-content: end;
-  grid-auto-rows: auto;
-  /* Tight vertical stack; logo→slogan gap is mostly from row-gap once `.logoWrapper` is collapsed */
-  row-gap: 4px;
-  column-gap: 32px;
-  grid-template-columns: 1fr;
-  grid-template-areas:
-    'branding'
-    'grid'
-    'links';
-}
-
-.brandingColumn {
-  grid-area: branding;
+.legalColumn,
+.contactColumn {
+  grid-column: 1;
+  min-width: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  align-self: stretch;
-  row-gap: 4px;
-  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.grid {
-  grid-area: grid;
-  display: grid;
-  /* Match right edge padding (no centering) */
-  justify-content: stretch;
-  justify-items: start;
-  align-content: start;
-  grid-auto-rows: auto;
-  grid-gap: 32px;
+.legalColumn {
+  justify-content: flex-start;
 }
 
-/* Contact below legal blocks on small screens only; desktop uses .footerMetaRow */
-.footerContactLinkMobileWrap {
-  grid-column: 1 / -1;
-  margin-top: 12px;
+.contactColumn {
+  justify-content: center;
+}
 
-  @media (--viewportLarge) {
-    display: none;
-  }
+.footerBlock {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.footerBlockText {
+  width: auto;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .footerContactLink {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: inherit;
+  line-height: inherit;
   font-weight: var(--fontWeightMedium);
   color: var(--colorGrey700);
   text-decoration: none;
@@ -104,35 +93,29 @@
 
 /* One row: slogan | Contact us | copyright (large screens only) */
 .footerMetaRow {
-  display: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  column-gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: initial;
+  font-size: 12px;
+  line-height: 18px;
 
-  @media (--viewportLarge) {
-    grid-area: meta;
-    display: grid;
-    grid-template-columns: var(--footerMetaCols, 1fr);
-    align-items: start;
-    column-gap: 32px;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 0;
-    padding-top: 12px;
-    border-top: none;
+  & * {
+    font-size: inherit;
+    line-height: inherit;
   }
 
-  /* Match the footer columns: (1) slogan aligns with logo column,
-     (2) contact aligns with Terms/Privacy column,
-     (3) copyright aligns with socials/copyright column */
-  & .slogan {
+  & .legalColumn {
     grid-column: 1;
-    min-width: 0;
-    text-align: left;
     justify-self: start;
   }
 
-  & .footerContactLink {
+  & .contactColumn {
     grid-column: 2;
-    justify-self: start;
-    white-space: nowrap;
+    justify-self: center;
   }
 
   & .copyright {
@@ -142,61 +125,15 @@
   }
 }
 
-.copyrightMobileWrap {
-  @media (--viewportLarge) {
-    display: none;
-  }
-}
-
-.gridCol1,
-.gridCol2,
-.gridCol3,
-.gridCol4 {
-  grid-template-columns: 1fr;
-}
-
-.detailsInfo {
-  grid-area: links;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-
-  @media (--viewportLarge) {
-    align-items: flex-end;
-    align-self: start;
-    justify-content: flex-start;
-    text-align: right;
-  }
-}
-
 .slogan {
   font-size: 16px;
   line-height: 24px;
 }
-.sloganMobile {
-  @media (--viewportLarge) {
-    display: none;
-  }
-}
-/* Slogan on large screens lives in .footerMetaRow only */
 
 .copyright {
   display: inline-block;
-  font-size: 14px;
-  line-height: 20px;
   color: var(--colorGrey600);
   margin-top: 0;
-}
-
-.icons {
-  margin-top: 0;
-}
-
-.icon {
-  font-size: 28px;
-  margin: 0 15px 0 0;
-  padding: 10px 15px;
 }
 
 .logoLink {
@@ -221,108 +158,16 @@
   width: auto;
   max-width: 100%;
   /* Keep footer logo same visual size as header logo */
-  max-height: calc(var(--topbarHeight) / 2);
+  max-height: 48px;
   object-fit: contain;
   object-position: center;
 
   @media (--viewportMedium) {
-    max-height: calc(var(--topbarHeightDesktop) / 2);
+    max-height: 96px;
   }
 
   @media (--viewportLarge) {
-    max-height: calc(var(--topbarHeightDesktop) / 2);
+    max-height: 96px;
   }
 }
 
-@media (min-width: 350px) {
-  .gridCol2,
-  .gridCol3,
-  .gridCol4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 600px) {
-  .gridCol3,
-  .gridCol4 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (--viewportMedium) {
-  .gridCol4 {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (--viewportLarge) {
-  .content {
-    /* Ensure second row sits at the top of its grid tracks */
-    align-content: start;
-  }
-
-  .detailsInfo {
-    grid-area: links;
-  }
-
-  /* Equal-height columns: stretch items to the row track height */
-  .contentCol1,
-  .contentCol2,
-  .contentCol3,
-  .contentCol4 {
-    align-content: stretch;
-    align-items: stretch;
-  }
-
-  .grid {
-    align-self: stretch;
-    min-height: 100%;
-    box-sizing: border-box;
-  }
-
-  /* Three equal-height columns: (1) logo + slogan (2) legal links + contact (3) socials + copyright */
-  .contentCol1 {
-    --footerMetaCols: minmax(0, 1.6fr) minmax(0, 2fr) minmax(0, 1.4fr);
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 2fr) minmax(0, 1.4fr);
-    grid-template-areas:
-      'branding grid links'
-      'meta meta meta';
-  }
-  .contentCol2 {
-    --footerMetaCols: minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
-    grid-template-areas:
-      'branding grid links'
-      'meta meta meta';
-  }
-  .contentCol3 {
-    --footerMetaCols: minmax(0, 1.5fr) minmax(0, 1.5fr) minmax(0, 1.3fr);
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.5fr) minmax(0, 1.3fr);
-    grid-template-areas:
-      'branding grid links'
-      'meta meta meta';
-  }
-  .contentCol4 {
-    --footerMetaCols: minmax(0, 1.4fr) minmax(0, 2.2fr) minmax(0, 1.4fr);
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 2.2fr) minmax(0, 1.4fr);
-    grid-template-areas:
-      'branding grid links'
-      'meta meta meta';
-  }
-
-  .gridCol1 {
-    grid-template-columns: 1fr;
-  }
-
-  .gridCol2 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .gridCol3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .gridCol4 {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}

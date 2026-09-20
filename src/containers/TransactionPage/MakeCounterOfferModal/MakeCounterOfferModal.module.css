@@ -30,9 +30,6 @@
 }
 
 .formRoot {
-  display: flex;
-  flex-direction: column;
-
   /* Layout: size and positioning */
   width: 100%;
   height: auto;
@@ -83,7 +80,7 @@
   @media (--viewportMedium) {
     display: inline-block;
     width: 100%;
-    margin-top: 36px;
+    margin-top: 24px;
     margin-bottom: 0;
   }
 }

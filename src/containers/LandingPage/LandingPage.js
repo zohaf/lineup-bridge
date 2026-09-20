@@ -14,16 +14,68 @@ import { fetchFeaturedListings } from '../../ducks/featuredListings.duck';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { getFeaturedListingsProps } from '../../util/data';
 
+import css from './LandingPage.module.css';
+
+const isHowItWorksSection = section =>
+  section?.sectionId === 'how-it-works' || section?.sectionName?.toLowerCase() === 'how it works';
+
+const addLandingTitleBreak = title => {
+  if (!title?.content) {
+    return title;
+  }
+
+  const content = title.content.replace(/\s*-\s*without\b/, '\nwithout');
+  return content === title.content ? title : { ...title, content };
+};
+
+const removeLandingDatePicker = section => {
+  const callToAction = section?.callToAction;
+  if (!callToAction?.searchFields) {
+    return section;
+  }
+
+  return {
+    ...section,
+    callToAction: {
+      ...callToAction,
+      searchFields: {
+        ...callToAction.searchFields,
+        dateRange: false,
+      },
+    },
+  };
+};
+
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
 
 export const LandingPageComponent = props => {
   const { pageAssetsData, inProgress, error } = props;
+  const landingPageData = pageAssetsData?.[camelize(ASSET_NAME)]?.data;
+  const pageAssetsDataWithoutHowItWorks = landingPageData
+    ? {
+        ...landingPageData,
+        sections: landingPageData.sections?.filter(section => !isHowItWorksSection(section)),
+      }
+    : landingPageData;
+  const sectionsWithLandingTitleBreak = pageAssetsDataWithoutHowItWorks?.sections?.map(
+    (section, index) => {
+      const sectionWithoutDatePicker = removeLandingDatePicker(section);
+      return index === 0
+        ? { ...sectionWithoutDatePicker, title: addLandingTitleBreak(section.title) }
+        : sectionWithoutDatePicker;
+    }
+  );
+  const pageAssetsDataForLanding = pageAssetsDataWithoutHowItWorks
+    ? { ...pageAssetsDataWithoutHowItWorks, sections: sectionsWithLandingTitleBreak }
+    : pageAssetsDataWithoutHowItWorks;
 
   return (
     <PageBuilder
-      pageAssetsData={pageAssetsData?.[camelize(ASSET_NAME)]?.data}
+      pageAssetsData={pageAssetsDataForLanding}
+      className={css.landingPage}
+      title="lineupBridge"
       inProgress={inProgress}
       error={error}
       fallbackPage={<FallbackPage error={error} />}

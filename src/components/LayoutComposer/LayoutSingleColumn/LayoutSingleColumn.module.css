@@ -12,6 +12,7 @@
 
 .main {
   display: grid;
+  padding-top: 12px;
   scroll-margin-top: var(--topbarHeight);
 
   @media (--viewportMedium) {

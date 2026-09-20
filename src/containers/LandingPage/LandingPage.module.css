@@ -1,0 +1,63 @@
+@import '../../styles/customMediaQueries.css';
+
+.landingPage :global(main#main-content section:first-child) .pbSectionDescription {
+  margin-top: 0;
+}
+
+.landingPage :global(main#main-content) .pbSectionTitle {
+  white-space: pre-line;
+}
+
+.landingPage :global(main#main-content section[data-section-type='columns']) .pbBlockContainer {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.landingPage :global(main#main-content) {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.landingPage :global(main#main-content section:nth-of-type(2)) {
+  background-color: var(--colorBlack);
+}
+
+.landingPage :global(main#main-content section:first-child),
+.landingPage :global(main#main-content section:nth-of-type(2)) {
+  height: calc(100vh - var(--topbarHeight));
+  min-height: calc(100vh - var(--topbarHeight));
+}
+
+.landingPage :global(main#main-content section:first-child),
+.landingPage :global(main#main-content section:nth-of-type(2)) {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landingPage :global(main#main-content section:first-child) > div:last-child,
+.landingPage :global(main#main-content section:nth-of-type(2)) > div:last-child {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.landingPage :global(main#main-content section:nth-of-type(2)) :global(.pbSectionTitle),
+.landingPage :global(main#main-content section:nth-of-type(2)) :global(.pbSectionDescription) {
+  color: #ffffff !important;
+}
+
+@media (--viewportMedium) {
+  .landingPage :global(main#main-content section:first-child),
+  .landingPage :global(main#main-content section:nth-of-type(2)) {
+    height: calc(100vh - var(--topbarHeightDesktop));
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+  }
+}

@@ -177,6 +177,21 @@
   width: 100%;
 }
 
+.ownProfileMessage {
+  composes: marketplaceDefaultFontStyles from global;
+  width: 100%;
+  margin-top: 18px;
+  padding: 18px;
+  border: solid 1px var(--colorGrey100);
+  border-radius: 8px;
+  color: var(--colorGrey700);
+
+  @media (--viewportLarge) {
+    margin-top: 24px;
+    padding: 24px;
+  }
+}
+
 .desktopHeading {
   display: none;
 
@@ -275,41 +290,6 @@
   }
 }
 
-.mobileReviewsTitle {
-  margin: 24px 0 26px 0;
-}
-
-.mobileReviews {
-  border-top: 1px solid var(--colorGrey100);
-  margin-bottom: 36px;
-}
-
-.desktopReviews {
-  border-top: 1px solid var(--colorGrey100);
-
-  @media (--viewportMedium) {
-    margin-bottom: 48px;
-  }
-
-  @media (--viewportLarge) {
-    margin-bottom: 0;
-  }
-}
-
-.desktopReviewsWrapper {
-  max-width: 600px;
-  margin-top: 28px;
-}
-
-.desktopReviewsTitle {
-  composes: textLarge from global;
-  margin-bottom: 0;
-}
-
-.desktopReviewsTabNav {
-  margin-bottom: 32px;
-}
-
 .sectionText {
   padding: 0 24px;
   margin-bottom: 30px;
@@ -320,8 +300,8 @@
   }
 }
 
-/* 
- * Custom field component classes 
+/*
+ * Custom field component classes
  */
 
 .sectionHeading {

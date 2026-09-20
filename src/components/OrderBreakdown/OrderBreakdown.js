@@ -6,6 +6,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
+import { formatMoney } from '../../util/currency';
 import {
   DATE_TYPE_DATE,
   DATE_TYPE_DATETIME,
@@ -14,6 +15,7 @@ import {
   LINE_ITEM_FIXED,
   LINE_ITEM_HOUR,
   LINE_ITEM_PROVIDER_COMMISSION,
+  LINE_ITEM_VAT,
   LISTING_UNIT_TYPES,
   propTypes,
 } from '../../util/types';
@@ -32,6 +34,23 @@ import LineItemTotalPrice from './LineItemTotalPrice';
 import LineItemUnknownItemsMaybe from './LineItemUnknownItemsMaybe';
 
 import css from './OrderBreakdown.module.css';
+
+const LineItemVatMaybe = ({ lineItems, isCustomer, intl, marketplaceName }) => {
+  const vatLineItem = lineItems.find(item => item.code === LINE_ITEM_VAT && !item.reversal);
+
+  if (!isCustomer || !vatLineItem) {
+    return null;
+  }
+
+  return (
+    <div className={css.lineItem}>
+      <span className={css.itemLabel}>
+        <FormattedMessage id="OrderBreakdown.vat" values={{ marketplaceName }} />
+      </span>
+      <span className={css.itemValue}>{formatMoney(intl, vatLineItem.lineTotal)}</span>
+    </div>
+  );
+};
 
 export const OrderBreakdownComponent = props => {
   const {
@@ -66,6 +85,8 @@ export const OrderBreakdownComponent = props => {
     const hasProviderCommission = isProvider && item.code === LINE_ITEM_PROVIDER_COMMISSION;
     return (hasCustomerCommission || hasProviderCommission) && !item.reversal;
   });
+  const hasVatLineItem =
+    isCustomer && lineItems.some(item => item.code === LINE_ITEM_VAT && !item.reversal);
 
   const classes = classNames(rootClassName || css.root, className);
 
@@ -140,6 +161,12 @@ export const OrderBreakdownComponent = props => {
         marketplaceName={marketplaceName}
         intl={intl}
       />
+      <LineItemVatMaybe
+        lineItems={lineItems}
+        isCustomer={isCustomer}
+        intl={intl}
+        marketplaceName={marketplaceName}
+      />
       <LineItemCustomerCommissionRefundMaybe
         lineItems={lineItems}
         isCustomer={isCustomer}
@@ -169,7 +196,15 @@ export const OrderBreakdownComponent = props => {
 
       {hasCommissionLineItem ? (
         <span className={css.feeInfo}>
-          <FormattedMessage id="OrderBreakdown.commissionFeeNote" />
+          <FormattedMessage
+            id="OrderBreakdown.commissionFeeNote"
+            values={{ marketplaceName }}
+          />
+        </span>
+      ) : null}
+      {hasVatLineItem ? (
+        <span className={css.feeInfo}>
+          <FormattedMessage id="OrderBreakdown.vatFeeNote" values={{ marketplaceName }} />
         </span>
       ) : null}
     </div>

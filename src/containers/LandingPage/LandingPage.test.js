@@ -48,10 +48,17 @@ describe('LandingPage', () => {
             },
           ],
         },
+        {
+          sectionType: 'columns',
+          sectionId: 'how-it-works',
+          sectionName: 'How it works',
+          numColumns: 1,
+          title: { fieldType: 'heading2', content: 'How it works' },
+        },
       ],
     };
 
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <LandingPageComponent
         pageAssetsData={{ landingPage: { data } }}
         inProgress={false}
@@ -65,6 +72,8 @@ describe('LandingPage', () => {
       expect(getByText('This is the description of the section')).toBeInTheDocument();
       expect(getByText('Block title here')).toBeInTheDocument();
       expect(getByText('Lorem ipsum')).toBeInTheDocument();
+      expect(document.title).toBe('lineupBridge');
+      expect(queryByText('How it works')).not.toBeInTheDocument();
     });
   });
 });
