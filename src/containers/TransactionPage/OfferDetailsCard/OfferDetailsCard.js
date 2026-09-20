@@ -61,11 +61,14 @@ const OfferDetailsCard = props => {
   const latestBusinessOfferType = getBusinessOfferType(latestBusinessOffer?.transition);
   const isReceivedDjCounterOffer =
     latestBusinessOffer?.by === 'provider' &&
-    latestBusinessOffer?.transition === transitions.MAKE_OFFER_FROM_REQUEST &&
+    latestBusinessOffer?.transition === transitions.PROVIDER_MAKE_COUNTER_OFFER &&
     latestBusinessOfferType === 'counter-offer';
   const latestOfferAmount = latestBusinessOffer?.amount
     ? latestBusinessOffer.amount / 100
     : offerAmount;
+  const displayedOfferAmount =
+    showProposedChanges && isReceivedDjCounterOffer ? offerAmount : latestOfferAmount;
+  const proposedOfferAmount = proposedChanges?.proposedFee || latestOfferAmount;
   const displayedBookingStartTime = !showProposedChanges
     ? proposedChanges?.proposedStartTime || bookingStartTime
     : bookingStartTime;
@@ -130,12 +133,7 @@ const OfferDetailsCard = props => {
 
   const deckSetupDisplay = formatDeckSetup(deckSetup);
   const hasTechnicalSection =
-    deckSetupDisplay ||
-    boothMonitorsAvailable ||
-    soundSystem ||
-    technicalSetup ||
-    additionalNotes ||
-    proposedChanges?.proposedNotes;
+    deckSetupDisplay || boothMonitorsAvailable || technicalSetup || proposedChanges?.proposedNotes;
 
   const ProposedValue = ({ children }) => <span className={css.proposedValue}>{children}</span>;
 
@@ -304,15 +302,15 @@ const OfferDetailsCard = props => {
           </span>
           <div className={css.rowValueStack}>
             <span className={css.rowValueFee}>
-              {latestOfferAmount != null ? `€${latestOfferAmount}` : notProvided}
+              {displayedOfferAmount != null ? `€${displayedOfferAmount}` : notProvided}
             </span>
             {showProposedChanges &&
-            proposedChanges?.proposedFee &&
-            proposedChanges.proposedFee !== offerAmount ? (
+            proposedOfferAmount != null &&
+            proposedOfferAmount !== offerAmount ? (
               <ProposedValue>
                 <FormattedMessage
                   id="OfferDetailsCard.proposedLabel"
-                  values={{ value: `€${proposedChanges.proposedFee}` }}
+                  values={{ value: `€${proposedOfferAmount}` }}
                 />
               </ProposedValue>
             ) : null}

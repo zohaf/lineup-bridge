@@ -49,6 +49,12 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
   } = processInfo;
   const negotiationSummary = getNegotiationSummary(transaction);
   const latestBusinessOfferType = negotiationSummary.latestBusinessOfferType;
+  const latestBusinessOffer = negotiationSummary.latestBusinessOffer;
+  const customerViewingProviderCounterOffer =
+    transactionRole === CUSTOMER &&
+    latestBusinessOffer?.by === PROVIDER.toLowerCase() &&
+    latestBusinessOffer?.transition === transitions.PROVIDER_MAKE_COUNTER_OFFER &&
+    latestBusinessOfferType === 'counter-offer';
   const hasCustomerFinalOffer = latestBusinessOfferType === 'final-offer';
   const latestTransition = transaction?.attributes?.transitions?.at(-1)?.transition;
   const isDjFinalOfferAccepted =
@@ -217,7 +223,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showOfferDetailsCard: true,
-        showAgreedOfferDetails: true,
+        showAgreedOfferDetails: !customerViewingProviderCounterOffer,
         ...(isCustomerFinalOfferAccepted
           ? {
               headingTitleMessageId:
