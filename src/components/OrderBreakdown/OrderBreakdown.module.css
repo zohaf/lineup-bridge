@@ -55,12 +55,18 @@
   }
 }
 
-.dayInfo,
-.totalPrice {
+.dayInfo {
   composes: p from global;
   font-weight: var(--fontWeightBold);
   letter-spacing: -0.2px;
 
+  margin: 0;
+  padding: 0;
+}
+
+.totalPrice {
+  composes: marketplaceSmallFontStyles from global;
+  font-weight: var(--fontWeightBold);
   margin: 0;
   padding: 0;
 }

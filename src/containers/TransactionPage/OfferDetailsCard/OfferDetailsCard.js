@@ -30,6 +30,7 @@ const OfferDetailsCard = props => {
     bookingDate,
     bookingStartTime,
     bookingEndTime,
+    setStartTime,
     durationHours,
     setTimeNeeded,
     previousDj,
@@ -99,9 +100,7 @@ const OfferDetailsCard = props => {
       all_night: 'OfferDetailsCard.setTimeNeeded.allNight',
     };
     const messageId = keyByValue[val];
-    return messageId
-      ? intl.formatMessage({ id: messageId })
-      : val;
+    return messageId ? intl.formatMessage({ id: messageId }) : val;
   };
 
   const formatDeckSetup = keys => {
@@ -138,38 +137,44 @@ const OfferDetailsCard = props => {
     additionalNotes ||
     proposedChanges?.proposedNotes;
 
-  const ProposedValue = ({ children }) => (
-    <span className={css.proposedValue}>{children}</span>
-  );
+  const ProposedValue = ({ children }) => <span className={css.proposedValue}>{children}</span>;
 
   return (
     <div className={css.root}>
-      {/* Proposed changes banner */}
       {hasProposedChanges ? (
         <div className={css.proposedBanner}>
           <FormattedMessage id="OfferDetailsCard.proposedChangesBanner" />
         </div>
       ) : null}
 
-      {/* Set details */}
       <div className={css.section}>
         <h3 className={css.sectionTitle}>
-          <FormattedMessage id="OfferDetailsCard.sectionSetDetails" />
+          <FormattedMessage id="OfferDetailsCard.sectionEventDetails" />
         </h3>
+        <div className={css.row}>
+          <span className={css.rowLabel}>
+            <FormattedMessage id="OfferDetailsCard.venueName" />
+          </span>
+          <span className={css.rowValue}>{venueName || notProvided}</span>
+        </div>
+        <div className={css.row}>
+          <span className={css.rowLabel}>
+            <FormattedMessage id="OfferDetailsCard.location" />
+          </span>
+          <span className={css.rowValue}>{eventLocation || notProvided}</span>
+        </div>
+        <div className={css.row}>
+          <span className={css.rowLabel}>
+            <FormattedMessage id="OfferDetailsCard.eventName" />
+          </span>
+          <span className={css.rowValue}>{eventName || notProvided}</span>
+        </div>
         <div className={css.row}>
           <span className={css.rowLabel}>
             <FormattedMessage id="OfferDetailsCard.date" />
           </span>
           <span className={css.rowValue}>{formatDate(bookingDate)}</span>
         </div>
-        {setTimeNeeded ? (
-          <div className={css.row}>
-            <span className={css.rowLabel}>
-              <FormattedMessage id="OfferDetailsCard.setTimeNeeded" />
-            </span>
-            <span className={css.rowValue}>{formatSetTimeNeeded(setTimeNeeded)}</span>
-          </div>
-        ) : null}
         <div className={css.row}>
           <span className={css.rowLabel}>
             <FormattedMessage id="OfferDetailsCard.startTime" />
@@ -188,14 +193,61 @@ const OfferDetailsCard = props => {
             ) : null}
           </div>
         </div>
-        {bookingEndTime ? (
+        <div className={css.row}>
+          <span className={css.rowLabel}>
+            <FormattedMessage id="OfferDetailsCard.endTime" />
+          </span>
+          <span className={css.rowValue}>{bookingEndTime || notProvided}</span>
+        </div>
+        <div className={css.row}>
+          <span className={css.rowLabel}>
+            <FormattedMessage id="OfferDetailsCard.expectedAttendance" />
+          </span>
+          <span className={css.rowValue}>{expectedAttendance || notProvided}</span>
+        </div>
+        {eventType ? (
           <div className={css.row}>
             <span className={css.rowLabel}>
-              <FormattedMessage id="OfferDetailsCard.endTime" />
+              <FormattedMessage id="OfferDetailsCard.eventType" />
             </span>
-            <span className={css.rowValue}>{bookingEndTime}</span>
+            <span className={css.rowValue}>
+              {intl.formatMessage({
+                id: `RequestQuoteForm.eventType.${eventType.replace(/_([a-z])/g, (_, c) =>
+                  c.toUpperCase()
+                )}`,
+                defaultMessage: eventType.replace(/_/g, ' '),
+              })}
+            </span>
           </div>
         ) : null}
+        {description ? (
+          <div className={css.descriptionBlock}>
+            <p className={css.descriptionLabel}>
+              <FormattedMessage id="OfferDetailsCard.eventDescription" />
+            </p>
+            <p className={css.descriptionValue}>{description}</p>
+          </div>
+        ) : null}
+      </div>
+
+      <div className={css.section}>
+        <h3 className={css.sectionTitle}>
+          <FormattedMessage id="OfferDetailsCard.sectionSetDetails" />
+        </h3>
+        {setTimeNeeded ? (
+          <div className={css.row}>
+            <span className={css.rowLabel}>
+              <FormattedMessage id="OfferDetailsCard.setTimeNeeded" />
+            </span>
+            <span className={css.rowValue}>{formatSetTimeNeeded(setTimeNeeded)}</span>
+          </div>
+        ) : null}
+        <div className={css.row}>
+          <span className={css.rowLabel}>
+            <FormattedMessage id="RequestQuoteForm.setStartTimeLabel" />
+          </span>
+          <span className={css.rowValue}>{setStartTime || notProvided}</span>
+        </div>
         {durationHours ? (
           <div className={css.row}>
             <span className={css.rowLabel}>
@@ -210,7 +262,7 @@ const OfferDetailsCard = props => {
               </span>
               {showProposedChanges &&
               proposedChanges?.proposedDuration &&
-                proposedChanges.proposedDuration !== durationHours ? (
+              proposedChanges.proposedDuration !== durationHours ? (
                 <ProposedValue>
                   <FormattedMessage
                     id="OfferDetailsCard.proposedLabel"
@@ -242,59 +294,6 @@ const OfferDetailsCard = props => {
         </div>
       </div>
 
-      {/* Event details */}
-      <div className={css.section}>
-        <h3 className={css.sectionTitle}>
-          <FormattedMessage id="OfferDetailsCard.sectionEventDetails" />
-        </h3>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.eventName" />
-          </span>
-          <span className={css.rowValue}>{eventName || notProvided}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.eventType" />
-          </span>
-          <span className={css.rowValue}>
-            {eventType
-              ? intl.formatMessage({
-                  id: `RequestQuoteForm.eventType.${eventType.replace(/_([a-z])/g, (_, c) => c.toUpperCase())}`,
-                  defaultMessage: eventType.replace(/_/g, ' '),
-                })
-              : notProvided}
-          </span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.expectedAttendance" />
-          </span>
-          <span className={css.rowValue}>{expectedAttendance || notProvided}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.venueName" />
-          </span>
-          <span className={css.rowValue}>{venueName || notProvided}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.location" />
-          </span>
-          <span className={css.rowValue}>{eventLocation || notProvided}</span>
-        </div>
-        {description ? (
-          <div className={css.descriptionBlock}>
-            <p className={css.descriptionLabel}>
-              <FormattedMessage id="OfferDetailsCard.eventDescription" />
-            </p>
-            <p className={css.descriptionValue}>{description}</p>
-          </div>
-        ) : null}
-      </div>
-
-      {/* Fee & logistics */}
       <div className={css.section}>
         <h3 className={css.sectionTitle}>
           <FormattedMessage id="OfferDetailsCard.sectionFeeLogistics" />
@@ -309,7 +308,7 @@ const OfferDetailsCard = props => {
             </span>
             {showProposedChanges &&
             proposedChanges?.proposedFee &&
-              proposedChanges.proposedFee !== offerAmount ? (
+            proposedChanges.proposedFee !== offerAmount ? (
               <ProposedValue>
                 <FormattedMessage
                   id="OfferDetailsCard.proposedLabel"
@@ -331,14 +330,6 @@ const OfferDetailsCard = props => {
           </span>
           <span className={css.rowValue}>{formatYesNo(accommodationIncluded)}</span>
         </div>
-        {includedDetails ? (
-          <div className={css.descriptionBlock}>
-            <p className={css.descriptionLabel}>
-              <FormattedMessage id="OfferDetailsCard.additionalInclusions" />
-            </p>
-            <p className={css.descriptionValue}>{includedDetails}</p>
-          </div>
-        ) : null}
         {showProposedChanges && proposedChanges?.proposedFeeNotes ? (
           <div className={css.descriptionBlock}>
             <p className={css.descriptionLabelProposed}>
@@ -349,7 +340,6 @@ const OfferDetailsCard = props => {
         ) : null}
       </div>
 
-      {/* Technical setup */}
       {hasTechnicalSection ? (
         <div className={css.section}>
           <h3 className={css.sectionTitle}>
@@ -386,6 +376,17 @@ const OfferDetailsCard = props => {
               <p className={css.proposedDescriptionValue}>{proposedChanges.proposedNotes}</p>
             </div>
           ) : null}
+        </div>
+      ) : null}
+
+      {includedDetails ? (
+        <div className={css.section}>
+          <h3 className={css.sectionTitle}>
+            <FormattedMessage id="RequestQuoteForm.additionalNotesLabel" />
+          </h3>
+          <div className={css.descriptionBlock}>
+            <p className={css.descriptionValue}>{includedDetails}</p>
+          </div>
         </div>
       ) : null}
     </div>

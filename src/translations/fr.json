@@ -844,7 +844,7 @@
   "OrderBreakdown.vat": "TVA (21 % sur les frais {marketplaceName})*",
   "OrderBreakdown.vatFeeNote": "* La TVA est calculée uniquement sur les frais {marketplaceName}, et non sur le cachet de la prestation.",
   "OrderBreakdown.pickupFee": "Retrait",
-  "OrderBreakdown.providerTotalDefault": "Vous allez gagner",
+  "OrderBreakdown.providerTotalDefault": "Vous recevez",
   "OrderBreakdown.providerTotalReceived": "Vous avez gagné",
   "OrderBreakdown.providerTotalRefunded": "Prix total",
   "OrderBreakdown.refund": "Remboursement",
