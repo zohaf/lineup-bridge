@@ -24,7 +24,7 @@
 /* ── Sections ── */
 
 .section {
-  border: 1px solid var(--colorGrey300);
+  border: 1px solid var(--colorGrey100);
   border-radius: 8px;
   padding: 18px;
   margin-bottom: 12px;
