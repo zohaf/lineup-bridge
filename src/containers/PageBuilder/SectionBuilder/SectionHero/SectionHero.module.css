@@ -7,7 +7,7 @@
   position: relative;
 
   /* Hero specific */
-  min-height: calc(80vh + 100px);
+  min-height: clamp(500px, 70vh, 600px);
   display: flex;
   justify-content: center;
   align-items: center;
