@@ -559,14 +559,7 @@ const EnhancedSearchPage = props => {
   const location = useLocation();
 
   const searchListingsError = props.searchListingsError;
-  const { currentUser, ...restOfProps } = props;
-  const isPrivateMarketplace = config.accessControl.marketplace.private === true;
-  const isUnauthorizedUser = currentUser && !isUserAuthorized(currentUser);
-  const hasNoViewingRightsUser = currentUser && !hasPermissionToViewData(currentUser);
-  const hasUserPendingApprovalError = isErrorUserPendingApproval(searchListingsError);
-  const hasNoViewingRightsError = isErrorNoViewingPermission(searchListingsError);
-
-  if (isForbiddenError(searchListingsError) && !hasUserPendingApprovalError) {
+  if (isForbiddenError(searchListingsError)) {
     // This can happen if private marketplace mode is active
     return (
       <NamedRedirect
@@ -576,7 +569,14 @@ const EnhancedSearchPage = props => {
     );
   }
 
-  if (isPrivateMarketplace && isUnauthorizedUser && !hasUserPendingApprovalError) {
+  const { currentUser, ...restOfProps } = props;
+  const isPrivateMarketplace = config.accessControl.marketplace.private === true;
+  const isUnauthorizedUser = currentUser && !isUserAuthorized(currentUser);
+  const hasNoViewingRightsUser = currentUser && !hasPermissionToViewData(currentUser);
+  const hasUserPendingApprovalError = isErrorUserPendingApproval(searchListingsError);
+  const hasNoViewingRightsError = isErrorNoViewingPermission(searchListingsError);
+
+  if ((isPrivateMarketplace && isUnauthorizedUser) || hasUserPendingApprovalError) {
     return (
       <NamedRedirect
         name="NoAccessPage"
