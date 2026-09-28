@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createImageVariantConfig } from '../../util/sdkLoader';
+import appSettings from '../../config/settings';
+import { createImageVariantConfig, createInstance, tokenStore } from '../../util/sdkLoader';
+import { typeHandlers } from '../../util/api';
 import { isErrorUserPendingApproval, isForbiddenError, storableError } from '../../util/errors';
 import { convertUnitToSubUnit, unitDivisor } from '../../util/currency';
 import {
@@ -30,13 +32,27 @@ const resultIds = data => {
     .map(l => l.id);
 };
 
+const createPublicSdk = () =>
+  createInstance({
+    clientId: appSettings.sdk.clientId,
+    baseUrl: appSettings.sdk.baseUrl,
+    assetCdnBaseUrl: appSettings.sdk.assetCdnBaseUrl,
+    secure: appSettings.usingSSL,
+    transitVerbose: appSettings.sdk.transitVerbose,
+    tokenStore: tokenStore.memoryStore(),
+    typeHandlers,
+  });
+
 // ================ Async Thunks ================ //
 
 /////////////////////
 // Search Listings //
 /////////////////////
 const searchListingsPayloadCreator = ({ searchParams, config }, thunkAPI) => {
-  const { dispatch, rejectWithValue, extra: sdk } = thunkAPI;
+  const { dispatch, getState, rejectWithValue, extra: sdk } = thunkAPI;
+  const currentUser = getState().user?.currentUser;
+  const isPendingApprovalUser = currentUser?.attributes?.state === 'pending-approval';
+  const searchSdk = isPendingApprovalUser ? createPublicSdk() : sdk;
   // SearchPage can enforce listing query to only those listings with valid listingType
   // NOTE: this only works if you have set 'enum' type search schema to listing's public data fields
   //       - listingType
@@ -308,7 +324,7 @@ const searchListingsPayloadCreator = ({ searchParams, config }, thunkAPI) => {
     perPage,
   };
 
-  return sdk.listings
+  return searchSdk.listings
     .query(params)
     .then(response => {
       const listingFields = config?.listing?.listingFields;
