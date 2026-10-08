@@ -1,7 +1,7 @@
 import React from 'react';
-import { LinkedLogo, NamedLink } from '../../../../components';
+import { LinkedLogo } from '../../../../components';
+import { useConfiguration } from '../../../../context/configurationContext';
 
-import { FormattedMessage } from '../../../../util/reactIntl';
 import Field from '../../Field';
 import BlockBuilder from '../../BlockBuilder';
 
@@ -61,6 +61,8 @@ const SectionFooter = props => {
     options,
     linkLogoToExternalSite,
   } = props;
+  const { marketplaceRootURL } = useConfiguration();
+  const contactUsUrl = `${marketplaceRootURL?.replace(/\/$/, '') || ''}/p/contact-us`;
 
   // If external mapping has been included for fields
   // E.g. { h1: { component: MyAwesomeHeader } }
@@ -105,15 +107,20 @@ const SectionFooter = props => {
               textClassName={css.footerBlockText}
             />
           </div>
-          <div className={css.contactColumn}>
-            <NamedLink
-              name="ContactPage"
-              className={css.footerContactLink}
-            >
-              <FormattedMessage id="SectionFooter.contactUs" />
-            </NamedLink>
+          <div className={css.copyrightColumn}>
+            <Field data={copyright} className={css.copyright} />
           </div>
-          <Field data={copyright} className={css.copyright} />
+          <div className={css.footerLinks}>
+            <a href={contactUsUrl} className={css.footerLink}>
+              Contact us
+            </a>
+            <span className={css.footerSeparator} aria-hidden="true">
+              {'   |   '}
+            </span>
+            <a href="https://www.lineupbridge.com/p/faq" className={css.footerLink}>
+              FAQ
+            </a>
+          </div>
         </div>
       </div>
     </SectionContainer>

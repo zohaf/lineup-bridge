@@ -43,6 +43,8 @@
   /* Size */
   width: 100%;
   height: var(--topbarHeight);
+  box-sizing: border-box;
+  padding-top: 32px;
 
   /* Layout for child components */
   display: flex;
@@ -56,6 +58,7 @@
 
   @media (--viewportMedium) {
     height: var(--topbarHeightDesktop);
+    padding-top: 32px;
   }
 
   @media (--viewportLarge) {

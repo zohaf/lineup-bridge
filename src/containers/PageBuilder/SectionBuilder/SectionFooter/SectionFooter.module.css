@@ -49,7 +49,7 @@
 }
 
 .legalColumn,
-.contactColumn {
+.copyrightColumn {
   grid-column: 1;
   min-width: 0;
   display: flex;
@@ -63,7 +63,7 @@
   justify-content: flex-start;
 }
 
-.contactColumn {
+.copyrightColumn {
   justify-content: center;
 }
 
@@ -78,7 +78,8 @@
   line-height: inherit;
 }
 
-.footerContactLink {
+.footerLink {
+  display: inline-block;
   font-size: inherit;
   line-height: inherit;
   font-weight: var(--fontWeightMedium);
@@ -91,15 +92,29 @@
   }
 }
 
-/* One row: slogan | Contact us | copyright (large screens only) */
+.footerLinks {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  color: var(--colorGrey700);
+  text-align: right;
+}
+
+.footerSeparator {
+  white-space: pre;
+}
+
+/* One row: legal links | copyright | Contact us and FAQ */
 .footerMetaRow {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  column-gap: 24px;
+  row-gap: 12px;
   width: 100%;
   box-sizing: border-box;
-  text-align: initial;
+  min-width: 0;
+  text-align: center;
   font-size: 12px;
   line-height: 18px;
 
@@ -110,18 +125,47 @@
 
   & .legalColumn {
     grid-column: 1;
-    justify-self: start;
+    justify-self: center;
+    justify-content: center;
+    text-align: center;
   }
 
-  & .contactColumn {
-    grid-column: 2;
+  & .copyrightColumn {
+    grid-column: 1;
     justify-self: center;
   }
 
-  & .copyright {
-    grid-column: 3;
-    justify-self: end;
-    text-align: right;
+  & .footerLinks {
+    grid-column: 1;
+    justify-self: center;
+    text-align: center;
+  }
+}
+
+@media (--viewportMedium) {
+  .footerMetaRow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 0;
+    text-align: initial;
+
+    & .legalColumn {
+      grid-column: 1;
+      justify-self: start;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    & .copyrightColumn {
+      grid-column: 2;
+      justify-self: center;
+    }
+
+    & .footerLinks {
+      grid-column: 3;
+      justify-self: end;
+      text-align: right;
+    }
   }
 }
 
@@ -134,6 +178,7 @@
   display: inline-block;
   color: var(--colorGrey600);
   margin-top: 0;
+  text-align: center;
 }
 
 .logoLink {
@@ -170,4 +215,3 @@
     max-height: 96px;
   }
 }
-

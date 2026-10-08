@@ -49,15 +49,47 @@
   align-items: center;
 }
 
+/* Let the dark landing section grow around all mobile content before the footer. */
+.landingPage :global(main#main-content section:nth-of-type(2)) {
+  height: auto;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.landingPage :global(main#main-content section:nth-of-type(2)) > div:last-child {
+  height: auto;
+  min-height: 0;
+  padding-top: 32px;
+  padding-bottom: 48px;
+  justify-content: flex-start;
+}
+
 .landingPage :global(main#main-content section:nth-of-type(2)) :global(.pbSectionTitle),
 .landingPage :global(main#main-content section:nth-of-type(2)) :global(.pbSectionDescription) {
   color: #ffffff !important;
 }
 
 @media (--viewportMedium) {
-  .landingPage :global(main#main-content section:first-child),
+  .landingPage :global(main#main-content section:first-child) {
+    height: calc(100vh - var(--topbarHeightDesktop));
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+  }
+}
+
+@media (--viewportLarge) {
   .landingPage :global(main#main-content section:nth-of-type(2)) {
     height: calc(100vh - var(--topbarHeightDesktop));
     min-height: calc(100vh - var(--topbarHeightDesktop));
+  }
+
+  .landingPage :global(main#main-content section:nth-of-type(2)) {
+    align-items: center;
+  }
+
+  .landingPage :global(main#main-content section:nth-of-type(2)) > div:last-child {
+    height: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+    justify-content: center;
   }
 }
