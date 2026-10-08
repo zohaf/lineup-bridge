@@ -42,9 +42,9 @@
 .container {
   /* Size */
   width: 100%;
-  height: var(--topbarHeight);
   box-sizing: border-box;
-  padding-top: 32px;
+  min-height: 72px;
+  padding-top: 24px;
 
   /* Layout for child components */
   display: flex;
@@ -57,8 +57,8 @@
   box-shadow: none;
 
   @media (--viewportMedium) {
-    height: var(--topbarHeightDesktop);
-    padding-top: 32px;
+    min-height: 120px;
+    padding-top: 24px;
   }
 
   @media (--viewportLarge) {
