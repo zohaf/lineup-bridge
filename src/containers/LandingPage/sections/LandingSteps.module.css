@@ -1,0 +1,13 @@
+@import '../../../styles/customMediaQueries.css';
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--lb-header-gap);
+  align-items: start;
+
+  @media (--viewportMedium) {
+    grid-template-columns: 4fr 7fr;
+    column-gap: var(--lb-space-9);
+  }
+}

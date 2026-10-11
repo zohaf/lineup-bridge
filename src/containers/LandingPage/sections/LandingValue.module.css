@@ -1,0 +1,18 @@
+@import '../../../styles/customMediaQueries.css';
+
+.stages {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--lb-card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (--viewportMedium) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (--viewportLarge) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

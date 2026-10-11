@@ -1,0 +1,11 @@
+@import '../../../styles/customMediaQueries.css';
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--lb-card-gap);
+
+  @media (--viewportMedium) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

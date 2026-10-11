@@ -1,0 +1,21 @@
+.root {
+  composes: label from '../landingType.module.css';
+  display: inline-block;
+  padding: var(--lb-space-1) var(--lb-space-3);
+  border-radius: 999px;
+}
+
+.neutral {
+  background-color: var(--colorGrey100);
+  color: var(--colorGrey800);
+}
+
+.active {
+  background-color: var(--colorAttentionSubtle);
+  color: var(--colorAttentionDark);
+}
+
+.success {
+  background-color: var(--colorSuccessSubtle);
+  color: var(--colorSuccess);
+}

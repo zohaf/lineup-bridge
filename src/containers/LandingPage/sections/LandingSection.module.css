@@ -1,0 +1,33 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* Doubled selectors win over SectionContainer's single-class defaults. */
+.root.root {
+  background-color: var(--colorPageBackground);
+}
+
+.root.dark {
+  background-color: var(--colorBlack);
+}
+
+.root .content {
+  padding: var(--lb-section-pad) 0;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-header-gap);
+  width: 100%;
+  max-width: var(--contentMaxWidthPages);
+  margin: 0 auto;
+  padding: 0 var(--lb-gutter);
+}
+
+.inner.wide {
+  max-width: 1360px;
+  padding: 0 var(--lb-space-4);
+
+  @media (--viewportMedium) {
+    padding: 0 var(--lb-space-5);
+  }
+}
