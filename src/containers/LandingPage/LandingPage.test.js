@@ -58,7 +58,7 @@ describe('LandingPage', () => {
       ],
     };
 
-    const { getByText, queryByText } = render(
+    const { getByText } = render(
       <LandingPageComponent
         pageAssetsData={{ landingPage: { data } }}
         inProgress={false}
@@ -72,8 +72,37 @@ describe('LandingPage', () => {
       expect(getByText('This is the description of the section')).toBeInTheDocument();
       expect(getByText('Block title here')).toBeInTheDocument();
       expect(getByText('Lorem ipsum')).toBeInTheDocument();
-      expect(document.title).toBe('lineupBridge');
-      expect(queryByText('How it works')).not.toBeInTheDocument();
+      expect(document.title).toBe('LineupBridge');
+      expect(getByText('How it works')).toBeInTheDocument();
+    });
+  });
+
+  it('renders a local How it works section when hosted data does not include one', async () => {
+    const data = {
+      sections: [
+        {
+          sectionType: 'columns',
+          sectionId: 'test-section',
+          numColumns: 1,
+          title: { fieldType: 'heading2', content: 'Landing page' },
+        },
+      ],
+    };
+
+    const { getByText } = render(
+      <LandingPageComponent
+        pageAssetsData={{ landingPage: { data } }}
+        inProgress={false}
+        error={null}
+      />
+    );
+
+    await waitFor(() => {
+      expect(getByText('How it works')).toBeInTheDocument();
+      expect(getByText('Start with a profile.')).toBeInTheDocument();
+      expect(getByText('Find terms that work for both sides.')).toBeInTheDocument();
+      expect(getByText('Confirm the booking.')).toBeInTheDocument();
+      expect(getByText('Payment, handled securely.')).toBeInTheDocument();
     });
   });
 });

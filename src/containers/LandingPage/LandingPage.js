@@ -9,15 +9,14 @@ import { camelize } from '../../util/string';
 import { propTypes } from '../../util/types';
 
 import FallbackPage from './FallbackPage';
+import { landingSections } from './landingSections';
+import { landingSectionComponents } from './sections';
 import { ASSET_NAME } from './LandingPage.duck';
 import { fetchFeaturedListings } from '../../ducks/featuredListings.duck';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { getFeaturedListingsProps } from '../../util/data';
 
 import css from './LandingPage.module.css';
-
-const isHowItWorksSection = section =>
-  section?.sectionId === 'how-it-works' || section?.sectionName?.toLowerCase() === 'how it works';
 
 const addLandingTitleBreak = title => {
   if (!title?.content) {
@@ -53,27 +52,26 @@ const PageBuilder = loadable(() =>
 export const LandingPageComponent = props => {
   const { pageAssetsData, inProgress, error } = props;
   const landingPageData = pageAssetsData?.[camelize(ASSET_NAME)]?.data;
-  const pageAssetsDataWithoutHowItWorks = landingPageData
-    ? {
-        ...landingPageData,
-        sections: landingPageData.sections?.filter(section => !isHowItWorksSection(section)),
-      }
+  const sections = landingPageData?.sections || [];
+  // Only the hosted hero is kept, the other sections of the page are defined in landingSections.js
+  const hostedHero = sections.find(section => section.sectionType === 'hero') || sections[0];
+  const sectionsForLanding = hostedHero
+    ? [
+        {
+          ...removeLandingDatePicker(hostedHero),
+          title: addLandingTitleBreak(hostedHero.title),
+        },
+        ...landingSections,
+      ]
+    : [];
+  const pageAssetsDataForLanding = landingPageData
+    ? { ...landingPageData, sections: sectionsForLanding }
     : landingPageData;
-  const sectionsWithLandingTitleBreak = pageAssetsDataWithoutHowItWorks?.sections?.map(
-    (section, index) => {
-      const sectionWithoutDatePicker = removeLandingDatePicker(section);
-      return index === 0
-        ? { ...sectionWithoutDatePicker, title: addLandingTitleBreak(section.title) }
-        : sectionWithoutDatePicker;
-    }
-  );
-  const pageAssetsDataForLanding = pageAssetsDataWithoutHowItWorks
-    ? { ...pageAssetsDataWithoutHowItWorks, sections: sectionsWithLandingTitleBreak }
-    : pageAssetsDataWithoutHowItWorks;
 
   return (
     <PageBuilder
       pageAssetsData={pageAssetsDataForLanding}
+      options={{ sectionComponents: landingSectionComponents }}
       className={css.landingPage}
       title="lineupBridge"
       inProgress={inProgress}

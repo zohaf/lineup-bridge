@@ -1,0 +1,36 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--lb-space-3);
+  text-align: left;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  gap: var(--lb-space-4);
+}
+
+.center {
+  align-items: center;
+  text-align: center;
+}
+
+/* Light text on the black section */
+.inverse {
+  composes: landingDark from '../landingTokens.module.css';
+}
+
+.eyebrow {
+  composes: eyebrow from '../landingType.module.css';
+}
+
+.heading {
+  composes: h2 from '../landingType.module.css';
+}
+
+.lede {
+  composes: lead from '../landingType.module.css';
+}

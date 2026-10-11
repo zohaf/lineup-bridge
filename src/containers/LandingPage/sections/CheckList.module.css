@@ -1,0 +1,25 @@
+.root {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  composes: body from '../landingType.module.css';
+  position: relative;
+  padding: var(--lb-space-3) 0 var(--lb-space-3) var(--lb-space-5);
+  border-top: 1px solid var(--colorGrey100);
+
+  /* Tick mark */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 15px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--colorBlack);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+}
