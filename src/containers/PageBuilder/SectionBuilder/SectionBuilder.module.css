@@ -270,10 +270,15 @@
   /* Requested height */
   min-height: 566px;
   /* Black section background */
-  background-color: var(--colorBlack);
+  background-color: var(--colorBlack) !important;
   /* Breathing room */
   padding-top: 48px;
   padding-bottom: 48px;
+}
+
+:global(section#how-it-works > .sectionContent),
+:global(section[data-section-name='How it works'] > .sectionContent) {
+  background-color: var(--colorBlack);
 }
 
 /* Make header text readable on black */
@@ -289,7 +294,7 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* Add white “cards” under each of the 4 columns. */
+/* Add white “cards” under each of the 5 columns. */
 :global(section#how-it-works .pbBlockContainer),
 :global(section[data-section-name='How it works'] .pbBlockContainer) {
   /* Force consistent 24px gutters while keeping extra top spacing. */
@@ -305,13 +310,13 @@
 @media (--viewportMedium) {
   :global(section#how-it-works .pbBlockContainer),
   :global(section[data-section-name='How it works'] .pbBlockContainer) {
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(5, 1fr) !important;
   }
 }
 
 /**
  * Apply same styling for the last "columns" section on the page.
- * (Used when the last landing section is also a 4-column section.)
+ * (Used when the last landing section is also a multi-column section.)
  */
 :global(main#main-content section[data-section-type='columns']:last-of-type) {
   border: none;
@@ -337,7 +342,7 @@
 :global(section#how-it-works .pbBlockContainer > *),
 :global(section[data-section-name='How it works'] .pbBlockContainer > *) {
   /* No fill, only outline */
-  background-color: transparent;
+  background-color: transparent !important;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 0;
   padding: 18px;
@@ -369,7 +374,7 @@
 /* Ensure card text is readable on black background */
 :global(section#how-it-works .pbBlockContainer > *),
 :global(section[data-section-name='How it works'] .pbBlockContainer > *) {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--colorWhite);
 }
 
 :global(section#how-it-works .pbBlockContainer > * h1),
