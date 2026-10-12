@@ -25,8 +25,9 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background-color: var(--colorBlack);
-  color: var(--colorWhite);
+  border: 1px solid var(--colorBlack);
+  background-color: transparent;
+  color: var(--colorBlack);
   font-variant-numeric: tabular-nums;
 }
 

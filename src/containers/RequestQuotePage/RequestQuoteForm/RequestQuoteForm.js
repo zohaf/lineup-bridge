@@ -11,7 +11,7 @@ import * as validators from '../../../util/validators.js';
 import {
   Form,
   FieldTextInput,
-  FieldSelect,
+  SelectField,
   PrimaryButton,
   ValidationError,
   SectionCard,
@@ -206,7 +206,7 @@ export const RequestQuoteForm = props => {
                           [css.dateInputError]: (meta.touched || submitFailed) && meta.invalid,
                         })}
                       />
-                      <ValidationError fieldMeta={meta} />
+                      <ValidationError rootClassName={formCss.error} fieldMeta={meta} />
                     </div>
                   )}
                 </Field>
@@ -283,7 +283,7 @@ export const RequestQuoteForm = props => {
               title={<FormattedMessage id="RequestQuoteForm.sectionSetDetails" />}
             >
               <div className={formCss.row2}>
-                <FieldSelect
+                <SelectField
                   rootClassName={formCss.field}
                   labelClassName={formCss.label}
                   selectClassName={selectClass('setTimeNeeded')}
@@ -312,7 +312,7 @@ export const RequestQuoteForm = props => {
                   <option value="all_night">
                     {intl.formatMessage({ id: 'RequestQuoteForm.setTimeNeeded.allNight' })}
                   </option>
-                </FieldSelect>
+                </SelectField>
               </div>
 
               <div className={formCss.row2}>
@@ -400,7 +400,8 @@ export const RequestQuoteForm = props => {
             >
               <Field name="offerAmount" validate={composeOfferValidators(intl)}>
                 {({ input, meta }) => {
-                  const showError = (meta.touched || submitFailed) && (meta.error || meta.submitError);
+                  const showError =
+                    (meta.touched || submitFailed) && (meta.error || meta.submitError);
                   return (
                     <div className={formCss.field}>
                       <label className={formCss.label} htmlFor={fid('offerAmount')}>
@@ -408,7 +409,8 @@ export const RequestQuoteForm = props => {
                       </label>
                       <div
                         className={classNames(formCss.inputWithUnit, {
-                          [formCss.inputWithUnitError]: (meta.touched || submitFailed) && meta.invalid,
+                          [formCss.inputWithUnitError]:
+                            (meta.touched || submitFailed) && meta.invalid,
                         })}
                       >
                         <input
@@ -433,7 +435,7 @@ export const RequestQuoteForm = props => {
                         </span>
                       </div>
                       {showError ? (
-                        <ValidationError fieldMeta={meta} />
+                        <ValidationError rootClassName={formCss.error} fieldMeta={meta} />
                       ) : (
                         <div className={formCss.helper}>
                           <FormattedMessage id="RequestQuoteForm.feeHelper" />
@@ -446,7 +448,7 @@ export const RequestQuoteForm = props => {
 
               <div className={formCss.row2}>
                 <div className={css.fieldWithHelper}>
-                  <FieldSelect
+                  <SelectField
                     rootClassName={formCss.field}
                     labelClassName={formCss.label}
                     selectClassName={selectClass('travelIncluded')}
@@ -458,7 +460,7 @@ export const RequestQuoteForm = props => {
                     )}
                   >
                     {yesNoOptions}
-                  </FieldSelect>
+                  </SelectField>
                   {hasError('travelIncluded') ? null : (
                     <div className={formCss.helper}>
                       <FormattedMessage id="RequestQuoteForm.travelIncludedHelper" />
@@ -467,19 +469,21 @@ export const RequestQuoteForm = props => {
                 </div>
 
                 <div className={css.fieldWithHelper}>
-                  <FieldSelect
+                  <SelectField
                     rootClassName={formCss.field}
                     labelClassName={formCss.label}
                     selectClassName={selectClass('accommodationIncluded')}
                     name="accommodationIncluded"
                     id={fid('accommodationIncluded')}
-                    label={intl.formatMessage({ id: 'RequestQuoteForm.accommodationIncludedLabel' })}
+                    label={intl.formatMessage({
+                      id: 'RequestQuoteForm.accommodationIncludedLabel',
+                    })}
                     validate={validators.required(
                       intl.formatMessage({ id: 'RequestQuoteForm.accommodationIncludedRequired' })
                     )}
                   >
                     {yesNoOptions}
-                  </FieldSelect>
+                  </SelectField>
                   {hasError('accommodationIncluded') ? null : (
                     <div className={formCss.helper}>
                       <FormattedMessage id="RequestQuoteForm.accommodationIncludedHelper" />
@@ -505,7 +509,7 @@ export const RequestQuoteForm = props => {
               />
 
               <div className={formCss.row2}>
-                <FieldSelect
+                <SelectField
                   rootClassName={formCss.field}
                   labelClassName={formCss.label}
                   selectClassName={selectClass('boothMonitorsAvailable')}
@@ -517,7 +521,7 @@ export const RequestQuoteForm = props => {
                   )}
                 >
                   {yesNoOptions}
-                </FieldSelect>
+                </SelectField>
               </div>
 
               <FieldTextInput

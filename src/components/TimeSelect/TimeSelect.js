@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { ChevronDown, ChevronsUpDown } from 'lucide-react';
 
 import formCss from '../../styles/lineupForm.module.css';
 import css from './TimeSelect.module.css';
@@ -65,7 +66,7 @@ const TimeSelect = props => {
     const value = input.value == null ? '' : String(input.value);
     return (
       <fieldset className={classNames(formCss.field, className)}>
-        <legend className={formCss.label}>{label}</legend>
+        <legend className={formCss.legend}>{label}</legend>
         <div className={css.unitBox}>
           <select
             id={hoursId}
@@ -85,6 +86,12 @@ const TimeSelect = props => {
               </option>
             ))}
           </select>
+          <ChevronsUpDown
+            className={formCss.chevron}
+            size={16}
+            strokeWidth={2}
+            absoluteStrokeWidth
+          />
           {unit ? (
             <span className={formCss.unit} aria-hidden="true">
               {unit}
@@ -104,42 +111,55 @@ const TimeSelect = props => {
 
   return (
     <fieldset className={classNames(formCss.field, className)}>
-      <legend className={formCss.label}>{label}</legend>
+      <legend className={formCss.legend}>{label}</legend>
       <div className={css.pair}>
-        <select
-          id={hourId}
-          className={selectClasses}
-          value={allowEmpty ? h : hour}
-          onChange={e => input.onChange(joinTime(e.target.value, minute, defaultHour, allowEmpty))}
-          onBlur={input.onBlur}
-        >
-          {allowEmpty ? (
-            <option value="" disabled>
-              {hourPlaceholder}
-            </option>
-          ) : null}
-          {HOURS.map(v => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
+        <div className={formCss.selectBox}>
+          <select
+            id={hourId}
+            className={selectClasses}
+            value={allowEmpty ? h : hour}
+            onChange={e =>
+              input.onChange(joinTime(e.target.value, minute, defaultHour, allowEmpty))
+            }
+            onBlur={input.onBlur}
+          >
+            {allowEmpty ? (
+              <option value="" disabled>
+                {hourPlaceholder}
+              </option>
+            ) : null}
+            {HOURS.map(v => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </select>
+          <ChevronsUpDown
+            className={formCss.chevron}
+            size={16}
+            strokeWidth={2}
+            absoluteStrokeWidth
+          />
+        </div>
         <span className={css.separator} aria-hidden="true">
           :
         </span>
-        <select
-          id={minuteId}
-          className={selectClasses}
-          value={minute}
-          onChange={e => input.onChange(joinTime(hour, e.target.value, defaultHour, allowEmpty))}
-          onBlur={input.onBlur}
-        >
-          {MINUTES.map(v => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
+        <div className={formCss.selectBox}>
+          <select
+            id={minuteId}
+            className={selectClasses}
+            value={minute}
+            onChange={e => input.onChange(joinTime(hour, e.target.value, defaultHour, allowEmpty))}
+            onBlur={input.onBlur}
+          >
+            {MINUTES.map(v => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className={formCss.chevron} size={16} strokeWidth={2} absoluteStrokeWidth />
+        </div>
       </div>
       {errorMessage}
     </fieldset>
