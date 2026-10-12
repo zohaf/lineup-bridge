@@ -1,0 +1,60 @@
+import React from 'react';
+import classNames from 'classnames';
+import { FieldArray } from 'react-final-form-arrays';
+import { Field } from 'react-final-form';
+
+import formCss from '../../styles/lineupForm.module.css';
+import css from './CheckboxTileGroup.module.css';
+
+const CheckboxTilesRenderer = props => {
+  const { className, label, id, fields, options, meta } = props;
+  const { touched, submitFailed, error } = meta;
+  const hasError = (touched || submitFailed) && !!error;
+
+  return (
+    <fieldset className={classNames(formCss.field, className)}>
+      {label ? <legend className={formCss.label}>{label}</legend> : null}
+      <ul className={css.list}>
+        {options.map(option => {
+          const fieldId = `${id}.${option.key}`;
+          return (
+            <li key={fieldId}>
+              <label
+                htmlFor={fieldId}
+                className={classNames(css.tile, { [css.tileError]: hasError })}
+              >
+                <Field
+                  id={fieldId}
+                  name={fields.name}
+                  component="input"
+                  type="checkbox"
+                  value={option.key}
+                  className={css.checkbox}
+                />
+                <span className={css.text}>{option.label}</span>
+              </label>
+            </li>
+          );
+        })}
+      </ul>
+      {hasError ? <div className={formCss.error}>{error}</div> : null}
+    </fieldset>
+  );
+};
+
+/**
+ * Final Form checkbox group drawn as tiles. Same props and validation as FieldCheckboxGroup.
+ *
+ * @component
+ * @param {Object} props
+ * @param {string?} props.className add more style rules to the fieldset
+ * @param {string} props.name Name of the array field in Final Form
+ * @param {string} props.id
+ * @param {ReactNode?} props.label group label, rendered as a legend
+ * @param {Array<{key: string, label: ReactNode}>} props.options
+ * @param {Function?} props.validate Final Form validator for the array
+ * @returns {JSX.Element} Final Form FieldArray with checkbox tiles
+ */
+const CheckboxTileGroup = props => <FieldArray component={CheckboxTilesRenderer} {...props} />;
+
+export default CheckboxTileGroup;

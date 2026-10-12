@@ -1,6 +1,4 @@
-@import '../../styles/customMediaQueries.css';
-
-/* One class per text role, see .claude/docs/landing-typography.md */
+/* One class per text role, see .claude/landing-typography.md */
 .reset {
   margin: 0;
   padding: 0;
@@ -96,4 +94,14 @@
   font-size: var(--lb-size-button);
   line-height: var(--lb-leading-button);
   font-weight: var(--lb-weight-semibold);
+}
+
+/* Form label and group legend: color is black, sizes come from the form tokens */
+.fieldLabel {
+  composes: reset;
+  display: block;
+  font-size: var(--lb-size-field-label);
+  line-height: var(--lb-leading-field-label);
+  font-weight: var(--lb-weight-semibold);
+  color: var(--lb-text-primary);
 }

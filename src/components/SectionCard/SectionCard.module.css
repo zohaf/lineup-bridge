@@ -1,0 +1,42 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+  min-width: 0;
+  padding: var(--lb-card-pad);
+  border: 1px solid var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorWhite);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-3);
+  padding-bottom: var(--lb-space-4);
+  border-bottom: 1px solid var(--colorGrey100);
+}
+
+.number {
+  composes: label from '../../styles/lineupType.module.css';
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--colorBlack);
+  color: var(--colorWhite);
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  composes: h3 from '../../styles/lineupType.module.css';
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+  min-width: 0;
+}

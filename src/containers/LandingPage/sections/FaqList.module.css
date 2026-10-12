@@ -7,7 +7,7 @@
 }
 
 .question {
-  composes: h3 from '../landingType.module.css';
+  composes: h3 from '../../../styles/lineupType.module.css';
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,6 +37,6 @@
 }
 
 .answer {
-  composes: body from '../landingType.module.css';
+  composes: body from '../../../styles/lineupType.module.css';
   padding: 0 var(--lb-space-7) var(--lb-row-pad) 0;
 }

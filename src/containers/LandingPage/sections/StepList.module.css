@@ -13,7 +13,7 @@
 }
 
 .number {
-  composes: label from '../landingType.module.css';
+  composes: label from '../../../styles/lineupType.module.css';
   flex: 0 0 var(--lb-space-5);
   color: var(--lb-text-muted);
 }
@@ -33,9 +33,9 @@
 }
 
 .title {
-  composes: h3 from '../landingType.module.css';
+  composes: h3 from '../../../styles/lineupType.module.css';
 }
 
 .text {
-  composes: body from '../landingType.module.css';
+  composes: body from '../../../styles/lineupType.module.css';
 }

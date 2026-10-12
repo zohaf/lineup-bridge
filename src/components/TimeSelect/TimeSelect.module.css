@@ -1,0 +1,31 @@
+.pair {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+}
+
+.pair select {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.separator {
+  composes: reset from '../../styles/lineupType.module.css';
+  color: var(--lb-text-muted);
+}
+
+.unitBox {
+  position: relative;
+}
+
+/* Leaves room for the unit before the chevron */
+.unitSelect {
+  padding-right: calc(var(--lb-space-9) + var(--lb-space-4));
+}
+
+.unitBox > span {
+  position: absolute;
+  top: 50%;
+  right: var(--lb-space-7);
+  transform: translateY(-50%);
+}

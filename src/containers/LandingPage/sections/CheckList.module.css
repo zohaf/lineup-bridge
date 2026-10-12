@@ -5,7 +5,7 @@
 }
 
 .item {
-  composes: body from '../landingType.module.css';
+  composes: body from '../../../styles/lineupType.module.css';
   position: relative;
   padding: var(--lb-space-3) 0 var(--lb-space-3) var(--lb-space-5);
   border-top: 1px solid var(--colorGrey100);

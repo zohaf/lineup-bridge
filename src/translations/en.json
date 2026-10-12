@@ -1074,6 +1074,7 @@
   "RequestChangesModal.title": "Request changes",
   "RequestQuotePage.finePrint": "You’ll be notified when {providerName} reacts to your offer.",
   "RequestQuotePage.heading": "Complete your offer",
+  "RequestQuotePage.listingTitle": "{listingTitle}",
   "RequestQuotePage.helperText": "DJs are more likely to respond to requests with clear event details and logistics.",
   "RequestQuotePage.step1SummaryTitle": "Set details",
   "RequestQuotePage.step1DateLabel": "Date",

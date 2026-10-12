@@ -23,15 +23,15 @@
 }
 
 .eyebrow {
-  composes: eyebrow from '../landingType.module.css';
+  composes: eyebrow from '../../../styles/lineupType.module.css';
 }
 
 .title {
-  composes: h3 from '../landingType.module.css';
+  composes: h3 from '../../../styles/lineupType.module.css';
 }
 
 .text {
-  composes: body from '../landingType.module.css';
+  composes: body from '../../../styles/lineupType.module.css';
 }
 
 .list {
@@ -45,7 +45,7 @@
 }
 
 .button {
-  composes: button from '../landingType.module.css';
+  composes: button from '../../../styles/lineupType.module.css';
   display: flex;
   justify-content: center;
   align-items: center;

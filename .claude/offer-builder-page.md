@@ -43,7 +43,7 @@ UI-only redesign of the organizer's offer page, `RequestQuotePage` (`/l/:slug/:i
 | | 2 columns | Previous DJ (helper) · Headliner (helper) |
 | 3 Fee and logistics | 1 column | Proposed fee (input with unit "€", helper) |
 | | 2 columns | Travel included (select, helper) · Accommodation included (select, helper) |
-| 4 Technical setup | 1 column | Deck setup (checkbox tiles, 2 → 3 columns) |
+| 4 Technical setup | 1 column | Deck setup (checkbox tiles, 1 → 3 columns) |
 | | 2 columns (one used) | Booth monitors available (select) |
 | | 1 column | Additional note (optional) (textarea) |
 

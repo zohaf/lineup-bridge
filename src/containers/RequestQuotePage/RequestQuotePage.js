@@ -15,13 +15,11 @@ import {
   NO_ACCESS_PAGE_USER_PENDING_APPROVAL,
 } from '../../util/urlHelpers.js';
 import { hasPermissionToInitiateTransactions, isUserAuthorized } from '../../util/userHelpers.js';
-import { displayPrice } from '../../util/configHelpers.js';
 import { pathByRouteName } from '../../util/routes.js';
 import {
   NEGOTIATION_PROCESS_NAME,
   resolveLatestProcessName,
 } from '../../transactions/transaction.js';
-import { requireListingImage } from '../../util/configHelpers.js';
 import { pickTransactionFieldsData } from '../../util/fieldHelpers.js';
 
 // Import global thunk functions
@@ -29,12 +27,17 @@ import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck.js';
 import { isScrollingDisabled } from '../../ducks/ui.duck.js';
 
 // Import shared components
-import { H3, ErrorMessage, NamedRedirect, Page, TopbarSimplified } from '../../components/index.js';
+import {
+  ErrorMessage,
+  NamedRedirect,
+  Page,
+  PageHeader,
+  ResponsiveImage,
+  TopbarSimplified,
+} from '../../components/index.js';
 
 // Import modules from this directory
 import HeadingDetails from './HeadingDetails.js';
-import DetailsSideCard from './DetailsSideCard/DetailsSideCard.js';
-import MobileListingImage from './MobileListingImage/MobileListingImage.js';
 import RequestQuoteForm from './RequestQuoteForm/RequestQuoteForm.js';
 
 import { requestQuote } from './RequestQuotePage.duck.js';
@@ -176,75 +179,50 @@ const RequestQuotePageComponent = props => {
     scrollingDisabled,
     intl,
     config,
-    processName,
     listing,
     pageTitle,
     requestQuoteError,
   } = props;
 
   const listingTitle = listing?.attributes?.title;
-  const { price, publicData } = listing?.attributes || {};
+  const { publicData } = listing?.attributes || {};
   const firstImage = listing?.images?.length > 0 ? listing.images[0] : null;
 
   const listingType = publicData?.listingType;
   const listingTypeConfigs = config.listing.listingTypes;
   const listingTypeConfig = listingTypeConfigs.find(conf => conf.listingType === listingType);
-  const showPrice = displayPrice(listingTypeConfig);
-  const showListingImage = requireListingImage(listingTypeConfig);
   const transactionFieldConfigs = listingTypeConfig?.transactionFields || [];
+
+  const { variantPrefix = 'listing-card' } = config.layout.listingImage || {};
+  const imageVariants = firstImage
+    ? Object.keys(firstImage?.attributes?.variants || {}).filter(k => k.startsWith(variantPrefix))
+    : [];
 
   const onSubmit = handleSubmit(submitting, setSubmitting, props, transactionFieldConfigs);
 
   return (
     <Page title={pageTitle} scrollingDisabled={scrollingDisabled}>
       <TopbarSimplified />
-      <div className={css.contentContainer}>
-        <MobileListingImage
-          listingTitle={listingTitle}
-          author={listing?.author}
-          firstImage={firstImage}
-          layoutListingImageConfig={config.layout.listingImage}
-          showListingImage={showListingImage}
+      <main className={css.content}>
+        <PageHeader
+          image={
+            firstImage ? (
+              <ResponsiveImage alt={listingTitle} image={firstImage} variants={imageVariants} />
+            ) : null
+          }
+          eyebrow={<HeadingDetails listing={listing} listingTitle={listingTitle} />}
+          title={pageTitle}
+          lead={intl.formatMessage({ id: 'RequestQuotePage.helperText' })}
         />
-        <main className={css.orderFormContainer}>
-          <div className={css.headingContainer}>
-            <H3 as="h1" className={css.heading}>
-              {pageTitle}
-            </H3>
-            <p className={css.helperText}>
-              {intl.formatMessage({ id: 'RequestQuotePage.helperText' })}
-            </p>
-            <HeadingDetails
-              listing={listing}
-              listingTitle={listingTitle}
-              listingTypeConfig={listingTypeConfig}
-              price={price}
-              intl={intl}
-            />
-          </div>
 
-          <section className={css.paymentContainer}>
-            <RequestQuoteForm
-              intl={intl}
-              authorDisplayName={userDisplayNameAsString(listing?.author, '')}
-              onSubmit={onSubmit}
-              errorMessageComponent={ErrorMessage}
-              requestQuoteError={requestQuoteError}
-            />
-          </section>
-        </main>
-
-        <DetailsSideCard
-          listing={listing}
-          listingTitle={listingTitle}
-          showListingImage={showListingImage}
-          firstImage={firstImage}
-          layoutListingImageConfig={config.layout.listingImage}
-          processName={processName}
-          showPrice={showPrice && !!price}
+        <RequestQuoteForm
           intl={intl}
+          authorDisplayName={userDisplayNameAsString(listing?.author, '')}
+          onSubmit={onSubmit}
+          errorMessageComponent={ErrorMessage}
+          requestQuoteError={requestQuoteError}
         />
-      </div>
+      </main>
     </Page>
   );
 };

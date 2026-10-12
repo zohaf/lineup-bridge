@@ -2,17 +2,14 @@ import React from 'react';
 
 // Import contexts and util modules
 import { FormattedMessage } from '../../util/reactIntl';
-import { displayPrice } from '../../util/configHelpers';
-import { formatMoney } from '../../util/currency';
 import { createSlug } from '../../util/urlHelpers';
 
 // Import shared components
-import { H4, NamedLink } from '../../components';
+import { NamedLink } from '../../components';
 
-import css from './RequestQuotePage.module.css';
-
+/** Listing title as a link to the listing page, shown as the page header eyebrow. */
 export const HeadingDetails = props => {
-  const { intl, listing, listingTitle, listingTypeConfig, price } = props;
+  const { listing, listingTitle } = props;
 
   const listingTitleLink = (
     <NamedLink
@@ -23,22 +20,11 @@ export const HeadingDetails = props => {
     </NamedLink>
   );
 
-  const showPrice = displayPrice(listingTypeConfig);
-
   return (
-    <H4 as="h2" className={css.detailsHeadingMobile}>
-      <FormattedMessage
-        id="RequestQuotePage.listingTitle"
-        values={{ listingTitle: listingTitleLink }}
-      />
-
-      {showPrice && price ? (
-        <>
-          <br />
-          <span className={css.headingPrice}>{formatMoney(intl, price)}</span>
-        </>
-      ) : null}
-    </H4>
+    <FormattedMessage
+      id="RequestQuotePage.listingTitle"
+      values={{ listingTitle: listingTitleLink }}
+    />
   );
 };
 
