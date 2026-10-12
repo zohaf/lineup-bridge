@@ -5,16 +5,11 @@
 }
 
 .ownListingsInner {
-  max-width: 920px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 24px;
-  padding-right: 24px;
+  composes: centered wide from '../../styles/lineupLayout.module.css';
 
-  @media (--viewportSmall) {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
+  /* Vertical spacing comes from the section */
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .ownListingsCards {
@@ -52,16 +47,11 @@
 }
 
 .homeInner {
-  max-width: 920px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 24px;
-  padding-right: 24px;
+  composes: centered wide from '../../styles/lineupLayout.module.css';
 
-  @media (--viewportSmall) {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
+  /* Vertical spacing comes from the section */
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .welcomeBack {

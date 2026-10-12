@@ -37,7 +37,12 @@ const SelectFieldComponent = props => {
         </label>
       ) : null}
       <div className={formCss.selectBox}>
-        <select className={selectClassName} id={id} {...input} {...rest}>
+        <select
+          className={classNames(selectClassName, { [formCss.selectEmpty]: input.value === '' })}
+          id={id}
+          {...input}
+          {...rest}
+        >
           {children}
         </select>
         <Chevron className={formCss.chevron} size={16} strokeWidth={2} absoluteStrokeWidth />

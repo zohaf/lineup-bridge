@@ -1,6 +1,6 @@
 @import './customMediaQueries.css';
 
-/* All --lb-* design tokens, see .claude/landing-typography.md. No font-family here: the app font stays as it is. */
+/* All --lb-* design tokens, see .claude/tokens.md. No font-family here: the app font stays as it is. */
 :root {
   /* Font */
   --lb-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
@@ -64,6 +64,13 @@
   --lb-card-gap: var(--lb-space-4);
   --lb-row-pad: var(--lb-space-4);
   --lb-button-height: 48px;
+
+  /* Layout (Centered) */
+  --lb-width-narrow: 440px;
+  --lb-width-form: 760px;
+  --lb-width-wide: 920px;
+  --lb-page-top: var(--lb-gutter);
+  --lb-page-bottom: var(--lb-space-9);
 
   /* Form */
   --lb-size-field-label: 15px;

@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { FieldArray } from 'react-final-form-arrays';
 import { Field } from 'react-final-form';
+import { Check } from 'lucide-react';
 
 import formCss from '../../styles/lineupForm.module.css';
 import css from './CheckboxTileGroup.module.css';
@@ -23,14 +24,17 @@ const CheckboxTilesRenderer = props => {
                 htmlFor={fieldId}
                 className={classNames(css.tile, { [css.tileError]: hasError })}
               >
-                <Field
-                  id={fieldId}
-                  name={fields.name}
-                  component="input"
-                  type="checkbox"
-                  value={option.key}
-                  className={css.checkbox}
-                />
+                <span className={css.box}>
+                  <Field
+                    id={fieldId}
+                    name={fields.name}
+                    component="input"
+                    type="checkbox"
+                    value={option.key}
+                    className={css.checkbox}
+                  />
+                  <Check className={css.tick} size={14} strokeWidth={2} absoluteStrokeWidth />
+                </span>
                 <span className={css.text}>{option.label}</span>
               </label>
             </li>

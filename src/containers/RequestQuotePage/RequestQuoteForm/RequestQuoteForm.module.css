@@ -24,11 +24,12 @@
     width: 100%;
     min-height: var(--lb-input-height);
     margin: 0;
-    padding: 0 var(--lb-space-4);
+    padding: 0 var(--lb-space-7) 0 var(--lb-space-4);
     border: 1px solid var(--colorGrey200);
     border-radius: var(--borderRadiusMedium);
     background-color: var(--colorWhite);
     background-image: none;
+    cursor: pointer;
     box-shadow: none;
     font-family: var(--lb-font);
     font-size: var(--lb-size-input);
@@ -48,6 +49,67 @@
     &::placeholder {
       color: var(--colorGrey300);
     }
+  }
+}
+
+/* Calendar icon sits where the select chevron sits; the whole box opens the calendar */
+.dateBox {
+  position: relative;
+}
+
+.dateIcon {
+  position: absolute;
+  top: calc(var(--lb-input-height) / 2);
+  right: var(--lb-space-4);
+  transform: translateY(-50%);
+  color: var(--colorBlack);
+  /* sanitize.css sets svg { fill: currentColor } */
+  fill: none;
+  pointer-events: none;
+}
+
+.dateIconError {
+  color: var(--colorFail);
+}
+
+/* Calendar card under the field. The picker reads its colors from these variables. */
+.datePopup {
+  --datepickerFgColor: var(--colorBlack);
+  --datepickerBgColor: transparent;
+  --datepickerBorderColor: transparent;
+  --datepickerDisabledFgColor: var(--colorGrey300);
+  --datepickerDisabledTextDeco: none;
+  --datepickerHoveredFgColor: var(--colorBlack);
+  --datepickerHoveredBgColor: var(--colorGrey100);
+  --datepickerHeaderArrowColor: var(--colorBlack);
+  --datepickerButtonOutlineColor: var(--colorBlack);
+  --datepickerDateOutline: auto;
+  --datepickerSelectedFgColor: var(--colorBlack);
+  --datepickerSelectedBgColor: transparent;
+  --datepickerSelectedHoveredFgColor: var(--colorBlack);
+  --datepickerSelectedHoveredBgColor: var(--colorGrey100);
+
+  /* popupClassName replaces the picker's own popup class, so the positioning is repeated here */
+  position: absolute;
+  z-index: 5;
+  width: 100%;
+  max-width: 360px;
+  margin-top: var(--lb-space-1);
+  padding: var(--lb-space-3);
+  border: 1px solid var(--colorGrey200);
+  border-radius: 8px;
+  background-color: var(--colorWhite);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  &:empty {
+    display: none;
+  }
+
+  /* Selected day: black outline, 600 (never a fill) */
+  & [class*='dateSelected'] [class*='renderedDay'] {
+    border-radius: var(--borderRadiusMedium);
+    box-shadow: inset 0 0 0 1px var(--colorBlack);
+    font-weight: var(--lb-weight-semibold);
   }
 }
 

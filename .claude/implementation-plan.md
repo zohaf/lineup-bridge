@@ -105,7 +105,7 @@ We work one step at a time, and you review each step in the browser before the n
 
 ## Stage 2: typography and spacing consistency
 
-Stage 2 makes every text style and gap on the landing page follow **[landing-typography.md](landing-typography.md)**, the single source of truth. Font decision (Oct 12, 2026): the **system font** (San Francisco, Segoe UI, Roboto), weights 400 and 600 only. The logo stays an image in Times New Roman MT bold italic.
+Stage 2 makes every text style and gap on the landing page follow **[tokens.md](tokens.md)**, the single source of truth. Font decision (Oct 12, 2026): the **system font** (San Francisco, Segoe UI, Roboto), weights 400 and 600 only. The logo stays an image in Times New Roman MT bold italic.
 
 **Tasks** (in order; follow the spec, not this list, for values)
 

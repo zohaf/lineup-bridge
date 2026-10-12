@@ -1,6 +1,6 @@
 @import './customMediaQueries.css';
 
-/* Shared button styles, see .claude/design-system.md section 4. */
+/* Shared button styles, see .claude/design-system-rules.md section 4. */
 
 .base {
   composes: button from './lineupType.module.css';

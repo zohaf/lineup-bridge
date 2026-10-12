@@ -70,7 +70,9 @@ const TimeSelect = props => {
         <div className={css.unitBox}>
           <select
             id={hoursId}
-            className={classNames(selectClasses, css.unitSelect)}
+            className={classNames(selectClasses, css.unitSelect, {
+              [formCss.selectEmpty]: value === '',
+            })}
             value={value}
             onChange={e => input.onChange(e.target.value)}
             onBlur={input.onBlur}

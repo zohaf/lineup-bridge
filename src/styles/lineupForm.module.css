@@ -1,12 +1,12 @@
 @import './customMediaQueries.css';
 
-/* Shared form styles, see .claude/design-system.md section 4. Pass these classes into the Field components. */
+/* Shared form styles, see .claude/design-system-rules.md section 4. Pass these classes into the Field components. */
 
 .field {
   display: flex;
   flex-direction: column;
   gap: var(--lb-label-gap);
-  align-content: start;
+  align-content: flex-start;
   min-width: 0;
   margin: 0;
   padding: 0;
@@ -92,6 +92,15 @@
   &:hover,
   &:focus {
     background-color: var(--colorWhite);
+  }
+}
+
+/* Empty select shows the "Select…" option in placeholder grey; the open list keeps normal text */
+.selectEmpty {
+  color: var(--colorGrey300);
+
+  & option {
+    color: var(--lb-text-primary);
   }
 }
 
@@ -208,6 +217,113 @@
   font-size: var(--lb-size-small);
   line-height: var(--lb-leading-small);
   font-weight: var(--lb-weight-regular);
+}
+
+/* Choice tiles: buttons that pick one option (user type). Selected = black border (1px + 1px inset). */
+.choiceTiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--lb-space-2);
+}
+
+.choiceTile {
+  composes: button from './lineupType.module.css';
+  min-height: var(--lb-input-height);
+  margin: 0;
+  padding: 0 var(--lb-space-3);
+  border: 1px solid var(--colorGrey200);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorWhite);
+  color: var(--lb-text-primary);
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--colorGrey300);
+  }
+
+  &:focus-visible {
+    outline: 0;
+    border-color: var(--colorBlack);
+    box-shadow: var(--lb-focus-ring);
+  }
+}
+
+.choiceTileSelected {
+  border-color: var(--colorBlack);
+  box-shadow: inset 0 0 0 1px var(--colorBlack);
+
+  &:hover {
+    border-color: var(--colorBlack);
+  }
+}
+
+/* Consent tile: wraps a template FieldCheckbox. The template checkbox icon is restyled through element
+   selectors (outlined box, black tick, no fill); the doubled class beats the component's own rules. */
+.consentTile.consentTile {
+  display: block;
+  padding: var(--lb-space-3);
+  border: 1px solid var(--colorGrey200);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorWhite);
+
+  &:hover {
+    border-color: var(--colorGrey300);
+  }
+
+  &:has(input:checked) {
+    border-color: var(--colorBlack);
+  }
+
+  &:has(input:focus-visible) {
+    border-color: var(--colorBlack);
+    box-shadow: var(--lb-focus-ring);
+  }
+
+  & label {
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+  }
+
+  & label > span:first-child {
+    height: auto;
+    margin: 0 var(--lb-space-3) 0 0;
+  }
+
+  & svg g g path:nth-child(1) {
+    display: none;
+  }
+
+  & svg g g path:nth-child(2) {
+    stroke: var(--colorGrey600);
+  }
+
+  & input:checked + label svg g g path:nth-child(2) {
+    stroke: var(--colorBlack);
+  }
+
+  & input:checked + label svg > g > path {
+    fill: var(--colorBlack);
+  }
+}
+
+.consentTileError.consentTileError {
+  border-color: var(--colorFail);
+  background-color: var(--colorFailSubtle);
+
+  &:has(input:checked) {
+    border-color: var(--colorFail);
+  }
+}
+
+.consentText {
+  composes: small from './lineupType.module.css';
+  margin: 0;
+  padding: 0;
+  color: var(--lb-text-primary);
+  text-align: left;
+  cursor: pointer;
 }
 
 /* Field rows: one column on phones */

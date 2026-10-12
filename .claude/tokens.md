@@ -1,8 +1,8 @@
-# LineupBridge landing page: typography and spacing spec
+# LineupBridge tokens: typography and spacing
 
 Oct 12, 2026 · Zoha Fard
 
-This file is the single source of truth for type and spacing on the landing page (`/`). Every value here exists once in code as a CSS custom property with the **same name**. Components use only those tokens, so code and this document stay 100% in sync.
+This file is the single source of truth for type and spacing in the whole app (it started as the landing page spec, `/`). Every value here exists once in code as a CSS custom property with the **same name**. Components use only those tokens, so code and this document stay 100% in sync.
 
 ## How this document and the code stay in sync
 
@@ -78,6 +78,8 @@ All spacing is a multiple of 4px.
 | --- | --- | --- | --- |
 | Section top and bottom padding | 56px | 96px | `--lb-section-pad` |
 | Page side padding | 24px | 32px | `--lb-gutter` |
+| App pages: topbar → content | 24px | 32px | `--lb-page-top` (= `--lb-gutter`) |
+| App pages: content → footer / page end | 64px | 64px | `--lb-page-bottom` |
 | Eyebrow → heading | 12px | 12px | `--lb-space-3` |
 | Heading → lede | 16px | 16px | `--lb-space-4` |
 | Section header → content | 32px | 48px | `--lb-header-gap` |

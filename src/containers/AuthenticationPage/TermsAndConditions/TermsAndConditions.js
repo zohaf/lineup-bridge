@@ -1,10 +1,13 @@
 import React from 'react';
+import classNames from 'classnames';
+import { useFormState } from 'react-final-form';
 
 import { requiredFieldArrayCheckbox } from '../../../util/validators';
 import { FieldCheckboxGroup } from '../../../components';
 
 import { FormattedMessage, intlShape } from '../../../util/reactIntl';
 
+import formCss from '../../../styles/lineupForm.module.css';
 import css from './TermsAndConditions.module.css';
 
 const KEY_CODE_ENTER = 13;
@@ -22,6 +25,10 @@ const KEY_CODE_ENTER = 13;
  */
 const TermsAndConditions = props => {
   const { onOpenTermsOfService, onOpenPrivacyPolicy, formId, intl } = props;
+  const { errors, touched, submitFailed } = useFormState({
+    subscription: { errors: true, touched: true, submitFailed: true },
+  });
+  const hasError = !!(touched?.terms || submitFailed) && !!errors?.terms;
 
   const handleClick = callback => e => {
     e.preventDefault();
@@ -59,11 +66,13 @@ const TermsAndConditions = props => {
   );
 
   return (
-    <div className={css.root}>
+    <div
+      className={classNames(formCss.consentTile, { [formCss.consentTileError]: hasError })}
+    >
       <FieldCheckboxGroup
         name="terms"
         id={formId ? `${formId}.terms-accepted` : 'terms-accepted'}
-        optionLabelClassName={css.finePrint}
+        optionLabelClassName={formCss.consentText}
         options={[
           {
             key: 'tos-and-privacy',

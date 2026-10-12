@@ -1,0 +1,49 @@
+@import './customMediaQueries.css';
+
+/* Page layouts, see .claude/layouts.md. */
+
+/* Page frame: topbar, main, footer (same areas as the template's LayoutSingleColumn) */
+.root {
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+.topbar {
+  position: relative;
+  z-index: var(--zIndexTopbar);
+}
+
+.stickyTopbar {
+  position: sticky;
+  top: 0;
+}
+
+.main {
+  display: grid;
+  scroll-margin-top: var(--topbarHeight);
+
+  @media (--viewportMedium) {
+    scroll-margin-top: var(--topbarHeightDesktop);
+  }
+}
+
+/* Centered: one column, the variant sets its max width. */
+
+.centered {
+  width: 100%;
+  max-width: calc(var(--lb-centered-width, var(--lb-width-form)) + 2 * var(--lb-gutter));
+  margin: 0 auto;
+  padding: var(--lb-page-top) var(--lb-gutter) var(--lb-page-bottom);
+}
+
+.narrow {
+  --lb-centered-width: var(--lb-width-narrow);
+}
+
+.form {
+  --lb-centered-width: var(--lb-width-form);
+}
+
+.wide {
+  --lb-centered-width: var(--lb-width-wide);
+}

@@ -1,6 +1,6 @@
 @import '../../styles/customMediaQueries.css';
 
-/* Type and spacing tokens, see .claude/landing-typography.md */
+/* Type and spacing tokens, see .claude/tokens.md */
 .landingPage {
   composes: landingTokens from './landingTokens.module.css';
 }

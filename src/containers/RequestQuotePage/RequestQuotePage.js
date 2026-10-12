@@ -29,6 +29,7 @@ import { isScrollingDisabled } from '../../ducks/ui.duck.js';
 // Import shared components
 import {
   ErrorMessage,
+  LayoutCentered,
   NamedRedirect,
   Page,
   PageHeader,
@@ -202,8 +203,12 @@ const RequestQuotePageComponent = props => {
 
   return (
     <Page title={pageTitle} scrollingDisabled={scrollingDisabled}>
-      <TopbarSimplified />
-      <main className={css.content}>
+      <LayoutCentered
+        variant="form"
+        className={css.content}
+        stickyTopbar={false}
+        topbar={<TopbarSimplified />}
+      >
         <PageHeader
           image={
             firstImage ? (
@@ -222,7 +227,7 @@ const RequestQuotePageComponent = props => {
           errorMessageComponent={ErrorMessage}
           requestQuoteError={requestQuoteError}
         />
-      </main>
+      </LayoutCentered>
     </Page>
   );
 };
