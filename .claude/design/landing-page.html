@@ -1,0 +1,406 @@
+<meta charset="utf-8">
+<title>LineupBridge Master Design</title>
+<style>
+/* Layout: mockup toolbar on top, then a container-query "frame" holding the real five-section page,
+   so the Mobile toggle reflows exactly like a phone would. Single light look = the live site's palette. */
+:root {
+  color-scheme: light;
+  --page: #eeede9;          /* --colorPageBackground */
+  --paper: #ffffff;         /* --colorWhite */
+  --ink: #000000;           /* --marketplaceColor (hosted branding = black) */
+  --ink-2: hsl(240 3% 30%); /* --colorGrey700 */
+  --ink-3: hsl(240 3% 50%); /* --colorGrey500 */
+  --rule: hsl(240 3% 88%);  /* ~--colorGrey100 */
+  --rule-strong: hsl(240 3% 80%);
+  --success: #138041;       /* --colorSuccess */
+  --success-subtle: #f0fff6;
+  --tool: #1b1b1d;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-mark: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius: 4px;            /* --borderRadiusMedium */
+  --radius-card: 8px;
+}
+* { box-sizing: border-box; }
+body { background: #d9d8d3; color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; letter-spacing: -0.02em; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* ---------- Mockup toolbar (not part of the page) ---------- */
+.toolbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--tool); color: #f2f2f0; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; font-size: 13px; }
+.toolbar strong { font-weight: 600; margin-right: auto; }
+.seg { display: inline-flex; background: #2c2c30; border-radius: 6px; padding: 3px; gap: 2px; }
+.seg button { font: inherit; color: #c8c8c4; background: transparent; border: 0; padding: 6px 12px; border-radius: 4px; cursor: pointer; min-height: 32px; }
+.seg button[aria-pressed="true"] { background: #f2f2f0; color: #111; }
+.seg-label { color: #9a9a96; margin-right: 6px; }
+.note { width: 100%; color: #a9a9a4; font-size: 12px; }
+.note b { color: #f2f2f0; font-weight: 500; }
+
+.stage { padding: 24px 16px 64px; }
+.frame { container-type: inline-size; container-name: page; margin: 0 auto; max-width: 1360px; background: var(--page); box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 12px 40px rgba(0,0,0,.10); overflow: hidden; transition: max-width .3s ease; border-radius: 6px; }
+.stage[data-view="mobile"] .frame { max-width: 390px; border-radius: 28px; border: 10px solid #111; }
+@media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
+
+/* ---------- Page ---------- */
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+@container page (min-width: 768px) { .wrap { padding-inline: 32px; } }
+
+.topbar { height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: var(--font-mark); font-style: italic; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; text-decoration: none; }
+.topnav { display: flex; gap: 20px; font-size: 14px; color: var(--ink-2); }
+.topnav a { text-decoration: none; }
+@container page (min-width: 768px) { .topbar { height: 72px; } .logo { font-size: 30px; } }
+
+.section { padding-block: 56px; }
+@container page (min-width: 768px) { .section { padding-block: 96px; } }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.h2 { font-size: 28px; line-height: 1.15; font-weight: 600; margin-top: 10px; }
+.lede { color: var(--ink-2); margin-top: 12px; max-width: 54ch; }
+@container page (min-width: 768px) { .h2 { font-size: 40px; } .lede { font-size: 18px; } }
+.section-head { margin-bottom: 32px; }
+@container page (min-width: 768px) { .section-head { margin-bottom: 48px; } }
+
+/* Buttons, matching the template's black primary / outlined secondary */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: var(--radius); font: 600 15px/1 var(--font-body); text-decoration: none; cursor: pointer; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); transition: background .15s, color .15s; }
+.btn:hover { background: hsl(240 3% 20%); }
+.btn-outline { background: transparent; color: var(--ink); }
+.btn-outline:hover { background: var(--ink); color: var(--paper); }
+.btn-sm { min-height: 40px; padding: 0 16px; font-size: 14px; }
+.btn-ghost { background: var(--paper); color: var(--ink); border-color: var(--rule-strong); }
+.btn-ghost:hover { background: var(--page); }
+
+/* Status chips (transaction states) */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--page); color: var(--ink-2); border: 1px solid var(--rule); }
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip-live { color: var(--ink); background: var(--paper); border-color: var(--ink); }
+.chip-ok { color: var(--success); background: var(--success-subtle); border-color: #bfe8cf; }
+.mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: .02em; color: var(--ink-3); }
+
+/* ===== 1. HERO ===== */
+.hero { padding-block: 40px 56px; }
+.hero-grid { display: grid; gap: 40px; align-items: center; }
+.hero h1 { font-size: 36px; line-height: 1.08; font-weight: 600; letter-spacing: -0.03em; }
+.hero .sub { color: var(--ink-2); font-size: 17px; margin-top: 16px; max-width: 46ch; }
+.search { margin-top: 28px; display: flex; gap: 6px; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.06); max-width: 520px; }
+.search label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.search input { flex: 1; min-width: 0; border: 0; font: 15px var(--font-body); padding: 0 12px; background: transparent; color: var(--ink); min-height: 44px; }
+.search input::placeholder { color: var(--ink-3); }
+.search input:focus { outline: none; }
+.search:focus-within { border-color: var(--ink); }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 20px; font-size: 14px; color: var(--ink-2); align-items: center; }
+.hero-ctas a { font-weight: 600; color: var(--ink); text-underline-offset: 3px; }
+.hero-visual { display: none; }
+.br-wide { display: none; }
+@container page (min-width: 900px) { .br-wide { display: inline; } }
+@container page (min-width: 900px) {
+  .hero { padding-block: 72px 112px; }
+  .hero-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 64px; }
+  .hero h1 { font-size: 58px; }
+  .hero .sub { font-size: 19px; }
+  .hero-visual { display: block; }
+}
+
+/* Offer card: the booking UI centerpiece */
+.offer { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); box-shadow: 0 18px 50px rgba(0,0,0,.08); font-size: 14px; overflow: hidden; }
+.offer-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--rule); }
+.offer-dj { display: flex; gap: 12px; align-items: center; padding: 18px; border-bottom: 1px solid var(--rule); }
+.avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; background: radial-gradient(circle at 30% 30%, #6b6b70, #111); color: #fff; display: grid; place-items: center; font-weight: 600; font-size: 15px; }
+.offer-dj b { display: block; font-size: 15px; }
+.offer-dj span { color: var(--ink-3); font-size: 13px; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--rule); }
+.facts div { padding: 12px 18px; border-top: 1px solid var(--rule); min-width: 0; }
+.facts div:nth-child(-n+2) { border-top: 0; }
+.facts div:nth-child(odd) { border-right: 1px solid var(--rule); }
+.facts dt { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); font-weight: 600; }
+.facts dd { margin: 2px 0 0; font-weight: 500; }
+.rounds { padding: 14px 18px; display: grid; gap: 10px; }
+.round { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+.round .who { font-size: 13px; color: var(--ink-2); }
+.round .amt { font-variant-numeric: tabular-nums; font-weight: 600; }
+.round .amt s { color: var(--ink-3); font-weight: 500; }
+.round-dot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--rule-strong); display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.round.now .round-dot { background: var(--ink); border-color: var(--ink); color: #fff; }
+.proposed { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); background: var(--page); border-radius: 3px; padding: 2px 6px; margin-left: 6px; }
+.offer-actions { display: flex; gap: 8px; padding: 14px 18px 18px; border-top: 1px solid var(--rule); }
+.offer-actions .btn { flex: 1; }
+.meter { display: flex; gap: 4px; }
+.meter i { width: 16px; height: 4px; border-radius: 2px; background: var(--rule-strong); }
+.meter i.on { background: var(--ink); }
+
+/* ===== 2. PRODUCT VALUE (stages) ===== */
+.stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: st; }
+.stage-item { position: relative; padding: 20px 0 20px 44px; border-top: 1px solid var(--rule-strong); }
+.stage-item::before { counter-increment: st; content: counter(st); position: absolute; left: 0; top: 20px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--ink); display: grid; place-items: center; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stage-item .chip { margin-bottom: 10px; }
+.stage-item h3 { font-size: 19px; font-weight: 600; }
+.stage-item p { color: var(--ink-2); margin-top: 6px; font-size: 15px; }
+@container page (min-width: 768px) {
+  .stages { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .stage-item { padding: 56px 0 0; border-top: 0; }
+  .stage-item::after { content: ""; position: absolute; top: 14px; left: 36px; right: -24px; height: 1px; background: var(--rule-strong); }
+  .stage-item:last-child::after { display: none; }
+  .stage-item::before { top: 0; }
+}
+.value-panel { margin-top: 40px; display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: var(--radius-card); overflow: hidden; }
+.value-panel > div { background: var(--paper); padding: 20px; display: grid; gap: 4px; }
+.value-panel b { font-size: 15px; }
+.value-panel span { color: var(--ink-2); font-size: 14px; }
+@container page (min-width: 768px) { .value-panel { grid-template-columns: repeat(3, 1fr); margin-top: 56px; } .value-panel > div { padding: 24px 28px; } }
+
+/* ===== 3. HOW IT WORKS ===== */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--ink); }
+.step { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 4px 12px; padding: 20px 0; border-bottom: 1px solid var(--rule-strong); }
+.step .n { font-family: var(--font-mono); font-size: 13px; color: var(--ink-3); padding-top: 3px; }
+.step h3 { font-size: 18px; font-weight: 600; }
+.step p { grid-column: 2; color: var(--ink-2); font-size: 15px; max-width: 58ch; }
+.step .who { grid-column: 2; margin-top: 6px; }
+@container page (min-width: 768px) {
+  .how-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 64px; align-items: start; }
+  .how-grid .section-head { position: sticky; top: 24px; margin-bottom: 0; }
+  .step { grid-template-columns: 64px minmax(0, 1fr) auto; padding: 24px 0; align-items: baseline; }
+  .step p { grid-column: 2; }
+  .step .who { grid-column: 3; grid-row: 1; margin-top: 0; }
+}
+
+/* ===== 4. AUDIENCES ===== */
+.aud-grid { display: grid; gap: 16px; }
+@container page (min-width: 768px) { .aud-grid { grid-template-columns: 1fr 1fr; gap: 24px; } }
+.aud { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); padding: 28px 24px; display: flex; flex-direction: column; gap: 16px; }
+@container page (min-width: 768px) { .aud { padding: 40px; } }
+.aud h3 { font-size: 24px; font-weight: 600; }
+.aud > p { color: var(--ink-2); }
+.ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.ticks li { padding: 12px 0 12px 28px; border-bottom: 1px solid var(--rule); position: relative; font-size: 15px; }
+.ticks li::before { content: ""; position: absolute; left: 2px; top: 18px; width: 12px; height: 6px; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); }
+.aud .btn { align-self: flex-start; margin-top: auto; }
+.aud-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 8px; }
+.aud-foot a.link { font-size: 14px; color: var(--ink-2); text-underline-offset: 3px; }
+
+/* ===== 5. FAQ ===== */
+.faq { border-top: 1px solid var(--ink); }
+.faq details { border-bottom: 1px solid var(--rule-strong); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; min-height: 44px; font-weight: 600; font-size: 17px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: ""; flex: none; width: 10px; height: 10px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(45deg) translate(-2px, -2px); transition: transform .2s; }
+.faq details[open] summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+.faq .ans { padding: 0 0 20px; color: var(--ink-2); max-width: 62ch; }
+.todo { display: inline-block; margin-left: 8px; font: 500 11px var(--font-mono); color: #8a5a00; background: #fff4d6; border: 1px dashed #d9a93a; border-radius: 3px; padding: 1px 6px; vertical-align: middle; }
+@container page (min-width: 768px) {
+  .faq-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 64px; align-items: start; }
+  .faq-grid .section-head { margin-bottom: 0; }
+  .faq summary { font-size: 19px; padding: 22px 0; }
+}
+
+/* Mockup-only section labels */
+.tag { display: inline-block; font: 500 11px var(--font-mono); letter-spacing: .04em; color: #6a5200; background: #fff4d6; border: 1px dashed #d9a93a; border-radius: 3px; padding: 2px 8px; margin-bottom: 16px; }
+.band .tag { color: #fff4d6; background: transparent; border-color: #d9a93a; }
+.frame.no-tags .tag { display: none; }
+.labelled { position: relative; }
+
+/* Footer (unchanged, shown for context) */
+.footer { border-top: 1px solid var(--rule-strong); padding-block: 28px; font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; }
+.footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.footer a { text-decoration: none; }
+
+/* =====================================================================
+   DIRECTION B: "Contrast band" — centered hero like today, black band for
+   product value, horizontal steps, one dark audience card, stacked FAQ.
+   ===================================================================== */
+.only-b { display: none; }
+[data-dir="b"] .only-a { display: none; }
+[data-dir="b"] .only-b { display: block; }
+
+[data-dir="b"] .hero-grid { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+[data-dir="b"] .hero .sub { margin-inline: auto; }
+[data-dir="b"] .search { margin-inline: auto; width: 100%; }
+[data-dir="b"] .hero-ctas { justify-content: center; }
+[data-dir="b"] .hero-visual { display: none; }
+@container page (min-width: 900px) { [data-dir="b"] .hero { padding-block: 120px 128px; } [data-dir="b"] .hero h1 { font-size: 52px; max-width: none; } }
+
+[data-dir="b"] .band { background: var(--ink); color: var(--paper); }
+[data-dir="b"] .band .eyebrow { color: hsl(240 3% 62%); }
+[data-dir="b"] .band .lede { color: hsl(240 3% 78%); }
+[data-dir="b"] .band .section-head { text-align: center; }
+[data-dir="b"] .band .lede { margin-inline: auto; }
+[data-dir="b"] .band .stages { gap: 12px; }
+[data-dir="b"] .band .stage-item { background: var(--paper); color: var(--ink); border: 0; border-radius: var(--radius-card); padding: 24px 22px 24px 64px; }
+[data-dir="b"] .band .stage-item::before { left: 22px; top: 24px; }
+[data-dir="b"] .band .stage-item::after { display: none; }
+@container page (min-width: 768px) {
+  [data-dir="b"] .band .stage-item { padding: 76px 24px 28px; }
+  [data-dir="b"] .band .stage-item::before { top: 28px; left: 24px; }
+}
+[data-dir="b"] .band .value-panel { background: hsl(240 3% 22%); border-color: hsl(240 3% 22%); }
+[data-dir="b"] .band .value-panel > div { background: var(--ink); }
+[data-dir="b"] .band .value-panel b { color: var(--paper); }
+[data-dir="b"] .band .value-panel span { color: hsl(240 3% 70%); }
+.band-offer { margin: 40px auto 0; max-width: 460px; }
+
+</style>
+
+<div class="toolbar" role="region" aria-label="Mockup controls">
+  <strong>LineupBridge landing · master design</strong>
+  <span><span class="seg-label">Labels</span><span class="seg" id="tagSeg">
+    <button type="button" id="tagsOn" data-tags="on" aria-pressed="true">On</button>
+    <button type="button" id="tagsOff" data-tags="off" aria-pressed="false">Off</button>
+  </span></span>
+  <span><span class="seg-label">View</span><span class="seg" id="viewSeg">
+    <button type="button" id="viewDesktop" data-view="desktop" aria-pressed="true">Desktop</button>
+    <button type="button" id="viewMobile" data-view="mobile" aria-pressed="false">Mobile</button>
+  </span></span>
+  <span class="note"><b>Mix:</b> header, hero and Why LineupBridge from B (centered, black band). How it works, Get started and FAQ from A. Stage 1 = layout only; offer snippets and final copy come in stage 2.</span>
+</div>
+
+<div class="stage" id="stage" data-view="desktop">
+<div class="frame" id="frame" data-dir="b">
+
+  <header class="wrap topbar">
+    <a class="logo" href="#top">LineupBridge</a>
+    <nav class="topnav" aria-label="Account"><a href="#audiences">Sign up</a><a href="#top">Log in</a></nav>
+  </header>
+
+  <main id="top">
+
+    <!-- 1. HERO -->
+    <section class="hero wrap" aria-labelledby="h-hero">
+      <div style="text-align:center"><span class="tag">1 · Hero — from B</span></div>
+      <div class="hero-grid">
+        <div>
+          <h1 id="h-hero">Professional DJ booking platform,<br class="br-wide"> from offer to payment</h1>
+          <p class="sub">Structured offers, organized negotiations, confirmed bookings, and secured payments.</p>
+          <form class="search" id="heroSearch" role="search">
+            <label for="djSearch">Search DJs</label>
+            <input id="djSearch" type="search" placeholder="Type a DJ name" autocomplete="off">
+            <button class="btn btn-sm" type="submit">Search</button>
+          </form>
+          <p class="hero-ctas"><span>New here?</span> <a href="#audiences">Sign up as a DJ</a> <a href="#audiences">Sign up as an organizer</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. PRODUCT VALUE -->
+    <section class="section band" aria-labelledby="h-value">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="tag">2 · Why LineupBridge — from B, no offer snippet</span>
+          <p class="eyebrow">Why LineupBridge</p>
+          <h2 class="h2" id="h-value">Every booking moves through four clear stages</h2>
+          <p class="lede">Both sides always see where a booking stands and what was agreed. No scattered emails or DMs to piece together.</p>
+        </div>
+        <ol class="stages">
+          <li class="stage-item"><span class="chip">Offer sent</span><h3>Offer</h3><p>Date, set times, venue and fee arrive as one structured request the DJ can review at a glance.</p></li>
+          <li class="stage-item"><span class="chip chip-live">Negotiating</span><h3>Negotiation</h3><p>Either side can propose new terms, for up to three rounds. Every proposal stays on record.</p></li>
+          <li class="stage-item"><span class="chip">Accepted</span><h3>Confirmed</h3><p>The DJ accepts the final offer and the booking is confirmed for both sides.</p></li>
+          <li class="stage-item"><span class="chip chip-ok">Paid</span><h3>Paid</h3><p>Payment is processed through LineupBridge as part of the booking, so nobody chases invoices.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 3. HOW IT WORKS -->
+    <section class="section wrap" aria-labelledby="h-how">
+      <div class="how-grid">
+        <div class="section-head">
+          <span class="tag">3 · How it works — from A</span>
+          <p class="eyebrow">How it works</p>
+          <h2 class="h2" id="h-how">From first search to paid booking</h2>
+          <p class="lede">A simple path from your first message to a confirmed booking.</p>
+        </div>
+        <ol class="steps">
+          <li class="step"><span class="n">01</span><h3>Find a DJ</h3><p>Search by name and browse profiles with genres, experience and sample mixes.</p><span class="who chip">Organizer</span></li>
+          <li class="step"><span class="n">02</span><h3>Send an offer</h3><p>Add your event details, set times and the fee you propose.</p><span class="who chip">Organizer</span></li>
+          <li class="step"><span class="n">03</span><h3>Agree on terms</h3><p>The DJ can accept, decline or counter. You have up to three rounds to agree.</p><span class="who chip">Both</span></li>
+          <li class="step"><span class="n">04</span><h3>Confirm the booking</h3><p>The DJ accepts the final offer and the date is locked in.</p><span class="who chip">DJ</span></li>
+          <li class="step"><span class="n">05</span><h3>Pay securely</h3><p>Payment runs through LineupBridge as part of the booking.</p><span class="who chip chip-ok">Done</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 4. FOR DJS / ORGANIZERS -->
+    <section class="section wrap" id="audiences" aria-labelledby="h-aud">
+      <div class="section-head aud-head">
+        <span class="tag">4 · Get started — from A</span>
+        <p class="eyebrow">Get started</p>
+        <h2 class="h2" id="h-aud">Start your LineupBridge experience</h2>
+        <p class="lede">Whether you're a DJ or an event organizer, LineupBridge makes booking seamless.</p>
+      </div>
+      <div class="aud-grid">
+        <article class="aud dark">
+          <p class="eyebrow">For DJs</p>
+          <h3>Get booked on clear terms</h3>
+          <p>Showcase your music and receive structured offers from event organizers.</p>
+          <ul class="ticks">
+            <li>A profile with your genres, mixes and experience</li>
+            <li>Offers with date, set times and fee in one place</li>
+            <li>Counter on terms instead of haggling over chat</li>
+            <li>Payment handled through the platform</li>
+          </ul>
+          <div class="aud-foot"><a class="btn" href="#top">Sign up as a DJ</a><a class="link" href="#top">Read the profile guidelines</a></div>
+        </article>
+        <article class="aud">
+          <p class="eyebrow">For event organizers</p>
+          <h3>Book the right DJ with less back-and-forth</h3>
+          <p>Discover professional DJs, send structured offers, and make secure payments.</p>
+          <ul class="ticks">
+            <li>Search DJs by name and compare profiles</li>
+            <li>Send one offer with all your event details</li>
+            <li>See every counteroffer and what changed</li>
+            <li>Pay securely once the booking is confirmed</li>
+          </ul>
+          <div class="aud-foot"><a class="btn btn-outline" href="#top">Sign up as an organizer</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. FAQ -->
+    <section class="section wrap" aria-labelledby="h-faq">
+      <div class="faq-grid">
+        <div class="section-head">
+          <span class="tag">5 · FAQ — from A</span>
+          <p class="eyebrow">FAQ</p>
+          <h2 class="h2" id="h-faq">Questions, answered</h2>
+          <p class="lede">More in the full FAQ, or contact us.</p>
+        </div>
+        <div class="faq">
+          <details open><summary>How does booking a DJ work?</summary><p class="ans">Find a DJ, send an offer with your event details and proposed fee, agree on terms, and the booking is confirmed once the DJ accepts. Payment is part of the same flow.</p></details>
+          <details><summary>How many times can we negotiate?</summary><p class="ans">Up to three negotiation rounds. Each counteroffer is shown with the proposed values, so both sides can see what changed.</p></details>
+          <details><summary>How is payment handled?</summary><p class="ans">Payment is processed through LineupBridge as part of the booking, which keeps the transaction secure and removes payment follow-ups.</p></details>
+          <details><summary>How do I join as a DJ?</summary><p class="ans">Sign up as a DJ, build your profile using our profile guidelines, and start receiving structured offers from organizers.</p></details>
+          <details><summary>What are the fees and cancellation terms? <span class="todo">needs your facts</span></summary><p class="ans">Placeholder. I won't write this answer until you confirm the actual fees and cancellation policy.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <span>© 2026 LineupBridge</span>
+    <nav aria-label="Footer"><a href="#top">Privacy policy</a><a href="#top">Terms of use</a><a href="#top">Payment terms</a><a href="#top">Contact us</a><a href="#top">FAQ</a></nav>
+  </footer>
+</div>
+</div>
+
+<script>
+(function () {
+  var frame = document.getElementById('frame');
+  var stage = document.getElementById('stage');
+  function press(seg, btn) {
+    seg.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+  }
+  function setView(v) {
+    stage.setAttribute('data-view', v);
+    press(document.getElementById('viewSeg'), document.querySelector('#viewSeg [data-view="' + v + '"]'));
+    try { localStorage.setItem('lb-view', v); } catch (e) {}
+  }
+  function setTags(t) {
+    frame.classList.toggle('no-tags', t === 'off');
+    press(document.getElementById('tagSeg'), document.querySelector('#tagSeg [data-tags="' + t + '"]'));
+  }
+  document.getElementById('viewSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setView(b.dataset.view); });
+  document.getElementById('tagSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setTags(b.dataset.tags); });
+  document.getElementById('heroSearch').addEventListener('submit', function (e) { e.preventDefault(); });
+  var v = null;
+  try { v = localStorage.getItem('lb-view'); } catch (e) {}
+  if (v === 'desktop' || v === 'mobile') setView(v);
+})();
+</script>

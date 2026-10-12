@@ -24,13 +24,13 @@
 }
 
 .eyebrow {
-  composes: eyebrow from '../landingType.module.css';
+  composes: eyebrow from '../../../styles/lineupType.module.css';
 }
 
 .heading {
-  composes: h2 from '../landingType.module.css';
+  composes: h2 from '../../../styles/lineupType.module.css';
 }
 
 .lede {
-  composes: lead from '../landingType.module.css';
+  composes: lead from '../../../styles/lineupType.module.css';
 }

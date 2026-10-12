@@ -1,0 +1,201 @@
+@import './customMediaQueries.css';
+
+/* Shared form styles, see .claude/design-system.md section 4. Pass these classes into the Field components. */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-label-gap);
+  align-content: start;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.label {
+  composes: fieldLabel from './lineupType.module.css';
+  margin: 0;
+  padding: 0;
+}
+
+.optional {
+  font-weight: var(--lb-weight-regular);
+  color: var(--lb-text-muted);
+}
+
+/* Shared box for input, select and textarea. Overrides the global element styles. */
+.input,
+.select,
+.textarea {
+  display: block;
+  width: 100%;
+  min-height: var(--lb-input-height);
+  margin: 0;
+  padding: 0 var(--lb-space-4);
+  border: 1px solid var(--colorGrey200);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorWhite);
+  box-shadow: none;
+  font-family: var(--lb-font);
+  font-size: var(--lb-size-input);
+  line-height: 1.5;
+  font-weight: var(--lb-weight-regular);
+  color: var(--lb-text-primary);
+  transition: none;
+
+  &:hover {
+    border-color: var(--colorGrey300);
+    background-color: var(--colorWhite);
+  }
+
+  &:focus,
+  &:focus-within {
+    outline: 0;
+    border-color: var(--colorBlack);
+    background-color: var(--colorWhite);
+    box-shadow: var(--lb-focus-ring);
+  }
+
+  &:disabled {
+    border-color: var(--colorGrey100);
+    background-color: var(--colorGrey100);
+    color: var(--colorGrey600);
+    opacity: 1;
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: var(--colorGrey300);
+  }
+}
+
+.textarea {
+  min-height: 112px;
+  padding: var(--lb-space-3) var(--lb-space-4);
+  resize: vertical;
+}
+
+/* Native select with a custom chevron. The data-URI SVG is the one approved raw value (design-system.md section 1). */
+.select {
+  appearance: none;
+  padding-right: var(--lb-space-7);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--lb-space-4) center;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: var(--colorWhite);
+  }
+}
+
+/* Error: pass together with .input / .select / .textarea */
+.inputError {
+  border-color: var(--colorFail);
+  background-color: var(--colorFailSubtle);
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    border-color: var(--colorFail);
+    background-color: var(--colorFailSubtle);
+  }
+}
+
+/* Input with a unit inside the box on the right ("hours", "€") */
+.inputWithUnit {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+  padding: 0 var(--lb-space-4);
+  min-height: var(--lb-input-height);
+  border: 1px solid var(--colorGrey200);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorWhite);
+  font-size: var(--lb-size-input);
+  min-width: 0;
+
+  &:hover {
+    border-color: var(--colorGrey300);
+  }
+
+  &:focus-within {
+    border-color: var(--colorBlack);
+    box-shadow: var(--lb-focus-ring);
+  }
+
+  & input {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    height: var(--lb-input-height);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: var(--lb-font);
+    font-size: inherit;
+    color: var(--lb-text-primary);
+
+    &:focus {
+      border: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    &::placeholder {
+      color: var(--colorGrey300);
+    }
+  }
+}
+
+.inputWithUnitError {
+  border-color: var(--colorFail);
+  background-color: var(--colorFailSubtle);
+
+  &:hover,
+  &:focus-within {
+    border-color: var(--colorFail);
+  }
+}
+
+.unit {
+  composes: reset from './lineupType.module.css';
+  color: var(--lb-text-muted);
+  pointer-events: none;
+}
+
+.helper {
+  composes: small from './lineupType.module.css';
+  color: var(--lb-text-muted);
+}
+
+/* Error message, for components we build ourselves */
+.error {
+  composes: small from './lineupType.module.css';
+  color: var(--colorFail);
+}
+
+/* Field rows: one column on phones */
+.row,
+.row2,
+.row3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--lb-field-gap);
+  min-width: 0;
+}
+
+@media (--viewportMedium) {
+  .row2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .row3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

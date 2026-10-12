@@ -16,7 +16,7 @@
 }
 
 .number {
-  composes: label from '../landingType.module.css';
+  composes: label from '../../../styles/lineupType.module.css';
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,9 +34,9 @@
 }
 
 .title {
-  composes: h3 from '../landingType.module.css';
+  composes: h3 from '../../../styles/lineupType.module.css';
 }
 
 .text {
-  composes: body from '../landingType.module.css';
+  composes: body from '../../../styles/lineupType.module.css';
 }

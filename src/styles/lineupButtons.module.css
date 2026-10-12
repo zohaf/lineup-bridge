@@ -1,0 +1,91 @@
+@import './customMediaQueries.css';
+
+/* Shared button styles, see .claude/design-system.md section 4. */
+
+.base {
+  composes: button from './lineupType.module.css';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lb-space-2);
+  min-height: var(--lb-button-height);
+  padding: 0 var(--lb-space-5);
+  border: 1px solid var(--colorBlack);
+  border-radius: var(--borderRadiusMedium);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Filled black. The template's loading state reads --colorPrimaryButton (green), so it is set to black here. */
+.primary {
+  composes: base;
+  --colorPrimaryButton: var(--colorBlack);
+  background-color: var(--colorBlack);
+  color: var(--colorWhite);
+
+  &:hover,
+  &:focus {
+    background-color: var(--colorGrey900);
+    border-color: var(--colorGrey900);
+  }
+
+  &:disabled {
+    background-color: var(--colorGrey100);
+    border-color: var(--colorGrey100);
+    color: var(--colorGrey600);
+    cursor: not-allowed;
+  }
+}
+
+/* Outlined black, fills on hover */
+.secondary {
+  composes: base;
+  background-color: transparent;
+  color: var(--colorBlack);
+
+  &:hover,
+  &:focus {
+    background-color: var(--colorBlack);
+    color: var(--colorWhite);
+  }
+
+  &:disabled {
+    border-color: var(--colorGrey200);
+    color: var(--colorGrey600);
+    background-color: transparent;
+    cursor: not-allowed;
+  }
+}
+
+/* Light grey border, transparent */
+.ghost {
+  composes: base;
+  background-color: transparent;
+  border-color: var(--colorGrey200);
+  color: var(--colorBlack);
+
+  &:hover,
+  &:focus {
+    background-color: var(--colorWhite);
+  }
+}
+
+/* Full width on phones, auto (min 200px) from 768px */
+.formButton {
+  width: 100%;
+
+  @media (--viewportMedium) {
+    width: auto;
+    min-width: 200px;
+  }
+}
+
+.link {
+  composes: small from './lineupType.module.css';
+  font-weight: var(--lb-weight-semibold);
+  color: var(--colorBlack);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

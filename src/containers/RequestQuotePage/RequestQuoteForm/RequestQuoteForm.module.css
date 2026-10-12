@@ -1,231 +1,72 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* Cards stack 16px apart, 24px from 768px */
 .root {
-}
-
-/* Reusable card shell for grouped form sections */
-.sectionCard {
-  border: 1px solid var(--colorGrey100);
-  border-radius: 8px;
-  padding: 18px;
-  background-color: var(--colorWhite);
-
-  @media (--viewportMedium) {
-    padding: 24px;
-  }
-}
-
-.bookingSummary {
-  composes: sectionCard;
-  margin-bottom: 18px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 24px;
-  }
-}
-
-.bookingSummaryTitle {
-  composes: marketplaceDefaultFontStyles from global;
-  font-weight: var(--fontWeightSemiBold);
-  margin: 0 0 12px 0;
-  color: var(--colorGrey900);
-}
-
-.bookingSummaryGrid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--lb-form-section-gap);
+  min-width: 0;
 }
 
-.bookingSummaryItem {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.bookingSummaryLabel {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey700);
-}
-
-.bookingSummaryValue {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey900);
-}
-
-.section {
-  composes: sectionCard;
+/* A field with its helper text under it, as one grid cell */
+.fieldWithHelper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 24px;
-  }
+  gap: var(--lb-label-gap);
+  align-content: start;
+  min-width: 0;
 }
 
-.sectionTitle {
-  composes: marketplaceDefaultFontStyles from global;
-  font-weight: var(--fontWeightSemiBold);
-  margin: 0 0 16px 0;
-  color: var(--colorGrey900);
-}
-
-.input {
-}
-
-.field {
-  margin: 0 0 24px 0;
-
-  & label {
-    margin: 0 0 8px 0;
-    padding: 0;
-  }
-}
-
-.fieldCompact {
-  margin-bottom: 4px;
-}
-
-.label {
-  composes: marketplaceSmallFontStyles from global;
-  font-weight: var(--fontWeightMedium);
-}
-
-.optional {
-  font-weight: var(--fontWeightRegular);
-  color: var(--colorGrey500);
-}
-
-.multiSelect {
-  composes: marketplaceInputStyles from global;
-  width: 100%;
-  min-height: 120px;
-  padding: 8px 12px;
-}
-
-.deckSetupField {
-  margin-bottom: 0;
-}
-
-.deckSetupField legend {
-  font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 24px;
-  margin: 0 0 8px 0;
-  padding: 0;
-  display: block;
-}
-
-.deckSetupField ul {
-  margin: 0;
-}
-
-.deckSetupField li {
-  padding: 0;
-  page-break-inside: avoid;
-}
-
-/* Default checkbox variant: visible box + tick when selected */
-.deckSetupField label {
-  display: flex;
-  align-items: center;
-  margin: 0;
-  cursor: pointer;
-}
-
-.boothMonitorsField {
-  margin-top: 16px;
-}
-
-.helper {
-  font-weight: var(--fontWeightHeading);
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--colorGrey500);
-  margin: 0 0 24px 0;
-}
-
-.offerUnderText {
-  margin: 4px 0 0 0;
-}
-
-.finePrint {
-  composes: marketplaceTinyFontStyles from global;
-  text-align: center;
-}
-
-.dateInputRightIcon {
+/* The date picker wraps its input; give that input the shared field look */
+.dateInput {
   & input {
-    padding-left: 12px;
-    padding-right: 36px;
-    background-position: calc(100% - 12px) 9px;
+    display: block;
+    width: 100%;
+    min-height: var(--lb-input-height);
+    margin: 0;
+    padding: 0 var(--lb-space-4);
+    border: 1px solid var(--colorGrey200);
+    border-radius: var(--borderRadiusMedium);
+    background-color: var(--colorWhite);
+    background-image: none;
+    box-shadow: none;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-input);
+    line-height: 1.5;
+    color: var(--lb-text-primary);
 
-    @media (--viewportMedium) {
-      background-position: calc(100% - 12px) 14px;
+    &:hover {
+      border-color: var(--colorGrey300);
+    }
+
+    &:focus {
+      border-color: var(--colorBlack);
+      background-color: var(--colorWhite);
+      box-shadow: var(--lb-focus-ring);
+    }
+
+    &::placeholder {
+      color: var(--colorGrey300);
     }
   }
 }
 
-.timePickerRow {
-  display: flex;
-  gap: 8px;
-}
-
-.timeSelect {
-  composes: marketplaceInputStyles from global;
-  flex: 1;
-}
-
-.durationInputShell {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.durationInputShellError {
-  & input {
+.dateInputError {
+  & input,
+  & input:hover,
+  & input:focus {
     border-color: var(--colorFail);
+    background-color: var(--colorFailSubtle);
   }
 }
 
-.durationInput {
-  composes: marketplaceInputStyles from global;
-  width: 100%;
-  padding-right: 64px;
-}
-
-.durationSuffix {
-  position: absolute;
-  right: 12px;
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey700);
-  pointer-events: none;
-}
-
-.offerInputShell {
-  position: relative;
+.submit {
   display: flex;
-  align-items: center;
-}
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--lb-space-3);
 
-.offerInputShellError {
-  & input {
-    border-color: var(--colorFail);
+  @media (--viewportMedium) {
+    align-items: flex-start;
   }
-}
-
-.offerInput {
-  composes: marketplaceInputStyles from global;
-  width: 100%;
-  padding-right: 44px;
-}
-
-.offerSuffix {
-  position: absolute;
-  right: 12px;
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey700);
-  pointer-events: none;
 }
