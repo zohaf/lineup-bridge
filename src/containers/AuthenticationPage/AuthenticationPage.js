@@ -34,9 +34,9 @@ import {
   NamedRedirect,
   LinkTabNavHorizontal,
   SocialLoginButton,
-  ResponsiveBackgroundImageContainer,
   Modal,
-  LayoutSingleColumn,
+  LayoutCentered,
+  SectionCard,
 } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
@@ -183,7 +183,7 @@ export const AuthenticationForms = props => {
   const tabs = [
     {
       text: (
-        <Heading as={!isLogin ? 'h1' : 'h2'} rootClassName={css.tab}>
+        <Heading as={!isLogin ? 'h1' : 'h2'} rootClassName={!isLogin ? css.tabSelected : css.tab}>
           <FormattedMessage id="AuthenticationPage.signupLinkText" />
         </Heading>
       ),
@@ -196,7 +196,7 @@ export const AuthenticationForms = props => {
     },
     {
       text: (
-        <Heading as={isLogin ? 'h1' : 'h2'} rootClassName={css.tab}>
+        <Heading as={isLogin ? 'h1' : 'h2'} rootClassName={isLogin ? css.tabSelected : css.tab}>
           <FormattedMessage id="AuthenticationPage.loginLinkText" />
         </Heading>
       ),
@@ -310,22 +310,29 @@ export const AuthenticationForms = props => {
 
   return (
     <div className={css.content}>
-      <LinkTabNavHorizontal className={css.tabs} tabs={tabs} ariaLabel={ariaLabel} />
+      <LinkTabNavHorizontal
+        rootClassName={css.tabs}
+        tabRootClassName={css.tabItem}
+        tabs={tabs}
+        ariaLabel={ariaLabel}
+      />
       {loginOrSignupError ? <div ref={formErrorRef}>{loginOrSignupError}</div> : null}
 
-      {isLogin ? (
-        <LoginForm className={css.loginForm} onSubmit={submitLogin} inProgress={authInProgress} />
-      ) : (
-        <SignupForm
-          className={css.signupForm}
-          onSubmit={handleSubmitSignup}
-          inProgress={authInProgress}
-          termsAndConditions={termsAndConditions}
-          preselectedUserType={preselectedUserType}
-          userTypes={userTypes}
-          userFields={userFields}
-        />
-      )}
+      <SectionCard>
+        {isLogin ? (
+          <LoginForm className={css.loginForm} onSubmit={submitLogin} inProgress={authInProgress} />
+        ) : (
+          <SignupForm
+            className={css.signupForm}
+            onSubmit={handleSubmitSignup}
+            inProgress={authInProgress}
+            termsAndConditions={termsAndConditions}
+            preselectedUserType={preselectedUserType}
+            userTypes={userTypes}
+            userFields={userFields}
+          />
+        )}
+      </SectionCard>
 
       <SocialLoginButtonsMaybe
         isLogin={isLogin}
@@ -700,7 +707,7 @@ export const AuthenticationPageComponent = props => {
     ? 'AuthenticationPage.resendFailedTooManyRequests'
     : 'AuthenticationPage.resendFailed';
   const resendErrorMessage = sendVerificationEmailError ? (
-    <p className={css.error}>
+    <p className={css.verifyError}>
       <FormattedMessage id={resendErrorTranslationId} />
     </p>
   ) : null;
@@ -716,54 +723,45 @@ export const AuthenticationPageComponent = props => {
         description: schemaDescription,
       }}
     >
-      <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
+      <LayoutCentered
+        variant="narrow"
         topbar={<TopbarContainer className={topbarClasses} />}
         footer={<FooterContainer />}
       >
-        <ResponsiveBackgroundImageContainer
-          className={css.root}
-          childrenWrapperClassName={css.contentContainer}
-          as="section"
-          image={config.branding.brandImage}
-          sizes="100%"
-          useOverlay
-        >
-          {showEmailVerification ? (
-            <EmailVerificationInfo
-              name={user.attributes.profile.firstName}
-              email={<span className={css.email}>{user.attributes.email}</span>}
-              onResendVerificationEmail={onResendVerificationEmail}
-              resendErrorMessage={resendErrorMessage}
-              sendVerificationEmailInProgress={sendVerificationEmailInProgress}
-            />
-          ) : (
-            <AuthenticationOrConfirmInfoForm
-              tab={tab}
-              userType={resolvedUserType}
-              authInfo={authInfo}
-              from={from}
-              showFacebookLogin={!!process.env.REACT_APP_FACEBOOK_APP_ID}
-              showGoogleLogin={!!process.env.REACT_APP_GOOGLE_CLIENT_ID}
-              submitLogin={submitLogin}
-              submitSignup={submitSignup}
-              submitSingupWithIdp={submitSingupWithIdp}
-              authInProgress={authInProgress}
-              loginError={loginError}
-              idpAuthError={authError}
-              signupError={signupError}
-              confirmError={confirmError}
-              termsAndConditions={
-                <TermsAndConditions
-                  onOpenTermsOfService={() => setTosModalOpen(true)}
-                  onOpenPrivacyPolicy={() => setPrivacyModalOpen(true)}
-                  intl={intl}
-                />
-              }
-            />
-          )}
-        </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn>
+        {showEmailVerification ? (
+          <EmailVerificationInfo
+            name={user.attributes.profile.firstName}
+            email={<span className={css.email}>{user.attributes.email}</span>}
+            onResendVerificationEmail={onResendVerificationEmail}
+            resendErrorMessage={resendErrorMessage}
+            sendVerificationEmailInProgress={sendVerificationEmailInProgress}
+          />
+        ) : (
+          <AuthenticationOrConfirmInfoForm
+            tab={tab}
+            userType={resolvedUserType}
+            authInfo={authInfo}
+            from={from}
+            showFacebookLogin={!!process.env.REACT_APP_FACEBOOK_APP_ID}
+            showGoogleLogin={!!process.env.REACT_APP_GOOGLE_CLIENT_ID}
+            submitLogin={submitLogin}
+            submitSignup={submitSignup}
+            submitSingupWithIdp={submitSingupWithIdp}
+            authInProgress={authInProgress}
+            loginError={loginError}
+            idpAuthError={authError}
+            signupError={signupError}
+            confirmError={confirmError}
+            termsAndConditions={
+              <TermsAndConditions
+                onOpenTermsOfService={() => setTosModalOpen(true)}
+                onOpenPrivacyPolicy={() => setPrivacyModalOpen(true)}
+                intl={intl}
+              />
+            }
+          />
+        )}
+      </LayoutCentered>
       <Modal
         id="AuthenticationPage.tos"
         isOpen={tosModalOpen}
