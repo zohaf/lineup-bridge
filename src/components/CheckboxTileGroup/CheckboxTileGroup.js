@@ -13,7 +13,7 @@ const CheckboxTilesRenderer = props => {
 
   return (
     <fieldset className={classNames(formCss.field, className)}>
-      {label ? <legend className={formCss.label}>{label}</legend> : null}
+      {label ? <legend className={formCss.legend}>{label}</legend> : null}
       <ul className={css.list}>
         {options.map(option => {
           const fieldId = `${id}.${option.key}`;

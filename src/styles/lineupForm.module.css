@@ -19,6 +19,12 @@
   padding: 0;
 }
 
+/* Legend of a fieldset field: the flex gap does not apply to a legend, so it carries the label gap itself */
+.legend {
+  composes: label;
+  margin-bottom: var(--lb-label-gap);
+}
+
 .optional {
   font-weight: var(--lb-weight-regular);
   color: var(--lb-text-muted);
@@ -76,19 +82,33 @@
   resize: vertical;
 }
 
-/* Native select with a custom chevron. The data-URI SVG is the one approved raw value (design-system.md section 1). */
+/* Native select; the icon is a lucide-react chevron inside .selectBox. background-image: none removes the global select arrows. */
 .select {
   appearance: none;
+  background-image: none;
   padding-right: var(--lb-space-7);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right var(--lb-space-4) center;
   cursor: pointer;
 
   &:hover,
   &:focus {
     background-color: var(--colorWhite);
   }
+}
+
+.selectBox {
+  position: relative;
+  min-width: 0;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--lb-space-4);
+  transform: translateY(-50%);
+  color: var(--colorBlack);
+  /* sanitize.css sets svg { fill: currentColor }, which beats the icon's fill="none" */
+  fill: none;
+  pointer-events: none;
 }
 
 /* Error: pass together with .input / .select / .textarea */
@@ -178,6 +198,16 @@
 .error {
   composes: small from './lineupType.module.css';
   color: var(--colorFail);
+}
+
+/* The shared ValidationError (inside FieldTextInput) adds its own margin-top on top of the field gap.
+   Match the .error look so every message sits one field gap under its input. */
+.input + div,
+.textarea + div {
+  margin-top: 0;
+  font-size: var(--lb-size-small);
+  line-height: var(--lb-leading-small);
+  font-weight: var(--lb-weight-regular);
 }
 
 /* Field rows: one column on phones */
