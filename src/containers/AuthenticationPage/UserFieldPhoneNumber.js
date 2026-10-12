@@ -5,7 +5,7 @@ import { intlShape } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import * as validators from '../../util/validators';
 
-import { FieldPhoneNumberInput } from '../../components';
+import { PhoneNumberField } from '../../components';
 
 /**
  * A component that renders the phone number field.
@@ -43,16 +43,12 @@ const UserFieldPhoneNumber = props => {
     : {};
 
   return (
-    <FieldPhoneNumberInput
+    <PhoneNumberField
       className={classNames(className, { [rootClassName]: !!rootClassName })}
-      type="text"
       id={formId ? `${formId}.phoneNumber` : 'phoneNumber'}
       name="phoneNumber"
       label={intl.formatMessage({
         id: `${formName}.phoneNumberLabel`,
-      })}
-      placeholder={intl.formatMessage({
-        id: `${formName}.phoneNumberPlaceholder`,
       })}
       {...validateMaybe}
     />

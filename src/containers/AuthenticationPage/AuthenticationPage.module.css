@@ -19,14 +19,9 @@
 }
 
 .content {
-  composes: marketplaceModalBaseStyles from global;
-  padding-top: 29px;
-
-  @media (--viewportMedium) {
-    margin-top: 5vh;
-    margin-bottom: 7.5vh;
-    min-height: 700px;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-6);
 }
 
 .spinnerContainer {
@@ -39,36 +34,40 @@
 /* ================ Tabs & Form ================ */
 
 .tabs {
-  @media (--viewportMedium) {
-    margin-top: 6px;
+  display: flex;
+  gap: var(--lb-space-5);
+}
+
+.tabItem {
+  display: flex;
+
+  /* The template tab link draws its own underline, padding and font; the heading inside draws ours */
+  & > a {
+    padding: 0;
+    border-bottom: 0;
+    text-decoration: none;
   }
 }
 
 .tab {
-  composes: marketplaceModalTitleStyles from global;
+  composes: button from '../../styles/lineupType.module.css';
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin: 0;
   padding: 0;
-  margin-top: 0;
-  margin-bottom: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--lb-text-muted);
 
-  /* Break long words into multiple lines to avoid overflow */
-  word-break: break-word;
-  hyphens: auto;
-  font-size: 20px;
-
-  @media (min-width: 375px) {
-    font-size: 24px;
+  &:hover {
+    color: var(--colorBlack);
   }
+}
 
-  @media (min-width: 450px) {
-    font-size: 30px;
-  }
-
-  @media (--viewportMedium) {
-    word-break: unset;
-    hyphens: unset;
-    padding: 0;
-    margin-top: 0;
-  }
+.tabSelected {
+  composes: tab;
+  border-bottom-color: var(--colorBlack);
+  color: var(--colorBlack);
 }
 
 .form {
@@ -80,40 +79,9 @@
   }
 }
 
-.loginForm {
-  margin-top: 24px;
-
-  /* We don't want the form to take the whole space so that on mobile view
-  the social login buttons will be after the sign up button
-  and not in the bottom of the page.
-  We also need to add flex-basis value so that Safari will show the
-  whole form correctly.  */
-  flex-grow: 0;
-  flex-basis: 260px;
-
-  @media (--viewportMedium) {
-    flex-basis: 330px;
-    margin-top: 30px;
-    padding-top: 2px;
-  }
-}
-
+.loginForm,
 .signupForm {
-  margin-top: 24px;
-
-  /* We don't want the form to take the whole space so that on mobile view
-  the social login buttons will be after the sign up button
-  and not in the bottom of the page.
-  We also need to add flex-basis value so that Safari will show the
-  whole form correctly.  */
-  flex-grow: 0;
-  flex-basis: 340px;
-
-  @media (--viewportMedium) {
-    flex-basis: 410px;
-    margin-top: 30px;
-    padding-top: 2px;
-  }
+  margin: 0;
 }
 
 .bottomWrapper {
@@ -169,65 +137,51 @@
   }
 }
 
-/* ================ Close icon ================ */
+/* ================ After sign up: check your email ================ */
 
-.verifyClose {
-  composes: marketplaceModalCloseStyles from global;
-
-  /* This is not a real modal, z-index should not be modal's z-index */
-  z-index: 1;
+.verifyTitle {
+  composes: h2 from '../../styles/lineupType.module.css';
+  margin: 0;
 }
 
-.closeText {
-  composes: marketplaceModalCloseText from global;
-}
-
-.closeIcon {
-  composes: marketplaceModalCloseIcon from global;
-}
-
-/* ================ Typography ================ */
-
-/* Title of the modal */
-.modalTitle {
-  composes: marketplaceModalTitleStyles from global;
-}
-
-/* Paragraph for the Modal */
-.modalMessage {
-  composes: marketplaceModalParagraphStyles from global;
+.verifyMessage {
+  composes: body from '../../styles/lineupType.module.css';
+  margin: 0;
 }
 
 /* Make the email pop */
 .email {
-  font-weight: var(--fontWeightHighlightEmail);
-
-  /* fallback option */
-  word-break: break-all;
-  /* use break-word if available */
+  font-weight: var(--lb-weight-semibold);
   word-break: break-word;
-  hyphens: auto;
 }
 
-/* Helper links */
-.modalHelperLink {
-  composes: a from global;
-  composes: marketplaceModalHelperLink from global;
+.verifyHelp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
+  padding-top: var(--lb-space-5);
+  border-top: 1px solid var(--colorGrey100);
 }
 
-/* Helper texts for the links, not the actual links */
-.modalHelperText {
-  composes: marketplaceModalHelperText from global;
+.verifyHelperText {
+  composes: small from '../../styles/lineupType.module.css';
+  margin: 0;
+  color: var(--lb-text-muted);
 }
 
-.modalIcon {
-  composes: marketplaceModalIconStyles from global;
+/* Full width secondary button */
+.verifyLater {
+  composes: secondary from '../../styles/lineupButtons.module.css';
+  width: 100%;
+  text-transform: lowercase;
+}
 
-  /* Align the icon and rest of the content in the modal. Sign & Login doesn't use an icon, maybe we should add one? */
-  margin-top: 47px;
+/* "LATER" in the translation is shown as "Later" */
+.verifyLaterText {
+  display: inline-block;
 
-  @media (--viewportMedium) {
-    margin-top: 0;
+  &::first-letter {
+    text-transform: uppercase;
   }
 }
 
@@ -235,6 +189,11 @@
 
 .error {
   composes: marketplaceModalPasswordMargins from global;
+}
+
+.verifyError {
+  composes: error from '../../styles/lineupForm.module.css';
+  margin: 0;
 }
 
 /* ================ Social logins & SSO ================ */

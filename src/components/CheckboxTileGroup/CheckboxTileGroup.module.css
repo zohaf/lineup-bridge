@@ -51,14 +51,42 @@
   background-color: var(--colorFailSubtle);
 }
 
-.checkbox {
+.box {
+  position: relative;
+  display: grid;
   flex: none;
+  place-items: center;
+}
+
+/* Outlined box; the lucide Check is drawn on top when checked */
+.checkbox {
+  appearance: none;
+  display: block;
   width: 18px;
   height: 18px;
   margin: 0;
   padding: 0;
-  accent-color: var(--colorBlack);
+  border: 1px solid var(--colorGrey600);
+  border-radius: 3px;
+  background-color: var(--colorWhite);
   cursor: pointer;
+
+  &:checked {
+    border-color: var(--colorBlack);
+  }
+}
+
+.tick {
+  position: absolute;
+  display: none;
+  color: var(--colorBlack);
+  /* sanitize.css sets svg { fill: currentColor } */
+  fill: none;
+  pointer-events: none;
+}
+
+.checkbox:checked + .tick {
+  display: block;
 }
 
 .text {

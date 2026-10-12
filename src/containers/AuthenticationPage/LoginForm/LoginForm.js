@@ -6,6 +6,8 @@ import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import * as validators from '../../../util/validators';
 import { Form, PrimaryButton, FieldTextInput, NamedLink } from '../../../components';
 
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './LoginForm.module.css';
 
 const LoginFormComponent = props => (
@@ -22,7 +24,14 @@ const LoginFormComponent = props => (
         invalid,
         values,
         errors,
+        touched,
+        submitFailed,
       } = fieldRenderProps;
+
+      const inputClass = name =>
+        classNames(formCss.input, {
+          [formCss.inputError]: !!(touched?.[name] || submitFailed) && !!errors?.[name],
+        });
 
       // email
       const emailLabel = intl.formatMessage({
@@ -71,8 +80,11 @@ const LoginFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          <div>
+          <div className={css.fields}>
             <FieldTextInput
+              rootClassName={formCss.field}
+              labelClassName={formCss.label}
+              inputRootClass={inputClass('email')}
               type="email"
               id={formId ? `${formId}.email` : 'email'}
               name="email"
@@ -81,30 +93,36 @@ const LoginFormComponent = props => (
               placeholder={emailPlaceholder}
               validate={validators.composeValidators(emailRequired, emailValid)}
             />
-            <FieldTextInput
-              className={css.password}
-              type="password"
-              id={formId ? `${formId}.password` : 'password'}
-              name="password"
-              autoComplete="current-password"
-              label={passwordLabel}
-              placeholder={passwordPlaceholder}
-              validate={passwordRequired}
-            />
-          </div>
-          <div className={css.bottomWrapper}>
-            <p className={css.bottomWrapperText}>
-              <span className={css.recoveryLinkInfo}>
+            <div className={css.passwordBlock}>
+              <FieldTextInput
+                rootClassName={formCss.field}
+                labelClassName={formCss.label}
+                inputRootClass={inputClass('password')}
+                type="password"
+                id={formId ? `${formId}.password` : 'password'}
+                name="password"
+                autoComplete="current-password"
+                label={passwordLabel}
+                placeholder={passwordPlaceholder}
+                validate={passwordRequired}
+              />
+              <p className={css.helper}>
                 <FormattedMessage
                   id="LoginForm.forgotPasswordInfo"
                   values={{ passwordRecoveryLink }}
                 />
-              </span>
-            </p>
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-              <FormattedMessage id="LoginForm.logIn" />
-            </PrimaryButton>
+              </p>
+            </div>
           </div>
+          <PrimaryButton
+            type="submit"
+            rootClassName={buttonCss.primary}
+            className={css.submitButton}
+            inProgress={submitInProgress}
+            disabled={submitDisabled}
+          >
+            <FormattedMessage id="LoginForm.logIn" />
+          </PrimaryButton>
         </Form>
       );
     }}

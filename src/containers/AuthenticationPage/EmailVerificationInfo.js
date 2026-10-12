@@ -2,8 +2,9 @@ import React from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
 
-import { Heading, NamedLink, IconEmailSent, InlineTextButton, IconClose } from '../../components';
+import { NamedLink, InlineTextButton, SectionCard } from '../../components';
 
+import buttonCss from '../../styles/lineupButtons.module.css';
 import css from './AuthenticationPage.module.css';
 
 const EmailVerificationInfo = props => {
@@ -16,46 +17,47 @@ const EmailVerificationInfo = props => {
   } = props;
 
   const resendEmailLink = (
-    <InlineTextButton rootClassName={css.modalHelperLink} onClick={onResendVerificationEmail}>
+    <InlineTextButton rootClassName={buttonCss.link} onClick={onResendVerificationEmail}>
       <FormattedMessage id="AuthenticationPage.resendEmailLinkText" />
     </InlineTextButton>
   );
 
   const fixEmailLink = (
-    <NamedLink className={css.modalHelperLink} name="ContactDetailsPage">
+    <NamedLink className={buttonCss.link} name="ContactDetailsPage">
       <FormattedMessage id="AuthenticationPage.fixEmailLinkText" />
     </NamedLink>
   );
 
   return (
     <div className={css.content}>
-      <NamedLink className={css.verifyClose} name="ContactDetailsPage">
-        <span className={css.closeText}>
-          <FormattedMessage id="AuthenticationPage.verifyEmailClose" />
-        </span>
-        <IconClose rootClassName={css.closeIcon} />
-      </NamedLink>
-      <IconEmailSent className={css.modalIcon} />
-      <Heading as="h1" rootClassName={css.modalTitle}>
+      <h1 className={css.verifyTitle}>
         <FormattedMessage id="AuthenticationPage.verifyEmailTitle" values={{ name }} />
-      </Heading>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="AuthenticationPage.verifyEmailText" values={{ email }} />
-      </p>
-      {resendErrorMessage}
+      </h1>
+      <SectionCard>
+        <p className={css.verifyMessage}>
+          <FormattedMessage id="AuthenticationPage.verifyEmailText" values={{ email }} />
+        </p>
+        {resendErrorMessage}
 
-      <div className={css.bottomWrapper}>
-        <p className={css.modalHelperText}>
-          {sendVerificationEmailInProgress ? (
-            <FormattedMessage id="AuthenticationPage.sendingEmail" />
-          ) : (
-            <FormattedMessage id="AuthenticationPage.resendEmail" values={{ resendEmailLink }} />
-          )}
-        </p>
-        <p className={css.modalHelperText}>
-          <FormattedMessage id="AuthenticationPage.fixEmail" values={{ fixEmailLink }} />
-        </p>
-      </div>
+        <div className={css.verifyHelp}>
+          <p className={css.verifyHelperText}>
+            {sendVerificationEmailInProgress ? (
+              <FormattedMessage id="AuthenticationPage.sendingEmail" />
+            ) : (
+              <FormattedMessage id="AuthenticationPage.resendEmail" values={{ resendEmailLink }} />
+            )}
+          </p>
+          <p className={css.verifyHelperText}>
+            <FormattedMessage id="AuthenticationPage.fixEmail" values={{ fixEmailLink }} />
+          </p>
+        </div>
+
+        <NamedLink className={css.verifyLater} name="ContactDetailsPage">
+          <span className={css.verifyLaterText}>
+            <FormattedMessage id="AuthenticationPage.verifyEmailClose" />
+          </span>
+        </NamedLink>
+      </SectionCard>
     </div>
   );
 };

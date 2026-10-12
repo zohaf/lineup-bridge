@@ -111,6 +111,7 @@ export { default as CheckboxTileGroup } from './CheckboxTileGroup/CheckboxTileGr
 export { default as FieldCheckboxGroup } from './FieldCheckboxGroup/FieldCheckboxGroup';
 export { default as FieldPhoneNumberInput } from './FieldPhoneNumberInput/FieldPhoneNumberInput';
 export { default as TimeSelect } from './TimeSelect/TimeSelect';
+export { default as PhoneNumberField } from './PhoneNumberField/PhoneNumberField';
 export { default as LocationAutocompleteInput, FieldLocationAutocompleteInput } from './LocationAutocompleteInput/LocationAutocompleteInput';
 
 // NOTE: these are code-splitted since these components are heavy and needed only on couple of pages
@@ -151,5 +152,6 @@ export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/
 //////////////////////////////////////////////
 
 export { default as LayoutComposer, LayoutSingleColumn, LayoutSideNavigation } from './LayoutComposer';
+export { default as LayoutCentered } from './LayoutCentered/LayoutCentered';
 export { default as MaintenanceMode } from './MaintenanceMode/MaintenanceMode';
 export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';

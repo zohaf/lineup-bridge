@@ -2,6 +2,7 @@ import React from 'react';
 import { Form as FinalForm, Field } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
+import { Calendar } from 'lucide-react';
 
 // Import contexts and util modules
 import { FormattedMessage, intlShape } from '../../../util/reactIntl.js';
@@ -195,17 +196,28 @@ export const RequestQuoteForm = props => {
                       <label className={formCss.label} htmlFor={fid('bookingDate')}>
                         <FormattedMessage id="RequestQuoteForm.dateLabel" />
                       </label>
-                      <SingleDatePicker
-                        id={fid('bookingDate')}
-                        value={input.value || null}
-                        onChange={input.onChange}
-                        placeholderText={intl.formatMessage({
-                          id: 'RequestQuoteForm.datePlaceholder',
-                        })}
-                        inputClassName={classNames(css.dateInput, {
-                          [css.dateInputError]: (meta.touched || submitFailed) && meta.invalid,
-                        })}
-                      />
+                      <div className={css.dateBox}>
+                        <SingleDatePicker
+                          id={fid('bookingDate')}
+                          value={input.value || null}
+                          onChange={input.onChange}
+                          placeholderText={intl.formatMessage({
+                            id: 'RequestQuoteForm.datePlaceholder',
+                          })}
+                          inputClassName={classNames(css.dateInput, {
+                            [css.dateInputError]: (meta.touched || submitFailed) && meta.invalid,
+                          })}
+                          popupClassName={css.datePopup}
+                        />
+                        <Calendar
+                          className={classNames(css.dateIcon, {
+                            [css.dateIconError]: (meta.touched || submitFailed) && meta.invalid,
+                          })}
+                          size={16}
+                          strokeWidth={2}
+                          absoluteStrokeWidth
+                        />
+                      </div>
                       <ValidationError rootClassName={formCss.error} fieldMeta={meta} />
                     </div>
                   )}

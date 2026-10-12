@@ -1,55 +1,83 @@
 @import '../../../styles/customMediaQueries.css';
 
 .root {
-  composes: marketplaceModalFormRootStyles from global;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+}
 
-  justify-content: flex-start;
+.userTypeSelector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-label-gap);
 }
 
 .defaultUserFields {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-
-  @media (--viewportMedium) {
-    gap: 32px;
-  }
+  gap: var(--lb-field-gap);
 }
 
+/* First and last name stack: 440px is too narrow for a pair */
 .name {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
 }
 
-.row,
+/* Console user fields (CustomExtendedDataField) take no class props, so their parts are styled from here */
 .customFields {
-}
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
 
-.firstNameRoot {
-  width: calc(34% - 9px);
-}
+  & > * {
+    margin: 0;
+  }
 
-.lastNameRoot {
-  width: calc(66% - 9px);
-}
+  & label {
+    display: block;
+    margin: 0 0 var(--lb-label-gap);
+    padding: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-field-label);
+    line-height: var(--lb-leading-field-label);
+    font-weight: var(--lb-weight-semibold);
+    color: var(--lb-text-primary);
+  }
 
-.password {
-  /* Keep spacing consistent via .defaultUserFields gap */
+  & input:not([type='checkbox']):not([type='radio']),
+  & select,
+  & textarea {
+    width: 100%;
+    min-height: var(--lb-input-height);
+    padding: 0 var(--lb-space-4);
+    border: 1px solid var(--colorGrey200);
+    border-radius: var(--borderRadiusMedium);
+    background-color: var(--colorWhite);
+    box-shadow: none;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-input);
+    color: var(--lb-text-primary);
+
+    &:focus {
+      outline: 0;
+      border-color: var(--colorBlack);
+      box-shadow: var(--lb-focus-ring);
+    }
+  }
 }
 
 .bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
-  margin-top: 32px;
-
-  @media (--viewportMedium) {
-    margin-top: 32px;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
 }
 
-.confirmationFinePrint {
-  composes: marketplaceModalHelperLink from global;
-  padding: 3px 0 5px 0;
-  text-align: left;
+.consent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
 }
 
 .confirmationRow,
@@ -58,47 +86,7 @@
   width: 100%;
 }
 
-.termsRow {
-  margin-top: 8px;
-}
-
-.userTypeSelector {
+/* Full width at every size (narrow column) */
+.submitButton {
   width: 100%;
-  margin-bottom: 32px;
-}
-
-.userTypeLabel {
-  margin: 0 0 12px;
-  font-weight: var(--fontWeightSemiBold);
-  color: var(--colorGrey700);
-  text-align: left;
-}
-
-.userTypeButtons {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.userTypeButton {
-  composes: buttonSecondary from global;
-  background: transparent;
-  width: 100%;
-  min-height: 48px;
-}
-
-.userTypeButtonSelected {
-  border-color: var(--marketplaceColor);
-}
-
-.error {
-  composes: textXSmall from global;
-  color: var(--colorFail);
-  font-weight: var(--fontWeightBold);
-  text-align: left;
-  padding: 6px 0;
-
-  @media (--viewportMedium) {
-    padding: 8px 0;
-  }
 }

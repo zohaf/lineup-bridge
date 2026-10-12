@@ -2,7 +2,7 @@
 <title>LineupBridge UI Library</title>
 <style>
 /* Layout: a reference sheet. Left: section index; right: each component with its states, the code name it maps to,
-   and the tokens it uses. Single light look on the app's beige, matching design-system.md. */
+   and the tokens it uses. Single light look on the app's beige, matching design-system-rules.md. */
 :root {
   color-scheme: light;
   --page: #eeede9;          /* --colorPageBackground */
@@ -112,6 +112,10 @@ body { margin: 0; background: var(--page); color: var(--ink); font-family: var(-
 .time { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--lb-space-2); align-items: center; }
 .time-duration { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .time .colon { font-size: var(--lb-size-input); font-weight: 600; color: var(--lb-text-muted); }
+.phone { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: var(--lb-space-2); }
+.phone .code { position: relative; }
+.phone .code .dial { pointer-events: none; }
+.phone .code select { position: absolute; inset: 0; width: 100%; opacity: 0; }
 .select .suffix { color: var(--lb-text-muted); pointer-events: none; }
 .pending { display: inline-block; font: 500 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #6a5200; background: #fff4d6; border: 1px dashed #d9a93a; border-radius: 3px; padding: 1px 6px; margin-left: 6px; }
 textarea.input { min-height: 112px; padding: var(--lb-space-3) var(--lb-space-4); resize: vertical; display: block; }
@@ -128,7 +132,14 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
 .checks { display: grid; grid-template-columns: 1fr; gap: var(--lb-space-2); }
 @media (min-width: 768px) { .checks { grid-template-columns: repeat(3, 1fr); } }
 .check { display: flex; align-items: center; gap: var(--lb-space-3); min-height: 44px; padding: 0 var(--lb-space-3); border: 1px solid var(--rule-strong); border-radius: var(--radius); font-size: var(--lb-size-body); cursor: pointer; background: var(--paper); }
-.check input { width: 18px; height: 18px; accent-color: #000; margin: 0; flex: none; }
+.check input { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; flex: none; border: 1px solid var(--grey600); border-radius: 3px; background: var(--paper); display: grid; place-items: center; cursor: pointer; }
+.check input:checked { border-color: var(--ink); }
+.check input:checked::after { content: ""; width: 5px; height: 10px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateY(-1px) rotate(45deg); }
+
+/* Date field (SingleDatePicker) */
+.date .input { position: relative; padding-right: var(--lb-space-7); }
+.date .icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--ink); pointer-events: none; }
+.date .input.is-error .icon { color: var(--fail); }
 .check:has(input:checked) { border-color: var(--ink); }
 .checks.is-error .check { border-color: var(--fail); }
 
@@ -165,6 +176,8 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
     <a href="#suffix-input">Input with unit</a>
     <a href="#select">Select</a>
     <a href="#time">Time and duration</a>
+    <a href="#phone">Phone number</a>
+    <a href="#date">Date</a>
     <a href="#textarea">Textarea</a>
     <a href="#checkboxes">Checkbox tiles</a>
     <a href="#rows">Field rows</a>
@@ -176,7 +189,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
     <header class="intro">
       <p class="reset eyebrow">LineupBridge UI library</p>
       <h1 class="reset h2">Components and states</h1>
-      <p class="reset lead">The visual source of truth for every shared element. Values come from landing-typography.md; rules and code names come from design-system.md. Example words are taken from the app.</p>
+      <p class="reset lead">The visual source of truth for every shared element. Values come from tokens.md; rules and code names come from design-system-rules.md. Example words are taken from the app.</p>
     </header>
 
     <section class="block" id="foundations">
@@ -231,7 +244,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
     </section>
 
     <section class="block" id="section-card">
-      <div class="block-head"><h2 class="reset h3">Section card</h2><p class="reset code">Component <b>SectionCard</b> · props: number, title, children</p></div>
+      <div class="block-head"><h2 class="reset h3">Section card</h2><p class="reset code">Component <b>SectionCard</b> · props: number, title (optional), children</p></div>
       <div class="specimen on-page">
         <div class="section-card">
           <div class="section-title"><span class="num">1</span><h3 class="reset h3">Event details</h3></div>
@@ -241,7 +254,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
           </div>
         </div>
       </div>
-      <ul class="rules"><li>White card, 1px border, 8px radius, padding 24px (phone) / 32px (768+).</li><li>Title row: number in a filled 28px black circle, <code>.h3</code> title, 1px rule underneath, 16px below the title.</li><li>Number only when the sections are a real sequence (a form). Without a sequence, drop the number and keep the rule.</li><li>Cards stack with 16px (phone) / 24px (768+) between them.</li></ul>
+      <ul class="rules"><li>White card, 1px border, 8px radius, padding 24px (phone) / 32px (768+).</li><li>Title row: number in a filled 28px black circle, <code>.h3</code> title, 1px rule underneath, 16px below the title.</li><li>Number only when the sections are a real sequence (a form). Without a sequence, drop the number and keep the rule.</li><li>Title is optional: without a title there is no title row and no rule (log in and sign up card).</li><li>Cards stack with 16px (phone) / 24px (768+) between them.</li></ul>
     </section>
 
     <section class="block" id="text-input">
@@ -303,6 +316,37 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
       <ul class="rules"><li>Hours 00–23, minutes 00 and 30 only. 24-hour format. Saved value stays <code>HH:MM</code> (for example <code>23:30</code>).</li><li>Both boxes use the standard Select style; a muted ":" sits between them. One label for the pair (a <code>&lt;legend&gt;</code>).</li><li>The hour box opens on the default from the code (23 for start times, 09 for end time).</li><li>Duration: hours 1–12 with the existing word "hours", minutes 00 / 30. Range 1–12 to be confirmed.</li><li>Error: both boxes turn red, one message under the pair, from the existing validation text.</li></ul>
     </section>
 
+    <section class="block" id="phone">
+      <div class="block-head"><h2 class="reset h3">Phone number</h2><p class="reset code">Component <b>PhoneNumberField</b> · country select (104px) + number input · same row pattern as TimeSelect</p></div>
+      <div class="specimen">
+        <div class="states">
+          <fieldset class="field"><span class="state-name">Empty</span><legend class="fieldLabel">Phone number</legend>
+            <div class="phone"><div class="input select code"><span class="dial">+31</span><select aria-label="Phone number"><option selected>Netherlands +31</option><option>Belgium +32</option><option>Germany +49</option></select></div><div class="input"><input type="tel" value="" aria-label="Phone number"></div></div>
+          </fieldset>
+          <fieldset class="field"><span class="state-name">Filled</span><legend class="fieldLabel">Phone number</legend>
+            <div class="phone"><div class="input select code"><span class="dial">+31</span><select aria-label="Phone number"><option selected>Netherlands +31</option><option>Belgium +32</option><option>Germany +49</option></select></div><div class="input"><input type="tel" value="612345678" aria-label="Phone number"></div></div>
+          </fieldset>
+          <fieldset class="field"><span class="state-name">Error</span><legend class="fieldLabel">Phone number</legend>
+            <div class="phone"><div class="input select code is-error"><span class="dial">+31</span><select aria-label="Phone number"><option selected>Netherlands +31</option><option>Belgium +32</option><option>Germany +49</option></select></div><div class="input is-error"><input type="tel" value="" aria-label="Phone number" aria-invalid="true"></div></div>
+            <p class="reset small error" style="margin-top: 8px">You need to add a phone number.</p>
+          </fieldset>
+        </div>
+      </div>
+      <ul class="rules"><li>One <code>&lt;fieldset&gt;</code> with the existing label "Phone number" as its <code>&lt;legend&gt;</code>, then one row: country select (104px), 8px, number input (rest of the row).</li><li>No placeholder at any screen size (it gets cut off on phones; the label already says what to enter).</li><li>Country select: the closed box shows only the dial code ("+31") and the chevron; the open list shows the country name and dial code ("Netherlands +31") for every country, names in the current language. It is the native <code>&lt;select&gt;</code> laid invisibly over the box. Default Netherlands. Its accessible name is the same "Phone number".</li><li>Saved value: one string, "+" dial code and digits (for example <code>+31612345678</code>).</li><li>Error: both boxes turn red, one message under the row, from the existing validation text.</li></ul>
+    </section>
+
+    <section class="block" id="date">
+      <div class="block-head"><h2 class="reset h3">Date</h2><p class="reset code">Restyles <b>SingleDatePicker</b> · same box as text input · lucide <b>Calendar</b> on the right · calendar popup under the field</p></div>
+      <div class="specimen">
+        <div class="states">
+          <div class="field date"><span class="state-name">Empty</span><label class="fieldLabel" for="dt1">Event date</label><div class="input"><input id="dt1" placeholder="Select date" readonly><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></div></div>
+          <div class="field date"><span class="state-name">Filled</span><label class="fieldLabel" for="dt2">Event date</label><div class="input"><input id="dt2" value="Sat, Oct 24" readonly><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></div></div>
+          <div class="field date"><span class="state-name">Error</span><label class="fieldLabel" for="dt3">Event date</label><div class="input is-error"><input id="dt3" placeholder="Select date" readonly aria-invalid="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></div><p class="reset small error">Event date is required.</p></div>
+        </div>
+      </div>
+      <ul class="rules"><li>Icon 16px, black, in the same place as the select chevron. Tapping anywhere on the box opens the calendar.</li><li>Calendar: white card, 1px border, 8px radius, as wide as the field (max 360px). Header: lucide <code>ChevronLeft</code> / <code>ChevronRight</code> (44px buttons, existing "Previous month" / "Next month" labels) and the month name. Weekdays muted 12px, Monday first. Days 40px high.</li><li>Selected day: 1px black outline + 600, no fill. Today: 600 + underline. Other-month days in light grey.</li><li>Value format and behaviour stay as in the code (for example "Sat, Oct 24"; closes on pick, outside click or Esc).</li><li>Open state: see the Event date field in the offer builder design.</li></ul>
+    </section>
+
     <section class="block" id="textarea">
       <div class="block-head"><h2 class="reset h3">Textarea</h2><p class="reset code">Wraps <b>FieldTextInput type="textarea"</b> · min height 112px · resizes vertically</p></div>
       <div class="specimen">
@@ -321,7 +365,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
           <p class="reset small error" style="margin-top: 8px">Select at least one deck setup option.</p>
         </fieldset>
       </div>
-      <ul class="rules"><li>Selected tile gets a black border; the whole tile is clickable.</li><li>Group label is a <code>&lt;legend&gt;</code> in the field-label style.</li></ul>
+      <ul class="rules"><li>Selected tile gets a black border; the whole tile is clickable.</li><li>The checkbox is outlined, never filled: 18px, 1px grey border, 3px radius, white. Checked: black border and a black tick (lucide <code>Check</code>, 14px, 2px stroke). Same outline look as the section numbers.</li><li>Group label is a <code>&lt;legend&gt;</code> in the field-label style.</li></ul>
     </section>
 
     <section class="block" id="rows">

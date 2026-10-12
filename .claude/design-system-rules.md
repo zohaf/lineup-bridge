@@ -1,4 +1,4 @@
-# LineupBridge design system
+# LineupBridge design system rules
 
 Oct 12, 2026 · Zoha Fard
 
@@ -6,25 +6,29 @@ This is the baseline for the LineupBridge redesign. Every page that gets redesig
 
 ## 1. Rules for every redesign
 
-1. **No new words.** Design files (HTML), specs and coding prompts use only text that already exists in the app (translations in `src/translations/en.json`, labels and placeholders in code, hosted content). A new word, label, section or piece of content needs Zoha's approval first. Example data in mockups (a DJ name, a venue) is marked as an example.
+1. **No new words.** Design files (HTML), specs and coding prompts use only text that already exists in the app (translations, labels and placeholders in code, hosted content). **The live wording is the Console translations (`translations.json` hosted asset), which override `src/translations/en.json`.** Check a key there before quoting it; `en.json` is only the fallback. A new word, label, section or piece of content needs Zoha's approval first. Example data in mockups (a DJ name, a venue) is marked as an example.
 2. **No new content, only UI.** A redesign changes how existing content looks and is arranged. It does not add fields, sections, claims or features.
 3. **Same component, same look.** A select, an input, a card title or a button looks identical on every page. If a page needs something the library does not have, the library is extended first (here and in the UI library page), then used.
 4. **Tokens only.** Font sizes, weights, line heights, letter spacing, colors and spacing come from `--lb-*` tokens. No raw values in component CSS (exceptions: `0`, `1px` borders, `%`, `--borderRadius*`, and one approved one: the focus ring, which is the token `--lb-focus-ring: 0 0 0 3px rgba(0,0,0,.08)` defined once in `lineupTokens.css`).
 5. **Icons.** Use `lucide-react` for new icons (import the named icon, for example `ChevronDown`). Do not draw icons as CSS or data-URI SVGs.
 6. **Mobile first.** Base styles are for phones; larger layouts use `--viewportMedium` (768px) and `--viewportLarge` (1024px).
-7. **Do not edit shared template components to restyle one page.** Style them through the class props they accept, using the shared style files below.
+7. **Three design widths.** Every page design has three views: **Mobile** (390px frame, checked at 375px), **iPad 768** and **Desktop** (1280px). There is no separate iPad landscape design: from 1024px a page uses the desktop design (the 1024 token step only makes the title and lead larger). Do not add tablet-only breakpoints.
+8. **Selection is an outline, not a fill.** Checkboxes, selected tiles, section numbers and the selected day in a calendar show selection with a black border (and a black tick or bold text), never a solid black fill. Solid black is only for the primary button.
+9. **Do not edit shared template components to restyle one page.** Style them through the class props they accept, using the shared style files below.
 
 ## 2. Sources of truth
 
 | What | File | Format |
 | --- | --- | --- |
-| Rules, components, architecture | `.claude/design-system.md` (this file) | Markdown |
-| Token values: type scale, spacing, colors | `.claude/landing-typography.md` (to be renamed `typography.md`, see open items) | Markdown |
+| Rules, components, architecture | `.claude/design-system-rules.md` (this file) | Markdown |
+| Token values: type scale, spacing, colors | `.claude/tokens.md` | Markdown |
+| How Claude works on UI tasks (smallest change, no tests or builds) | `.claude/working-rules.md` | Markdown |
 | What every component looks like, in every state | `.claude/design/components.html` · [online](https://claude.ai/artifact/GJyu2Jxse3cqF5RCiqXzmk) | HTML, open in a browser |
+| Page layouts: Centered and Split, which page uses which | `.claude/layouts.md` · `.claude/design/layouts.html` | Markdown + HTML |
 | Page designs | `.claude/design/<page>.html` | HTML |
 | Page specs and implementation steps | `.claude/<page>.md` | Markdown |
 
-Current page designs: [landing-page.html](design/landing-page.html) (spec: `implementation-plan.md`) and [offer-builder-page.html](design/offer-builder-page.html) (spec: [offer-builder-page.md](offer-builder-page.md)).
+Current page designs: [landing-page.html](design/landing-page.html) (spec: `implementation-plan.md`) and [offer-builder-page.html](design/offer-builder-page.html) (spec: [offer-builder-page.md](offer-builder-page.md)), and log in / sign up in [layouts.html](design/layouts.html) (spec: [auth-page.md](auth-page.md)).
 
 **Order of change:** design file and this document first, then token or style files, then components. Never the other way round.
 
@@ -45,7 +49,7 @@ Each component below is drawn, with all its states, in the UI library page. The 
 | Component | Anatomy and rules | Code |
 | --- | --- | --- |
 | **Page header** | Optional image (64px square, 8px radius) on the left · optional eyebrow (an existing label, such as the DJ's name) · title in `.h2` · optional lead in `.lead`. Gaps: eyebrow → title 12px, title → lead 12px, header → content 32px. Sits on the page background, never in a card. | New shared `PageHeader` |
-| **Section card** | White card, 1px border, 8px radius, padding 24px → 32px from 768px. Title row: number in a 28px circle with a 1px black outline and black text, no fill (only when sections are a real sequence, such as form steps) + `.h3` title + 1px rule underneath with 16px below the title. Content below with 24px between fields. Cards stack 16px → 24px apart. | New shared `SectionCard` |
+| **Section card** | White card, 1px border, 8px radius, padding 24px → 32px from 768px. Title row: number in a 28px circle with a 1px black outline and black text, no fill (only when sections are a real sequence, such as form steps) + `.h3` title + 1px rule underneath with 16px below the title. Content below with 24px between fields. The title is optional: without a title there is no title row and no rule (for example the log in and sign up card). Cards stack 16px → 24px apart. | New shared `SectionCard` |
 | **Content card** (landing) | White card without a number or rule, for cards that are not form sections (stage cards, audience cards). Same border, radius and padding as the section card. | Existing landing components, moved to shared when a second page needs them |
 
 ### Form fields
@@ -57,11 +61,13 @@ All fields share one anatomy: **label → 8px → control → 8px → helper or 
 | **Label** | `.fieldLabel` (15px → 16px, 600, black). Optional fields add "(optional)" in 400 muted grey, using the existing wording. Groups use a `<legend>` in the same style. | `labelClassName` on Field components |
 | **Text input** | 48px high, 16px text (never smaller: iOS zooms below 16px), padding 0 16px, 1px `--colorGrey200` border, 4px radius, white. Placeholder in light grey, always the existing placeholder text. | `FieldTextInput` + `inputRootClass` |
 | **Input with unit** | Text input with the unit inside the box on the right, in muted grey ("hours", "€"). The inner text box must shrink (`flex: 1 1 0; width: 0; min-width: 0`) so it never overflows a narrow column. | Shared `.inputWithUnit` class |
-| **Select** | The native `<select>`, styled as the text input with one `lucide-react` icon (16px, black outline, true 2px stroke via `strokeWidth={2} absoluteStrokeWidth`, not clickable) on the right, inside `.selectBox`: `ChevronsUpDown` for long lists (hours, duration hours), `ChevronDown` for short ones (minutes, yes/no, set slot). The global `select` arrows are switched off with `background-image: none`. Empty option is the existing "Select…" text, in placeholder grey. | `SelectField` (like `FieldSelect`, adds the chevron) + `selectClassName` |
+| **Select** | The native `<select>`, styled as the text input with one `lucide-react` icon (16px, black outline, true 2px stroke via `strokeWidth={2} absoluteStrokeWidth`, not clickable) on the right, inside `.selectBox`: `ChevronsUpDown` for long lists (hours, duration hours), `ChevronDown` for short ones (minutes, yes/no, set slot). The icon sits at the same place in **every** select (16px from the right edge, box padding-right 48px), so yes/no and set slot selects look exactly like the time selects; no extra space after the icon. The global `select` arrows are switched off with `background-image: none`. Empty option is the existing "Select…" text, in placeholder grey. | `SelectField` (like `FieldSelect`, adds the chevron) + `selectClassName` |
 | **Textarea** | Same box, min height 112px, padding 12px 16px, resizes vertically. | `FieldTextInput type="textarea"` |
-| **Checkbox tiles** | Each option is a 44px tile with a 1px border and the checkbox inside; the whole tile is clickable; checked tile gets a black border. 1 column (stacked) on phones, 3 columns from 768px. | New shared `CheckboxTileGroup` (FieldCheckboxGroup does not pass classes to each option) |
+| **Date** | Same box as the text input with the lucide `Calendar` icon (16px, black) where the select chevron sits; the whole box opens the calendar. Calendar popup under the field: white, 1px border, 8px radius, as wide as the field (max 360px); header with `ChevronLeft` / `ChevronRight` (44px, existing "Previous month" / "Next month" labels) and the month; weekdays 12px muted, Monday first; days 40px. Selected day: 1px black outline, 600. Today: 600 + underline. Value format, placeholder and behaviour unchanged. Error: red box and red icon. | `SingleDatePicker` restyled through `inputClassName` / `popupClassName` (replace its data-URI calendar icon) |
+| **Checkbox tiles** | Each option is a 44px tile with a 1px border and the checkbox inside; the whole tile is clickable; checked tile gets a black border. The checkbox itself is outlined, not filled: 18px, 1px `--colorGrey600` border, 3px radius, white; checked = black border + lucide `Check` (14px, black, 2px stroke). 1 column (stacked) on phones, 3 columns from 768px. | New shared `CheckboxTileGroup` (FieldCheckboxGroup does not pass classes to each option) |
 | **Time select** | One label (a `<legend>`) over two selects side by side: hour `00`–`23` and minutes `00` / `30` (half hours only), with a muted ":" between them. 24-hour format. Saved value stays `HH:MM`. The hour box opens on the default from the code (23 for start times, 09 for end time). Error: both boxes red, one message under the pair. Used for every time field in the app (offer form, profile booking box, propose-changes window). | New shared `TimeSelect` (replaces `TimeSelectField` in `RequestQuoteForm`, the native time input on `ProfilePage`, and the time row in `ProposeChangesModal`) |
 | **Duration select** | Same pair layout without the ":": hours `1`–`12` with the unit "hours" inside the box, and minutes `00` / `30` with the unit "min" inside the box. **"min" is a new word and needs approval. Half-hour durations also change data (see open items).** | `TimeSelect` duration variant |
+| **Phone number** | One `<fieldset>` with the label "Phone number" as its `<legend>`, then one row: country select (104px) + 8px + number input (rest of the row), the same row pattern as the time select. **No placeholder.** The country select is the native `<select>` laid invisibly over a box that shows only the dial code ("+31") and the select chevron; the open list shows "Netherlands +31" for every country, names in the current language. Default Netherlands. Saved value: `+` dial code and digits in one string (`+31612345678`). Error: both boxes red, one message under the row. | New shared `PhoneNumberField` (replaces `FieldPhoneNumberInput` in `UserFieldPhoneNumber`, sign up only) with `src/translations/countryDialCodes.js` |
 | **Helper text** | `.small` in muted grey, under the control. Only existing helper texts. | Shared `.helper` class |
 | **Field rows** | Pairs (`.row2`) or threes (`.row3`) from 768px, one column on phones, 24px gaps. Pair fields that belong together; threes only for short values (dates, times, duration). Field order follows the code. | Shared `.row2`, `.row3` classes |
 
@@ -101,6 +107,7 @@ src/components/
   SectionCard/
   CheckboxTileGroup/
   TimeSelect/               # time and duration variants
+  PhoneNumberField/         # country select + number input
   StatusChip/               # moved from LandingPage/sections
   index.js                  # export the new components, keeping the existing import order
 ```
@@ -125,12 +132,12 @@ How it is wired:
 - [ ] Only components from this library; any new one was added to the library first.
 - [ ] No raw font, color or spacing values in the page's CSS.
 - [ ] Error states use the existing validation messages.
+- [ ] Design has Mobile, iPad 768 and Desktop views (no separate 1024 design).
 - [ ] Works at 375px, 768px, 1024px and 1280px with no horizontal scroll; touch targets at least 44px.
 - [ ] Shared template components were not edited.
 
 ## 8. Open items
 
-- [ ] Rename `landing-typography.md` to `typography.md` now that it covers the whole app, and update links.
 - [ ] Decide when to move the landing tokens to `src/styles/lineupTokens.css` (step 1 of the offer builder implementation does it).
 - [ ] Decide whether to fix the broken global font-weight tokens.
 - [ ] Approve the unit word "min" for the duration minutes box (no word for minutes exists in the app yet; "hour" and "hours" do).

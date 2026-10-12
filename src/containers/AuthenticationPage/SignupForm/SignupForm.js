@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import { Field } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
@@ -20,6 +20,8 @@ import {
 import UserFieldDisplayName from '../UserFieldDisplayName';
 import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
 
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './SignupForm.module.css';
 
 const getSoleUserTypeMaybe = userTypes =>
@@ -36,6 +38,34 @@ const isPasswordUsedMoreThanOnce = formValues => {
     return isPasswordRepeated;
   }
   return false;
+};
+
+// Keeps the API-required first and last name in sync with the business name (event organizers)
+// and the full name (DJs). Done in an effect: changing form state while rendering warns in React.
+const NameSync = props => {
+  const { formApi, values, isEventOrganizer, isDj } = props;
+  const businessName = values?.businessName;
+  const djFullName = values?.djFullName;
+  const fname = values?.fname;
+  const lname = values?.lname;
+
+  useEffect(() => {
+    if (isEventOrganizer && businessName && (fname !== businessName || lname !== businessName)) {
+      formApi.change('fname', businessName);
+      formApi.change('lname', businessName);
+    }
+    if (isDj && djFullName) {
+      const trimmed = `${djFullName}`.trim().replace(/\s+/g, ' ');
+      const [first, ...rest] = trimmed.split(' ').filter(Boolean);
+      const last = rest.length > 0 ? rest.join(' ') : first;
+      if (first && last && (fname !== first || lname !== last)) {
+        formApi.change('fname', first);
+        formApi.change('lname', last);
+      }
+    }
+  }, [formApi, isEventOrganizer, isDj, businessName, djFullName, fname, lname]);
+
+  return null;
 };
 
 const SignupFormComponent = props => (
@@ -58,7 +88,18 @@ const SignupFormComponent = props => (
         userTypes,
         userFields,
         values,
+        errors,
+        touched,
+        submitFailed,
       } = formRenderProps;
+
+      const hasError = name => !!(touched?.[name] || submitFailed) && !!errors?.[name];
+      // Shared field classes for every text input of this form
+      const fieldProps = name => ({
+        rootClassName: formCss.field,
+        labelClassName: formCss.label,
+        inputRootClass: classNames(formCss.input, { [formCss.inputError]: hasError(name) }),
+      });
 
       const { userType } = values || {};
 
@@ -173,38 +214,25 @@ const SignupFormComponent = props => (
         intl.formatMessage({ id: 'SignupForm.contactPersonFullNameRequired' })
       );
 
-      // Keep API-required name fields in sync for event organizers.
-      const businessName = values?.businessName;
-      if (isEventOrganizer && businessName && (values?.fname !== businessName || values?.lname !== businessName)) {
-        formApi.change('fname', businessName);
-        formApi.change('lname', businessName);
-      }
-
-      // Keep API-required name fields in sync for DJs.
-      const djFullName = values?.djFullName;
-      if (isDj && djFullName) {
-        const trimmed = `${djFullName}`.trim().replace(/\s+/g, ' ');
-        const [first, ...rest] = trimmed.split(' ').filter(Boolean);
-        const last = rest.length > 0 ? rest.join(' ') : first;
-        if (first && last && (values?.fname !== first || values?.lname !== last)) {
-          formApi.change('fname', first);
-          formApi.change('lname', last);
-        }
-      }
-
       return (
         <Form className={classes} onSubmit={handleSubmit}>
+          <NameSync
+            formApi={formApi}
+            values={values}
+            isEventOrganizer={isEventOrganizer}
+            isDj={isDj}
+          />
           {showUserTypeSelector ? (
             <div className={css.userTypeSelector}>
-              <p className={css.userTypeLabel}>
+              <p className={formCss.label}>
                 <FormattedMessage id="SignupForm.userTypePrompt" />
               </p>
-              <div className={css.userTypeButtons}>
+              <div className={formCss.choiceTiles}>
                 {userTypeOptions.map(opt => {
                   const type = opt.userType;
                   const isSelected = type === userType;
-                  const buttonClasses = classNames(css.userTypeButton, {
-                    [css.userTypeButtonSelected]: isSelected,
+                  const buttonClasses = classNames(formCss.choiceTile, {
+                    [formCss.choiceTileSelected]: isSelected,
                   });
                   const labelId =
                     opt === userTypeOptions[0]
@@ -215,6 +243,7 @@ const SignupFormComponent = props => (
                       key={type}
                       type="button"
                       className={buttonClasses}
+                      aria-pressed={isSelected}
                       onClick={() => formApi.change('userType', type)}
                     >
                       <FormattedMessage id={labelId} />
@@ -239,6 +268,7 @@ const SignupFormComponent = props => (
               {isEventOrganizer ? (
                 <>
                   <FieldTextInput
+                    {...fieldProps('businessName')}
                     type="text"
                     id={formId ? `${formId}.businessName` : 'businessName'}
                     name="businessName"
@@ -249,6 +279,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
+                    {...fieldProps('contactPersonFullName')}
                     type="text"
                     id={formId ? `${formId}.contactPersonFullName` : 'contactPersonFullName'}
                     name="contactPersonFullName"
@@ -261,6 +292,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
+                    {...fieldProps('email')}
                     type="email"
                     id={formId ? `${formId}.email` : 'email'}
                     name="email"
@@ -278,7 +310,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
-                    className={css.password}
+                    {...fieldProps('password')}
                     type="password"
                     id={formId ? `${formId}.password` : 'password'}
                     name="password"
@@ -293,6 +325,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
+                    {...fieldProps('passwordConfirm')}
                     type="password"
                     id={formId ? `${formId}.passwordConfirm` : 'passwordConfirm'}
                     name="passwordConfirm"
@@ -313,6 +346,7 @@ const SignupFormComponent = props => (
               ) : isDj ? (
                 <>
                   <FieldTextInput
+                    {...fieldProps('artistName')}
                     type="text"
                     id={formId ? `${formId}.artistName` : 'artistName'}
                     name="artistName"
@@ -323,6 +357,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
+                    {...fieldProps('djFullName')}
                     type="text"
                     id={formId ? `${formId}.djFullName` : 'djFullName'}
                     name="djFullName"
@@ -333,6 +368,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
+                    {...fieldProps('email')}
                     type="email"
                     id={formId ? `${formId}.email` : 'email'}
                     name="email"
@@ -354,7 +390,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
-                    className={css.password}
+                    {...fieldProps('password')}
                     type="password"
                     id={formId ? `${formId}.password` : 'password'}
                     name="password"
@@ -369,6 +405,7 @@ const SignupFormComponent = props => (
                   />
 
                   <FieldTextInput
+                    {...fieldProps('passwordConfirm')}
                     type="password"
                     id={formId ? `${formId}.passwordConfirm` : 'passwordConfirm'}
                     name="passwordConfirm"
@@ -389,6 +426,7 @@ const SignupFormComponent = props => (
               ) : (
                 <>
                   <FieldTextInput
+                    {...fieldProps('email')}
                     type="email"
                     id={formId ? `${formId}.email` : 'email'}
                     name="email"
@@ -403,7 +441,7 @@ const SignupFormComponent = props => (
                   />
                   <div className={css.name}>
                     <FieldTextInput
-                      className={css.firstNameRoot}
+                      {...fieldProps('fname')}
                       type="text"
                       id={formId ? `${formId}.fname` : 'fname'}
                       name="fname"
@@ -421,7 +459,7 @@ const SignupFormComponent = props => (
                       )}
                     />
                     <FieldTextInput
-                      className={css.lastNameRoot}
+                      {...fieldProps('lname')}
                       type="text"
                       id={formId ? `${formId}.lname` : 'lname'}
                       name="lname"
@@ -442,13 +480,14 @@ const SignupFormComponent = props => (
 
                   <UserFieldDisplayName
                     formName="SignupForm"
+                    fieldProps={fieldProps('displayName')}
                     className={css.row}
                     userTypeConfig={userTypeConfig}
                     intl={intl}
                   />
 
                   <FieldTextInput
-                    className={css.password}
+                    {...fieldProps('password')}
                     type="password"
                     id={formId ? `${formId}.password` : 'password'}
                     name="password"
@@ -482,6 +521,7 @@ const SignupFormComponent = props => (
           ) : null}
 
           <div className={css.bottomWrapper}>
+            <div className={css.consent}>
             {showTermsAndConditions ? (
               <div className={css.confirmationRow}>
                 <FieldCheckbox
@@ -490,17 +530,27 @@ const SignupFormComponent = props => (
                   label={intl.formatMessage({ id: 'SignupForm.authorizationConfirmationLabel' })}
                   value="confirmed"
                   validate={authorizationConfirmationRequired}
-                  textClassName={css.confirmationFinePrint}
+                  className={classNames(formCss.consentTile, {
+                    [formCss.consentTileError]: hasError('authorizationConfirmation'),
+                  })}
+                  textClassName={formCss.consentText}
                 />
               </div>
             ) : null}
             {showTermsAndConditions ? <div className={css.termsRow}>{termsAndConditions}</div> : null}
+            </div>
             {isPasswordUsedMoreThanOnce(values) ? (
-              <div className={css.error}>
+              <div className={formCss.error}>
                 <FormattedMessage id="SignupForm.passwordRepeatedOnOtherFields" />
               </div>
             ) : null}
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+            <PrimaryButton
+              type="submit"
+              rootClassName={buttonCss.primary}
+              className={css.submitButton}
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+            >
               <FormattedMessage id="SignupForm.signUp" />
             </PrimaryButton>
           </div>
