@@ -5,6 +5,7 @@ How to work on LineupBridge UI tasks. Design rules (no new words, tokens only, c
 layouts in [layouts.md](layouts.md).
 
 - Work only on the UI that was asked for.
+- Use only what the design docs and the UI library define (design-system-rules.md rule 10). If something is missing or unclear, stop and ask Zoha. Never guess or assume.
 - Make the smallest necessary changes to achieve the design.
 - Do not run tests, builds, linting, or other verification commands.
 - Do not refactor unrelated code or add dependencies.

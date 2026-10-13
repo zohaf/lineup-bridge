@@ -1,0 +1,39 @@
+/* One white bar around the input and the button, see .claude/design-system-rules.md (Hero search) */
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-1);
+  width: 100%;
+  max-width: var(--lb-width-search);
+  padding: var(--lb-space-1);
+  background-color: var(--colorWhite);
+  border: 1px solid var(--colorGrey100);
+  border-radius: var(--borderRadiusMedium);
+  box-shadow: var(--lb-shadow-search);
+
+  &:focus-within {
+    border-color: var(--colorBlack);
+  }
+}
+
+.field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Only the bar shows a border, in every input state */
+.input {
+  composes: input from '../../../styles/lineupForm.module.css';
+
+  &,
+  &:hover,
+  &:focus,
+  &:focus-within {
+    border: 0;
+    box-shadow: none;
+  }
+}
+
+.button {
+  flex: none;
+}

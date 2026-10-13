@@ -676,6 +676,9 @@
   "LandingPage.faq.items.vat.answer": "Where applicable, LineupBridge charges VAT on its platform fee, rather than on the full booking amount. Any VAT applicable to the DJ’s performance fee is separate.",
   "LandingPage.faq.items.vat.question": "Does LineupBridge charge VAT?",
   "LandingPage.faq.lede": "Answers about how payment, payouts and fees work.",
+  "LandingPage.hero.newHere": "New here?",
+  "LandingPage.hero.subtitle": "Structured offers, organized negotiations, confirmed bookings, and secured payments.",
+  "LandingPage.hero.title": "Professional DJ booking{lineBreak} platform, from offer to payment",
   "LandingPage.steps.eyebrow": "How it works",
   "LandingPage.steps.heading": "From discovery to payment",
   "LandingPage.steps.items.confirm.text": "The DJ reviews and accepts the final offer.",
@@ -1877,5 +1880,12 @@
   "TransactionPage.default-negotiation.customer.finalOfferAccepted.title": "{providerName} hat dein finales Angebot angenommen!",
   "TransactionPage.default-negotiation.customer.finalOfferAccepted.extraInfo": "Schließe die Zahlung ab, um diese Buchung zu bestätigen.",
   "TransactionPage.default-negotiation.customer.rejectCounterOffer": "Gegenangebot ablehnen",
-  "TransactionPanel.default-negotiation.paymentSummaryTitle": "Zahlungsübersicht"
+  "TransactionPanel.default-negotiation.paymentSummaryTitle": "Zahlungsübersicht",
+  "Footer.slogan": "Built for the electronic music industry",
+  "Footer.faq": "FAQ",
+  "Footer.contactUs": "Contact us",
+  "Footer.privacyPolicy": "Privacy policy",
+  "Footer.termsOfUse": "Terms of use",
+  "Footer.paymentTerms": "Payment terms",
+  "Footer.copyright": "© {year} LineupBridge. All rights reserved"
 }

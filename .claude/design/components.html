@@ -29,6 +29,7 @@
   --lb-size-field-label: 15px; --lb-size-input: 16px; --lb-input-height: 48px; --lb-button-height: 48px;
   --lb-text-primary: var(--ink); --lb-text-secondary: var(--grey700); --lb-text-muted: var(--grey600);
   --lb-space-1: 4px; --lb-space-2: 8px; --lb-space-3: 12px; --lb-space-4: 16px; --lb-space-5: 24px; --lb-space-6: 32px; --lb-space-7: 48px; --lb-space-8: 56px; --lb-space-9: 64px; --lb-space-10: 96px;
+  --lb-width-search: 520px; --lb-shadow-search: 0 6px 24px rgba(0,0,0,.06);
   --lb-card-pad: var(--lb-space-5); --lb-label-gap: var(--lb-space-2); --lb-field-gap: var(--lb-space-5);
 }
 @media (min-width: 768px) {
@@ -144,6 +145,11 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
 .checks.is-error .check { border-color: var(--fail); }
 
 /* Buttons */
+.hero-search { display: flex; align-items: center; gap: var(--lb-space-1); width: 100%; max-width: var(--lb-width-search); padding: var(--lb-space-1); background: var(--paper); border: 1px solid var(--grey100); border-radius: var(--radius); box-shadow: var(--lb-shadow-search); }
+.hero-search:focus-within, .hero-search.is-focus { border-color: var(--ink); }
+.hero-search input { flex: 1 1 0; min-width: 0; min-height: var(--lb-input-height); border: 0; box-shadow: none; outline: 0; background: transparent; padding: 0 var(--lb-space-4); font: 400 var(--lb-size-input)/1.5 var(--lb-font); color: var(--ink); }
+.hero-search input::placeholder { color: var(--grey300); }
+.hero-search .btn { flex: none; }
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--lb-space-3); align-items: center; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--lb-space-2); min-height: var(--lb-button-height); padding: 0 var(--lb-space-5); border-radius: var(--radius); font: 600 var(--lb-size-button)/1 var(--lb-font); border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer; transition: background .15s, color .15s; }
 .btn:hover { background: hsl(240 3% 20%); }
@@ -157,6 +163,19 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .btn.is-loading::after { animation: none; } }
 .link { color: var(--ink); font-weight: 600; font-size: var(--lb-size-small); text-decoration: underline; text-underline-offset: 3px; }
+.link-footer { color: var(--ink); font-weight: 600; font-size: var(--lb-size-small); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+.link-footer:hover { text-decoration: underline; text-underline-offset: 3px; }
+.link-muted { color: var(--grey600, hsl(240 3% 40%)); font-weight: 400; font-size: var(--lb-size-small); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+.link-muted:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.social-link { width: 44px; height: 44px; display: inline-grid; place-items: center; color: hsl(240 3% 40%); }
+.social-link:hover { color: var(--ink); }
+.social-link svg { width: 20px; height: 20px; fill: currentColor; }
+.lib-footer { border-top: 1px solid hsl(240 3% 90%); padding: 32px 24px 24px; display: grid; gap: 32px; background: #eeede9; border-radius: 8px; }
+.lib-footer .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; }
+.lib-footer .brand { display: grid; gap: 8px; }
+.lib-footer .wordmark { font-family: "Times New Roman MT", "Times New Roman", Times, serif; font-style: italic; font-weight: 700; font-size: 24px; line-height: 1; }
+.lib-footer .meta { border-top: 1px solid hsl(240 3% 90%); padding-top: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 32px; font-size: var(--lb-size-small); color: hsl(240 3% 40%); }
+.lib-footer .legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px; }
 
 /* Chips */
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--page); color: var(--grey700); border: 1px solid var(--rule); }
@@ -183,6 +202,8 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
     <a href="#rows">Field rows</a>
     <a href="#buttons">Buttons</a>
     <a href="#chips">Status chips</a>
+    <a href="#hero-search">Hero search</a>
+    <a href="#footer">Footer</a>
   </nav>
 
   <main class="content">
@@ -398,6 +419,29 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
         <div class="btn-row"><span class="chip">Offered</span><span class="chip chip-active">Negotiated</span><span class="chip chip-success">Paid</span></div>
       </div>
       <ul class="rules"><li>Only for states that exist in the transaction process. Labels come from the app's translations.</li></ul>
+    </section>
+    <section class="block" id="hero-search">
+      <div class="block-head"><h2 class="reset h3">Hero search</h2><p class="reset code">Component <b>HeroSearch</b> · one white bar, max 520px (<b>--lb-width-search</b>) · landing hero only</p></div>
+      <div class="specimen on-page">
+        <form class="hero-search" role="search" onsubmit="return false"><input type="text" placeholder="Type a DJ name" aria-label="Type a DJ name"><button class="btn" type="submit">Search</button></form>
+        <form class="hero-search is-focus" role="search" onsubmit="return false"><input type="text" placeholder="Type a DJ name" aria-label="Type a DJ name"><button class="btn" type="submit">Search</button></form>
+      </div>
+      <ul class="rules"><li>1px <code>--colorGrey100</code> border, <code>--borderRadiusMedium</code>, 4px inner padding and gap, shadow <code>--lb-shadow-search</code>.</li><li>Keyword input without its own border, 16px text, existing placeholder. Primary button inline on the right at every width.</li><li>Focus: the bar's border turns black.</li></ul>
+    </section>
+    <section class="block" id="footer">
+      <div class="block-head"><h2 class="reset h3">Footer</h2><p class="reset code">Component <b>Footer</b> · logo 24px · help links · legal links + copyright · social icons from Console · spec <b>footer.md</b></p></div>
+      <div class="specimen">
+        <div class="btn-row"><a class="link-footer" href="#footer">FAQ</a><a class="link-muted" href="#footer">Privacy policy</a><a class="social-link" href="#footer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4Zm5.3-9.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4 2.3 2.3 4 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.9 1.9 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.9-.2 5.6-1.9 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1C21.7 4 20 2.3 16.1 2.1 15 2 14.7 2 12 2Z"/></svg></a></div>
+      </div>
+      <div class="specimen">
+        <footer class="lib-footer">
+          <div class="top"><div class="brand"><span class="wordmark">LineupBridge</span><span class="reset" style="font-size:var(--lb-size-small);color:hsl(240 3% 30%)">Built for the electronic music industry</span></div>
+            <div class="btn-row" style="gap:0 24px"><a class="link-footer" href="#footer">FAQ</a><a class="link-footer" href="#footer">Contact us</a></div></div>
+          <div class="meta"><div class="legal"><span>© 2026 LineupBridge. All rights reserved</span><a class="link-muted" href="#footer">Privacy policy</a><a class="link-muted" href="#footer">Terms of use</a><a class="link-muted" href="#footer">Payment terms</a></div>
+            <div><a class="social-link" href="#footer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4Zm5.3-9.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4 2.3 2.3 4 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.9 1.9 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.9-.2 5.6-1.9 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1C21.7 4 20 2.3 16.1 2.1 15 2 14.7 2 12 2Z"/></svg></a></div></div>
+        </footer>
+      </div>
+      <ul class="rules"><li><b>Footer link</b>: 14px, 600, black, no underline; underline (offset 3px) on hover. For FAQ and Contact us.</li><li><b>Muted link</b>: 14px, 400, <code>--lb-text-muted</code>; black and underlined on hover. For legal links.</li><li><b>Social icon</b>: 20px (<code>--lb-icon-social</code>), muted, black on hover, 44px tap area. Shared <code>SocialIcon</code>: template paths with a viewBox added (approved exception to rule 5).</li><li>Footer logo: 24px high (<code>--lb-logo-footer</code>). Full layout per view in <code>design/footer.html</code>.</li></ul>
     </section>
   </main>
 </div>

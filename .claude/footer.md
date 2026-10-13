@@ -19,8 +19,8 @@ The footer has two sources of content:
 
 ## Goal
 
-The footer is built entirely in code, so it no longer depends on Console. Every text goes through
-translations. Same words as today.
+The code controls the footer UI. All text is in code and goes through translations, with the same
+words as today. Only the social links come from Console.
 
 ## Content (existing words only)
 
@@ -31,7 +31,7 @@ translations. Same words as today.
 | Help links | FAQ · Contact us | `/p/faq` · `/p/contact-us` |
 | Legal links | Privacy policy · Terms of use · Payment terms | `/privacy-policy` · `/p/terms-of-use` · `/p/payment-terms` |
 | Copyright | © 2026 LineupBridge. All rights reserved | — |
-| Social | icons only, with an `aria-label` per platform | **to be decided** |
+| Social | icons only, with an `aria-label` per platform | from Console (`footer.socialMediaLinks`) |
 
 ## Layout
 
@@ -57,10 +57,19 @@ Spacing:
 - Padding: 32/24px on phones, 48/32px from 768px (top/bottom).
 - 32px between the rows. Logo → slogan 8px. Links 24px apart.
 
-## Open decisions
+## Decisions (Oct 13, 2026)
 
-1. **Social links:** which platforms, and their URLs. Until then, the row is hidden.
-2. **Social icons:** `lucide-react` 1.x has no brand icons. The options are the template's existing
-   SVG icons in PageBuilder, or an exception to rule 5.
-3. **Copyright year:** a fixed "2026" (as today), or the current year from code.
-4. The search page has no footer (template default). That stays as it is.
+1. **Social links stay in Console** (Content → Footer → Social media links). The code reads them and
+   controls how they look. Everything else in the footer is in code and translations. If Console has
+   no social links, the icon row is not rendered.
+2. **Social icons:** a new shared `SocialIcon` component (`src/components/SocialIcon/`). It uses the
+   same paths as the template's SVGs (`PageBuilder/Primitives/Link/Icons`) with a `viewBox` added,
+   because the template icons have fixed sizes (13–18px) and no `viewBox`, so CSS can't scale them.
+   The template files stay untouched. This is an approved exception to rule 5. Supported platforms
+   (the same keys as the template): facebook, instagram, linkedin, pinterest, tiktok, twitter (X),
+   youtube.
+3. **Copyright year:** the current year, from code. The wording stays as it is today.
+4. **Sizes:** the logo is 24px high (`--lb-logo-footer`), social icons are 20px (`--lb-icon-social`).
+5. **Link styles:** Footer link (FAQ, Contact us) and Muted link (legal links), added to the UI
+   library.
+6. The search page has no footer (template default). That stays as it is.

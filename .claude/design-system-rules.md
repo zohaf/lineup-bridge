@@ -10,11 +10,12 @@ This is the baseline for the LineupBridge redesign. Every page that gets redesig
 2. **No new content, only UI.** A redesign changes how existing content looks and is arranged. It does not add fields, sections, claims or features.
 3. **Same component, same look.** A select, an input, a card title or a button looks identical on every page. If a page needs something the library does not have, the library is extended first (here and in the UI library page), then used.
 4. **Tokens only.** Font sizes, weights, line heights, letter spacing, colors and spacing come from `--lb-*` tokens. No raw values in component CSS (exceptions: `0`, `1px` borders, `%`, `--borderRadius*`, and one approved one: the focus ring, which is the token `--lb-focus-ring: 0 0 0 3px rgba(0,0,0,.08)` defined once in `lineupTokens.css`).
-5. **Icons.** Use `lucide-react` for new icons (import the named icon, for example `ChevronDown`). Do not draw icons as CSS or data-URI SVGs.
+5. **Icons.** Use `lucide-react` for new icons (import the named icon, for example `ChevronDown`). Do not draw icons as CSS or data-URI SVGs. One approved exception: social brand icons use the shared `SocialIcon` component, whose paths are copied from the template's SVGs (lucide has none).
 6. **Mobile first.** Base styles are for phones; larger layouts use `--viewportMedium` (768px) and `--viewportLarge` (1024px).
 7. **Three design widths.** Every page design has three views: **Mobile** (390px frame, checked at 375px), **iPad 768** and **Desktop** (1280px). There is no separate iPad landscape design: from 1024px a page uses the desktop design (the 1024 token step only makes the title and lead larger). Do not add tablet-only breakpoints.
 8. **Selection is an outline, not a fill.** Checkboxes, selected tiles, section numbers and the selected day in a calendar show selection with a black border (and a black tick or bold text), never a solid black fill. Solid black is only for the primary button.
 9. **Do not edit shared template components to restyle one page.** Style them through the class props they accept, using the shared style files below.
+10. **Nothing outside the design system. No guessing, no assuming.** Every component, token, type role, spacing value, layout, icon and word must come from this file, [tokens.md](tokens.md), [layouts.md](layouts.md), the UI library (`design/components.html`) or an approved page design. If something a task needs is not there, stop and ask Zoha before building it. Do not invent a value, pick a close one or carry on with an assumption. Once Zoha decides, the answer is added to these docs (and the UI library) first, then built.
 
 ## 2. Sources of truth
 
@@ -28,7 +29,7 @@ This is the baseline for the LineupBridge redesign. Every page that gets redesig
 | Page designs | `.claude/design/<page>.html` | HTML |
 | Page specs and implementation steps | `.claude/<page>.md` | Markdown |
 
-Current page designs: [landing-page.html](design/landing-page.html) (spec: `implementation-plan.md`) and [offer-builder-page.html](design/offer-builder-page.html) (spec: [offer-builder-page.md](offer-builder-page.md)), and log in / sign up in [layouts.html](design/layouts.html) (spec: [auth-page.md](auth-page.md)).
+Current page designs: [landing-page.html](design/landing-page.html) (spec: `implementation-plan.md`) and [offer-builder-page.html](design/offer-builder-page.html) (spec: [offer-builder-page.md](offer-builder-page.md)), log in / sign up in [layouts.html](design/layouts.html) (spec: [auth-page.md](auth-page.md)), and the footer in [footer.html](design/footer.html) (spec: [footer.md](footer.md)).
 
 **Order of change:** design file and this document first, then token or style files, then components. Never the other way round.
 
@@ -50,6 +51,7 @@ Each component below is drawn, with all its states, in the UI library page. The 
 | --- | --- | --- |
 | **Page header** | Optional image (64px square, 8px radius) on the left · optional eyebrow (an existing label, such as the DJ's name) · title in `.h2` · optional lead in `.lead`. Gaps: eyebrow → title 12px, title → lead 12px, header → content 32px. Sits on the page background, never in a card. | New shared `PageHeader` |
 | **Section card** | White card, 1px border, 8px radius, padding 24px → 32px from 768px. Title row: number in a 28px circle with a 1px black outline and black text, no fill (only when sections are a real sequence, such as form steps) + `.h3` title + 1px rule underneath with 16px below the title. Content below with 24px between fields. The title is optional: without a title there is no title row and no rule (for example the log in and sign up card). Cards stack 16px → 24px apart. | New shared `SectionCard` |
+| **Footer** | Logo (24px high, `--lb-logo-footer`) + slogan · FAQ, Contact us · rule · copyright + legal links · social icons. Built in code; only the social links come from Console. Spec: [footer.md](footer.md), design: `design/footer.html`. | New `Footer` in `FooterContainer` |
 | **Content card** (landing) | White card without a number or rule, for cards that are not form sections (stage cards, audience cards). Same border, radius and padding as the section card. | Existing landing components, moved to shared when a second page needs them |
 
 ### Form fields
@@ -90,6 +92,10 @@ All fields share one anatomy: **label → 8px → control → 8px → helper or 
 | **Secondary button** | Outlined black, black text; fills black on hover. The alternative action. | `SecondaryButton` + shared class |
 | **Ghost button** | Light grey border, transparent; for icon or minor actions. | Shared class |
 | **Text link** | 14px, 600, black, underlined (offset 3px). | Shared class |
+| **Footer link** | 14px, 600, black, no underline; underlined (offset 3px) on hover. 44px tall. Footer only (FAQ, Contact us). | Shared class `.linkFooter` |
+| **Muted link** | 14px, 400, `--lb-text-muted`; black and underlined on hover. 44px tall. Footer legal links. | Shared class `.linkMuted` |
+| **Social icon** | 20px (`--lb-icon-social`), muted, black on hover, 44px square tap area, `aria-label` = platform name. Paths copied from the template's SVGs in `PageBuilder/Primitives/Link/Icons` with a `viewBox` added so they scale (the template files have none and stay untouched). Approved exception to rule 5: lucide has no brand icons. | New shared `SocialIcon` |
+| **Hero search** | One white bar, max 520px (`--lb-width-search`), 1px `--colorGrey100` border, `--borderRadiusMedium`, 4px inner padding and gap, shadow `--lb-shadow-search`. Keyword input without its own border, 16px text, existing placeholder. Primary button inline on the right at every width. Focus: the bar's border turns black. Landing hero only. | `HeroSearch` in `LandingPage/sections` |
 | **Status chip** | Pill, 12px 600, dot before the text. Variants: neutral (beige), active (black outline), success (green). Labels only from the app's translations. | Move `StatusChip` from `LandingPage/sections` to shared |
 
 ## 5. Front-end architecture
@@ -109,6 +115,7 @@ src/components/
   TimeSelect/               # time and duration variants
   PhoneNumberField/         # country select + number input
   StatusChip/               # moved from LandingPage/sections
+  SocialIcon/               # social brand icons (template paths + viewBox), 20px
   index.js                  # export the new components, keeping the existing import order
 ```
 

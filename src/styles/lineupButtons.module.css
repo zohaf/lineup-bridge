@@ -89,3 +89,35 @@
   text-underline-offset: 3px;
   cursor: pointer;
 }
+
+/* Footer links: help links (semibold) and legal links (muted), 44px tap height */
+.linkFooter {
+  composes: small from './lineupType.module.css';
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: var(--lb-weight-semibold);
+  color: var(--lb-text-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.linkMuted {
+  composes: small from './lineupType.module.css';
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: var(--lb-weight-regular);
+  color: var(--lb-text-muted);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--lb-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

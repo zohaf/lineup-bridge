@@ -91,6 +91,11 @@ All spacing is a multiple of 4px.
 | Header column ↔ list column (sections 3 and 5) | stacked | 64px | `--lb-space-9` |
 | Button height | 48px | 48px | `--lb-button-height` |
 | Button side padding | 24px | 24px | `--lb-space-5` |
+| Footer padding (top / bottom) | 32 / 24px | 48 / 32px | `--lb-space-6` / `--lb-space-5`, `--lb-space-7` / `--lb-space-6` |
+| Footer logo height | 24px | 24px | `--lb-logo-footer` |
+| Social icon size | 20px | 20px | `--lb-icon-social` |
+| Hero search bar: max width | 520px | 520px | `--lb-width-search` |
+| Hero search bar: shadow | `0 6px 24px rgba(0,0,0,.06)` | same | `--lb-shadow-search` |
 
 **Rule:** spacing between siblings is set with `gap` on the parent (flex or grid). Children have `margin: 0`. This prevents the global margins described below from leaking in.
 
@@ -163,6 +168,10 @@ Copy exactly. The values match the tables above.
   --lb-text-secondary: var(--colorGrey700);
   --lb-text-muted: var(--colorGrey600);
   --lb-measure: 60ch;
+
+  /* Hero */
+  --lb-width-search: 520px;
+  --lb-shadow-search: 0 6px 24px rgba(0, 0, 0, 0.06);
 
   /* Spacing scale */
   --lb-space-1: 4px;
