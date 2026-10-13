@@ -18,33 +18,6 @@ import { getFeaturedListingsProps } from '../../util/data';
 
 import css from './LandingPage.module.css';
 
-const addLandingTitleBreak = title => {
-  if (!title?.content) {
-    return title;
-  }
-
-  const content = title.content.replace(/\s*-\s*without\b/, '\nwithout');
-  return content === title.content ? title : { ...title, content };
-};
-
-const removeLandingDatePicker = section => {
-  const callToAction = section?.callToAction;
-  if (!callToAction?.searchFields) {
-    return section;
-  }
-
-  return {
-    ...section,
-    callToAction: {
-      ...callToAction,
-      searchFields: {
-        ...callToAction.searchFields,
-        dateRange: false,
-      },
-    },
-  };
-};
-
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
@@ -52,20 +25,9 @@ const PageBuilder = loadable(() =>
 export const LandingPageComponent = props => {
   const { pageAssetsData, inProgress, error } = props;
   const landingPageData = pageAssetsData?.[camelize(ASSET_NAME)]?.data;
-  const sections = landingPageData?.sections || [];
-  // Only the hosted hero is kept, the other sections of the page are defined in landingSections.js
-  const hostedHero = sections.find(section => section.sectionType === 'hero') || sections[0];
-  const sectionsForLanding = hostedHero
-    ? [
-        {
-          ...removeLandingDatePicker(hostedHero),
-          title: addLandingTitleBreak(hostedHero.title),
-        },
-        ...landingSections,
-      ]
-    : [];
+  // The hosted sections are ignored, the page sections are defined in landingSections.js
   const pageAssetsDataForLanding = landingPageData
-    ? { ...landingPageData, sections: sectionsForLanding }
+    ? { ...landingPageData, sections: landingSections }
     : landingPageData;
 
   return (

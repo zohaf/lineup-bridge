@@ -1,8 +1,14 @@
-// Code-defined landing page sections that follow the hosted hero.
+// Code-defined landing page sections, in page order.
 // Each `sectionType` is rendered by a component registered in ./sections (landingSectionComponents).
 // Message ids are resolved with intl, copy lives in src/translations.
 
 export const landingSections = [
+  {
+    sectionType: 'landingHero',
+    sectionId: 'landing-hero',
+    sectionName: 'Hero',
+    messageKeyPrefix: 'LandingPage.hero',
+  },
   {
     sectionType: 'landingValue',
     sectionId: 'landing-value',

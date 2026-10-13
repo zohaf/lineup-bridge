@@ -1,0 +1,5 @@
+.root {
+  width: var(--lb-icon-social);
+  height: var(--lb-icon-social);
+  display: block;
+}

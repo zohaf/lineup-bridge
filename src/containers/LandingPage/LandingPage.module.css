@@ -1,16 +1,6 @@
-@import '../../styles/customMediaQueries.css';
-
 /* Type and spacing tokens, see .claude/tokens.md */
 .landingPage {
   composes: landingTokens from './landingTokens.module.css';
-}
-
-.landingPage :global(main#main-content section:first-child) .pbSectionDescription {
-  margin-top: 0;
-}
-
-.landingPage :global(main#main-content) .pbSectionTitle {
-  white-space: pre-line;
 }
 
 .landingPage :global(main#main-content section[data-section-type='columns']) .pbBlockContainer {
@@ -21,33 +11,4 @@
 .landingPage :global(main#main-content) {
   margin-top: 0;
   padding-top: 0;
-}
-
-/* The hosted hero fills the first screen */
-.landingPage :global(main#main-content section:first-child) {
-  height: calc(100vh - var(--topbarHeight));
-  min-height: calc(100vh - var(--topbarHeight));
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.landingPage :global(main#main-content section:first-child) > div:last-child {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  padding-top: 0;
-  padding-bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-@media (--viewportMedium) {
-  .landingPage :global(main#main-content section:first-child) {
-    height: calc(100vh - var(--topbarHeightDesktop));
-    min-height: calc(100vh - var(--topbarHeightDesktop));
-  }
 }

@@ -81,6 +81,14 @@
   --lb-field-gap: var(--lb-space-5);
   --lb-form-section-gap: var(--lb-space-4);
   --lb-focus-ring: 0 0 0 3px rgba(0, 0, 0, 0.08);
+
+  /* Footer */
+  --lb-logo-footer: 24px;
+  --lb-icon-social: 20px;
+
+  /* Hero */
+  --lb-width-search: 520px;
+  --lb-shadow-search: 0 6px 24px rgba(0, 0, 0, 0.06);
 }
 
 @media (--viewportMedium) {
