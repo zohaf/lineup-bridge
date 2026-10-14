@@ -1,53 +1,44 @@
-@import '../../styles/customMediaQueries.css';
+/* Contact: Centered · form layout, one card. See .claude/design/content-pages.html. */
 
-.page :global(section#contact .sectionContent),
-.contactDetails {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 1.5rem 6rem;
-  align-items: center;
+.root {
+  composes: centered form from '../../styles/lineupLayout.module.css';
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-6);
 }
 
-.page :global(section#contact .sectionDetails) {
-  min-width: 0;
-  margin: 0;
+.title {
+  composes: h2 from '../../styles/lineupType.module.css';
 }
 
-.contactDetails {
-  display: grid;
-  justify-content: center;
-  position: relative;
-  margin: 0 auto;
-  text-align: center;
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-5);
+  padding: var(--lb-card-pad);
+  border: 1px solid var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorWhite);
 }
 
-.contactLabel {
-  font-weight: 700;
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
 }
 
-.page :global(section#contact .pbSectionTitle) {
-  font-size: 32px;
-  line-height: 1.33;
+.label {
+  composes: eyebrow from '../../styles/lineupType.module.css';
 }
 
-.page :global(section#contact .pbSectionTitle),
-.page :global(section#contact .pbSectionDescription) {
-  text-align: center;
+.value {
+  composes: body from '../../styles/lineupType.module.css';
 }
 
-.contactDetails > div + div {
-  margin-top: 24px;
-}
-
-@media (--viewportMedium) {
-  .page :global(section#contact .sectionContent),
-  .contactDetails {
-    gap: 2rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    justify-items: center;
-  }
+.link {
+  composes: body from '../../styles/lineupType.module.css';
+  color: var(--lb-text-primary);
+  font-weight: var(--lb-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

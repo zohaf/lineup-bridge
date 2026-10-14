@@ -1,0 +1,116 @@
+/* Legal pages and FAQ: Centered · form layout, collapsible section cards.
+   See .claude/design/content-pages.html. */
+
+.root {
+  composes: centered form from '../../../../styles/lineupLayout.module.css';
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-6);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+}
+
+.title {
+  composes: h2 from '../../../../styles/lineupType.module.css';
+}
+
+.description {
+  composes: small from '../../../../styles/lineupType.module.css';
+  white-space: pre-line;
+}
+
+/* Console markdown (paragraphs, lists, links) in body type */
+.text {
+  composes: body from '../../../../styles/lineupType.module.css';
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+
+  & p,
+  & ul,
+  & ol,
+  & li {
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    font: inherit;
+    color: inherit;
+  }
+
+  & ul,
+  & ol {
+    padding-left: var(--lb-space-5);
+  }
+
+  & a {
+    color: var(--lb-text-primary);
+    font-weight: var(--lb-weight-semibold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-card-gap);
+}
+
+/* Same look as SectionCard, collapsible with native <details> (no JS, works with SSR) */
+.card {
+  min-width: 0;
+  border: 1px solid var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorWhite);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-4);
+  min-height: 64px;
+  padding: var(--lb-space-4) var(--lb-card-pad);
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover .chevron {
+    background-color: var(--colorGrey50);
+  }
+}
+
+.cardTitle {
+  composes: h3 from '../../../../styles/lineupType.module.css';
+}
+
+.chevron {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: transform 0.2s;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.card[open] .chevron {
+  transform: rotate(180deg);
+}
+
+.answer {
+  margin: 0 var(--lb-card-pad);
+  padding: var(--lb-space-4) 0 var(--lb-card-pad);
+  border-top: 1px solid var(--colorGrey100);
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 import appSettings from '../../../config/settings';
@@ -28,6 +28,8 @@ import {
   LinkedLogo,
   Modal,
   ModalMissingInformation,
+  NamedLink,
+  SiteHeader,
 } from '../../../components';
 import { getSearchPageResourceLocatorStringParams } from '../../SearchPage/SearchPage.shared';
 
@@ -37,6 +39,7 @@ import TopbarSearchForm from './TopbarSearchForm/TopbarSearchForm';
 import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
 
+import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './Topbar.module.css';
 import { getCurrentUserTypeRoles } from '../../../util/userHelpers';
 
@@ -212,6 +215,12 @@ const TopbarComponent = props => {
     config,
     routeConfiguration,
   } = props;
+
+  // Sign up and Log in render only after mount, so the server and first client render match.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = values => {
     const { currentSearchParams, history, location, config, routeConfiguration } = props;
@@ -474,49 +483,74 @@ const TopbarComponent = props => {
         onLogout={handleLogout}
         currentPage={resolvedCurrentPage}
       />
-      <nav className={classNames(mobileRootClassName || css.container, mobileClassName)}>
-        <Button
-          id={MOBILE_MENU_BUTTON_ID}
-          rootClassName={css.menu}
-          onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
-          title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
-        >
-          <MenuIcon
-            className={css.menuIcon}
-            ariaLabel={intl.formatMessage({ id: 'Topbar.menuIcon' })}
-          />
-          {notificationDot}
-        </Button>
-        <LinkedLogo
-          id="logo-topbar-mobile"
-          layout={'mobile'}
-          logoClassName={css.topbarMobileLogoRoot}
-          logoImageClassName={css.topbarMobileLogoHalf}
-          alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
+      {isAuthenticated ? null : (
+        <SiteHeader
+          ariaLabel={intl.formatMessage({ id: 'TopbarDesktop.screenreader.topbarNavigation' })}
+          logoAlt={intl.formatMessage(
+            { id: 'TopbarDesktop.logo' },
+            { marketplaceName: config.marketplaceName }
+          )}
           linkToExternalSite={config?.topbar?.logoLink}
-        />
-        {mobileSearchButtonMaybe}
-      </nav>
-      <div className={css.desktop}>
-        <TopbarDesktop
-          className={desktopClassName}
-          currentUserHasListings={currentUserHasListings}
-          currentUser={currentUser}
-          currentPage={resolvedCurrentPage}
-          initialSearchFormValues={initialSearchFormValues}
-          intl={intl}
-          isAuthenticated={isAuthenticated}
-          notificationCount={notificationCount}
-          onLogout={handleLogout}
-          onSearchSubmit={handleSubmit}
-          config={config}
-          customLinks={customLinksForTopbar}
-          showSearchForm={showSearchForm}
-          showCreateListingsLink={showCreateListingsLink}
-          inboxTab={topbarInboxTab}
-          onMyPublicProfileClick={handleMyPublicProfileClick}
-        />
-      </div>
+        >
+          {mounted ? (
+            <>
+              <NamedLink id="signup-link" name="SignupPage" className={buttonCss.linkHeader}>
+                <FormattedMessage id="TopbarDesktop.signup" />
+              </NamedLink>
+              <NamedLink id="login-link" name="LoginPage" className={buttonCss.linkHeader}>
+                <FormattedMessage id="TopbarDesktop.login" />
+              </NamedLink>
+            </>
+          ) : null}
+        </SiteHeader>
+      )}
+      {isAuthenticated ? (
+        <>
+        <nav className={classNames(mobileRootClassName || css.container, mobileClassName)}>
+          <Button
+            id={MOBILE_MENU_BUTTON_ID}
+            rootClassName={css.menu}
+            onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
+            title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
+          >
+            <MenuIcon
+              className={css.menuIcon}
+              ariaLabel={intl.formatMessage({ id: 'Topbar.menuIcon' })}
+            />
+            {notificationDot}
+          </Button>
+          <LinkedLogo
+            id="logo-topbar-mobile"
+            layout={'mobile'}
+            logoClassName={css.topbarMobileLogoRoot}
+            logoImageClassName={css.topbarMobileLogoHalf}
+            alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
+            linkToExternalSite={config?.topbar?.logoLink}
+          />
+          {mobileSearchButtonMaybe}
+        </nav>
+        <div className={css.desktop}>
+          <TopbarDesktop
+            className={desktopClassName}
+            currentUserHasListings={currentUserHasListings}
+            currentUser={currentUser}
+            currentPage={resolvedCurrentPage}
+            initialSearchFormValues={initialSearchFormValues}
+            intl={intl}
+            isAuthenticated={isAuthenticated}
+            notificationCount={notificationCount}
+            onLogout={handleLogout}
+            onSearchSubmit={handleSubmit}
+            config={config}
+            customLinks={customLinksForTopbar}
+            showSearchForm={showSearchForm}
+            showCreateListingsLink={showCreateListingsLink}
+            inboxTab={topbarInboxTab}
+            onMyPublicProfileClick={handleMyPublicProfileClick}
+          />
+        </div>
+        </>
+      ) : null}
       <Modal
         id="TopbarMobileMenu"
         containerClassName={css.modalContainer}

@@ -6,11 +6,12 @@ This file is the single source of truth for type and spacing in the whole app (i
 
 ## How this document and the code stay in sync
 
-1. **Tokens live in one file:** `src/containers/LandingPage/landingTokens.module.css` (a CSS module, so its classes are scoped). `LandingPage.module.css` applies it to the `.landingPage` root with `composes: landingTokens from './landingTokens.module.css'`. The token names and values below are copied there exactly.
-2. **Type styles live in one file:** `src/containers/LandingPage/landingType.module.css` holds one class per text role (`.display`, `.h2`, `.h3`, `.lead`, `.leadLarge`, `.body`, `.small`, `.eyebrow`, `.label`, `.button`). Components never set font properties themselves; they use `composes: h2 from '../landingType.module.css';`.
-3. **No raw values in components.** Inside `src/containers/LandingPage/**`, every `font-size`, `font-weight`, `line-height`, `letter-spacing`, `margin`, `padding` and `gap` uses a `--lb-*` token. Allowed exceptions: `0`, `1px` borders, `%`, and the existing `--borderRadius*` tokens.
+1. **Tokens live in one file:** `src/styles/lineupTokens.css`, on `:root`, imported once in `src/styles/marketplaceDefaults.css`. The token names and values below are copied there exactly. (The landing page started with its own copy in `LandingPage/landingTokens.module.css`; only `.landingDark` is still needed from there.)
+2. **Type styles live in one file:** `src/styles/lineupType.module.css` holds one class per text role (`.display`, `.h2`, `.h3`, `.lead`, `.leadLarge`, `.body`, `.small`, `.eyebrow`, `.label`, `.button`). Components never set font properties themselves; they use `composes: h2 from '../../styles/lineupType.module.css';` (path relative to the component).
+3. **No raw values in components.** In every redesigned page and shared component, every `font-size`, `font-weight`, `line-height`, `letter-spacing`, `margin`, `padding` and `gap` uses a `--lb-*` token. Allowed exceptions: `0`, `1px` borders, `%`, and the existing `--borderRadius*` tokens.
 4. **To change a value:** update this document first, then the token file. Never change a value in a component.
-5. **Review check:** searching the landing folder for `px` in font or spacing properties, outside `landingTokens.module.css`, must return nothing.
+5. **Review check:** searching a redesigned page's CSS for `px` in font or spacing properties must return nothing (`lineupTokens.css` is the only place for values).
+6. **Design files:** every `design/*.html` copies the token values it uses into its `.page` block. When a value changes here, update `lineupTokens.css` and then the design files that use it.
 
 ## Font
 
@@ -92,6 +93,9 @@ All spacing is a multiple of 4px.
 | Button height | 48px | 48px | `--lb-button-height` |
 | Button side padding | 24px | 24px | `--lb-space-5` |
 | Footer padding (top / bottom) | 32 / 24px | 48 / 32px | `--lb-space-6` / `--lb-space-5`, `--lb-space-7` / `--lb-space-6` |
+| Header (topbar) height | 60px | 60px | `--lb-topbar-height` |
+| Header logo height | 28px | 28px | `--lb-logo-header` |
+| Header link letter spacing | -0.01em | -0.01em | `--lb-tracking-nav` |
 | Footer logo height | 24px | 24px | `--lb-logo-footer` |
 | Social icon size | 20px | 20px | `--lb-icon-social` |
 | Hero search bar: max width | 520px | 520px | `--lb-width-search` |

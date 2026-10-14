@@ -29,7 +29,7 @@ This is the baseline for the LineupBridge redesign. Every page that gets redesig
 | Page designs | `.claude/design/<page>.html` | HTML |
 | Page specs and implementation steps | `.claude/<page>.md` | Markdown |
 
-Current page designs: [landing-page.html](design/landing-page.html) (spec: `implementation-plan.md`) and [offer-builder-page.html](design/offer-builder-page.html) (spec: [offer-builder-page.md](offer-builder-page.md)), log in / sign up in [layouts.html](design/layouts.html) (spec: [auth-page.md](auth-page.md)), and the footer in [footer.html](design/footer.html) (spec: [footer.md](footer.md)).
+Current page designs: [landing-page.html](design/landing-page.html) (spec: `implementation-plan.md`) and [offer-builder-page.html](design/offer-builder-page.html) (spec: [offer-builder-page.md](offer-builder-page.md)), log in / sign up in [layouts.html](design/layouts.html) (spec: [auth-page.md](auth-page.md)), the footer in [footer.html](design/footer.html) (spec: [footer.md](footer.md)), and the header in [header.html](design/header.html) (spec: [header.md](header.md)). Console content pages in [content-pages.html](design/content-pages.html). The logged-in home page in [home-page.html](design/home-page.html) (spec: [home-page.md](home-page.md)).
 
 **Order of change:** design file and this document first, then token or style files, then components. Never the other way round.
 
@@ -51,6 +51,7 @@ Each component below is drawn, with all its states, in the UI library page. The 
 | --- | --- | --- |
 | **Page header** | Optional image (64px square, 8px radius) on the left · optional eyebrow (an existing label, such as the DJ's name) · title in `.h2` · optional lead in `.lead`. Gaps: eyebrow → title 12px, title → lead 12px, header → content 32px. Sits on the page background, never in a card. | New shared `PageHeader` |
 | **Section card** | White card, 1px border, 8px radius, padding 24px → 32px from 768px. Title row: number in a 28px circle with a 1px black outline and black text, no fill (only when sections are a real sequence, such as form steps) + `.h3` title + 1px rule underneath with 16px below the title. Content below with 24px between fields. The title is optional: without a title there is no title row and no rule (for example the log in and sign up card). Cards stack 16px → 24px apart. | New shared `SectionCard` |
+| **Header** | 60px bar (`--lb-topbar-height`) at every width on the page background, 1px `--colorGrey100` rule underneath, `--lb-gutter` side padding. Logo always on the left (28px high, `--lb-logo-header`); everything else on the right. Shows only items the code already shows. Spec: [header.md](header.md), design: `design/header.html`. | New shared `SiteHeader`, used by `Topbar` and `TopbarSimplified` |
 | **Footer** | Logo (24px high, `--lb-logo-footer`) + slogan · FAQ, Contact us · rule · copyright + legal links · social icons. Built in code; only the social links come from Console. Spec: [footer.md](footer.md), design: `design/footer.html`. | New `Footer` in `FooterContainer` |
 | **Content card** (landing) | White card without a number or rule, for cards that are not form sections (stage cards, audience cards). Same border, radius and padding as the section card. | Existing landing components, moved to shared when a second page needs them |
 
@@ -92,11 +93,13 @@ All fields share one anatomy: **label → 8px → control → 8px → helper or 
 | **Secondary button** | Outlined black, black text; fills black on hover. The alternative action. | `SecondaryButton` + shared class |
 | **Ghost button** | Light grey border, transparent; for icon or minor actions. | Shared class |
 | **Text link** | 14px, 600, black, underlined (offset 3px). | Shared class |
+| **Header link** | 14px, 400, black, letter spacing -0.01em (`--lb-tracking-nav`), no underline; underlined (offset 3px) on hover. 44px tall. Header only (Sign up, Log in). | Shared class `.linkHeader` |
 | **Footer link** | 14px, 600, black, no underline; underlined (offset 3px) on hover. 44px tall. Footer only (FAQ, Contact us). | Shared class `.linkFooter` |
 | **Muted link** | 14px, 400, `--lb-text-muted`; black and underlined on hover. 44px tall. Footer legal links. | Shared class `.linkMuted` |
 | **Social icon** | 20px (`--lb-icon-social`), muted, black on hover, 44px square tap area, `aria-label` = platform name. Paths copied from the template's SVGs in `PageBuilder/Primitives/Link/Icons` with a `viewBox` added so they scale (the template files have none and stay untouched). Approved exception to rule 5: lucide has no brand icons. | New shared `SocialIcon` |
 | **Hero search** | One white bar, max 520px (`--lb-width-search`), 1px `--colorGrey100` border, `--borderRadiusMedium`, 4px inner padding and gap, shadow `--lb-shadow-search`. Keyword input without its own border, 16px text, existing placeholder. Primary button inline on the right at every width. Focus: the bar's border turns black. Landing hero only. | `HeroSearch` in `LandingPage/sections` |
 | **Status chip** | Pill, 12px 600, dot before the text. Variants: neutral (beige), active (black outline), success (green). Labels only from the app's translations. | Move `StatusChip` from `LandingPage/sections` to shared |
+| **Item rows** | Rows inside one `SectionCard` per group, 1px rule between rows, `--lb-row-pad` above and below. Action row: title (`.fieldLabel` size) → 8px → `.body` text → secondary button (full width on phones; right, auto from 768px). Link row: whole row opens a page; title over date on the left, status chip, then the price at the right end (600, right-aligned; on phones price top right, chip under it); optional action on its own line under the row; hover underlines the title (pointer only). Approved Oct 14, first used on Home. | Classes in the page's CSS module, built on `SectionCard` |
 
 ## 5. Front-end architecture
 

@@ -63,6 +63,7 @@ export { default as ResponsiveImage } from './ResponsiveImage/ResponsiveImage';
 export { default as ResponsiveBackgroundImageContainer } from './ResponsiveBackgroundImageContainer/ResponsiveBackgroundImageContainer';
 export { default as SectionCard } from './SectionCard/SectionCard';
 export { default as SocialIcon } from './SocialIcon/SocialIcon';
+export { default as StatusChip } from './StatusChip/StatusChip';
 export { default as SelectField } from './SelectField/SelectField';
 export { default as TimeRange } from './TimeRange/TimeRange';
 export { default as UserDisplayName } from './UserDisplayName/UserDisplayName';
@@ -82,6 +83,7 @@ export { default as Button, PrimaryButton, PrimaryButtonInline, SecondaryButton,
 export { default as ErrorMessage } from './ErrorMessage/ErrorMessage';
 export { default as ImageFromFile } from './ImageFromFile/ImageFromFile';
 export { default as LinkedLogo } from './Logo/LinkedLogo';
+export { default as SiteHeader } from './SiteHeader/SiteHeader';
 export { default as ListingLink } from './ListingLink/ListingLink';
 export { default as PaginationLinks } from './PaginationLinks/PaginationLinks';
 export { default as ReviewRating } from './ReviewRating/ReviewRating';

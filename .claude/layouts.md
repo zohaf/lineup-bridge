@@ -69,7 +69,9 @@ and goes into `design/components.html` before it is built.
   in body size.
 - **States:**
   - Default: circle with a 1px black outline, black number, label in 400.
-  - **Current: black filled circle, white number, label in 600.**
+  - **Current: black filled circle, white number, label in 600.** Open: this conflicts with
+    design-system-rules.md rule 8 (selection is an outline, not a fill). Decide with the DJ profile
+    builder redesign.
   - Hover: the circle fills white.
   - Not reachable yet (DJ profile builder, new profile: steps after the first unsaved one): circle,
     number and label in light grey, not clickable. This is the wizard's existing disabled state.

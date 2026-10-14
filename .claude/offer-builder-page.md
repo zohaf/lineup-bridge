@@ -60,7 +60,7 @@ design (design-system-rules.md rule 7).
 | Width | Device | What applies |
 | --- | --- | --- |
 | below 768px | phones, iPad Split View / Slide Over narrow windows | phone layout: one column rows, deck tiles stacked, full-width button |
-| 768–1023px | iPad portrait (768, 810, 820, 834px) | `--viewportMedium` step: 32px gutter and page top, 72px topbar, card padding 32px, cards 24px apart, `.h2` 34px, `.lead` 17px, field labels 16px. Rows in 2 columns, deck tiles in 3 columns, button auto width (min 200px, left). The column fills the width minus the gutters (704px at 768). |
+| 768–1023px | iPad portrait (768, 810, 820, 834px) | `--viewportMedium` step: 32px gutter and page top, card padding 32px, cards 24px apart, `.h2` 34px, `.lead` 17px, field labels 16px. Rows in 2 columns, deck tiles in 3 columns, button auto width (min 200px, left). The column fills the width minus the gutters (704px at 768). |
 | 1024px and up | iPad landscape (1024, 1180px), iPad Pro portrait (1024px), desktop: uses the Desktop design | `--viewportLarge` step: `.h2` 40px, `.lead` 18px (already in `lineupTokens.css`). Column stops at 760px and is centered. Everything else as 768. |
 
 - **No tablet-only CSS.** Use only `@media (--viewportMedium)` and `@media (--viewportLarge)` through

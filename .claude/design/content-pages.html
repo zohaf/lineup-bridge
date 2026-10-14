@@ -74,7 +74,7 @@ details.card .answer { margin: 0 var(--lb-card-pad); padding: var(--lb-space-4) 
 </style>
 
 <div class="tool" role="toolbar" aria-label="Page">
-  <button aria-pressed="true" data-view="legal">Terms / Privacy / 3rd legal</button>
+  <button aria-pressed="true" data-view="legal">Privacy / Terms of use / Payment terms</button>
   <button aria-pressed="false" data-view="faq">FAQ</button>
   <button aria-pressed="false" data-view="contact">Contact</button>
 </div>
@@ -133,22 +133,15 @@ details.card .answer { margin: 0 var(--lb-card-pad); padding: var(--lb-space-4) 
   </div>
 </main>
 
-<!-- CONTACT: Split · summary (main left, 360px side card right; side card first on phones). -->
+<!-- CONTACT: Centered · form (760). Built in code (ContactPage.js), not Console. No form. -->
 <main class="view" id="contact" hidden>
-  <div class="split">
-    <header class="page-header">
-      <h1 class="reset h2">Let us know how we can help</h1>
-      <p class="reset lead"><span class="cms">Intro text</span> <span class="tag">optional, Console</span></p>
-    </header>
-    <aside class="side card">
-      <div class="details">
-        <div class="small"><p class="reset eyebrow">Email</p><a href="#">info@lineupbridge.com</a></div>
-        <div class="small"><p class="reset eyebrow">Address</p>Singel 126, 1015 AE Amsterdam, Netherlands</div>
-      </div>
-    </aside>
+  <div class="centered">
+    <header class="page-header"><h1 class="reset h2">Let us know how we can help</h1></header>
     <div class="card">
-      <div class="ghost">Contact form: needs your approval (new words + an email backend)</div>
-      <div class="ghost">…or the FAQ cards / Console text go here</div>
+      <div class="details">
+        <div class="body"><p class="reset eyebrow">Email</p><a href="#">info@lineupbridge.com</a></div>
+        <div class="body"><p class="reset eyebrow">Address</p>Singel 126, 1015 AE Amsterdam, Netherlands</div>
+      </div>
     </div>
   </div>
 </main>

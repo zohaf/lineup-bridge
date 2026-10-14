@@ -1,0 +1,44 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-4);
+  width: 100%;
+  box-sizing: border-box;
+  height: var(--lb-topbar-height);
+  padding: 0 var(--lb-gutter);
+  background-color: var(--colorPageBackground);
+  border-bottom: 1px solid var(--colorGrey100);
+}
+
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.logoWrapper {
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+}
+
+.logoImage {
+  height: auto;
+  width: auto;
+  max-width: 100%;
+  max-height: var(--lb-logo-header);
+  object-fit: contain;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0 var(--lb-space-5);
+}

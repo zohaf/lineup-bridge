@@ -1,0 +1,304 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LineupBridge Home</title>
+<style>
+/* Home /p/home, logged in (CMSPage.js: HomeNextSteps + OwnListingsSummary). Layout: Centered · wide
+   (920px), see ../layouts.md. Visual language of the offer builder: beige page, white SectionCards
+   with an .h3 title and a rule, black type. Every visible word is existing app copy (en.json; Console
+   translations override no Home.* key, checked Oct 14, 2026). Names, dates and prices are example
+   data. Yellow tags are mockup notes only. Toolbar: user, state, view, tags. One SectionCard per group (approved Oct 14). */
+:root {
+  color-scheme: light;
+  --page: #eeede9;
+  --paper: #ffffff;
+  --ink: #000000;
+  --grey100: hsl(240 3% 90%);
+  --grey300: hsl(240 3% 70%);
+  --grey600: hsl(240 3% 40%);
+  --grey700: hsl(240 3% 30%);
+  --rule: hsl(240 3% 88%);
+  --rule-strong: hsl(240 3% 80%);
+  --success: #138041;
+  --success-subtle: #f0fff6;
+  --tool: #1b1b1d;
+  --radius: 4px;
+  --radius-card: 8px;
+  --logo: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+/* Toolbar (mockup only) */
+.toolbar { position: sticky; top: 0; z-index: 30; background: var(--tool); color: #f2f2f0; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-size: 13px; }
+.toolbar strong { font-weight: 600; margin-right: auto; }
+.seg { display: inline-flex; flex-wrap: wrap; background: #2c2c30; border-radius: 6px; padding: 3px; gap: 2px; }
+.seg button { font: inherit; color: #c8c8c4; background: transparent; border: 0; padding: 6px 12px; border-radius: 4px; cursor: pointer; min-height: 32px; }
+.seg button[aria-pressed="true"] { background: #f2f2f0; color: #111; }
+.seg-label { color: #9a9a96; margin-right: 6px; }
+.stage { padding: 24px 16px 64px; }
+.caption { max-width: 1280px; margin: 0 auto 16px; font-size: 14px; line-height: 1.5; color: #3a3a3a; }
+.caption b { color: #000; }
+.frame { container-type: inline-size; margin: 0 auto; max-width: 1280px; background: var(--page); border-radius: 6px; overflow: clip; box-shadow: 0 12px 40px rgba(0,0,0,.10); transition: max-width .3s; }
+.stage[data-view="mobile"] .frame { max-width: 390px; border-radius: 28px; border: 10px solid #111; }
+.stage[data-view="ipad"] .frame { max-width: calc(768px + 24px); border-radius: 24px; border: 12px solid #111; }
+@media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
+.tag { display: inline-block; font: 500 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #6a5200; background: #fff4d6; border: 1px dashed #d9a93a; border-radius: 3px; padding: 1px 6px; white-space: normal; max-width: 100%; justify-self: start; letter-spacing: 0; text-transform: none; font-weight: 500; }
+.frame.no-tags .tag { display: none; }
+
+/* Tokens (tokens.md + layouts.md) */
+.page {
+  --lb-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --lb-size-h2: 28px; --lb-size-h3: 18px; --lb-size-body: 15px; --lb-size-small: 14px; --lb-size-label: 12px; --lb-size-button: 15px; --lb-size-field-label: 15px;
+  --lb-text-primary: var(--ink); --lb-text-secondary: var(--grey700); --lb-text-muted: var(--grey600);
+  --lb-space-1: 4px; --lb-space-2: 8px; --lb-space-3: 12px; --lb-space-4: 16px; --lb-space-5: 24px; --lb-space-6: 32px; --lb-space-7: 48px; --lb-space-9: 64px;
+  --lb-gutter: var(--lb-space-5); --lb-card-pad: var(--lb-space-5); --lb-card-gap: var(--lb-space-4); --lb-row-pad: var(--lb-space-4);
+  --lb-button-height: 48px; --lb-topbar-height: 60px;
+  --lb-width-wide: 920px; --lb-page-top: var(--lb-gutter); --lb-page-bottom: var(--lb-space-9);
+  font-family: var(--lb-font); font-size: var(--lb-size-body); line-height: 1.55; color: var(--lb-text-primary);
+  min-height: 720px; display: grid; grid-template-rows: auto 1fr auto;
+}
+@container (min-width: 768px) {
+  .page { --lb-size-h2: 34px; --lb-size-h3: 20px; --lb-size-body: 16px; --lb-size-field-label: 16px; --lb-gutter: var(--lb-space-6); --lb-card-pad: var(--lb-space-6); --lb-card-gap: var(--lb-space-5); --lb-row-pad: var(--lb-space-5); }
+}
+@container (min-width: 1024px) { .page { --lb-size-h2: 40px; } }
+
+/* Header (logged-in header = header stage 2, not designed yet; shown with today's items only) */
+.topbar { height: var(--lb-topbar-height); display: flex; align-items: center; gap: var(--lb-space-5); padding-inline: var(--lb-gutter); border-bottom: 1px solid var(--grey100); position: sticky; top: 0; z-index: 3; background: var(--page); }
+.logo { font-family: var(--logo); font-style: italic; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; line-height: 1; color: var(--ink); text-decoration: none; }
+.topbar .links { margin-left: auto; display: flex; align-items: center; gap: var(--lb-space-5); }
+.topbar .navLink { display: none; font-size: var(--lb-size-small); letter-spacing: -0.01em; color: var(--ink); text-decoration: none; min-height: 44px; align-items: center; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); flex: none; }
+.menuBtn { width: 44px; height: 44px; display: grid; place-items: center; margin-right: calc(-1 * var(--lb-space-3)); }
+.menuBtn svg { width: 20px; height: 20px; }
+@container (min-width: 768px) { .topbar .navLink { display: inline-flex; } .menuBtn { display: none; } }
+@container (max-width: 767px) { .topbar .avatar { display: none; } }
+
+/* Layout: Centered · wide (lineupLayout.module.css .centered .wide) */
+.centered { width: 100%; max-width: calc(var(--lb-width-wide) + 2 * var(--lb-gutter)); margin-inline: auto; padding: var(--lb-page-top) var(--lb-gutter) var(--lb-page-bottom); display: grid; gap: var(--lb-space-6); align-content: start; min-width: 0; }
+
+/* Type roles (lineupType.module.css) */
+.reset { margin: 0; padding: 0; }
+.h2 { font-size: var(--lb-size-h2); line-height: 1.15; letter-spacing: -0.015em; font-weight: 600; text-wrap: balance; }
+.h3 { font-size: var(--lb-size-h3); line-height: 1.3; letter-spacing: -0.01em; font-weight: 600; }
+.body { font-size: var(--lb-size-body); line-height: 1.55; color: var(--lb-text-secondary); }
+.small { font-size: var(--lb-size-small); line-height: 1.45; color: var(--lb-text-secondary); }
+.itemTitle { font-size: var(--lb-size-field-label); line-height: 1.4; font-weight: 600; color: var(--lb-text-primary); }
+
+/* SectionCard (existing component, no number): white card, .h3 title, 1px rule, content */
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); padding: var(--lb-card-pad); display: grid; gap: var(--lb-space-4); min-width: 0; }
+.card-title { padding-bottom: var(--lb-space-4); border-bottom: 1px solid var(--rule); }
+
+/* Item rows inside a card, divided by a rule (the landing StepList row pattern) */
+.rows { display: grid; min-width: 0; }
+.item { display: grid; gap: var(--lb-space-4); padding-block: var(--lb-row-pad); border-top: 1px solid var(--rule); min-width: 0; }
+.item:first-child { border-top: 0; padding-top: 0; }
+.item:last-child { padding-bottom: 0; }
+.itemText { display: grid; gap: var(--lb-space-2); min-width: 0; }
+@container (min-width: 768px) {
+  .item.next { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--lb-space-5); }
+}
+
+/* Buttons (lineupButtons.module.css) */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--lb-button-height); padding: 0 var(--lb-space-5); border-radius: var(--radius); border: 1px solid var(--ink); font-size: var(--lb-size-button); font-weight: 600; line-height: 1; white-space: nowrap; text-decoration: none; width: 100%; cursor: pointer; }
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-secondary { background: transparent; color: var(--ink); }
+@media (hover: hover) { .btn-secondary:hover { background: var(--ink); color: var(--paper); } }
+@container (min-width: 768px) { .btn { width: auto; min-width: 200px; } }
+
+/* Status chip (StatusChip, moved from LandingPage/sections to shared) */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: var(--lb-size-label); line-height: 1.3; letter-spacing: 0.02em; font-weight: 600; white-space: nowrap; background: var(--page); color: var(--grey700); border: 1px solid var(--rule); }
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip-active { color: var(--ink); background: var(--paper); border-color: var(--ink); }
+.chip-success { color: var(--success); background: var(--success-subtle); border-color: #bfe8cf; }
+
+/* Activity row: whole row opens the offer (OrderDetailsPage / SaleDetailsPage).
+   Price is always the last column, right-aligned, so amounts line up down the list; the status chip
+   sits just before it. Phone: name · price / date · chip. From 768px: name over date · chip · price. */
+.offer { cursor: pointer; color: inherit; text-decoration: none;
+  grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name price" "date chip" "pay pay";
+  column-gap: var(--lb-space-3); row-gap: var(--lb-space-1); align-items: center; }
+.offerName { grid-area: name; min-width: 0; overflow-wrap: anywhere; }
+.date { grid-area: date; font-size: var(--lb-size-small); line-height: 1.45; color: var(--lb-text-muted); white-space: nowrap; }
+.offer .chip { grid-area: chip; justify-self: end; }
+.price { grid-area: price; justify-self: end; font-size: var(--lb-size-body); font-weight: 600; color: var(--lb-text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.offer .btn { grid-area: pay; margin-top: var(--lb-space-3); }
+@media (hover: hover) { .offer:hover .offerName { text-decoration: underline; text-underline-offset: 3px; } }
+@container (min-width: 768px) {
+  .offer { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "name chip price" "date chip price" "pay pay pay"; column-gap: var(--lb-space-5); }
+  .offer .btn { justify-self: end; }
+}
+}
+
+/* Footer (footer.html, approved) */
+.footer { border-top: 1px solid var(--grey100); padding: var(--lb-space-6) var(--lb-gutter) var(--lb-space-5); display: grid; gap: var(--lb-space-6); }
+.brand { display: grid; gap: var(--lb-space-2); justify-items: start; }
+.brand .logo { font-size: 24px; }
+.slogan { margin: 0; font-size: var(--lb-size-small); line-height: 1.45; color: var(--lb-text-secondary); }
+.fnav { display: flex; flex-wrap: wrap; gap: 0 var(--lb-space-5); margin: 0; padding: 0; list-style: none; }
+.fnav a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--lb-size-small); font-weight: 600; color: var(--ink); text-decoration: none; }
+.meta { border-top: 1px solid var(--grey100); padding-top: var(--lb-space-4); }
+.legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--lb-space-5); font-size: var(--lb-size-small); line-height: 1.45; color: var(--lb-text-muted); }
+.legal p { margin: 0; flex-basis: 100%; order: 2; padding-top: var(--lb-space-2); }
+.legal a { display: inline-flex; align-items: center; min-height: 44px; color: var(--lb-text-muted); text-decoration: none; }
+@container (min-width: 768px) {
+  .footer { padding: var(--lb-space-7) var(--lb-gutter) var(--lb-space-6); }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-6); }
+  .meta { padding-top: var(--lb-space-2); }
+}
+@container (min-width: 1024px) { .legal p { flex-basis: auto; order: 0; padding-top: 0; } }
+</style>
+
+<div class="toolbar" role="toolbar" aria-label="Mockup controls">
+  <strong>Home · /p/home</strong>
+  <span><span class="seg-label">User</span>
+    <span class="seg" id="userSeg">
+      <button data-user="dj" aria-pressed="true">DJ</button>
+      <button data-user="org" aria-pressed="false">Event organizer</button>
+    </span>
+  </span>
+  <span><span class="seg-label">State</span><span class="seg" id="stateSeg"></span></span>
+  <span><span class="seg-label">View</span>
+    <span class="seg" id="viewSeg">
+      <button data-view="desktop" aria-pressed="true">Desktop</button>
+      <button data-view="ipad" aria-pressed="false">iPad 768</button>
+      <button data-view="mobile" aria-pressed="false">Mobile</button>
+    </span>
+  </span>
+  <span><span class="seg-label">Tags</span>
+    <span class="seg" id="tagSeg">
+      <button data-tags="on" aria-pressed="true">On</button>
+      <button data-tags="off" aria-pressed="false">Off</button>
+    </span>
+  </span>
+</div>
+
+<div class="stage" id="stage" data-view="desktop">
+  <p class="caption" id="caption"></p>
+  <div class="frame" id="frame">
+    <div class="page">
+      <header class="topbar">
+        <a class="logo" href="#">LineupBridge</a>
+        <span class="links">
+          <a class="navLink" href="#">Home</a>
+          <a class="navLink" href="#" data-org>Find a DJ</a>
+          <span class="avatar" aria-hidden="true"></span>
+          <span class="menuBtn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
+        </span>
+      </header>
+
+      <main class="centered" id="main"></main>
+
+      <footer class="footer">
+        <div class="top">
+          <div class="brand"><a class="logo" href="#">LineupBridge</a><p class="slogan">Built for the electronic music industry</p></div>
+          <ul class="fnav"><li><a href="#">FAQ</a></li><li><a href="#">Contact us</a></li></ul>
+        </div>
+        <div class="meta">
+          <div class="legal"><p>© 2026 LineupBridge. All rights reserved</p><a href="#">Privacy policy</a><a href="#">Terms of use</a><a href="#">Payment terms</a></div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Content = en.json text for each Home.* key. Conditions = CMSPage.js HomeNextSteps. */
+const T = {
+  welcome: n => `Welcome back, ${n}`,
+  whatsNext: "What's next",
+  activity: 'Your activity',
+};
+const NEXT = {
+  reviewDj:   { key: 'pendingApprovalTitleDj / MessageDj / CtaDj → StripePayoutPage', title: 'Your DJ account is under review', text: 'While we review your account, complete your payout setup so you’re ready to receive and confirm bookings.', cta: 'Set Up Payouts' },
+  reviewOrg:  { key: 'pendingApprovalTitleOrganizer / MessageOrganizer / CtaOrganizer → SearchPage', title: 'Your account is under review', text: 'While you wait, start exploring DJs for your next event.', cta: 'Find a DJ' },
+  approved:   { key: 'approvedProfileTitleDj / SubtitleDj · createProfileCtaDj → NewListingPage', title: 'Your account is approved', text: 'Create your public profile so event organizers can discover you and send you booking requests.', cta: 'Create Your Profile' },
+  manage:     { key: 'manageListingTitleDj / SubtitleDj · ctaEditListing → EditListingPage (first own listing, tab details)', title: 'Keep your public profile up to date', text: 'Edit your profile details so event organizers can discover and book you.', cta: 'Edit' },
+  payout:     { key: 'completePayoutTitleDj · profileReadyPayoutSubtitleDj · pendingApprovalCtaDj → StripePayoutPage', title: 'Complete your payout setup', text: 'Your profile is ready, but you need to set up your payouts before you can receive and confirm bookings.', cta: 'Set Up Payouts' },
+  blocked:    { key: 'blockedBookingTitleDj / SubtitleDj (shown when the DJ has offers) · pendingApprovalCtaDj → StripePayoutPage', title: 'Your booking is blocked', text: 'Complete your payout setup now to confirm this booking and receive your payment.', cta: 'Set Up Payouts' },
+  findDj:     { key: 'findNextDjTitle / Subtitle · findDjCta → SearchPage', title: 'Find your next DJ', text: 'Explore DJs and send a booking request for your event.', cta: 'Find a DJ' },
+};
+/* Activity rows: title (offerFrom/To, counterOffer…, finalOffer…), date, price, status chip, Pay. */
+const OFFERS = {
+  dj: [
+    { title: 'Offer from Sam Rivera', date: 'Oct 22, 2026', price: '€1,000', status: 'Needs your action', tone: 'active' },
+    { title: 'Counteroffer to Lena Hoff', date: 'Oct 18, 2026', price: '€850', status: 'Waiting for Lena Hoff', tone: 'neutral' },
+    { title: 'Final offer to Noor Haddad', date: 'Oct 9, 2026', price: '€700', status: 'Final offer accepted', tone: 'success' },
+    { title: 'Offer from Kai Berg', date: 'Oct 2, 2026', price: '€600', status: 'You responded', tone: 'neutral' },
+  ],
+  org: [
+    { title: 'Offer to Mara Vance', date: 'Oct 24, 2026', price: '€1,200', status: 'Needs your action', tone: 'active', pay: true },
+    { title: 'Counteroffer from Jonas Bell', date: 'Oct 20, 2026', price: '€900', status: 'Needs your action', tone: 'active' },
+    { title: 'Offer to Ines Okafor', date: 'Oct 12, 2026', price: '€750', status: 'Waiting for Ines Okafor', tone: 'neutral' },
+    { title: 'Final offer from Theo Marsh', date: 'Oct 3, 2026', price: '€600', status: 'Final offer rejected', tone: 'neutral' },
+  ],
+};
+const STATES = {
+  dj: [
+    { id: 'review', label: 'Under review', review: 'reviewDj', cap: 'Not approved yet (<code>!isUserAuthorized</code>). One card without a title. The CTA goes to payout setup.' },
+    { id: 'noProfile', label: 'Approved · no profile · no payouts', next: ['approved', 'payout'], cap: 'Approved, no published profile, no Stripe payouts. Note: the payout row says “Your profile is ready…” although no profile exists yet. That is today’s copy and logic, unchanged.' },
+    { id: 'noProfilePaid', label: 'Approved · no profile · payouts set', next: ['approved'], cap: 'Approved, payouts set up, no published profile.' },
+    { id: 'noPayout', label: 'Profile live · no payouts', next: ['manage', 'payout'], cap: 'Published profile, no payouts, no offers yet.' },
+    { id: 'blocked', label: 'Profile live · no payouts · offers', next: ['manage', 'blocked'], offers: true, cap: 'Published profile, offers came in, payouts still missing: the payout row switches to “Your booking is blocked”. Your activity follows.' },
+    { id: 'allSet', label: 'All set · offers', offers: true, cap: 'Profile published and payouts set: no “What’s next”, only Your activity (up to 6 offers, latest action first).' },
+    { id: 'empty', label: 'All set · no offers', next: ['manage'], suggested: true, cap: 'Profile published, payouts set, no offers. Today the page shows only the welcome line. <b>Suggested (needs Zoha’s yes):</b> keep the existing “Keep your public profile up to date” row, so the page is never a dead end. Same words as today; a one-line condition change.' },
+  ],
+  org: [
+    { id: 'review', label: 'Under review', review: 'reviewOrg', cap: 'Not approved yet. One card without a title; the CTA goes to search.' },
+    { id: 'noOffers', label: 'Approved · no offers', next: ['findDj'], cap: 'Approved, no offers yet (shown once transactions have loaded).' },
+    { id: 'offers', label: 'Approved · offers', offers: true, cap: 'Offers exist: no “What’s next”, only Your activity. “Pay” shows when an offer is waiting for payment (pending-payment state); it opens the order.' },
+  ],
+};
+
+const $ = s => document.querySelector(s);
+let user = 'dj', stateId = 'review';
+const tag = t => `<span class="tag">${t}</span>`;
+
+const nextItem = k => {
+  const n = NEXT[k];
+  return `<div class="item next">
+    <div class="itemText"><p class="reset itemTitle">${n.title}</p><p class="reset body">${n.text}</p></div>
+    <a class="btn btn-secondary" href="#">${n.cta}</a>
+    ${tag('Home.' + n.key)}
+  </div>`;
+};
+const offerItem = o => `<div class="item offer" role="link" tabindex="0">
+    <span class="itemTitle offerName">${o.title}</span>
+    <span class="date">${o.date}</span>
+    <span class="chip chip-${o.tone}">${o.status}</span>
+    <span class="price">${o.price}</span>${o.pay ? '\n    <a class="btn btn-secondary" href="#">Pay</a>' : ''}
+  </div>`;
+
+function render() {
+  const S = STATES[user].find(s => s.id === stateId) || STATES[user][0];
+  stateId = S.id;
+  const name = user === 'dj' ? 'Alex' : 'Bret';
+  let html = `<h1 class="reset h2">${T.welcome(name)}</h1>`;
+  if (S.review) {
+    html += `<section class="card group"><div class="rows">${nextItem(S.review)}</div></section>`;
+    html += tag('SectionCard without title · same row as “What’s next”');
+  }
+  if (S.next) {
+    html += `<section class="card group"><div class="card-title"><h2 class="reset h3">${T.whatsNext}</h2></div><div class="rows">${S.next.map(nextItem).join('')}</div></section>`;
+    if (S.suggested) html += tag('suggested · today this state shows no card · condition would add: isDj && hasPublishedProfile && hasPayoutDetails && offerTxs.length === 0');
+  }
+  if (S.offers) {
+    html += `<section class="card group"><div class="card-title"><h2 class="reset h3">${T.activity}</h2></div><div class="rows">${OFFERS[user].map(offerItem).join('')}</div></section>`;
+    html += tag('whole row opens OrderDetailsPage (organizer) / SaleDetailsPage (DJ) · chip: Needs your action = active, Final offer accepted = success, others neutral · names, dates and prices are examples');
+  }
+  html += tag('Centered · wide 920px · PageHeader title (.h2) → 32px → cards · OwnListingsSummary renders nothing for DJs and organizers (see report)');
+  $('#main').innerHTML = html;
+  $('#caption').innerHTML = `<b>${user === 'dj' ? 'DJ' : 'Event organizer'} · ${S.label}.</b> ${S.cap}`;
+  document.querySelectorAll('[data-org]').forEach(el => { el.hidden = user !== 'org'; });
+}
+function buildStates() {
+  $('#stateSeg').innerHTML = STATES[user].map(s => `<button data-state="${s.id}" aria-pressed="${s.id === stateId}">${s.label}</button>`).join('');
+}
+function press(seg, btn) { seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === btn))); }
+$('#userSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); user = b.dataset.user; stateId = 'review'; buildStates(); render(); });
+$('#stateSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); stateId = b.dataset.state; render(); });
+$('#viewSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); $('#stage').dataset.view = b.dataset.view; });
+$('#tagSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); $('#frame').classList.toggle('no-tags', b.dataset.tags === 'off'); });
+buildStates(); render();
+</script>
