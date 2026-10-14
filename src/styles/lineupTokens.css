@@ -82,6 +82,11 @@
   --lb-form-section-gap: var(--lb-space-4);
   --lb-focus-ring: 0 0 0 3px rgba(0, 0, 0, 0.08);
 
+  /* Header */
+  --lb-topbar-height: 60px;
+  --lb-logo-header: 28px;
+  --lb-tracking-nav: -0.01em;
+
   /* Footer */
   --lb-logo-footer: 24px;
   --lb-icon-social: 20px;

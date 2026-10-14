@@ -91,6 +91,21 @@
 }
 
 /* Footer links: help links (semibold) and legal links (muted), 44px tap height */
+.linkHeader {
+  composes: small from './lineupType.module.css';
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--lb-text-primary);
+  letter-spacing: var(--lb-tracking-nav);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
 .linkFooter {
   composes: small from './lineupType.module.css';
   display: inline-flex;

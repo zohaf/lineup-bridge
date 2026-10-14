@@ -182,6 +182,30 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
 .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .chip-active { color: var(--ink); background: var(--paper); border-color: var(--ink); }
 .chip-success { color: var(--success); background: var(--success-subtle); border-color: #bfe8cf; }
+
+/* ===== Item rows (inside a section card) ===== */
+.item-rows { display: grid; min-width: 0; }
+.item-row { display: grid; gap: var(--lb-space-4); padding-block: var(--lb-space-4); border-top: 1px solid var(--rule); min-width: 0; }
+.item-row:first-child { border-top: 0; padding-top: 0; }
+.item-row:last-child { padding-bottom: 0; }
+.item-row .btn { width: 100%; }
+.item-text { display: grid; gap: var(--lb-space-2); min-width: 0; }
+.item-top, .item-meta { display: flex; align-items: baseline; justify-content: space-between; gap: var(--lb-space-3); }
+.item-meta { align-items: center; }
+.item-date { font-size: var(--lb-size-small); color: var(--grey600); white-space: nowrap; }
+.item-price { font-size: var(--lb-size-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+.item-link { cursor: pointer; }
+@media (hover: hover) { .item-link:hover .item-name { text-decoration: underline; text-underline-offset: 3px; } }
+@media (min-width: 768px) {
+  .item-row { padding-block: var(--lb-space-5); }
+  .item-row.has-action { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--lb-space-5); }
+  .item-row .btn { width: auto; min-width: 200px; }
+  .item-link { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--lb-space-5); }
+  .item-link.has-pay { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .item-link .item-top { flex-direction: column; align-items: flex-start; gap: var(--lb-space-1); }
+  .item-link .item-meta { gap: var(--lb-space-5); }
+  .item-link .btn { min-width: 0; }
+}
 </style>
 
 <div class="sheet">
@@ -202,6 +226,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
     <a href="#rows">Field rows</a>
     <a href="#buttons">Buttons</a>
     <a href="#chips">Status chips</a>
+    <a href="#item-rows">Item rows</a>
     <a href="#hero-search">Hero search</a>
     <a href="#footer">Footer</a>
   </nav>
@@ -275,7 +300,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
           </div>
         </div>
       </div>
-      <ul class="rules"><li>White card, 1px border, 8px radius, padding 24px (phone) / 32px (768+).</li><li>Title row: number in a filled 28px black circle, <code>.h3</code> title, 1px rule underneath, 16px below the title.</li><li>Number only when the sections are a real sequence (a form). Without a sequence, drop the number and keep the rule.</li><li>Title is optional: without a title there is no title row and no rule (log in and sign up card).</li><li>Cards stack with 16px (phone) / 24px (768+) between them.</li></ul>
+      <ul class="rules"><li>White card, 1px border, 8px radius, padding 24px (phone) / 32px (768+).</li><li>Title row: number in a 28px circle with a 1px black outline and black text, no fill, <code>.h3</code> title, 1px rule underneath, 16px below the title.</li><li>Number only when the sections are a real sequence (a form). Without a sequence, drop the number and keep the rule.</li><li>Title is optional: without a title there is no title row and no rule (log in and sign up card).</li><li>Cards stack with 16px (phone) / 24px (768+) between them.</li></ul>
     </section>
 
     <section class="block" id="text-input">
@@ -419,6 +444,27 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
         <div class="btn-row"><span class="chip">Offered</span><span class="chip chip-active">Negotiated</span><span class="chip chip-success">Paid</span></div>
       </div>
       <ul class="rules"><li>Only for states that exist in the transaction process. Labels come from the app's translations.</li></ul>
+    </section>
+
+    <section class="block" id="item-rows">
+      <div class="block-head"><h2 class="reset h3">Item rows</h2><p class="reset code">Rows inside a <b>SectionCard</b>, divided by a 1px rule · action row and link row · first used on Home (spec <b>home-page.md</b>)</p></div>
+      <div class="specimen on-page">
+        <div class="section-card">
+          <div class="section-title"><h3 class="reset h3">What's next</h3></div>
+          <div class="item-rows">
+            <div class="item-row has-action"><div class="item-text"><p class="reset fieldLabel">Keep your public profile up to date</p><p class="reset body">Edit your profile details so event organizers can discover and book you.</p></div><a class="btn btn-secondary" href="#item-rows">Edit</a></div>
+            <div class="item-row has-action"><div class="item-text"><p class="reset fieldLabel">Complete your payout setup</p><p class="reset body">Your profile is ready, but you need to set up your payouts before you can receive and confirm bookings.</p></div><a class="btn btn-secondary" href="#item-rows">Set Up Payouts</a></div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="section-title"><h3 class="reset h3">Your activity</h3></div>
+          <div class="item-rows">
+            <div class="item-row item-link has-pay" role="link" tabindex="0"><div class="item-top"><span class="fieldLabel item-name">Offer to Mara Vance</span><span class="item-date">Oct 24, 2026</span></div><div class="item-meta"><span class="item-price">€1,200</span><span class="chip chip-active">Needs your action</span></div><a class="btn btn-secondary" href="#item-rows">Pay</a></div>
+            <div class="item-row item-link" role="link" tabindex="0"><div class="item-top"><span class="fieldLabel item-name">Offer to Ines Okafor</span><span class="item-date">Oct 12, 2026</span></div><div class="item-meta"><span class="item-price">€750</span><span class="chip">Waiting for Ines Okafor</span></div></div>
+          </div>
+        </div>
+      </div>
+      <ul class="rules"><li>Rows sit inside one <code>SectionCard</code> per group (approved Oct 14: one card per group, not one card per item). 1px rule between rows, 16px (phone) / 24px (768+) above and below (<code>--lb-row-pad</code>).</li><li><b>Action row:</b> title (<code>.fieldLabel</code> size, 600) → 8px → text (<code>.body</code>, secondary) → button. Phone: button full width under the text. From 768px: text left, button right (auto, min 200px), vertically centred.</li><li><b>Link row:</b> the whole row opens a page (<code>role="link"</code>, Enter/Space). Title + date (<code>.small</code>, muted) · price + status chip. An optional action (for example Pay) is its own full-width line on phones and the last column from 768px.</li><li>Link row hover (pointer only, <code>@media (hover: hover)</code>): the title underlines (offset 3px). No card lift, no shadow.</li><li>Row buttons are always secondary: a page can show several rows with an action, and only one primary button is allowed per view.</li></ul>
     </section>
     <section class="block" id="hero-search">
       <div class="block-head"><h2 class="reset h3">Hero search</h2><p class="reset code">Component <b>HeroSearch</b> · one white bar, max 520px (<b>--lb-width-search</b>) · landing hero only</p></div>

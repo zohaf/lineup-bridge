@@ -39,6 +39,7 @@ import {
 import { getStateData } from '../InboxPage/InboxPage.stateData';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+import SectionCollapsible from '../PageBuilder/SectionBuilder/SectionCollapsible/SectionCollapsible';
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
@@ -61,6 +62,9 @@ export const CMSPageComponent = props => {
   } = props;
   const pageId = params.pageId || props.pageId;
   const isHomePage = String(pageId).toLowerCase() === 'home';
+  // Console pages restyled with collapsible cards (see .claude/design/content-pages.html)
+  const isCollapsiblePage = ['terms-of-use', 'payment-terms', 'faq'].includes(pageId);
+  const collapsible = { component: SectionCollapsible };
 
   if (!inProgress && error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;
@@ -73,6 +77,17 @@ export const CMSPageComponent = props => {
         inProgress={inProgress}
         schemaType="Article"
         featuredListings={getFeaturedListingsProps(pageId, props)}
+        options={
+          isCollapsiblePage
+            ? {
+                sectionComponents: {
+                  article: collapsible,
+                  columns: collapsible,
+                  features: collapsible,
+                },
+              }
+            : undefined
+        }
         mainContentBefore={
           isHomePage && currentUser ? (
             <>

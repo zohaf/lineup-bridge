@@ -7,18 +7,28 @@ const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
 
-const ContactDetails = () => (
-  <div className={css.contactDetails}>
-    <div>
-        <div className={css.contactLabel}>Email</div>
-      <div>info@lineupbridge.com</div>
-    </div>
-    <div>
-        <div className={css.contactLabel}>Address</div>
-      <div>Singel 126, 1015 AE Amsterdam, Netherlands</div>
-    </div>
-  </div>
-);
+// Contact section in the LineupBridge design (Centered · form, one card).
+// See .claude/design/content-pages.html.
+const SectionContact = props => {
+  const { sectionId, title } = props;
+  return (
+    <section id={sectionId} className={css.root}>
+      <h1 className={css.title}>{title?.content}</h1>
+      <div className={css.card}>
+        <div className={css.item}>
+          <p className={css.label}>Email</p>
+          <a className={css.link} href="mailto:info@lineupbridge.com">
+            info@lineupbridge.com
+          </a>
+        </div>
+        <div className={css.item}>
+          <p className={css.label}>Address</p>
+          <p className={css.value}>Singel 126, 1015 AE Amsterdam, Netherlands</p>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const contactPageData = {
   sections: [
@@ -26,7 +36,6 @@ const contactPageData = {
       sectionType: 'article',
       sectionId: 'contact',
       title: { fieldType: 'heading1', content: 'Let us know how we can help' },
-      blocks: [{ blockType: 'contactDetails', blockId: 'contact-details' }],
     },
   ],
   meta: {
@@ -39,13 +48,11 @@ const contactPageData = {
 };
 
 const ContactPage = () => (
-  <div className={css.page}>
-    <PageBuilder
-      pageAssetsData={contactPageData}
-      schemaType="ContactPage"
-      options={{ blockComponents: { contactDetails: { component: ContactDetails } } }}
-    />
-  </div>
+  <PageBuilder
+    pageAssetsData={contactPageData}
+    schemaType="ContactPage"
+    options={{ sectionComponents: { article: { component: SectionContact } } }}
+  />
 );
 
 export default ContactPage;
