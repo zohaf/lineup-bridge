@@ -47,3 +47,7 @@
 .wide {
   --lb-centered-width: var(--lb-width-wide);
 }
+
+.profile {
+  --lb-centered-width: var(--lb-width-profile);
+}

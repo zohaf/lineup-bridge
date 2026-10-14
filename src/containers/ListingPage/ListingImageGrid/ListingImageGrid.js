@@ -17,12 +17,14 @@ const FALLBACK_THUMB_VARIANTS = ['scaled-small', 'scaled-medium', 'scaled-large'
  * @param {function(number): void} props.onTileClick
  * @param {string} [props.className]
  * @param {string} [props.rootClassName]
+ * @param {string} [props.gridClassName] added to the grid element (column overrides)
  */
 const ListingImageGrid = props => {
   const intl = useIntl();
   const {
     rootClassName,
     className,
+    gridClassName,
     images = [],
     thumbnailVariants,
     onTileClick,
@@ -40,7 +42,7 @@ const ListingImageGrid = props => {
 
   return (
     <div className={classes}>
-      <div className={css.grid} role="list">
+      <div className={classNames(css.grid, gridClassName)} role="list">
         {images.map((image, index) => {
           const alt = intl.formatMessage(
             { id: 'ListingImageGallery.imageAltText' },

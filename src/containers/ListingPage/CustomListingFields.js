@@ -21,7 +21,15 @@ import CustomExtendedDataSection from '../../components/CustomExtendedDataSectio
  * @returns React.Fragment containing aforementioned components
  */
 const CustomListingFields = props => {
-  const { publicData, metadata, listingFieldConfigs, categoryConfiguration, intl } = props;
+  const {
+    publicData,
+    metadata,
+    listingFieldConfigs,
+    categoryConfiguration,
+    intl,
+    rootClassName,
+    linksClassNames,
+  } = props;
 
   const { key: categoryPrefix, categories: listingCategoriesConfig } = categoryConfiguration;
   const categoriesObj = pickCategoryFields(publicData, categoryPrefix, 1, listingCategoriesConfig);
@@ -83,6 +91,8 @@ const CustomListingFields = props => {
       sectionDetailsProps={sectionDetailsProps}
       propsForCustomFields={propsForCustomFields}
       idPrefix="listingPage"
+      rootClassName={rootClassName}
+      linksClassNames={linksClassNames}
       pickExtendedDataFields={pickExtendedDataFields}
     />
   );

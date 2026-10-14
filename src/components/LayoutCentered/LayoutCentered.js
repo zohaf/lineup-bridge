@@ -9,6 +9,7 @@ const VARIANT_CLASSES = {
   narrow: css.narrow,
   form: css.form,
   wide: css.wide,
+  profile: css.profile,
 };
 
 /**
@@ -19,7 +20,7 @@ const VARIANT_CLASSES = {
  * @component
  * @param {Object} props
  * @param {string?} props.className add more style rules to the column
- * @param {'narrow'|'form'|'wide'} props.variant column max width: 440px, 760px or 920px
+ * @param {'narrow'|'profile'|'form'|'wide'} props.variant column max width: 440px, 600px, 760px or 920px
  * @param {boolean?} props.stickyTopbar keep the topbar pinned while scrolling (default true)
  * @param {ReactNode} props.children
  * @param {ReactNode} props.topbar

@@ -23,6 +23,9 @@ const SectionHero = props => {
     variantPrefix,
     carouselStartIndex = 0,
     onPhotoTileClick,
+    className,
+    gridClassName,
+    gridImageCount,
   } = props;
 
   const hasImages = listing.images && listing.images.length > 0;
@@ -32,7 +35,7 @@ const SectionHero = props => {
   const imageVariants = ['scaled-small', 'scaled-medium', 'scaled-large', 'scaled-xlarge'];
 
   return (
-    <section className={css.sectionHero} data-testid="hero">
+    <section className={className || css.sectionHero} data-testid="hero">
       <div className={css.imageWrapperForSectionHeroGrid}>
         {mounted && listing.id && isOwnListing ? (
           <div
@@ -45,7 +48,8 @@ const SectionHero = props => {
 
         {hasImages ? (
           <ListingImageGrid
-            images={listing.images}
+            images={gridImageCount ? listing.images.slice(0, gridImageCount) : listing.images}
+            gridClassName={gridClassName}
             thumbnailVariants={thumbnailVariants}
             onTileClick={onPhotoTileClick}
           />
