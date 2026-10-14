@@ -1,5 +1,5 @@
 .root {
-  composes: label from '../../../styles/lineupType.module.css';
+  composes: label from '../../styles/lineupType.module.css';
   display: inline-block;
   padding: var(--lb-space-1) var(--lb-space-3);
   border-radius: 999px;

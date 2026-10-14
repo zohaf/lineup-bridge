@@ -42,305 +42,128 @@
   color: var(--colorGrey900);
 }
 
-.homeSection {
-  padding: 28px 0 0 0;
-}
-
 .homeInner {
   composes: centered wide from '../../styles/lineupLayout.module.css';
-
-  /* Vertical spacing comes from the section */
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.welcomeBack {
-  composes: h2 from global;
-  margin: 0 0 8px 0;
-  color: var(--colorGrey700);
-}
-
-.whatsNextTitle,
-.offersTitle {
-  composes: marketplaceDefaultFontStyles from global;
-  margin: 0 0 20px 0;
-  color: var(--colorGrey900);
-  font-weight: var(--fontWeightSemiBold);
-  font-size: 1.125rem;
-  line-height: 1.4;
-}
-
-.nextCards {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-
-  @media (--viewportMedium) {
-    gap: 16px;
-  }
+  gap: var(--lb-space-6);
 }
 
-.nextCard {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 20px;
-  border: solid 1px var(--colorGrey100);
-  border-radius: 12px;
-  background-color: var(--colorWhite);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-  gap: 12px;
-
-  @media (--viewportMedium) {
-    padding: 24px;
-    gap: 18px;
-  }
-}
-
-.nextCardClickable {
-  cursor: pointer;
-}
-
-.nextCard:first-child {
-  border-color: rgba(105, 56, 239, 0.18);
-}
-
-.nextCardMain {
-  flex: 1;
+/* Item rows inside a SectionCard, see .claude/design/components.html#item-rows */
+.itemRows {
+  display: grid;
   min-width: 0;
 }
 
-.nextCardTitle {
-  composes: h4 from global;
-  margin: 0 0 8px 0;
-  color: var(--colorGrey900);
-  font-weight: var(--fontWeightSemiBold);
+.actionRow,
+.linkRow {
+  display: grid;
+  gap: var(--lb-space-4);
+  min-width: 0;
+  padding-block: var(--lb-row-pad);
+  border-top: 1px solid var(--colorGrey100);
 
-  @media (--viewportMedium) {
-    margin-bottom: 8px;
+  &:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
   }
 }
 
-.nextCardSubtitle {
-  composes: marketplaceSmallFontStyles from global;
-  margin: 0;
-  color: var(--colorGrey700);
-  line-height: 1.5;
+.itemText {
+  display: grid;
+  gap: var(--lb-space-2);
+  min-width: 0;
 }
 
-.nextCardCtaSlot {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: stretch;
+.itemTitle {
+  composes: fieldLabel from '../../styles/lineupType.module.css';
 }
 
-.nextCardCta {
-  composes: buttonSecondaryInline from global;
+.itemBody {
+  composes: body from '../../styles/lineupType.module.css';
+}
+
+.rowButton {
+  composes: secondary formButton from '../../styles/lineupButtons.module.css';
+}
+
+.actionRow {
+  @media (--viewportMedium) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--lb-space-5);
+  }
+}
+
+.linkRowName {
+  composes: fieldLabel from '../../styles/lineupType.module.css';
+  grid-area: name;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.itemDate {
+  composes: small from '../../styles/lineupType.module.css';
+  grid-area: date;
+  color: var(--lb-text-muted);
+}
+
+.linkRowChip {
+  grid-area: chip;
+  justify-self: end;
+}
+
+.itemPrice {
+  composes: body from '../../styles/lineupType.module.css';
+  grid-area: price;
+  justify-self: end;
+  color: var(--lb-text-primary);
+  font-weight: var(--lb-weight-semibold);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.pendingApprovalCard {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 20px;
-  border: solid 1px rgba(105, 56, 239, 0.18);
-  border-radius: 12px;
-  background-color: var(--colorWhite);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-  gap: 12px;
+.payButton {
+  composes: rowButton;
+  grid-area: pay;
+  margin-top: var(--lb-space-3);
 
   @media (--viewportMedium) {
-    padding: 24px;
-    gap: 18px;
+    justify-self: end;
   }
 }
 
-.pendingApprovalMain {
-  flex: 1;
-  min-width: 0;
-}
-
-.pendingApprovalTitle {
-  composes: h4 from global;
-  margin: 0 0 8px 0;
-  color: var(--colorGrey900);
-  font-weight: var(--fontWeightSemiBold);
-}
-
-.pendingApprovalMessage {
-  composes: marketplaceSmallFontStyles from global;
-  margin: 0;
-  color: var(--colorGrey700);
-  line-height: 1.5;
-}
-
-.pendingApprovalCtaSlot {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: stretch;
-}
-
-.pendingApprovalCta {
-  composes: buttonSecondaryInline from global;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.offersSection {
-  margin-top: 36px;
-}
-
-.offersTitle {
-  margin: 0 0 14px 0;
-}
-
-.offerCards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-
-  @media (--viewportMedium) {
-    gap: 16px;
-  }
-}
-
-.offerCard {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 20px;
-  border: solid 1px var(--colorGrey100);
-  border-radius: 12px;
-  background-color: var(--colorWhite);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-  gap: 12px;
-
-  @media (--viewportMedium) {
-    padding: 24px;
-    gap: 18px;
-  }
-}
-
-.offerCardClickable {
+.linkRowClickable {
   cursor: pointer;
+
+  @media (hover: hover) {
+    &:hover .linkRowName {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
 }
 
-.offerCardAction {
-  border-color: rgba(105, 56, 239, 0.18);
-}
-
-.offerCardMain {
-  flex: 1;
-  min-width: 0;
-}
-
-.offerCardTitle {
-  composes: marketplaceDefaultFontStyles from global;
-  font-weight: var(--fontWeightSemiBold);
-  margin: 0;
-  color: var(--colorGrey900);
-}
-
-.offerCardHeader {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0 0 8px 0;
-}
-
-.offerCardRight {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.offerCardDate {
-  composes: marketplaceSmallFontStyles from global;
-  flex-shrink: 0;
-  color: var(--colorGrey700);
-  text-align: right;
-}
-
-.offerCardStatusRow {
-  display: inline-flex;
+.linkRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name price'
+    'date chip'
+    'pay pay';
+  column-gap: var(--lb-space-3);
+  row-gap: var(--lb-space-1);
   align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-}
 
-.offerCardMeta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0;
-}
-
-.offerCardPrice {
-  composes: marketplaceSmallFontStyles from global;
-  margin: 0;
-  color: var(--colorGrey900);
-  font-weight: var(--fontWeightSemiBold);
-}
-
-.offerCardStatus {
-  composes: marketplaceSmallFontStyles from global;
-  margin: 0;
-  color: var(--colorGrey700);
-  text-align: right;
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background-color: var(--colorGrey50);
-  border: 1px solid var(--colorGrey100);
-  font-weight: var(--fontWeightSemiBold);
-  align-self: center;
-  margin-left: auto;
-}
-
-.offerCardStatusPending {
-  color: var(--colorAttentionDark);
-  background-color: var(--colorAttentionSubtle);
-  border-color: rgba(255, 170, 0, 0.24);
-}
-
-.offerCardStatusRejected {
-  color: var(--colorFailDark);
-  background-color: var(--colorFailSubtle);
-  border-color: rgba(231, 0, 11, 0.16);
-}
-
-.offerCardStatusAccepted {
-  color: var(--colorSuccessDark);
-  background-color: var(--colorSuccessSubtle);
-  border-color: rgba(19, 128, 65, 0.16);
-}
-
-.offerCardCtaSlot {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: stretch;
+  @media (--viewportMedium) {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'name chip price'
+      'date chip price'
+      'pay pay pay';
+    column-gap: var(--lb-space-5);
+  }
 }

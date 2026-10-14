@@ -43,10 +43,15 @@ right (auto width, min 200px), vertically centred. Button: **secondary** (one pr
 row is never the single main action of the page).
 
 **Offer row** (row 4): the whole row opens the offer (`OrderDetailsPage` / `SaleDetailsPage`, as
-today, keyboard Enter/Space). Title (600) + date (`.small`, muted) · price (`.body`, black) +
-status chip. "Pay" (`Home.ctaPay`, organizer, pending payment) is a secondary button: its own
-full-width line on phones, at the end of the row from 768px. Hover (pointer only): the title
-underlines.
+today, keyboard Enter/Space). **The price is always at the right end of the row** (`.body`, 600,
+tabular numbers, right-aligned, so amounts line up down the list) and the status chip sits just
+before it (approved Oct 14).
+
+- Phone: title · price on the first line, date (`.small`, muted) · chip on the second.
+- From 768px: title over date on the left, then the chip, then the price.
+- "Pay" (`Home.ctaPay`, organizer, pending payment) is a secondary button on its own line under the
+  row: full width on phones, right-aligned from 768px, so it never pushes the price out of line.
+- Hover (pointer only): the title underlines.
 
 Status chip (`StatusChip`, existing library component):
 

@@ -71,6 +71,8 @@ end under "Mismatches" (both sides, file and line).
 6. **Your activity:** `SectionCard` with the title `Home.activityTitle` and no number. One link row
    per transaction. Keep the row's `role="link"`, `tabIndex`, `onClick`, `onKeyDown` and the Pay
    `NamedLink` exactly. Status: `StatusChip`, with the tone from the table in `home-page.md`.
+   **The price is always at the right end of the row**, with the chip just before it, and Pay on
+   its own line under the row (see "Offer row" in `home-page.md`).
 7. **Item rows:** build them exactly as `components.html#item-rows` and the design-system-rules.md
    table describe (one card per group, 1px rule between rows, `--lb-row-pad`), as classes in
    `CMSPage.module.css` composed from the shared type and button files.

@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import StatusChip from './StatusChip';
+import { StatusChip } from '../../../components';
 
 import css from './StageCard.module.css';
 

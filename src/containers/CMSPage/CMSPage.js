@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import loadable from '@loadable/component';
 
 import { bool, object } from 'prop-types';
@@ -25,7 +26,7 @@ import {
 import { pathByRouteName } from '../../util/routes';
 import { getOwnListingsById } from '../ManageListingsPage/ManageListingsPage.duck';
 import ManageListingCard from '../ManageListingsPage/ManageListingCard/ManageListingCard';
-import { NamedLink } from '../../components';
+import { NamedLink, PageHeader, SectionCard, StatusChip } from '../../components';
 import {
   resolveLatestProcessName,
   isNegotiationProcess,
@@ -129,6 +130,17 @@ CMSPageComponent.defaultProps = {
   transactionsLoaded: false,
 };
 
+// Action row inside a SectionCard: title and text, with the button(s) as children
+const NextStepRow = ({ title, text, children }) => (
+  <div className={css.actionRow}>
+    <div className={css.itemText}>
+      <p className={css.itemTitle}>{title}</p>
+      <p className={css.itemBody}>{text}</p>
+    </div>
+    {children}
+  </div>
+);
+
 const HomeNextSteps = props => {
   const {
     currentUser,
@@ -217,137 +229,122 @@ const HomeNextSteps = props => {
       : 'Home.pendingApprovalCtaOrganizer';
 
     return (
-      <section className={css.homeSection}>
+      <section>
         <div className={css.homeInner}>
-          <p className={css.welcomeBack}>
-            <FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />
-          </p>
+          <PageHeader
+            title={<FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />}
+          />
 
-          <div className={css.pendingApprovalCard}>
-            <div className={css.pendingApprovalMain}>
-              <div className={css.pendingApprovalTitle}>
-                <FormattedMessage id={pendingApprovalTitleId} />
-              </div>
-              <div className={css.pendingApprovalMessage}>
-                <FormattedMessage id={pendingApprovalMessageId} />
-              </div>
+          <SectionCard>
+            <div className={css.itemRows}>
+              <NextStepRow
+                title={<FormattedMessage id={pendingApprovalTitleId} />}
+                text={<FormattedMessage id={pendingApprovalMessageId} />}
+              >
+                <NamedLink className={css.rowButton} name={pendingApprovalCtaName}>
+                  <FormattedMessage id={pendingApprovalCtaId} />
+                </NamedLink>
+              </NextStepRow>
             </div>
-            <div className={css.pendingApprovalCtaSlot}>
-              <NamedLink className={css.pendingApprovalCta} name={pendingApprovalCtaName}>
-                <FormattedMessage id={pendingApprovalCtaId} />
-              </NamedLink>
-            </div>
-          </div>
+          </SectionCard>
         </div>
       </section>
     );
   }
 
   return (
-    <section className={css.homeSection}>
+    <section>
       <div className={css.homeInner}>
-        <p className={css.welcomeBack}>
-          <FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />
-        </p>
+        <PageHeader
+          title={<FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />}
+        />
         {(isOrganizer && transactionsLoaded && offerTxs.length === 0) ||
         (isDj && (!hasPublishedProfile || !hasPayoutDetails)) ? (
-          <>
-            <h2 className={css.whatsNextTitle}>
-              <FormattedMessage id="Home.whatsNext" />
-            </h2>
-            <div className={css.nextCards}>
-              <div className={css.nextCard}>
-                <div className={css.nextCardMain}>
-                  <div className={css.nextCardTitle}>
-                    <FormattedMessage
-                      id={
-                        isOrganizer
-                          ? 'Home.findNextDjTitle'
-                          : hasPublishedProfile
-                          ? djPrimaryCardTitleId
-                          : 'Home.approvedProfileTitleDj'
-                      }
-                    />
-                  </div>
-                  <div className={css.nextCardSubtitle}>
-                    <FormattedMessage
-                      id={
-                        isOrganizer
-                          ? 'Home.findNextDjSubtitle'
-                          : hasPublishedProfile
-                          ? djPrimaryCardSubtitleId
-                          : 'Home.approvedProfileSubtitleDj'
-                      }
-                    />
-                  </div>
-                </div>
-                <div className={css.nextCardCtaSlot}>
-                  {isOrganizer ? (
-                    <NamedLink className={css.nextCardCta} name="SearchPage">
-                      <FormattedMessage id="Home.findDjCta" />
-                    </NamedLink>
-                  ) : null}
-                  {isDj && hasPublishedProfile && hasOwnListings && firstOwnListingId ? (
-                    <NamedLink
-                      className={css.nextCardCta}
-                      name="EditListingPage"
-                      params={{
-                        id: firstOwnListingId,
-                        slug: firstOwnListingSlug,
-                        type: firstOwnListingEditType,
-                        tab: 'details',
-                      }}
-                    >
-                      <FormattedMessage id="Home.ctaEditListing" />
-                    </NamedLink>
-                  ) : null}
-                  {isDj && !hasPublishedProfile ? (
-                    <NamedLink className={css.nextCardCta} name="NewListingPage">
-                      <FormattedMessage id="Home.createProfileCtaDj" />
-                    </NamedLink>
-                  ) : null}
-                </div>
-              </div>
+          <SectionCard title={<FormattedMessage id="Home.whatsNext" />}>
+            <div className={css.itemRows}>
+              <NextStepRow
+                title={
+                  <FormattedMessage
+                    id={
+                      isOrganizer
+                        ? 'Home.findNextDjTitle'
+                        : hasPublishedProfile
+                        ? djPrimaryCardTitleId
+                        : 'Home.approvedProfileTitleDj'
+                    }
+                  />
+                }
+                text={
+                  <FormattedMessage
+                    id={
+                      isOrganizer
+                        ? 'Home.findNextDjSubtitle'
+                        : hasPublishedProfile
+                        ? djPrimaryCardSubtitleId
+                        : 'Home.approvedProfileSubtitleDj'
+                    }
+                  />
+                }
+              >
+                {isOrganizer ? (
+                  <NamedLink className={css.rowButton} name="SearchPage">
+                    <FormattedMessage id="Home.findDjCta" />
+                  </NamedLink>
+                ) : null}
+                {isDj && hasPublishedProfile && hasOwnListings && firstOwnListingId ? (
+                  <NamedLink
+                    className={css.rowButton}
+                    name="EditListingPage"
+                    params={{
+                      id: firstOwnListingId,
+                      slug: firstOwnListingSlug,
+                      type: firstOwnListingEditType,
+                      tab: 'details',
+                    }}
+                  >
+                    <FormattedMessage id="Home.ctaEditListing" />
+                  </NamedLink>
+                ) : null}
+                {isDj && !hasPublishedProfile ? (
+                  <NamedLink className={css.rowButton} name="NewListingPage">
+                    <FormattedMessage id="Home.createProfileCtaDj" />
+                  </NamedLink>
+                ) : null}
+              </NextStepRow>
 
               {isDj && !hasPayoutDetails ? (
-                <div className={css.nextCard}>
-                  <div className={css.nextCardMain}>
-                    <div className={css.nextCardTitle}>
-                      <FormattedMessage
-                        id={
-                          offerTxs.length > 0
-                            ? 'Home.blockedBookingTitleDj'
-                            : 'Home.completePayoutTitleDj'
-                        }
-                      />
-                    </div>
-                    <div className={css.nextCardSubtitle}>
-                      <FormattedMessage
-                        id={
-                          offerTxs.length > 0
-                            ? 'Home.blockedBookingSubtitleDj'
-                            : 'Home.profileReadyPayoutSubtitleDj'
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className={css.nextCardCtaSlot}>
-                    <NamedLink className={css.nextCardCta} name="StripePayoutPage">
-                      <FormattedMessage id="Home.pendingApprovalCtaDj" />
-                    </NamedLink>
-                  </div>
-                </div>
+                <NextStepRow
+                  title={
+                    <FormattedMessage
+                      id={
+                        offerTxs.length > 0
+                          ? 'Home.blockedBookingTitleDj'
+                          : 'Home.completePayoutTitleDj'
+                      }
+                    />
+                  }
+                  text={
+                    <FormattedMessage
+                      id={
+                        offerTxs.length > 0
+                          ? 'Home.blockedBookingSubtitleDj'
+                          : 'Home.profileReadyPayoutSubtitleDj'
+                      }
+                    />
+                  }
+                >
+                  <NamedLink className={css.rowButton} name="StripePayoutPage">
+                    <FormattedMessage id="Home.pendingApprovalCtaDj" />
+                  </NamedLink>
+                </NextStepRow>
               ) : null}
             </div>
-          </>
+          </SectionCard>
         ) : null}
 
         {(isOrganizer || isDj) && offerTxs.length > 0 ? (
-          <div className={css.offersSection}>
-            <h3 className={css.offersTitle}>
-              <FormattedMessage id="Home.activityTitle" />
-            </h3>
-            <div className={css.offerCards}>
+          <SectionCard title={<FormattedMessage id="Home.activityTitle" />}>
+            <div className={css.itemRows}>
               {offerTxs.map(tx => {
                 const isCustomerView = isOrganizer;
                 const otherParty = isCustomerView ? tx?.provider : tx?.customer;
@@ -429,75 +426,63 @@ const HomeNextSteps = props => {
                   }
                 };
 
+                const hasPayAction = showPayCta && isCustomerView;
+                const chipTone = needsUserAction
+                  ? 'active'
+                  : activityStatusId === 'Home.activityFinalOfferAccepted'
+                  ? 'success'
+                  : 'neutral';
+
                 return (
                   <div
                     key={tx.id.uuid}
-                    className={`${css.offerCard} ${showPayCta ? css.offerCardAction : ''} ${
-                      detailPagePath ? css.offerCardClickable : ''
-                    }`}
+                    className={classNames(css.linkRow, {
+                      [css.linkRowClickable]: detailPagePath,
+                    })}
                     role={detailPagePath ? 'link' : undefined}
                     tabIndex={detailPagePath ? 0 : -1}
                     onClick={handleOpenOffer}
                     onKeyDown={handleOfferKeyDown}
                   >
-                    <div className={css.offerCardMain}>
-                      <div className={css.offerCardHeader}>
-                        <div className={css.offerCardTitle}>
-                          <FormattedMessage id={offerTitleId} values={{ name: otherPartyName }} />
-                        </div>
-                        <div className={css.offerCardRight}>
-                          <div className={css.offerCardDate}>
-                            {date
-                              ? intl.formatDate(date, {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                })
-                              : '—'}
-                          </div>
-                          {showPayCta && isCustomerView ? (
-                            <div className={css.offerCardStatusRow}>
-                              <NamedLink
-                                className={css.nextCardCta}
-                                name="OrderDetailsPage"
-                                params={{ id: tx.id.uuid }}
-                              >
-                                <FormattedMessage id="Home.ctaPay" />
-                              </NamedLink>
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className={css.offerCardMeta}>
-                        <div className={css.offerCardPrice}>
-                          {latestOffer?.amount != null && offerCurrency
-                            ? formatMoneyWithoutCents(
-                                intl,
-                                new Money(latestOffer.amount, offerCurrency)
-                              )
-                            : tx?.attributes?.payinTotal
-                            ? formatMoney(intl, tx.attributes.payinTotal)
-                            : '—'}
-                        </div>
-                        <div
-                          className={`${css.offerCardStatus} ${
-                            needsUserAction
-                              ? css.offerCardStatusPending
-                              : css.offerCardStatusAccepted
-                          }`}
-                        >
-                          <FormattedMessage
-                            id={activityStatusId}
-                            values={{ name: otherPartyName }}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    <span className={css.linkRowName}>
+                      <FormattedMessage id={offerTitleId} values={{ name: otherPartyName }} />
+                    </span>
+                    <span className={css.itemDate}>
+                      {date
+                        ? intl.formatDate(date, {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
+                        : '—'}
+                    </span>
+                    <StatusChip className={css.linkRowChip} tone={chipTone}>
+                      <FormattedMessage id={activityStatusId} values={{ name: otherPartyName }} />
+                    </StatusChip>
+                    <span className={css.itemPrice}>
+                      {latestOffer?.amount != null && offerCurrency
+                        ? formatMoneyWithoutCents(
+                            intl,
+                            new Money(latestOffer.amount, offerCurrency)
+                          )
+                        : tx?.attributes?.payinTotal
+                        ? formatMoney(intl, tx.attributes.payinTotal)
+                        : '—'}
+                    </span>
+                    {hasPayAction ? (
+                      <NamedLink
+                        className={css.payButton}
+                        name="OrderDetailsPage"
+                        params={{ id: tx.id.uuid }}
+                      >
+                        <FormattedMessage id="Home.ctaPay" />
+                      </NamedLink>
+                    ) : null}
                   </div>
                 );
               })}
             </div>
-          </div>
+          </SectionCard>
         ) : null}
       </div>
     </section>
