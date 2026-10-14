@@ -33,6 +33,7 @@ const CustomExtendedDataSection = props => {
     pickExtendedDataFields,
     className,
     rootClassName,
+    linksClassNames,
   } = props;
 
   const isUrlTextField = f => {
@@ -52,7 +53,12 @@ const CustomExtendedDataSection = props => {
   return (
     <>
       <SectionDetails {...sectionDetailsProps} pickExtendedDataFields={pickExtendedDataFields} />
-      <SectionLinks links={linkFields} className={className} rootClassName={rootClassName} />
+      <SectionLinks
+        links={linkFields}
+        className={className}
+        rootClassName={rootClassName}
+        {...linksClassNames}
+      />
       {otherFields.map(customFieldProps => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
         return schemaType === SCHEMA_TYPE_MULTI_ENUM ? (

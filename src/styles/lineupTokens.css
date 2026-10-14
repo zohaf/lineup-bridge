@@ -69,6 +69,7 @@
   --lb-width-narrow: 440px;
   --lb-width-form: 760px;
   --lb-width-wide: 920px;
+  --lb-width-profile: 600px;
   --lb-page-top: var(--lb-gutter);
   --lb-page-bottom: var(--lb-space-9);
 

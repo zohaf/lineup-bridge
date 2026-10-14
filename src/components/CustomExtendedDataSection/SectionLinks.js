@@ -41,7 +41,16 @@ const linkConfFromHeading = heading => {
  * Renders a compact "Links" section (icon + label), derived from text fields containing URLs.
  */
 const SectionLinks = props => {
-  const { links = [], className, rootClassName, heading = 'Links' } = props;
+  const {
+    links = [],
+    className,
+    rootClassName,
+    heading = 'Links',
+    headingClassName,
+    listClassName,
+    linkClassName,
+    iconClassName,
+  } = props;
   const classes = classNames(rootClassName || css.sectionLinks, className);
 
   const validLinks = links
@@ -55,13 +64,17 @@ const SectionLinks = props => {
 
   return (
     <section className={classes}>
-      <Heading as="h2" rootClassName={css.sectionHeading}>
+      <Heading as="h2" rootClassName={headingClassName || css.sectionHeading}>
         {heading}:
       </Heading>
-      <div className={css.linksList}>
+      <div className={listClassName || css.linksList}>
         {validLinks.map(({ href, conf }) => (
-          <ExternalLink key={`${conf.label}-${href}`} className={css.socialLink} href={href}>
-            {conf.Icon ? <conf.Icon className={css.socialIcon} /> : null}
+          <ExternalLink
+            key={`${conf.label}-${href}`}
+            className={linkClassName || css.socialLink}
+            href={href}
+          >
+            {conf.Icon ? <conf.Icon className={iconClassName || css.socialIcon} /> : null}
             <span>{conf.label}</span>
           </ExternalLink>
         ))}
