@@ -1,13 +1,11 @@
 @import '../../../styles/customMediaQueries.css';
 
-/* From tablet up the hero fills the window under the topbar, so the next section starts below the fold */
+/* The hero fills the window under the topbar, so the next section starts below the fold */
 .section.section {
-  @media (--viewportMedium) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: calc(100svh - var(--lb-topbar-height));
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100svh - var(--lb-topbar-height));
 }
 
 .hero {
