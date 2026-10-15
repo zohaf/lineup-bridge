@@ -9,11 +9,13 @@ import classNames from 'classnames';
 // Import configs and util modules
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 import { propTypes } from '../../../../util/types';
-import { nonEmptyArray, composeValidators } from '../../../../util/validators';
+import { composeValidators } from '../../../../util/validators';
 import { isUploadImageOverLimitError } from '../../../../util/errors';
 
 // Import shared components
-import { Button, Form, AspectRatioWrapper } from '../../../../components';
+import { Button, Form, AspectRatioWrapper, SectionCard } from '../../../../components';
+import formCss from '../../../../styles/lineupForm.module.css';
+import buttonCss from '../../../../styles/lineupButtons.module.css';
 
 // Import modules from this directory
 import ListingImage from './ListingImage';
@@ -21,13 +23,18 @@ import css from './EditListingPhotosForm.module.css';
 
 const ACCEPT_IMAGES = 'image/*';
 
+// The public profile shows the first two photos, so two are required (business-rules.md)
+export const MIN_PHOTOS = 2;
+const minPhotos = message => value =>
+  Array.isArray(value) && value.length >= MIN_PHOTOS ? undefined : message;
+
 const ImageUploadError = props => {
   return props.uploadOverLimit ? (
-    <p className={css.error}>
+    <p className={formCss.error} role="alert">
       <FormattedMessage id="EditListingPhotosForm.imageUploadFailed.uploadOverLimit" />
     </p>
   ) : props.uploadImageError ? (
-    <p className={css.error}>
+    <p className={formCss.error} role="alert">
       <FormattedMessage id="EditListingPhotosForm.imageUploadFailed.uploadFailed" />
     </p>
   ) : null;
@@ -38,7 +45,7 @@ const ImageUploadError = props => {
 // Create and show listing errors are shown above submit button
 const PublishListingError = props => {
   return props.error ? (
-    <p className={css.error}>
+    <p className={formCss.formError} role="alert">
       <FormattedMessage id="EditListingPhotosForm.publishListingFailed" />
     </p>
   ) : null;
@@ -46,7 +53,7 @@ const PublishListingError = props => {
 
 const ShowListingsError = props => {
   return props.error ? (
-    <p className={css.error}>
+    <p className={formCss.formError} role="alert">
       <FormattedMessage id="EditListingPhotosForm.showListingFailed" />
     </p>
   ) : null;
@@ -209,83 +216,86 @@ export const EditListingPhotosForm = props => {
               handleSubmit(e);
             }}
           >
-            {updateListingError ? (
-              <p className={css.error}>
-                <FormattedMessage id="EditListingPhotosForm.updateFailed" />
-              </p>
-            ) : null}
+            <SectionCard>
+              <div className={css.imagesFieldArray}>
+                <FieldArray
+                  name="images"
+                  validate={composeValidators(
+                    minPhotos(
+                      intl.formatMessage({
+                        id: 'EditListingPhotosForm.imageRequired',
+                      })
+                    )
+                  )}
+                >
+                  {({ fields }) =>
+                    fields.map((name, index) => (
+                      <FieldListingImage
+                        key={name}
+                        name={name}
+                        onRemoveImage={imageId => {
+                          fields.remove(index);
+                          onRemoveImage(imageId);
+                        }}
+                        intl={intl}
+                        aspectWidth={aspectWidth}
+                        aspectHeight={aspectHeight}
+                        variantPrefix={variantPrefix}
+                      />
+                    ))
+                  }
+                </FieldArray>
 
-            <div className={css.imagesFieldArray}>
-              <FieldArray
-                name="images"
-                validate={composeValidators(
-                  nonEmptyArray(
-                    intl.formatMessage({
-                      id: 'EditListingPhotosForm.imageRequired',
-                    })
-                  )
-                )}
-              >
-                {({ fields }) =>
-                  fields.map((name, index) => (
-                    <FieldListingImage
-                      key={name}
-                      name={name}
-                      onRemoveImage={imageId => {
-                        fields.remove(index);
-                        onRemoveImage(imageId);
-                      }}
-                      intl={intl}
-                      aspectWidth={aspectWidth}
-                      aspectHeight={aspectHeight}
-                      variantPrefix={variantPrefix}
-                    />
-                  ))
-                }
-              </FieldArray>
+                <FieldAddImage
+                  id="addImage"
+                  name="addImage"
+                  accept={ACCEPT_IMAGES}
+                  label={
+                    <span className={css.chooseImageText}>
+                      <span className={css.chooseImage}>
+                        <FormattedMessage id="EditListingPhotosForm.chooseImage" />
+                      </span>
+                      <span className={css.imageTypes}>
+                        <FormattedMessage id="EditListingPhotosForm.imageTypes" />
+                      </span>
+                    </span>
+                  }
+                  type="file"
+                  disabled={state.imageUploadRequested}
+                  formApi={form}
+                  onImageUploadHandler={onImageUploadHandler}
+                  aspectWidth={aspectWidth}
+                  aspectHeight={aspectHeight}
+                />
+              </div>
 
-              <FieldAddImage
-                id="addImage"
-                name="addImage"
-                accept={ACCEPT_IMAGES}
-                label={
-                  <span className={css.chooseImageText}>
-                    <span className={css.chooseImage}>
-                      <FormattedMessage id="EditListingPhotosForm.chooseImage" />
-                    </span>
-                    <span className={css.imageTypes}>
-                      <FormattedMessage id="EditListingPhotosForm.imageTypes" />
-                    </span>
-                  </span>
-                }
-                type="file"
-                disabled={state.imageUploadRequested}
-                formApi={form}
-                onImageUploadHandler={onImageUploadHandler}
-                aspectWidth={aspectWidth}
-                aspectHeight={aspectHeight}
+              {imagesError ? <p className={formCss.error}>{imagesError}</p> : null}
+
+              <ImageUploadError
+                uploadOverLimit={uploadOverLimit}
+                uploadImageError={uploadImageError}
               />
+            </SectionCard>
+
+            <div className={css.actions}>
+              {updateListingError ? (
+                <p className={formCss.formError} role="alert">
+                  <FormattedMessage id="EditListingPhotosForm.updateFailed" />
+                </p>
+              ) : null}
+              <PublishListingError error={publishListingError} />
+              <ShowListingsError error={showListingsError} />
+
+              <Button
+                rootClassName={classNames(buttonCss.primary, buttonCss.formButton)}
+                type="submit"
+                inProgress={submitInProgress}
+                disabled={submitDisabled}
+                ready={submitReady}
+              >
+                {saveActionMsg}
+              </Button>
             </div>
-
-            {imagesError ? <div className={css.arrayError}>{imagesError}</div> : null}
-
-            <ImageUploadError
-              uploadOverLimit={uploadOverLimit}
-              uploadImageError={uploadImageError}
-            />
-
-            <PublishListingError error={publishListingError} />
-            <ShowListingsError error={showListingsError} />
-
-            <Button
-              className={css.submitButton}
-              type="submit"
-              inProgress={submitInProgress}
-              disabled={submitDisabled}
-              ready={submitReady}
-            >
-              {saveActionMsg}
-            </Button>
           </Form>
         );
       }}

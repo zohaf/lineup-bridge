@@ -479,6 +479,7 @@
   "EditListingWizard.default-negotiation.new.saveLocation": "Siguiente",
   "EditListingWizard.default-negotiation.new.saveLocationNoPricingTab": "Siguiente",
   "EditListingWizard.default-negotiation.new.savePhotos": "Publicar anuncio",
+  "EditListingWizard.default-negotiation.new.saveLinks": "Siguiente",
   "EditListingWizard.default-negotiation.new.savePricing": "Siguiente",
   "EditListingWizard.default-negotiation.new.saveStyle": "Publicar anuncio",
   "EditListingWizard.default-purchase.new.saveDelivery": "Siguiente",
@@ -1891,5 +1892,7 @@
   "Footer.privacyPolicy": "Privacy policy",
   "Footer.termsOfUse": "Terms of use",
   "Footer.paymentTerms": "Payment terms",
-  "Footer.copyright": "© {year} LineupBridge. All rights reserved"
+  "Footer.copyright": "© {year} LineupBridge. All rights reserved",
+  "FieldPasswordInput.hide": "Ocultar",
+  "FieldPasswordInput.show": "Mostrar"
 }

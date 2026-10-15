@@ -10,7 +10,16 @@ import classNames from 'classnames';
 import { useConfiguration } from '../../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 
-import { Form, PrimaryButton, FieldTextInput, StripePaymentAddress, H4 } from '../../../components';
+import {
+  Form,
+  PrimaryButton,
+  FieldTextInput,
+  StripePaymentAddress,
+  SectionCard,
+} from '../../../components';
+
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
 
 import css from './PaymentMethodsForm.module.css';
 
@@ -54,19 +63,19 @@ const stripeErrorTranslation = (intl, stripeError) => {
 const stripeElementsOptions = {};
 
 // card (being a Stripe Elements component), can have own styling passed to it.
-// However, its internal width-calculation seems to break if font-size is too big
-// compared to component's own width.
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+// Same look as the shared text input and the checkout card element: system font, 16px at every
+// width (iOS does not zoom at 16px), black text, --colorGrey300 placeholder. Stripe's iframe cannot
+// read CSS variables.
 const cardStyles = {
   base: {
-    fontFamily: 'Suisse Intl, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
-    fontSize: isMobile ? '14px' : '16px',
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontSize: '16px',
     fontSmoothing: 'antialiased',
     lineHeight: '24px',
-    letterSpacing: '-0.1px',
-    color: '#4A4A4A',
+    color: 'hsl(0, 0%, 0%)',
     '::placeholder': {
-      color: '#B2B2B2',
+      color: 'hsl(240, 3%, 70%)',
     },
   },
 };
@@ -110,14 +119,6 @@ class PaymentMethodsForm extends Component {
       this.card = elements.create('card', { style: cardStyles });
       this.card.mount(this.cardContainer);
       this.card.addEventListener('change', this.handleCardValueChange);
-      // EventListener is the only way to simulate breakpoints with Stripe.
-      window.addEventListener('resize', () => {
-        if (window.innerWidth < 768) {
-          this.card.update({ style: { base: { fontSize: '14px', lineHeight: '24px' } } });
-        } else {
-          this.card.update({ style: { base: { fontSize: '18px', lineHeight: '24px' } } });
-        }
-      });
     }
   }
   componentWillUnmount() {
@@ -227,57 +228,56 @@ class PaymentMethodsForm extends Component {
 
     return hasStripeKey ? (
       <Form className={classes} onSubmit={handleSubmit}>
-        <label className={css.paymentLabel} htmlFor={`${formId}-card`}>
-          <FormattedMessage id="PaymentMethodsForm.paymentCardDetails" />
-        </label>
+        <SectionCard>
+          <div className={formCss.field}>
+            <label className={formCss.label} htmlFor={`${formId}-card`}>
+              <FormattedMessage id="PaymentMethodsForm.paymentCardDetails" />
+            </label>
+            <div
+              className={cardClasses}
+              id={`${formId}-card`}
+              ref={el => {
+                this.cardContainer = el;
+              }}
+            />
+            {hasCardError ? <span className={formCss.error}>{this.state.error}</span> : null}
+          </div>
+          <p className={css.infoText}>{infoText}</p>
+        </SectionCard>
 
-        <div
-          className={cardClasses}
-          id={`${formId}-card`}
-          ref={el => {
-            this.cardContainer = el;
-          }}
-        />
-        <div className={css.infoText}>{infoText}</div>
-        {hasCardError ? <span className={css.error}>{this.state.error}</span> : null}
-        <div className={css.paymentAddressField}>
-          <H4 as="h3">
-            <FormattedMessage id="PaymentMethodsForm.billingDetails" />
-          </H4>
-
-          <FieldTextInput
-            className={css.field}
-            type="text"
-            id="name"
-            name="name"
-            autoComplete="cc-name"
-            label={billingDetailsNameLabel}
-            placeholder={billingDetailsNamePlaceholder}
-          />
-
-          {billingAddress}
-        </div>
-
-        <div className={css.submitContainer}>
-          {hasErrors ? (
-            <span className={css.errorMessage}>
-              {hasErrors.message ? hasErrors.message : errorMessage}
-            </span>
-          ) : null}
-          <PrimaryButton
-            className={css.submitButton}
-            type="submit"
-            inProgress={submitInProgress}
-            disabled={submitDisabled}
-          >
-            <FormattedMessage id="PaymentMethodsForm.submitPaymentInfo" />
-          </PrimaryButton>
-        </div>
+        <SectionCard title={<FormattedMessage id="PaymentMethodsForm.billingDetails" />}>
+          <div className={css.billingDetails}>
+            <FieldTextInput
+              type="text"
+              id="name"
+              name="name"
+              autoComplete="cc-name"
+              label={billingDetailsNameLabel}
+              placeholder={billingDetailsNamePlaceholder}
+            />
+            {billingAddress}
+          </div>
+          <div className={css.submitContainer}>
+            {hasErrors ? (
+              <span className={formCss.formError} role="alert">
+                {hasErrors.message ? hasErrors.message : errorMessage}
+              </span>
+            ) : null}
+            <PrimaryButton
+              rootClassName={classNames(buttonCss.primary, buttonCss.formButton)}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+            >
+              <FormattedMessage id="PaymentMethodsForm.submitPaymentInfo" />
+            </PrimaryButton>
+          </div>
+        </SectionCard>
       </Form>
     ) : (
-      <div className={css.missingStripeKey}>
+      <p className={formCss.formError}>
         <FormattedMessage id="PaymentMethodsForm.missingStripeKey" />
-      </div>
+      </p>
     );
   }
 

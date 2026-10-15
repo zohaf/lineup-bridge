@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { LISTING_STATE_DRAFT } from '../../../../util/types';
 import { pickCategoryFields } from '../../../../util/fieldHelpers';
-import { H3, ListingLink } from '../../../../components';
+import { PageHeader } from '../../../../components';
 import {
   pickListingFieldsData,
   initialValuesForListingFields,
@@ -25,11 +25,7 @@ const buildInitialValues = (props, section) => {
   const listingFields = config.listing.listingFields;
   const nestedCategories = pickCategoryFields(publicData, categoryKey, 1, listingCategories);
 
-  const applicable = getApplicableListingFieldConfigs(
-    listingFields,
-    listingType,
-    nestedCategories
-  );
+  const applicable = getApplicableListingFieldConfigs(listingFields, listingType, nestedCategories);
   const sectionFields = applicable.filter(sectionPredicate(section));
 
   return {
@@ -93,17 +89,12 @@ const EditListingListingFieldsStepPanel = props => {
       ? 'EditListingListingFieldsStepPanel.editGenreTitle'
       : 'EditListingListingFieldsStepPanel.editLinksTitle';
 
-  const panelHeadingProps = isPublished
-    ? {
-        id: titleIdEdit,
-        values: { listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> },
-        messageProps: { listingTitle: listing.attributes.title },
-      }
-    : {
-        id: titleIdCreate,
-        values: { lineBreak: <br /> },
-        messageProps: {},
-      };
+  // One person, one public profile: the title does not name the profile (business-rules.md)
+  const panelHeadingId = isPublished ? titleIdEdit : titleIdCreate;
+  const panelHeadingValues = {
+    listingTitle: listing?.attributes?.title || '',
+    lineBreak: ' ',
+  };
 
   const { publicData } = listing?.attributes || {};
   const listingType = publicData?.listingType;
@@ -113,16 +104,11 @@ const EditListingListingFieldsStepPanel = props => {
   const listingFieldsConfig = config.listing.listingFields;
 
   return (
-    <main className={classes}>
+    <div className={classes}>
       <UpdatePageTitle
-        panelHeading={intl.formatMessage(
-          { id: panelHeadingProps.id },
-          { ...panelHeadingProps.messageProps }
-        )}
+        panelHeading={intl.formatMessage({ id: panelHeadingId }, panelHeadingValues)}
       />
-      <H3 as="h1">
-        <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
-      </H3>
+      <PageHeader title={<FormattedMessage id={panelHeadingId} values={panelHeadingValues} />} />
 
       <EditListingListingFieldsStepForm
         className={css.formRoot}
@@ -166,7 +152,7 @@ const EditListingListingFieldsStepPanel = props => {
         updateInProgress={updateInProgress}
         fetchErrors={errors}
       />
-    </main>
+    </div>
   );
 };
 

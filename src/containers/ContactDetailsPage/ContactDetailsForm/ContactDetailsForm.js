@@ -16,17 +16,22 @@ import {
   isUploadImageOverLimitError,
 } from '../../../util/errors';
 
+import { Check } from 'lucide-react';
+
 import {
-  Avatar,
-  FieldPhoneNumberInput,
+  AvatarLarge,
   Form,
   ImageFromFile,
   IconSpinner,
   PrimaryButton,
   FieldTextInput,
-  H4,
+  FieldPasswordInput,
+  PhoneNumberField,
+  SectionCard,
 } from '../../../components';
 
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './ContactDetailsForm.module.css';
 
 const SHOW_EMAIL_SENT_TIMEOUT = 2000;
@@ -54,14 +59,10 @@ const PhoneNumberMaybe = props => {
     : {};
 
   return (
-    <FieldPhoneNumberInput
-      className={css.phone}
+    <PhoneNumberField
       name="phoneNumber"
       id={formId ? `${formId}.phoneNumber` : 'phoneNumber'}
       label={intl.formatMessage({ id: 'ContactDetailsForm.phoneLabel' })}
-      placeholder={intl.formatMessage({
-        id: 'ContactDetailsForm.phonePlaceholder',
-      })}
       {...validateMaybe}
     />
   );
@@ -234,7 +235,7 @@ class ContactDetailsFormComponent extends Component {
           } else {
             resendEmailMessage = (
               <span
-                className={css.helperLink}
+                className={buttonCss.link}
                 onClick={this.handleResendVerificationEmail}
                 role="button"
               >
@@ -249,20 +250,21 @@ class ContactDetailsFormComponent extends Component {
           if (emailVerified && !pendingEmail && !emailChanged) {
             // Current email is verified and there's no pending unverified email
             emailVerifiedInfo = (
-              <span className={css.emailVerified}>
+              <p className={formCss.helperSuccess}>
+                <Check size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden="true" />
                 <FormattedMessage id="ContactDetailsForm.emailVerified" />
-              </span>
+              </p>
             );
           } else if (!emailVerified && !pendingEmail) {
             // Current email is unverified. This is the email given in sign up form
 
             emailVerifiedInfo = (
-              <span className={css.emailUnverified}>
+              <p className={formCss.helper}>
                 <FormattedMessage
                   id="ContactDetailsForm.emailUnverified"
                   values={{ resendEmailMessage }}
                 />
-              </span>
+              </p>
             );
           } else if (pendingEmail) {
             // Current email has been tried to change, but the new address is not yet verified
@@ -278,12 +280,12 @@ class ContactDetailsFormComponent extends Component {
             );
 
             emailVerifiedInfo = (
-              <span className={css.pendingEmailUnverified}>
+              <p className={formCss.error}>
                 <FormattedMessage
                   id="ContactDetailsForm.pendingEmailUnverified"
                   values={{ pendingEmailCheckInbox, resendEmailMessage }}
                 />
-              </span>
+              </p>
             );
           }
 
@@ -335,10 +337,6 @@ class ContactDetailsFormComponent extends Component {
             ? passwordFailedMessage
             : null;
 
-          const confirmClasses = classNames(css.confirmChangesSection, {
-            [css.confirmChangesSectionVisible]: emailChanged,
-          });
-
           // generic error
           const isGenericEmailError = saveEmailError && !(emailTakenErrorText || passwordErrorText);
 
@@ -346,32 +344,32 @@ class ContactDetailsFormComponent extends Component {
 
           if (isGenericEmailError && savePhoneNumberError) {
             genericError = (
-              <span className={css.error}>
+              <span className={formCss.formError}>
                 <FormattedMessage id="ContactDetailsForm.genericFailure" />
               </span>
             );
           } else if (isGenericEmailError) {
             genericError = (
-              <span className={css.error}>
+              <span className={formCss.formError}>
                 <FormattedMessage id="ContactDetailsForm.genericEmailFailure" />
               </span>
             );
           } else if (savePhoneNumberError) {
             genericError = (
-              <span className={css.error}>
+              <span className={formCss.formError}>
                 <FormattedMessage id="ContactDetailsForm.genericPhoneNumberFailure" />
               </span>
             );
           }
 
           const sendPasswordLink = (
-            <span className={css.helperLink} onClick={this.handleResetPassword} role="button">
+            <span className={buttonCss.link} onClick={this.handleResetPassword} role="button">
               <FormattedMessage id="ContactDetailsForm.resetPasswordLinkText" />
             </span>
           );
 
           const resendPasswordLink = (
-            <span className={css.helperLink} onClick={this.handleResetPassword} role="button">
+            <span className={buttonCss.link} onClick={this.handleResetPassword} role="button">
               <FormattedMessage id="ContactDetailsForm.resendPasswordLinkText" />
             </span>
           );
@@ -400,6 +398,12 @@ class ContactDetailsFormComponent extends Component {
             inProgress ||
             !(emailChanged || phoneNumberChanged);
 
+          // Error look on the email box (FieldTextInput does not pass it out with inputRootClass)
+          const emailFieldState = fieldRenderProps.form.getFieldState('email');
+          const emailHasError =
+            (!emailTouched && !!emailTakenErrorText) ||
+            !!(emailFieldState?.touched && emailFieldState?.invalid);
+
           return (
             <Form
               className={classes}
@@ -412,28 +416,9 @@ class ContactDetailsFormComponent extends Component {
                 });
               }}
             >
-              <div className={css.profileImageSection}>
-                <H4 as="h3" className={css.profileImageTitle}>
-                  <FormattedMessage id="ContactDetailsForm.yourProfilePicture" />
-                </H4>
-
-                <div className={css.avatarContainer}>
-                  {fileUploadInProgress ? (
-                    <ImageFromFile
-                      id={profileImage.id}
-                      className={css.uploadedImage}
-                      file={profileImage.file}
-                      alt={intl.formatMessage({ id: 'ContactDetailsForm.profileImageAlt' })}
-                    />
-                  ) : (
-                    <Avatar
-                      className={css.avatar}
-                      user={transientUser}
-                      disableProfileLink
-                    />
-                  )}
-                </div>
-
+              <SectionCard
+                title={<FormattedMessage id="ContactDetailsForm.yourProfilePicture" />}
+              >
                 <Field
                   accept={ACCEPT_IMAGES}
                   id="profileImage"
@@ -458,97 +443,123 @@ class ContactDetailsFormComponent extends Component {
                     let error = null;
                     if (isUploadImageOverLimitError(uploadImageError)) {
                       error = (
-                        <div className={css.error}>
+                        <div className={formCss.error}>
                           <FormattedMessage id="ContactDetailsForm.imageUploadFailedFileTooLarge" />
                         </div>
                       );
                     } else if (uploadImageError) {
                       error = (
-                        <div className={css.error}>
+                        <div className={formCss.error}>
                           <FormattedMessage id="ContactDetailsForm.imageUploadFailed" />
                         </div>
                       );
                     } else if (updateProfileImageError) {
                       error = (
-                        <div className={css.error}>
+                        <div className={formCss.error}>
                           <FormattedMessage id="ContactDetailsForm.updateProfileImageFailed" />
                         </div>
                       );
                     }
 
                     return (
-                      <div className={css.uploadAvatarWrapper}>
-                        <label className={css.label} htmlFor={id}>
-                          {label}
-                        </label>
-                        <input
-                          accept={accept}
-                          id={id}
-                          name={name}
-                          className={css.uploadAvatarInput}
-                          disabled={disabled}
-                          onChange={onChange}
-                          type={type}
-                        />
+                      <div className={formCss.field}>
+                        <div className={css.avatarRow}>
+                          {fileUploadInProgress ? (
+                            <ImageFromFile
+                              id={profileImage.id}
+                              className={css.avatar}
+                              file={profileImage.file}
+                              alt={intl.formatMessage({
+                                id: 'ContactDetailsForm.profileImageAlt',
+                              })}
+                            />
+                          ) : (
+                            <AvatarLarge user={transientUser} disableProfileLink />
+                          )}
+                          <label
+                            className={classNames(buttonCss.secondary, css.changePhoto, {
+                              [css.changePhotoDisabled]: disabled,
+                            })}
+                            htmlFor={id}
+                          >
+                            {label}
+                          </label>
+                          <input
+                            accept={accept}
+                            id={id}
+                            name={name}
+                            className={css.uploadAvatarInput}
+                            disabled={disabled}
+                            onChange={onChange}
+                            type={type}
+                          />
+                        </div>
                         {error}
                       </div>
                     );
                   }}
                 </Field>
-              </div>
+              </SectionCard>
 
-              <div className={css.contactDetailsSection}>
-                <FieldTextInput
-                  type="email"
-                  name="email"
-                  id={formId ? `${formId}.email` : 'email'}
-                  label={emailLabel}
-                  placeholder={emailPlaceholder}
-                  validate={validators.composeValidators(emailRequired, emailValid)}
-                  customErrorText={emailTouched ? null : emailTakenErrorText}
-                />
-                {emailVerifiedInfo}
+              <SectionCard title={<FormattedMessage id="ContactDetailsPage.heading" />}>
+                <div className={formCss.field}>
+                  <FieldTextInput
+                    rootClassName={formCss.field}
+                    labelClassName={formCss.label}
+                    inputRootClass={classNames(formCss.input, {
+                      [formCss.inputError]: emailHasError,
+                    })}
+                    type="email"
+                    name="email"
+                    id={formId ? `${formId}.email` : 'email'}
+                    label={emailLabel}
+                    placeholder={emailPlaceholder}
+                    validate={validators.composeValidators(emailRequired, emailValid)}
+                    customErrorText={emailTouched ? null : emailTakenErrorText}
+                  />
+                  {emailVerifiedInfo}
+                </div>
 
                 <PhoneNumberMaybe formId={formId} userTypeConfig={userTypeConfig} intl={intl} />
-              </div>
 
-              <div className={confirmClasses} aria-hidden={!emailChanged}>
-                <H4 as="h3" className={css.confirmChangesTitle}>
-                  <FormattedMessage id="ContactDetailsForm.confirmChangesTitle" />
-                </H4>
-                <p className={css.confirmChangesInfo}>
-                  <FormattedMessage id="ContactDetailsForm.confirmChangesInfo" />
-                  <br />
-                  <FormattedMessage
-                    id="ContactDetailsForm.resetPasswordInfo"
-                    values={{ resetPasswordLink }}
-                  />
-                </p>
+                {emailChanged ? (
+                  <div className={css.confirmChanges}>
+                    <h3 className={css.confirmChangesTitle}>
+                      <FormattedMessage id="ContactDetailsForm.confirmChangesTitle" />
+                    </h3>
+                    <p className={css.confirmChangesInfo}>
+                      <FormattedMessage id="ContactDetailsForm.confirmChangesInfo" />
+                      <br />
+                      <FormattedMessage
+                        id="ContactDetailsForm.resetPasswordInfo"
+                        values={{ resetPasswordLink }}
+                      />
+                    </p>
+                    <FieldPasswordInput
+                      name="currentPassword"
+                      id={formId ? `${formId}.currentPassword` : 'currentPassword'}
+                      autoComplete="current-password"
+                      label={passwordLabel}
+                      placeholder={passwordPlaceholder}
+                      validate={passwordValidators}
+                      customErrorText={passwordTouched ? null : passwordErrorText}
+                    />
+                  </div>
+                ) : null}
 
-                <FieldTextInput
-                  className={css.password}
-                  type="password"
-                  name="currentPassword"
-                  id={formId ? `${formId}.currentPassword` : 'currentPassword'}
-                  disabled={!emailChanged}
-                  autoComplete="current-password"
-                  label={passwordLabel}
-                  placeholder={passwordPlaceholder}
-                  validate={passwordValidators}
-                  customErrorText={passwordTouched ? null : passwordErrorText}
-                />
-              </div>
-              <div className={css.bottomWrapper}>
-                {genericError}
-                <PrimaryButton
-                  type="submit"
-                  inProgress={inProgress}
-                  ready={pristineSinceLastSubmit}
-                  disabled={submitDisabled}
-                >
-                  <FormattedMessage id="ContactDetailsForm.saveChanges" />
-                </PrimaryButton>
-              </div>
+                <div className={css.bottomWrapper}>
+                  {genericError}
+                  <PrimaryButton
+                    rootClassName={classNames(buttonCss.primary, buttonCss.formButton)}
+                    type="submit"
+                    inProgress={inProgress}
+                    ready={pristineSinceLastSubmit}
+                    disabled={submitDisabled}
+                  >
+                    <FormattedMessage id="ContactDetailsForm.saveChanges" />
+                  </PrimaryButton>
+                </div>
+              </SectionCard>
             </Form>
           );
         }}

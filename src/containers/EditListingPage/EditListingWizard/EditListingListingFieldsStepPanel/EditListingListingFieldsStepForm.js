@@ -4,7 +4,9 @@ import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 
 import { useIntl } from '../../../../util/reactIntl';
-import { Form, Button, CustomExtendedDataField } from '../../../../components';
+import { Form, Button, CustomExtendedDataField, SectionCard } from '../../../../components';
+import formCss from '../../../../styles/lineupForm.module.css';
+import buttonCss from '../../../../styles/lineupButtons.module.css';
 import { getApplicableListingFieldConfigs } from '../editListingFieldHelpers';
 import { isGenreField, isLinkField } from '../../../../util/listingFieldWizardSections';
 import css from './EditListingListingFieldsStepPanel.module.css';
@@ -48,42 +50,46 @@ const ListingFieldsStepFormFields = props => {
 
   return (
     <Form className={classes} onSubmit={handleSubmit}>
-      {updateListingError ? (
-        <p className={css.error}>
-          {intl.formatMessage({ id: 'EditListingDetailsForm.updateFailed' })}
-        </p>
-      ) : null}
-      {showListingsError ? (
-        <p className={css.error}>
-          {intl.formatMessage({ id: 'EditListingDetailsForm.showListingFailed' })}
-        </p>
-      ) : null}
+      <SectionCard>
+        {sectionFieldConfigs.map(fieldConfig => {
+          const { key, scope } = fieldConfig || {};
+          const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
+          return (
+            <CustomExtendedDataField
+              key={namespacedKey}
+              name={namespacedKey}
+              fieldConfig={fieldConfig}
+              defaultRequiredMessage={intl.formatMessage({
+                id: 'EditListingDetailsForm.defaultRequiredMessage',
+              })}
+              formId={formId}
+              lineupStyle
+            />
+          );
+        })}
+      </SectionCard>
 
-      {sectionFieldConfigs.map(fieldConfig => {
-        const { key, scope } = fieldConfig || {};
-        const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
-        return (
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-            formId={formId}
-          />
-        );
-      })}
-
-      <Button
-        className={css.submitButton}
-        type="submit"
-        inProgress={submitInProgress}
-        disabled={submitDisabled}
-        ready={submitReady}
-      >
-        {saveActionMsg}
-      </Button>
+      <div className={css.actions}>
+        {updateListingError ? (
+          <p className={formCss.formError} role="alert">
+            {intl.formatMessage({ id: 'EditListingDetailsForm.updateFailed' })}
+          </p>
+        ) : null}
+        {showListingsError ? (
+          <p className={formCss.formError} role="alert">
+            {intl.formatMessage({ id: 'EditListingDetailsForm.showListingFailed' })}
+          </p>
+        ) : null}
+        <Button
+          rootClassName={classNames(buttonCss.primary, buttonCss.formButton)}
+          type="submit"
+          inProgress={submitInProgress}
+          disabled={submitDisabled}
+          ready={submitReady}
+        >
+          {saveActionMsg}
+        </Button>
+      </div>
     </Form>
   );
 };
@@ -99,9 +105,7 @@ const EditListingListingFieldsStepForm = props => {
       initialValues={initialValues}
       mutators={{ ...arrayMutators }}
       onSubmit={onSubmit}
-      render={formRenderProps => (
-        <ListingFieldsStepFormFields {...props} {...formRenderProps} />
-      )}
+      render={formRenderProps => <ListingFieldsStepFormFields {...props} {...formRenderProps} />}
     />
   );
 };

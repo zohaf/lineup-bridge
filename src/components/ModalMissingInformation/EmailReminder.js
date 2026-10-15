@@ -23,7 +23,7 @@ const EmailReminder = props => {
   );
 
   const fixEmailLink = (
-    <NamedLink className={css.helperLink} name="ContactDetailsPage">
+    <NamedLink className={css.helperLink} name="AccountSettingsPage">
       <FormattedMessage id="ModalMissingInformation.fixEmailLinkText" />
     </NamedLink>
   );

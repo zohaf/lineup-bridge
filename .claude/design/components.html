@@ -226,6 +226,76 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
 .hm-item { display: flex; align-items: center; min-height: 44px; padding: 0 var(--lb-space-4); font-size: var(--lb-size-small); color: var(--ink); text-decoration: none; }
 .hm-item.is-current { font-weight: 600; }
 .hm-greeting { display: block; padding: var(--lb-space-3) var(--lb-space-4) var(--lb-space-1); font-size: var(--lb-size-small); color: var(--grey600); }
+
+/* ===== Added Oct 15: account and public profile setup (spec account-and-profile-setup.md) ===== */
+/* Step menu */
+.sm-card { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); padding: var(--lb-space-3) var(--lb-space-5); max-width: 264px; }
+.sm-row { background: var(--page); border-bottom: 1px solid var(--grey100); padding: var(--lb-space-2) var(--lb-space-5); }
+.sm { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--lb-space-1); }
+.sm-row .sm { flex-direction: row; gap: var(--lb-space-3); }
+.sm a { display: flex; align-items: center; gap: var(--lb-space-3); min-height: 44px; min-width: 44px; color: var(--ink); text-decoration: none; font-size: var(--lb-size-body); white-space: nowrap; }
+.sm-row .sm a { justify-content: center; }
+.sm-row .sm .sm-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.sm .num svg { width: 14px; height: 14px; }
+.sm a[aria-current] { font-weight: 600; }
+.sm a[aria-current] .num { border-width: 2px; }
+.sm a[aria-disabled="true"] { color: var(--grey300); pointer-events: none; }
+.sm a[aria-disabled="true"] .num { border-color: var(--grey300); color: var(--grey300); }
+.sm.nonum a[aria-current] { box-shadow: inset 2px 0 0 var(--ink); padding-left: var(--lb-space-3); margin-left: calc(-1 * var(--lb-space-3)); }
+.sm-row .sm.nonum { gap: var(--lb-space-5); overflow-x: auto; }
+.sm-row .sm.nonum a { justify-content: flex-start; min-width: 0; }
+.sm-row .sm.nonum .sm-label { position: static; width: auto; height: auto; clip-path: none; overflow: visible; }
+.sm-row .sm.nonum a[aria-current] { box-shadow: inset 0 -2px 0 var(--ink); padding-left: 0; margin-left: 0; }
+/* Choice tiles (lineupForm .choiceTiles): matches the code (sign up user type) */
+.choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--lb-space-2); }
+.choice-tile { display: flex; align-items: center; justify-content: center; text-align: center; min-height: var(--lb-input-height); padding: 0 var(--lb-space-3); border: 1px solid var(--rule-strong); border-radius: var(--radius); background: var(--paper); font: 600 var(--lb-size-button)/1 var(--lb-font); color: var(--ink); cursor: pointer; }
+.choice-tile:hover { border-color: var(--grey300); }
+.choice-tile.is-on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.choice-tile.is-focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(0,0,0,.08); }
+/* Password with Show toggle */
+.pw-toggle { flex: none; border: 0; background: transparent; padding: 0 var(--lb-space-1); min-height: 44px; font: 600 var(--lb-size-small)/1 var(--lb-font); color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+/* Photo grid */
+.pg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--lb-space-2); }
+@media (min-width: 768px) { .pg { gap: var(--lb-space-3); } }
+.pg-img { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-card); background: linear-gradient(135deg, #3a3a40, #0d0d0f); overflow: hidden; }
+.pg-img.b { background: linear-gradient(160deg, #6b5a4a, #1d1712); }
+.pg-rm { position: absolute; top: var(--lb-space-2); right: var(--lb-space-2); width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.pg-rm::after { content: ""; position: absolute; inset: -6px; }
+.pg-rm svg, .pg-up svg { width: 16px; height: 16px; }
+.pg-up { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(255,255,255,.6); color: var(--ink); }
+.pg-up svg { width: 24px; height: 24px; animation: spin .8s linear infinite; }
+.pg-add { aspect-ratio: 4 / 3; border: 1px dashed var(--grey300); border-radius: var(--radius-card); background: var(--paper); display: grid; place-content: center; text-align: center; gap: var(--lb-space-1); padding: var(--lb-space-3); cursor: pointer; }
+.pg-add b { font-size: var(--lb-size-small); font-weight: 600; }
+.pg-add span { font-size: 12px; color: var(--grey600); }
+.pg-add.is-error { border-color: var(--fail); background: var(--fail-subtle); }
+@media (prefers-reduced-motion: reduce) { .pg-up svg { animation: none; } }
+/* Profile picture */
+.pp { display: flex; align-items: center; gap: var(--lb-space-4); flex-wrap: wrap; }
+.pp-img { position: relative; width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg, #3a3a40, #0d0d0f); flex: none; overflow: hidden; }
+.pp-img.is-empty { background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 28px; font-weight: 600; }
+/* City search: predictions in the menu panel style */
+.cs { position: relative; display: grid; gap: var(--lb-label-gap); }
+.cs-panel { background: var(--paper); border: 1px solid var(--grey100); border-radius: var(--radius-card); box-shadow: var(--lb-shadow-search); padding: var(--lb-space-1) 0; }
+.cs-item { display: flex; align-items: center; min-height: 44px; padding: 0 var(--lb-space-4); font-size: var(--lb-size-body); }
+.cs-item.is-active { background: var(--page); }
+.cs-attr { display: block; padding: var(--lb-space-2) var(--lb-space-4); font-size: 12px; color: var(--grey600); border-top: 1px solid var(--rule); }
+/* Status messages */
+.helper-success { display: flex; align-items: center; gap: var(--lb-space-2); color: var(--success); }
+.helper-success svg { width: 16px; height: 16px; flex: none; }
+.form-error { font-weight: 600; color: var(--fail); }
+/* Stripe status card */
+.ss { display: grid; gap: var(--lb-space-2); }
+.ss-ok { display: flex; align-items: center; gap: var(--lb-space-2); color: var(--success); }
+.ss-ok svg { width: 20px; height: 20px; flex: none; }
+.ss-ok .h3 { color: var(--success); }
+/* Saved card */
+.sc { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-4); min-height: var(--lb-input-height); padding: 0 var(--lb-space-4); border: 1px solid var(--rule-strong); border-radius: var(--radius); background: var(--paper); font-size: var(--lb-size-input); font-variant-numeric: tabular-nums; }
+.sc svg { width: 16px; height: 16px; flex: none; }
+.sc.is-error { border-color: var(--fail); background: var(--fail-subtle); }
+.sc-panel { background: var(--paper); border: 1px solid var(--grey100); border-radius: var(--radius-card); box-shadow: var(--lb-shadow-search); padding: var(--lb-space-1) 0; max-width: 360px; }
+.sc-item { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-3); min-height: 44px; padding: 0 var(--lb-space-4); font-size: var(--lb-size-small); }
+.sc-item.is-current { font-weight: 600; }
+.sc-item svg { width: 16px; height: 16px; }
 </style>
 
 <div class="sheet">
@@ -248,6 +318,15 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
     <a href="#chips">Status chips</a>
     <a href="#item-rows">Item rows</a>
     <a href="#notice-banner">Notice banner</a>
+    <a href="#step-menu">Step menu</a>
+    <a href="#choice-tiles">Choice tiles</a>
+    <a href="#password">Password</a>
+    <a href="#photo-grid">Photo grid</a>
+    <a href="#profile-picture">Profile picture</a>
+    <a href="#city-search">City search</a>
+    <a href="#status-messages">Status messages</a>
+    <a href="#stripe-status">Stripe status</a>
+    <a href="#saved-card">Saved card</a>
     <a href="#hero-search">Hero search</a>
     <a href="#footer">Footer</a>
   </nav>
@@ -493,6 +572,127 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
         <div class="notice" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><p class="reset notice-title">Complete your payout setup</p><p class="reset notice-msg">Your account is approved, but you won't receive booking requests until your payout setup is complete.</p><a class="btn btn-secondary" href="#notice-banner">Set up payouts</a></div>
       </div>
       <ul class="rules"><li>Anatomy: lucide <code>CircleAlert</code> 20px in <code>--colorAttentionDark</code> · title <code>.label</code> 600 · message <code>.small</code> in <code>--colorGrey700</code> · one secondary button, 44px, under the message. Padding 16px, 8px radius. Fill <code>--colorAttentionSubtle</code>, 1px <code>--colorAttention</code> border. No new colors.</li><li>Only for something that blocks the user's business (payout details today). One per page. Persistent: not dismissible, not a toast; it goes away by itself once the problem is solved. Shown together with any other page state.</li><li>First in the page column, under the topbar, at the column width. <code>role="status"</code>.</li><li>The button is secondary: the page keeps one primary button. The text above is the existing Home copy (<code>Home.completePayoutTitleDj</code>, <code>Home.completePayoutMessageDj</code>, <code>Home.pendingApprovalCtaDj</code>).</li></ul>
+    </section>
+    <section class="block" id="step-menu">
+      <div class="block-head"><h2 class="reset h3">Step menu</h2><p class="reset code">Component <b>StepMenu</b> · side column of <b>LayoutSplit role="nav"</b> · two variants: <b>steps</b> (numbers) and <b>pages</b> (no numbers) · added Oct 15</p></div>
+      <div class="specimen on-page">
+        <div class="states">
+          <div><span class="state-name">Steps · desktop (from 1024px)</span>
+            <nav class="sm-card" aria-label="Steps"><ol class="sm">
+              <li><a href="#step-menu"><span class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="sm-label">Profile</span></a></li>
+              <li><a href="#step-menu" aria-current="step"><span class="num">2</span><span class="sm-label">Links</span></a></li>
+              <li><a href="#step-menu" aria-disabled="true"><span class="num">3</span><span class="sm-label">Photos</span></a></li>
+            </ol></nav></div>
+          <div><span class="state-name">Pages · desktop (from 1024px)</span>
+            <nav class="sm-card" aria-label="Account settings"><ol class="sm nonum">
+              <li><a href="#step-menu" aria-current="page"><span class="sm-label">Account settings</span></a></li>
+              <li><a href="#step-menu"><span class="sm-label">Payout details</span></a></li>
+            </ol></nav></div>
+        </div>
+        <div class="states">
+          <div><span class="state-name">Steps · phone and tablet</span>
+            <nav class="sm-row" aria-label="Steps"><ol class="sm">
+              <li><a href="#step-menu"><span class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="sm-label">Profile</span></a></li>
+              <li><a href="#step-menu" aria-current="step"><span class="num">2</span><span class="sm-label">Links</span></a></li>
+              <li><a href="#step-menu" aria-disabled="true"><span class="num">3</span><span class="sm-label">Photos</span></a></li>
+            </ol></nav></div>
+          <div><span class="state-name">Pages · phone and tablet</span>
+            <nav class="sm-row" aria-label="Account settings"><ol class="sm nonum">
+              <li><a href="#step-menu" aria-current="page"><span class="sm-label">Account settings</span></a></li>
+              <li><a href="#step-menu"><span class="sm-label">Payout details</span></a></li>
+            </ol></nav></div>
+        </div>
+      </div>
+      <ul class="rules"><li><b>Steps</b> (a real sequence, the public profile builder): 28px circle with a number. Done = lucide <code>Check</code> (14px) in the circle. Current = 2px black outline, label 600 (no fill, rule 8). Not reached yet = circle, number and label in <code>--colorGrey300</code>, not clickable. Hover on a reachable step: circle fills white.</li><li><b>Pages</b> (not a sequence, account settings): no numbers. Current = 2px black bar (left on desktop, under the label on phones), label 600.</li><li>Desktop: white card (1px border, 8px radius, 12px 24px padding), 264px, sticky 24px below the topbar. Rows at least 44px.</li><li>Below 1024px: one row on the beige page under the topbar, sticky, 1px <code>--colorGrey100</code> rule underneath. Steps show circles only (labels stay for screen readers; the step name is the page title). Pages show labels and scroll sideways if they don't fit.</li><li>Labels are the existing menu labels. <code>aria-current="step"</code> / <code>"page"</code>. Replaces the wizard's <code>Tabs</code> and <code>LayoutWrapperAccountSettingsSideNav</code>.</li></ul>
+    </section>
+    <section class="block" id="choice-tiles">
+      <div class="block-head"><h2 class="reset h3">Choice tiles</h2><p class="reset code">Classes <b>.choiceTiles</b> / <b>.choiceTile</b> / <b>.choiceTileSelected</b> in lineupForm.module.css · one choice from a few · in code since sign up (user type), drawn here Oct 15</p></div>
+      <div class="specimen">
+        <div class="states">
+          <div><span class="state-name">Default</span><p class="reset fieldLabel" style="margin-bottom:8px">Account type</p><div class="choice"><button type="button" class="choice-tile" aria-pressed="false">I'm an individual</button><button type="button" class="choice-tile" aria-pressed="false">I represent a company</button></div></div>
+          <div><span class="state-name">Selected</span><p class="reset fieldLabel" style="margin-bottom:8px">Account type</p><div class="choice"><button type="button" class="choice-tile is-on" aria-pressed="true">I'm an individual</button><button type="button" class="choice-tile" aria-pressed="false">I represent a company</button></div></div>
+          <div><span class="state-name">Focus</span><p class="reset fieldLabel" style="margin-bottom:8px">Account type</p><div class="choice"><button type="button" class="choice-tile is-focus" aria-pressed="false">I'm an individual</button><button type="button" class="choice-tile" aria-pressed="false">I represent a company</button></div></div>
+        </div>
+      </div>
+      <ul class="rules"><li>Buttons with <code>aria-pressed</code>, two columns at every width, 8px gap, 48px high, centred text in the button style (15px, 600).</li><li>Default: 1px <code>--colorGrey200</code> border; hover <code>--colorGrey300</code>. Selected: black border plus a 1px black inset (reads as 2px), no fill (rule 8). Focus: black border + focus ring.</li><li>No error state: the forms that use them (sign up, payout account type) keep the button disabled until a choice is made.</li></ul>
+    </section>
+    <section class="block" id="password">
+      <div class="block-head"><h2 class="reset h3">Password</h2><p class="reset code">Text input + <b>Show</b> toggle inside the box · component <b>FieldPasswordInput</b> (keys FieldPasswordInput.show / .hide) · added Oct 15</p></div>
+      <div class="specimen">
+        <div class="states">
+          <div class="field"><span class="state-name">Hidden</span><label class="fieldLabel" for="pw1">Current password</label><div class="input"><input id="pw1" type="password" placeholder="Enter your current password…"><button class="pw-toggle" type="button" aria-pressed="false">Show</button></div></div>
+          <div class="field"><span class="state-name">Shown</span><label class="fieldLabel" for="pw2">New password</label><div class="input"><input id="pw2" type="text" value="night-shift-2026"><button class="pw-toggle" type="button" aria-pressed="true">Hide</button></div></div>
+          <div class="field"><span class="state-name">Error</span><label class="fieldLabel" for="pw3">Current password</label><div class="input is-error"><input id="pw3" type="password" value="12345678"><button class="pw-toggle" type="button" aria-pressed="false">Show</button></div><p class="reset small error">Please double-check your current password.</p></div>
+        </div>
+      </div>
+      <ul class="rules"><li>The toggle is a text button at the right end of the box (14px, 600, underlined, 44px tap area). It switches the input between <code>password</code> and <code>text</code>, and its label between "Show" and "Hide" (<code>aria-pressed</code>).</li><li>Order on a change-password form: Current password first, then New password.</li><li>"Show" and "Hide" approved Oct 15 (new keys).</li></ul>
+    </section>
+    <section class="block" id="photo-grid">
+      <div class="block-head"><h2 class="reset h3">Photo grid</h2><p class="reset code">Restyles <b>FieldAddImage</b> + <b>ListingImage</b> in the photos panel's CSS · ratio from Console <b>listingImage.aspectRatio</b> (4/3) · added Oct 15</p></div>
+      <div class="specimen">
+        <div class="states">
+          <div><span class="state-name">Photos + add tile</span><div class="pg">
+            <div class="pg-img"><button class="pg-rm" type="button" aria-label="Remove image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+            <div class="pg-img b"><span class="pg-up" aria-label="Uploading…"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span></div>
+            <label class="pg-add"><b>+ Add a photo…</b><span>.JPG or .PNG. Max. 20 MB</span></label>
+          </div></div>
+          <div><span class="state-name">Error</span><div class="pg"><label class="pg-add is-error"><b>+ Add a photo…</b><span>.JPG or .PNG. Max. 20 MB</span></label></div><p class="reset small error">You need to add at least one photo.</p></div>
+        </div>
+      </div>
+      <ul class="rules"><li>Two columns at every width, gap 8px (12px from 768px). Tiles use the Console listing image ratio (4:3 today), 8px radius, <code>object-fit: cover</code>.</li><li>Remove: 32px dark circle top right with lucide <code>X</code> 16px (44px tap area), label "Remove image". Uploading: white veil with the spinner (lucide <code>LoaderCircle</code>).</li><li>Add tile last in the grid: dashed <code>--colorGrey300</code> border, existing texts. Error: red border, pale red fill, message under the grid (upload errors use the same place).</li><li>Required photos (two, approved Oct 15) need a new message; the one above is today's text.</li></ul>
+    </section>
+    <section class="block" id="profile-picture">
+      <div class="block-head"><h2 class="reset h3">Profile picture</h2><p class="reset code">Restyles the avatar upload in <b>ContactDetailsForm</b> · 96px circle + secondary button · added Oct 15</p></div>
+      <div class="specimen">
+        <div class="states">
+          <div><span class="state-name">With photo</span><div class="pp"><span class="pp-img"></span><label class="btn btn-secondary">Change photo</label></div></div>
+          <div><span class="state-name">No photo</span><div class="pp"><span class="pp-img is-empty">DE</span><label class="btn btn-secondary">Change photo</label></div></div>
+          <div><span class="state-name">Uploading · error</span><div class="pp"><span class="pp-img"></span><label class="btn btn-secondary is-loading" style="color:transparent">Change photo</label></div><p class="reset small error">The selected image is too large.</p></div>
+        </div>
+      </div>
+      <ul class="rules"><li>96px circle (photo, or initials on black like the header avatar). The secondary button is the file input's label ("Change photo"; "Uploading…" while it uploads).</li><li>Errors under the row: "The selected image is too large." · "Image upload failed. Please try again." · "Failed to update profile image. Please try again."</li></ul>
+    </section>
+    <section class="block" id="city-search">
+      <div class="block-head"><h2 class="reset h3">City search</h2><p class="reset code">Restyles <b>FieldLocationAutocompleteInput</b> through its class props (<b>inputClassName</b>, <b>predictionsClassName</b>, …) · added Oct 15</p></div>
+      <div class="specimen">
+        <div class="cs"><label class="fieldLabel" for="cs1">City</label><div class="input is-focus"><input id="cs1" value="Amster"></div>
+          <div class="cs-panel" role="listbox"><span class="cs-item is-active" role="option">Amsterdam, Netherlands</span><span class="cs-item" role="option">Amstelveen, Netherlands</span><span class="cs-attr">Map provider attribution (as today)</span></div></div>
+        <div class="field"><label class="fieldLabel" for="cs2">City</label><div class="input is-error"><input id="cs2" value="Amst"></div><p class="reset small error">We didn't recognize this city. Please choose one from the list.</p></div>
+      </div>
+      <ul class="rules"><li>The box is the text input. The template's own search icon is dropped.</li><li>Predictions: the header menu panel look (white, 1px <code>--colorGrey100</code>, 8px radius, <code>--lb-shadow-search</code>), 44px rows in <code>.body</code>, active row on the beige fill. The map provider's attribution stays at the bottom (required by the provider).</li><li>Example cities are examples.</li></ul>
+    </section>
+    <section class="block" id="status-messages">
+      <div class="block-head"><h2 class="reset h3">Status messages</h2><p class="reset code">Classes <b>.helperSuccess</b> and <b>.formError</b> in lineupForm.module.css · added Oct 15</p></div>
+      <div class="specimen">
+        <div class="field"><label class="fieldLabel" for="sm1">Your email address</label><div class="input"><input id="sm1" value="dj@example.com"></div><p class="reset small helper-success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Your email address is verified.</p></div>
+        <p class="reset small form-error" role="alert">Failed to update public profile. Please try again.</p>
+        <a class="btn" href="#status-messages" style="justify-self:start">Save changes</a>
+      </div>
+      <ul class="rules"><li><b>Success helper</b>: under the control instead of the helper, <code>.small</code> in <code>--colorSuccess</code> with lucide <code>Check</code> 16px (color is never the only signal).</li><li><b>Form error</b>: a save or load failure for the whole form. <code>.small</code> 600 in <code>--colorFail</code>, directly above the form's button, <code>role="alert"</code>. Field errors stay under their field.</li></ul>
+    </section>
+    <section class="block" id="stripe-status">
+      <div class="block-head"><h2 class="reset h3">Stripe status</h2><p class="reset code">Restyles <b>StripeConnectAccountStatusBox</b> as a <b>SectionCard</b> without title · payout details page · added Oct 15</p></div>
+      <div class="specimen on-page">
+        <div class="states">
+          <div><span class="state-name">Needs verification</span><div class="section-card"><div class="ss"><h3 class="reset h3">Complete verification to receive payments</h3><p class="reset small">Stripe needs some more information from you to verify your account.</p></div><a class="btn" href="#stripe-status">Get verified</a></div></div>
+          <div><span class="state-name">Failed</span><div class="section-card"><div class="ss"><h3 class="reset h3">Something went wrong. Please try again.</h3><p class="reset small">To receive payments, you need to add your banking details and verify your account.</p></div><a class="btn" href="#stripe-status">Get verified</a></div></div>
+          <div><span class="state-name">Verified</span><div class="section-card"><div class="ss-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><h3 class="reset h3">Your Stripe account is up to date!</h3></div><a class="btn btn-secondary" href="#stripe-status">Edit Stripe account</a></div></div>
+        </div>
+      </div>
+      <ul class="rules"><li>Business rule: payout setup is complete only in the <b>Verified</b> state (business-rules.md). The other two keep the <code>NoticeBanner</code> showing.</li><li>Needs verification / failed: title <code>.h3</code>, text <code>.small</code>, primary "Get verified". Verified: lucide <code>CircleCheck</code> 20px + title in <code>--colorSuccess</code>, secondary "Edit Stripe account".</li></ul>
+    </section>
+    <section class="block" id="saved-card">
+      <div class="block-head"><h2 class="reset h3">Saved card</h2><p class="reset code">Restyles <b>SavedCardDetails</b> (template <b>Menu</b>) · payment methods page · added Oct 15</p></div>
+      <div class="specimen">
+        <div class="states">
+          <div><span class="state-name">Card + open menu</span>
+            <div class="sc"><span>•••• •••• •••• 4242</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></div>
+            <div class="sc-panel" style="margin-top:4px"><span class="sc-item is-current">•••• •••• •••• 4242<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="sc-item">Use another payment card</span></div>
+            <a class="link" href="#saved-card" style="display:inline-flex;min-height:44px;align-items:center">Remove payment card</a></div>
+          <div><span class="state-name">Expired</span><div class="sc is-error"><span>•••• •••• •••• 4242</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></div><p class="reset small error">This payment card has expired.</p></div>
+        </div>
+      </div>
+      <ul class="rules"><li>The card is a select-style box (48px, chevron). Its menu uses the header menu panel look; the current card is 600 with lucide <code>Check</code>.</li><li>"Remove payment card" is a text link; it opens the library Modal ("Are you sure you want to remove this payment card?", "Remove card", "Cancel").</li><li>Example card number is an example.</li></ul>
     </section>
     <section class="block" id="header-menu">
       <div class="block-head"><h2 class="reset h3">Header menu</h2><p class="reset code">Component <b>HeaderMenu</b> · trigger + panel · dropdown from 768px, full-width panel under the bar on phones · spec <b>header.md</b></p></div>

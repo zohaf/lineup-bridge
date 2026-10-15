@@ -128,7 +128,7 @@ const UserCard = props => {
   const editProfileMobile = (
     <span className={css.editProfileMobile}>
       <span className={css.linkSeparator}>•</span>
-      <NamedLink name="ContactDetailsPage">
+      <NamedLink name="AccountSettingsPage">
         <FormattedMessage id="ListingPage.editProfileLink" />
       </NamedLink>
     </span>
@@ -136,7 +136,7 @@ const UserCard = props => {
 
   const editProfileDesktop =
     mounted && isCurrentUser ? (
-      <NamedLink className={css.editProfileDesktop} name="ContactDetailsPage">
+      <NamedLink className={css.editProfileDesktop} name="AccountSettingsPage">
         <FormattedMessage id="ListingPage.editProfileLink" />
       </NamedLink>
     ) : null;

@@ -8,13 +8,15 @@ import formCss from '../../styles/lineupForm.module.css';
 import css from './CheckboxTileGroup.module.css';
 
 const CheckboxTilesRenderer = props => {
-  const { className, label, id, fields, options, meta } = props;
+  const { className, label, hideLabel, id, fields, options, meta } = props;
   const { touched, submitFailed, error } = meta;
   const hasError = (touched || submitFailed) && !!error;
 
   return (
     <fieldset className={classNames(formCss.field, className)}>
-      {label ? <legend className={formCss.legend}>{label}</legend> : null}
+      {label ? (
+        <legend className={hideLabel ? formCss.visuallyHidden : formCss.legend}>{label}</legend>
+      ) : null}
       <ul className={css.list}>
         {options.map(option => {
           const fieldId = `${id}.${option.key}`;
@@ -55,6 +57,7 @@ const CheckboxTilesRenderer = props => {
  * @param {string} props.name Name of the array field in Final Form
  * @param {string} props.id
  * @param {ReactNode?} props.label group label, rendered as a legend
+ * @param {boolean?} props.hideLabel keep the legend for screen readers only (the card title says it)
  * @param {Array<{key: string, label: ReactNode}>} props.options
  * @param {Function?} props.validate Final Form validator for the array
  * @returns {JSX.Element} Final Form FieldArray with checkbox tiles

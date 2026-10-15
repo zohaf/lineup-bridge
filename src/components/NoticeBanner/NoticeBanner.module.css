@@ -1,0 +1,41 @@
+/* Notice banner, see the UI library (Notice banner) */
+.root {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  column-gap: var(--lb-space-3);
+  row-gap: var(--lb-space-1);
+  align-items: start;
+  padding: var(--lb-space-4);
+  border: 1px solid var(--colorAttention);
+  border-radius: 8px;
+  background-color: var(--colorAttentionSubtle);
+}
+
+.icon {
+  margin-top: 1px;
+  color: var(--colorAttentionDark);
+  /* sanitize.css sets svg { fill: currentColor }, which beats lucide's fill="none" */
+  fill: none;
+}
+
+.title {
+  composes: body from '../../styles/lineupType.module.css';
+  margin: 0;
+  font-weight: var(--lb-weight-semibold);
+  color: var(--lb-text-primary);
+}
+
+.message {
+  composes: small from '../../styles/lineupType.module.css';
+  grid-column: 2;
+  margin: 0;
+  color: var(--lb-text-secondary);
+}
+
+.action {
+  composes: secondary from '../../styles/lineupButtons.module.css';
+  grid-column: 2;
+  justify-self: start;
+  min-height: 44px;
+  margin-top: var(--lb-space-2);
+}

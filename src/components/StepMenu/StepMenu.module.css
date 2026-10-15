@@ -1,0 +1,139 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Step menu, see .claude/layouts.md and the UI library. Below 1024px: a row on the page background
+   with a rule underneath (LayoutSplit makes it sticky and edge to edge). From 1024px: a white card. */
+.root {
+  padding: var(--lb-space-2) var(--lb-gutter);
+  border-bottom: 1px solid var(--colorGrey100);
+  background-color: var(--colorPageBackground);
+
+  @media (--viewportLarge) {
+    padding: var(--lb-space-3) var(--lb-space-5);
+    border: 1px solid var(--colorGrey100);
+    border-radius: 8px;
+    background-color: var(--colorWhite);
+  }
+}
+
+.list {
+  display: flex;
+  gap: var(--lb-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (--viewportLarge) {
+    flex-direction: column;
+    gap: var(--lb-space-1);
+  }
+}
+
+.item {
+  composes: body from '../../styles/lineupType.module.css';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lb-space-3);
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--lb-text-primary);
+  white-space: nowrap;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  @media (--viewportLarge) {
+    justify-content: flex-start;
+  }
+}
+
+.number {
+  composes: label from '../../styles/lineupType.module.css';
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--colorBlack);
+  background-color: transparent;
+  color: var(--colorBlack);
+  font-variant-numeric: tabular-nums;
+
+  /* Done tick: sanitize.css sets svg { fill: currentColor }, which beats lucide's fill="none" */
+  & svg {
+    fill: none;
+  }
+}
+
+.current {
+  font-weight: var(--lb-weight-semibold);
+
+  & .number {
+    border-width: 2px;
+  }
+}
+
+.disabled {
+  color: var(--colorGrey300);
+  cursor: default;
+
+  & .number {
+    border-color: var(--colorGrey300);
+    color: var(--colorGrey300);
+  }
+}
+
+/* Reachable step, pointer only: the circle fills white */
+@media (hover: hover) {
+  a.item:not(.current):hover .number {
+    background-color: var(--colorWhite);
+  }
+}
+
+/* Steps: circles only below 1024px, labels kept for screen readers */
+.steps .label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+
+  @media (--viewportLarge) {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+}
+
+/* Pages: labels in a row that scrolls sideways below 1024px; current = 2px bar */
+.pages .list {
+  gap: var(--lb-space-5);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  @media (--viewportLarge) {
+    gap: var(--lb-space-1);
+    overflow: visible;
+  }
+}
+
+.pages .item {
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.pages .current {
+  box-shadow: inset 0 -2px 0 var(--colorBlack);
+
+  @media (--viewportLarge) {
+    margin-left: calc(-1 * var(--lb-space-3));
+    padding-left: var(--lb-space-3);
+    box-shadow: inset 2px 0 0 var(--colorBlack);
+  }
+}

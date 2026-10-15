@@ -5,6 +5,7 @@ import { loadData as AuthenticationPageLoader } from './AuthenticationPage/Authe
 import { loadData as LandingPageLoader } from './LandingPage/LandingPage.duck';
 import { setInitialValues as CheckoutPageInitialValues } from './CheckoutPage/CheckoutPage.duck';
 import { loadData as CMSPageLoader } from './CMSPage/CMSPage.duck';
+import { loadData as AccountSettingsPageLoader } from './AccountSettingsPage/AccountSettingsPage.duck';
 import { loadData as ContactDetailsPageLoader } from './ContactDetailsPage/ContactDetailsPage.duck';
 import { loadData as DjProfileGuidelinesPageLoader } from './DjProfileGuidelinesPage/DjProfileGuidelinesPage.duck';
 import { loadData as EditListingPageLoader } from './EditListingPage/EditListingPage.duck';
@@ -38,6 +39,9 @@ const getPageDataLoadingAPI = () => {
     },
     CMSPage: {
       loadData: CMSPageLoader,
+    },
+    AccountSettingsPage: {
+      loadData: AccountSettingsPageLoader,
     },
     ContactDetailsPage: {
       loadData: ContactDetailsPageLoader,

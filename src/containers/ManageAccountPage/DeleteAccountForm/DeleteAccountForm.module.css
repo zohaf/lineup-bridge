@@ -1,86 +1,18 @@
-@import '../../../styles/customMediaQueries.css';
-
+/* Delete account card and its confirm pop-up (library Modal) */
 .root {
-}
-
-.confirmChangesSection {
-  display: none;
-  flex-direction: column;
-  margin-bottom: 0;
-  padding: 0;
-}
-
-.confirmChangesSectionVisible {
   display: flex;
-  margin-bottom: 60px;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+  align-items: flex-start;
+}
+
+.info {
+  composes: small from '../../../styles/lineupType.module.css';
+  margin: 0;
+  color: var(--lb-text-secondary);
 }
 
 .emailStyle {
-  font-weight: var(--fontWeightBold);
-  word-wrap: break-word;
-}
-
-.helperLink {
-  composes: a from global;
-  color: var(--colorGrey700);
-  font-weight: var(--fontWeightMedium);
-  text-decoration: underline;
-
-  &:hover {
-    text-decoration: none;
-  }
-
-  @media (--viewportMedium) {
-    margin: 0;
-  }
-}
-
-.confirmChangesTitle {
-  margin-top: 0;
-  margin-bottom: 13px;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 16px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-}
-
-.confirmChangesInfo {
-  margin-top: 0;
-  margin-bottom: 37px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 48px;
-  }
-}
-
-.bottomWrapper {
-  margin-top: 24px;
-
-  @media (--viewportMedium) {
-    margin-top: 40px;
-  }
-}
-
-.submitButton {
-  background-color: var(--colorFail);
-
-  &:focus,
-  &:hover {
-    background-color: var(--colorFailDark);
-  }
-  &:disabled {
-    background-color: var(--colorGrey100);
-  }
-}
-
-.error {
-  color: var(--colorFail);
-  margin-top: 0;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-  }
+  font-weight: var(--lb-weight-semibold);
+  overflow-wrap: anywhere;
 }

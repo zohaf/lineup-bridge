@@ -43,3 +43,15 @@ export const listingTypeHasWizardSectionField = (config, listingType, predicate)
     f => predicate(f) && isFieldForListingType(listingType, f)
   );
 };
+
+/**
+ * Returns a predicate: is this listing field edited on its own wizard step (the 'genre' or 'links'
+ * tab) instead of the Profile (details) step? LineupBridge public profile: Links has its own step,
+ * Genre stays in Profile (negotiation process).
+ *
+ * @param {Array<string>} tabs the wizard tabs ('details', 'genre', 'links', …)
+ * @returns {Function} fieldConfig => boolean
+ */
+export const isFieldOnOwnStep = (tabs = []) => fieldConfig =>
+  (tabs.includes('genre') && isGenreField(fieldConfig)) ||
+  (tabs.includes('links') && isLinkField(fieldConfig));

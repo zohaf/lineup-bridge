@@ -109,3 +109,34 @@
   stroke: var(--colorSuccess);
   stroke-width: 3px;
 }
+
+/* Library look (lineupStyle) */
+.lineupText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
+}
+
+.lineupTitle {
+  composes: h3 from '../../styles/lineupType.module.css';
+}
+
+.lineupMessage {
+  composes: small from '../../styles/lineupType.module.css';
+  margin: 0;
+  color: var(--lb-text-secondary);
+}
+
+.lineupSuccessTitle {
+  composes: h3 from '../../styles/lineupType.module.css';
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+  color: var(--colorSuccess);
+
+  /* sanitize.css sets svg { fill: currentColor }, which beats lucide's fill="none" */
+  & svg {
+    flex: none;
+    fill: none;
+  }
+}

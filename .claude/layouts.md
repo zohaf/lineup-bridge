@@ -56,7 +56,7 @@ behaves on phones.
 - The summary card on phones is **not** a collapsible "show summary" bar: that would need a new label.
   If we want one later, the wording needs approval first.
 - The menu items are the existing ones. DJ profile builder steps come from the listing type's config
-  (for example Profile, Pricing, Photos). Account settings items come from
+  (for LineupBridge: Profile, Links, Photos). Account settings items come from
   `LayoutWrapperAccountSettingsSideNav`.
 
 #### Step menu (replaces the template's side tabs)
@@ -69,9 +69,8 @@ and goes into `design/components.html` before it is built.
   in body size.
 - **States:**
   - Default: circle with a 1px black outline, black number, label in 400.
-  - **Current: black filled circle, white number, label in 600.** Open: this conflicts with
-    design-system-rules.md rule 8 (selection is an outline, not a fill). Decide with the DJ profile
-    builder redesign.
+  - **Current: 2px black outline, label in 600** (no fill, rule 8; decided Oct 15).
+  - **Done: lucide `Check` in the circle** instead of the number (decided Oct 15).
   - Hover: the circle fills white.
   - Not reachable yet (DJ profile builder, new profile: steps after the first unsaved one): circle,
     number and label in light grey, not clickable. This is the wizard's existing disabled state.
@@ -79,11 +78,10 @@ and goes into `design/components.html` before it is built.
   the beige page background with a 1px rule underneath, sticky under the topbar. No labels and no
   sideways scrolling: the current step's name is already the page title. The labels stay in the HTML
   for screen readers.
-- **Account settings:** these pages are not steps in order, and the design system only uses numbers
-  for real sequences. Compare "Numbers" / "No numbers" in the design file. Without numbers, the
-  current item gets a 2px black bar (left on desktop, under the label on phones). **Decision open.**
-  Note: numbers only on phones works only with numbers. Without numbers, phones need the labels in a
-  row that scrolls sideways (more to build).
+- **Account settings: no numbers** (decided Oct 15). These pages are not steps in order. The current
+  item gets a 2px black bar (left on desktop, under the label on phones); on phones the labels sit in a
+  row that scrolls sideways if they don't fit.
+- Drawn in `design/components.html` (Step menu), used in `design/dj-setup.html`.
 
 ### Shared by both
 

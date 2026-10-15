@@ -10,8 +10,10 @@
   min-width: 0;
 }
 
-/* The visible box shows only the dial code; the native select sits invisibly on top of it */
-.dialCode {
+/* The visible box shows only the dial code; the native select sits invisibly on top of it.
+   Scoped to .countryBox so it beats the shared .select (display: block) whatever the load order,
+   which keeps the dial code vertically centred. */
+.countryBox .dialCode {
   display: flex;
   align-items: center;
   cursor: pointer;

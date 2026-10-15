@@ -1,127 +1,85 @@
 @import '../../../../styles/customMediaQueries.css';
 
+/* Profile step in the library look: cards stacked with the card gap, button after the cards */
 .root {
-  /* Dimensions */
-  width: 100%;
-  height: auto;
-
-  /* Layout */
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-
-  padding-top: 1px;
-
-  @media (--viewportMedium) {
-    padding-top: 2px;
-  }
-}
-
-.error {
-  color: var(--colorFail);
-}
-
-.formMargins {
-  margin-bottom: 24px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 32px;
-  }
-}
-
-.title {
-  composes: formMargins;
-}
-
-.description {
-  composes: formMargins;
-  flex-shrink: 0;
-}
-
-.locationCity {
-  composes: formMargins;
-  flex-shrink: 0;
-}
-
-.locationAutocompleteInput {
-}
-
-.locationAutocompleteInputIcon {
-  display: none;
-}
-
-.predictionsRoot {
-  position: absolute;
-  width: 100%;
-  top: 36px;
-  left: 0;
-  background-color: var(--marketplaceColor);
-  border-bottom-left-radius: var(--borderRadius);
-  border-bottom-right-radius: var(--borderRadius);
-  box-shadow: var(--boxShadowPopup);
-  z-index: calc(var(--zIndexPopup) + 1);
-
-  @media (--viewportMedium) {
-    top: 40px;
-  }
-}
-
-.validLocation {
-}
-
-.listingFieldsGrouped {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-
-  @media (--viewportMedium) {
-    gap: 32px;
-  }
-}
-
-.fieldSectionTitle {
-  margin-top: 0;
-  margin-bottom: 18px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 24px;
-  }
-}
-
-.listingTypeSelect {
-  margin-bottom: 24px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 32px;
-  }
-}
-
-.selectedLabel {
-  composes: label from global;
-}
-.selectedValue {
-  margin-top: 0;
-  margin-bottom: 6px;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 2px 0 6px 0;
-  }
+  gap: var(--lb-card-gap);
 }
 
 .unitTypeHidden {
   display: none;
 }
 
-.submitButton {
-  margin-top: auto;
-  margin-bottom: 24px;
-  flex-shrink: 0;
+.listingTypeSelect {
+  composes: field from '../../../../styles/lineupForm.module.css';
+}
 
-  @media (--viewportLarge) {
-    display: inline-block;
-    width: 241px;
-    margin-top: 24px;
+/* City search (UI library: City search): the text input look, no template icon, predictions in
+   the header menu panel look, map attribution kept */
+.city {
+  position: relative;
+
+  /* The template's validation message: the library error look */
+  & > div:last-child:not(:only-child) {
+    margin: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-small);
+    line-height: var(--lb-leading-small);
+    font-weight: var(--lb-weight-regular);
+    color: var(--colorFail);
   }
+}
+
+.cityIcon {
+  display: none;
+}
+
+.validLocation {
+}
+
+/* Doubled class: beats the template's own list styles whatever the load order */
+.cityPredictions.cityPredictions {
+  position: absolute;
+  top: calc(100% + var(--lb-space-1));
+  left: 0;
+  z-index: calc(var(--zIndexPopup) + 1);
+  width: 100%;
+  padding: var(--lb-space-1) 0;
+  border: 1px solid var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorWhite);
+  box-shadow: var(--lb-shadow-search);
+
+  & ul {
+    padding: 0;
+  }
+
+  & li {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--lb-space-4);
+    border-left: 0;
+    border-radius: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-body);
+    color: var(--lb-text-primary);
+
+    @media (--viewportMedium) {
+      padding: 0 var(--lb-space-4);
+    }
+
+    &:hover {
+      border-left: 0;
+      background-color: var(--colorPageBackground);
+      color: var(--lb-text-primary);
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
 }

@@ -1,0 +1,6 @@
+/* Header area: the payout notice banner (DJ, until Stripe is verified) above the page title */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-6);
+}

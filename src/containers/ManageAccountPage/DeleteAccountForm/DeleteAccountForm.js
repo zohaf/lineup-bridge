@@ -10,8 +10,17 @@ import {
   isStripeDeletionFailedNonZeroBalance,
 } from '../../../util/errors';
 
-import { Form, PrimaryButton, FieldTextInput, H4, FieldCheckbox } from '../../../components';
+import {
+  Form,
+  Modal,
+  PrimaryButton,
+  SecondaryButton,
+  FieldPasswordInput,
+} from '../../../components';
 
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
+import modalCss from '../../../styles/lineupModal.module.css';
 import css from './DeleteAccountForm.module.css';
 
 const ErrorMessage = props => {
@@ -30,7 +39,7 @@ const ErrorMessage = props => {
   const stripeDeletionFailedError = isStripeDeletionFailedNonZeroBalance(error);
 
   return error && !incorrectPasswordError ? (
-    <p className={css.error}>
+    <p className={formCss.formError} role="alert">
       {unfinishedTransactionsError ? (
         <FormattedMessage id="DeleteAccountForm.ongoingTransactionsError" />
       ) : stripeDeletionFailedError ? (
@@ -42,174 +51,149 @@ const ErrorMessage = props => {
   ) : null;
 };
 
+/**
+ * Delete account: the warning text and a secondary "Delete account" button in the page card. The
+ * button opens the library Modal, which asks for the current password and deletes the account.
+ *
+ * @component
+ * @param {Object} props
+ * @param {Function} props.onSubmitDeleteAccount called with the current password
+ * @param {Function} props.onResetPassword
+ * @param {Function} props.onManageDisableScrolling
+ * @param {Object} props.intl
+ * @param {string} props.marketplaceName
+ * @param {propTypes.currentUser} props.currentUser
+ * @param {propTypes.error?} props.deleteAccountError
+ * @param {boolean?} props.deleteAccountInProgress
+ * @param {boolean?} props.resetPasswordInProgress
+ * @returns {JSX.Element}
+ */
 const DeleteAccountForm = props => {
-  const { onSubmitDeleteAccount, intl, marketplaceName, onResetPassword } = props;
-  // submittedValues: the checkbox value and the given current password
-  const [submittedValues, setSubmittedValues] = useState({});
+  const {
+    onSubmitDeleteAccount,
+    onResetPassword,
+    onManageDisableScrolling,
+    intl,
+    marketplaceName,
+    currentUser,
+    deleteAccountError,
+    deleteAccountInProgress = false,
+    resetPasswordInProgress = false,
+  } = props;
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // showResetPasswordMessage: dictates if the reset password text should be shown
   const [showResetPasswordMessage, setShowResetPasswordMessage] = useState(false);
 
-  const handleSubmitDeleteAccount = values => {
-    // save  for the next rendering in case the onSubmitDeleteAccount call fails
-    setSubmittedValues(values);
-    return onSubmitDeleteAccount(values);
-  };
-
   const handleResetPassword = () => {
     setShowResetPasswordMessage(true);
-    onResetPassword(props.currentUser.attributes.email);
+    onResetPassword(currentUser.attributes.email);
   };
 
-  return (
-    <FinalForm
-      {...props}
-      initialValues={submittedValues}
-      onSubmit={handleSubmitDeleteAccount}
-      render={fieldRenderProps => {
-        const {
-          rootClassName,
-          className,
-          deleteAccountError,
-          formId,
-          handleSubmit,
-          currentUser,
-          inProgress = false,
-          invalid,
-          values,
-          resetPasswordInProgress = false,
-        } = fieldRenderProps;
-        const { confirmDeleteAccount, currentPassword } = values;
-        const { email } = currentUser.attributes;
+  const { email } = currentUser.attributes;
 
-        const deleteAccountConfirmed =
-          Array.isArray(confirmDeleteAccount) && confirmDeleteAccount.length > 0;
+  const passwordRequired = validators.requiredStringNoTrim(
+    intl.formatMessage({ id: 'DeleteAccountForm.passwordRequired' })
+  );
+  const passwordMinLength = validators.minLength(
+    intl.formatMessage(
+      { id: 'DeleteAccountForm.passwordTooShort' },
+      { minLength: validators.PASSWORD_MIN_LENGTH }
+    ),
+    validators.PASSWORD_MIN_LENGTH
+  );
+  const passwordErrorText = isChangeEmailWrongPassword(deleteAccountError)
+    ? intl.formatMessage({ id: 'DeleteAccountForm.passwordFailed' })
+    : null;
 
-        const passwordRequiredMessage = intl.formatMessage({
-          id: 'DeleteAccountForm.passwordRequired',
-        });
-
-        const passwordRequired = validators.requiredStringNoTrim(passwordRequiredMessage);
-
-        const passwordMinLengthMessage = intl.formatMessage(
-          {
-            id: 'DeleteAccountForm.passwordTooShort',
-          },
-          {
-            minLength: validators.PASSWORD_MIN_LENGTH,
-          }
-        );
-
-        const passwordMinLength = validators.minLength(
-          passwordMinLengthMessage,
-          validators.PASSWORD_MIN_LENGTH
-        );
-
-        const passwordValidators = deleteAccountConfirmed
-          ? validators.composeValidators(passwordRequired, passwordMinLength)
-          : null;
-
-        const passwordFailedMessage = intl.formatMessage({
-          id: 'DeleteAccountForm.passwordFailed',
-        });
-
-        const passwordErrorText = isChangeEmailWrongPassword(deleteAccountError)
-          ? passwordFailedMessage
-          : null;
-
-        const resetPasswordLink =
-          showResetPasswordMessage || resetPasswordInProgress ? (
-            <FormattedMessage
-              id="DeleteAccountForm.resetPasswordLinkSent"
-              values={{
-                email: <span className={css.emailStyle}>{currentUser.attributes.email}</span>,
-                resendPasswordLink: (
-                  <span className={css.helperLink} onClick={handleResetPassword} role="button">
-                    <FormattedMessage id="DeleteAccountForm.resendPasswordLinkText" />
-                  </span>
-                ),
-              }}
-            />
-          ) : (
-            <span className={css.helperLink} onClick={handleResetPassword} role="button">
-              <FormattedMessage id="DeleteAccountForm.resetPasswordLinkText" />
+  const resetPasswordLink =
+    showResetPasswordMessage || resetPasswordInProgress ? (
+      <FormattedMessage
+        id="DeleteAccountForm.resetPasswordLinkSent"
+        values={{
+          email: <span className={css.emailStyle}>{email}</span>,
+          resendPasswordLink: (
+            <span className={buttonCss.link} onClick={handleResetPassword} role="button">
+              <FormattedMessage id="DeleteAccountForm.resendPasswordLinkText" />
             </span>
-          );
+          ),
+        }}
+      />
+    ) : (
+      <span className={buttonCss.link} onClick={handleResetPassword} role="button">
+        <FormattedMessage id="DeleteAccountForm.resetPasswordLinkText" />
+      </span>
+    );
 
-        const confirmClasses = classNames(css.confirmChangesSection, {
-          [css.confirmChangesSectionVisible]: deleteAccountConfirmed,
-        });
+  return (
+    <div className={css.root}>
+      <p className={css.info}>
+        <FormattedMessage id="DeleteAccountForm.confirmDeleteInfo" values={{ marketplaceName }} />
+      </p>
+      <SecondaryButton
+        rootClassName={classNames(buttonCss.secondary, buttonCss.formButton)}
+        type="button"
+        onClick={() => setIsModalOpen(true)}
+      >
+        <FormattedMessage id="DeleteAccountForm.deleteAccount" />
+      </SecondaryButton>
 
-        const classes = classNames(rootClassName || css.root, className);
-        const submitDisabled =
-          invalid || inProgress || !(deleteAccountConfirmed && currentPassword);
-
-        return (
-          <Form
-            className={classes}
-            onSubmit={e => {
-              handleSubmit(e);
-            }}
-          >
-            <FieldCheckbox
-              id="confirmDeleteAccount"
-              name="confirmDeleteAccount"
-              label={intl.formatMessage({ id: 'DeleteAccountForm.checkboxLabel' })}
-              value="deleteAccountSelected"
-              useSuccessColor
-            />
-            <br />
-            <p className={css.confirmChangesInfo}>
-              <FormattedMessage
-                id="DeleteAccountForm.confirmDeleteInfo"
-                values={{ marketplaceName }}
-              />
-              <br />
-            </p>
-            <div className={confirmClasses} aria-hidden={!deleteAccountConfirmed}>
-              <H4 as="h3" className={css.confirmChangesTitle}>
-                <FormattedMessage id="DeleteAccountForm.confirmDeleteTitle" />
-              </H4>
-              <p className={css.confirmChangesInfo}>
-                <FormattedMessage id="DeleteAccountForm.deleteAccountInfo" values={{ email }} />
-                <br />
-                <FormattedMessage
-                  id="DeleteAccountForm.resetPasswordInfo"
-                  values={{ resetPasswordLink }}
+      <Modal
+        id="DeleteAccountForm.confirmModal"
+        scrollLayerClassName={modalCss.scrollLayer}
+        containerClassName={modalCss.container}
+        contentClassName={modalCss.content}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+      >
+        <FinalForm
+          onSubmit={values => onSubmitDeleteAccount(values)}
+          render={fieldRenderProps => {
+            const { handleSubmit, invalid, values } = fieldRenderProps;
+            const submitDisabled = invalid || deleteAccountInProgress || !values.currentPassword;
+            return (
+              <Form className={modalCss.form} onSubmit={handleSubmit}>
+                <div className={modalCss.head}>
+                  <h2 className={modalCss.title}>
+                    <FormattedMessage id="DeleteAccountForm.confirmDeleteTitle" />
+                  </h2>
+                  <p className={modalCss.description}>
+                    <FormattedMessage id="DeleteAccountForm.deleteAccountInfo" values={{ email }} />
+                  </p>
+                </div>
+                <FieldPasswordInput
+                  name="currentPassword"
+                  id="DeleteAccountForm.currentPassword"
+                  autoComplete="current-password"
+                  label={intl.formatMessage({ id: 'DeleteAccountForm.passwordLabel' })}
+                  placeholder={intl.formatMessage({ id: 'DeleteAccountForm.passwordPlaceholder' })}
+                  validate={validators.composeValidators(passwordRequired, passwordMinLength)}
+                  customErrorText={passwordErrorText}
                 />
-              </p>
-
-              <FieldTextInput
-                className={css.password}
-                type="password"
-                name="currentPassword"
-                id={formId ? `${formId}.currentPassword` : 'currentPassword'}
-                disabled={!deleteAccountConfirmed}
-                autoComplete="current-password"
-                label={intl.formatMessage({
-                  id: 'DeleteAccountForm.passwordLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'DeleteAccountForm.passwordPlaceholder',
-                })}
-                validate={passwordValidators}
-                customErrorText={passwordErrorText}
-              />
-            </div>
-            <div className={css.bottomWrapper}>
-              <ErrorMessage error={deleteAccountError} />
-              <PrimaryButton
-                className={css.submitButton}
-                type="submit"
-                inProgress={inProgress}
-                disabled={submitDisabled}
-              >
-                <FormattedMessage id="DeleteAccountForm.deleteAccount" />
-              </PrimaryButton>
-            </div>
-          </Form>
-        );
-      }}
-    />
+                <p className={css.info}>
+                  <FormattedMessage
+                    id="DeleteAccountForm.resetPasswordInfo"
+                    values={{ resetPasswordLink }}
+                  />
+                </p>
+                <ErrorMessage error={deleteAccountError} />
+                <div className={modalCss.footer}>
+                  <PrimaryButton
+                    rootClassName={buttonCss.primary}
+                    type="submit"
+                    inProgress={deleteAccountInProgress}
+                    disabled={submitDisabled}
+                  >
+                    <FormattedMessage id="DeleteAccountForm.deleteAccount" />
+                  </PrimaryButton>
+                </div>
+              </Form>
+            );
+          }}
+        />
+      </Modal>
+    </div>
   );
 };
 

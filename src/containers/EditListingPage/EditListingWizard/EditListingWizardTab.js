@@ -8,6 +8,7 @@ import {
 } from '../../../util/urlHelpers';
 import { ensureListing } from '../../../util/data';
 import { createResourceLocatorString } from '../../../util/routes';
+import { isFieldOnOwnStep } from '../../../util/listingFieldWizardSections';
 
 // Import modules from this directory
 import EditListingAvailabilityPanel from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
@@ -206,28 +207,18 @@ const EditListingWizardTab = props => {
           {...panelProps(DETAILS)}
           onListingTypeChange={onListingTypeChange}
           config={config}
-          hideGenreAndLinksInProfileForm={
-            marketplaceTabs.includes(GENRE) || marketplaceTabs.includes(LINKS)
-          }
+          isFieldOnOtherStep={isFieldOnOwnStep(marketplaceTabs)}
         />
       );
     }
     case GENRE: {
       return (
-        <EditListingListingFieldsStepPanel
-          {...panelProps(GENRE)}
-          section="genre"
-          config={config}
-        />
+        <EditListingListingFieldsStepPanel {...panelProps(GENRE)} section="genre" config={config} />
       );
     }
     case LINKS: {
       return (
-        <EditListingListingFieldsStepPanel
-          {...panelProps(LINKS)}
-          section="links"
-          config={config}
-        />
+        <EditListingListingFieldsStepPanel {...panelProps(LINKS)} section="links" config={config} />
       );
     }
     case PRICING_AND_STOCK: {
