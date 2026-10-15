@@ -1,0 +1,58 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* Booking summary card: OrderBreakdown inside, actions under the total from 1024px */
+.breakdown {
+  min-width: 0;
+}
+
+/* OrderBreakdown arrives with the old panel's margins (TransactionPage .breakdown, 48px sides,
+   47px bottom): the card padding replaces them. Doubled class so this wins whatever the CSS
+   load order. */
+.breakdown.breakdown {
+  & > * {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.desktopActions {
+  display: none;
+
+  @media (--viewportLarge) {
+    display: block;
+  }
+}
+
+/* Below 1024px: primary + tertiary in a sticky bar at the bottom of the screen */
+.bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  padding: var(--lb-space-3) var(--lb-gutter) calc(var(--lb-space-3) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--colorGrey100);
+  background-color: var(--colorPageBackground);
+
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
+/* Actions card without a summary (no line items yet): desktop only, phones use the sticky bar */
+.actionsCard {
+  display: none;
+
+  @media (--viewportLarge) {
+    display: block;
+  }
+}
+
+/* Below 1024px: the secondary action as a text link at the end of the page */
+.link {
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
+.error {
+  composes: error from '../../../styles/lineupForm.module.css';
+}

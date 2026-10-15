@@ -82,6 +82,57 @@ What each user sees (code + Console, unchanged by this redesign):
 - Remove what's switched off (header search, "Post a new listing", the "More" link overflow), if
   Zoha agrees. Decide the open items below.
 
+## Migration plan: every page on the new header (approved Oct 15, 2026)
+
+Picture of every page × user × width, today and proposed, with bugs and dead code:
+[design/header-journey.html](design/header-journey.html). This plan replaces the "Rollout" stages 2–3
+above.
+
+### What we are building
+
+| | Phone (< 768) | iPad 768 and desktop |
+| --- | --- | --- |
+| Guest | Logo · menu icon → panel: Sign up, Log in | Logo · Sign up · Log in |
+| Event organizer | Logo · avatar → panel: Hello {name}, Home, Find a DJ, Account settings, Log out | Logo · Home · Find a DJ · avatar → Hello {name}, Account settings, Log out |
+| DJ | Logo · avatar → panel: Hello {name}, Home, My public profile, Account settings, Log out | Logo · Home · My public profile · avatar → Hello {name}, Account settings, Log out |
+
+- Same 60px bar on **every** page, offer builder and payment included. No logo-only bar.
+- Logo: guest → landing `/`; logged in → `/p/home`.
+- My public profile opens the DJ's own profile (`/l/…`), which shows the owner's Edit profile link.
+- Avatar = initials circle, no chevron. Red dot on Home (phone: on the avatar) for unread offers.
+- Current page: underlined in the bar, 600 in the menu, `aria-current="page"`.
+- Dropdown: white, 1px `--colorGrey100`, 8px radius, `--lb-shadow-search`, 240px, 44px rows.
+  Phone panel: under the bar, 48px rows, no divider lines, scrim behind, Log out last.
+
+### Stages (one at a time; check guest, organizer and DJ at 375, 768 and 1280px)
+
+0. **Done:** guest bar on `SiteHeader`, logo-only bar.
+1. **One height** (prompt: [header-height-prompt.md](header-height-prompt.md)). Point `--topbarHeight` / `--topbarHeightDesktop` at `--lb-topbar-height`; check
+   sticky side nav, search map, anchors, full-height pages; drop dead `.topbar` rules in Checkout
+   and MakeOffer CSS. *Fixes: offsets 12px off.*
+2. **Header menu in the library (docs first).** Add avatar trigger, dropdown, phone panel and guest
+   menu to `components.html` and `design-system-rules.md`; tokens `--lb-avatar-header` (32px),
+   `--lb-menu-width` (240px), `--lb-scrim` to `tokens.md` + `lineupTokens.css`. Build a shared
+   `HeaderMenu` on `Menu` / `MenuLabel` / `MenuContent` class props with `aria-expanded`, Esc and
+   focus return. *Fixes: menu not announced to screen readers.*
+3. **Logged-in header everywhere.** `Topbar` renders `SiteHeader` for all users: one nav, one logo,
+   no `matchMedia`. Role items as in the table; current page; logo target; Home label from Console.
+   *Fixes: height jump on log in / sign up, two logos in the DOM, DJ profile highlight, hardcoded
+   "Home", logo going to `/`.*
+4. **Guest phone menu.** Menu icon (lucide `Menu`, "Open menu") opens the panel with Sign up, Log in.
+5. **Offer builder and payment.** `RequestQuotePage`, the three `CheckoutPage` variants and
+   `MakeOfferPage` use `TopbarContainer`.
+6. **Unread offers.** Red dot from the existing notification count. *Fixes: dot leading nowhere.*
+7. **Clean-up.** Delete `TopbarSimplified`, `TopbarDesktop`, `TopbarMobileMenu`, `CustomLinksMenu`,
+   header search, "Post a new listing", the guest "Hello there" menu; update `header.md`,
+   `bugs.md`, `components.html`.
+
+### Still open
+
+- [ ] Accounts with both roles: show both Find a DJ and My public profile? (Recommended; stage 3.)
+- [ ] Offer builder form is not saved: warn before leaving with changes? Needs existing wording
+      (stage 5).
+
 ## Open items (not part of stage 1)
 
 - [ ] **Activity link.** "Activity" is the existing label for the inbox, the page listing all

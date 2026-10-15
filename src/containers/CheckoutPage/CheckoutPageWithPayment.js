@@ -21,7 +21,17 @@ import {
 } from '../../transactions/transaction';
 
 // Import shared components
-import { H3, H4, NamedLink, OrderBreakdown, Page } from '../../components';
+import {
+  H3,
+  H4,
+  LayoutSplit,
+  NamedLink,
+  OrderBreakdown,
+  Page,
+  PageHeader,
+  ResponsiveImage,
+  SectionCard,
+} from '../../components';
 
 import {
   bookingDatesMaybe,
@@ -280,10 +290,8 @@ const handleSubmit = (
   const askShippingDetailsSubmit =
     pageData?.orderData?.deliveryMethod === 'shipping' &&
     !hasTransactionPassedPendingPayment(pageData?.transaction, process);
-  const skipStripeCardConfirmation =
-    !!checkoutCustomerMessageOnly && !askShippingDetailsSubmit;
-  const skipStripePaymentAndConfirm =
-    !!checkoutCustomerMessageOnly && !askShippingDetailsSubmit;
+  const skipStripeCardConfirmation = !!checkoutCustomerMessageOnly && !askShippingDetailsSubmit;
+  const skipStripePaymentAndConfirm = !!checkoutCustomerMessageOnly && !askShippingDetailsSubmit;
   const { card, message, paymentMethod: selectedPaymentMethod, formValues } = values;
   const { saveAfterOnetimePayment: saveAfterOnetimePaymentRaw } = formValues;
 
@@ -576,8 +584,7 @@ export const CheckoutPageWithPayment = props => {
     orderData?.deliveryMethod === 'shipping' &&
     !hasTransactionPassedPendingPayment(existingTransaction, process);
 
-  const customerMessageOnly =
-    !!checkoutCustomerMessageOnly && !askShippingDetails;
+  const customerMessageOnly = !!checkoutCustomerMessageOnly && !askShippingDetails;
 
   const listingLocation = listing?.attributes?.publicData?.location;
   const showPickUpLocation = isPurchase && orderData?.deliveryMethod === 'pickup';
@@ -612,6 +619,111 @@ export const CheckoutPageWithPayment = props => {
             </H4>
           </section>
         </div>
+      </Page>
+    );
+  }
+
+  const paymentForm = showPaymentForm ? (
+    <StripePaymentForm
+      className={css.paymentForm}
+      onSubmit={values =>
+        handleSubmit(
+          values,
+          process,
+          props,
+          stripe,
+          submitting,
+          setSubmitting,
+          customerMessageOnly,
+          () => null
+        )
+      }
+      inProgress={submitting}
+      formId="CheckoutPagePaymentForm"
+      providerDisplayName={providerDisplayName}
+      showInitialMessageInput={showInitialMessageInput}
+      initialValues={initialValuesForStripePayment}
+      initiateOrderError={initiateOrderError}
+      confirmCardPaymentError={confirmCardPaymentError}
+      confirmPaymentError={confirmPaymentError}
+      hasHandledCardPayment={hasPaymentIntentUserActionsDone}
+      loadingData={customerMessageOnly ? false : !stripeCustomerFetched}
+      defaultPaymentMethod={
+        hasDefaultPaymentMethod(stripeCustomerFetched, currentUser)
+          ? currentUser.stripeCustomer.defaultPaymentMethod
+          : null
+      }
+      paymentIntent={paymentIntent}
+      onStripeInitialized={stripe => {
+        setStripe(stripe);
+        return onStripeInitialized(stripe, process, props);
+      }}
+      askShippingDetails={askShippingDetails}
+      showPickUpLocation={showPickUpLocation}
+      showLocation={showLocation}
+      listingLocation={listingLocation}
+      totalPrice={totalPrice}
+      locale={config.localization.locale}
+      stripePublishableKey={config.stripe.publishableKey}
+      marketplaceName={config.marketplaceName}
+      isBooking={isBookingProcessAlias(transactionProcessAlias)}
+      isFuzzyLocation={config.maps.fuzzy.enabled}
+      transactionFieldConfigs={transactionFieldConfigs}
+      showTransactionFields={showTransactionFields}
+      customerMessageOnly={customerMessageOnly}
+    />
+  ) : null;
+
+  // Negotiation: Split · summary layout (design/booking-journey.html, "Checkout"). The DJ is in
+  // the page header, the "Booking summary" card on the side, the payment form in the main column.
+  if (isNegotiation) {
+    const { variantPrefix = 'listing-card' } = config.layout.listingImage || {};
+    const imageVariants = firstImage
+      ? Object.keys(firstImage?.attributes?.variants || {}).filter(k => k.startsWith(variantPrefix))
+      : [];
+    return (
+      <Page title={title} scrollingDisabled={scrollingDisabled}>
+        <LayoutSplit
+          topbar={<TopbarContainer />}
+          stickyTopbar={false}
+          header={
+            <PageHeader
+              image={
+                showListingImage && firstImage ? (
+                  <ResponsiveImage alt={listingTitle} image={firstImage} variants={imageVariants} />
+                ) : null
+              }
+              eyebrow={
+                <NamedLink
+                  name="ListingPage"
+                  params={{ id: listing?.id?.uuid, slug: createSlug(listingTitle) }}
+                >
+                  {listingTitle}
+                </NamedLink>
+              }
+              title={title}
+            />
+          }
+          side={
+            breakdown || errorMessages.speculateTransactionErrorMessage ? (
+              <SectionCard
+                title={<FormattedMessage id={`CheckoutPage.${processName}.orderBreakdown`} />}
+              >
+                {errorMessages.speculateTransactionErrorMessage}
+                <div className={css.summaryBreakdown}>{breakdown}</div>
+              </SectionCard>
+            ) : null
+          }
+        >
+          <SectionCard>
+            {errorMessages.initiateOrderErrorMessage}
+            {errorMessages.listingNotFoundErrorMessage}
+            {errorMessages.speculateErrorMessage}
+            {errorMessages.retrievePaymentIntentErrorMessage}
+            {errorMessages.paymentExpiredMessage}
+            {paymentForm}
+          </SectionCard>
+        </LayoutSplit>
       </Page>
     );
   }
@@ -654,56 +766,7 @@ export const CheckoutPageWithPayment = props => {
             {errorMessages.retrievePaymentIntentErrorMessage}
             {errorMessages.paymentExpiredMessage}
 
-            {showPaymentForm ? (
-              <StripePaymentForm
-                className={css.paymentForm}
-                onSubmit={values =>
-                  handleSubmit(
-                    values,
-                    process,
-                    props,
-                    stripe,
-                    submitting,
-                    setSubmitting,
-                    customerMessageOnly,
-                    () => null
-                  )
-                }
-                inProgress={submitting}
-                formId="CheckoutPagePaymentForm"
-                providerDisplayName={providerDisplayName}
-                showInitialMessageInput={showInitialMessageInput}
-                initialValues={initialValuesForStripePayment}
-                initiateOrderError={initiateOrderError}
-                confirmCardPaymentError={confirmCardPaymentError}
-                confirmPaymentError={confirmPaymentError}
-                hasHandledCardPayment={hasPaymentIntentUserActionsDone}
-                loadingData={customerMessageOnly ? false : !stripeCustomerFetched}
-                defaultPaymentMethod={
-                  hasDefaultPaymentMethod(stripeCustomerFetched, currentUser)
-                    ? currentUser.stripeCustomer.defaultPaymentMethod
-                    : null
-                }
-                paymentIntent={paymentIntent}
-                onStripeInitialized={stripe => {
-                  setStripe(stripe);
-                  return onStripeInitialized(stripe, process, props);
-                }}
-                askShippingDetails={askShippingDetails}
-                showPickUpLocation={showPickUpLocation}
-                showLocation={showLocation}
-                listingLocation={listingLocation}
-                totalPrice={totalPrice}
-                locale={config.localization.locale}
-                stripePublishableKey={config.stripe.publishableKey}
-                marketplaceName={config.marketplaceName}
-                isBooking={isBookingProcessAlias(transactionProcessAlias)}
-                isFuzzyLocation={config.maps.fuzzy.enabled}
-                transactionFieldConfigs={transactionFieldConfigs}
-                showTransactionFields={showTransactionFields}
-                customerMessageOnly={customerMessageOnly}
-              />
-            ) : null}
+            {paymentForm}
           </section>
         </main>
 

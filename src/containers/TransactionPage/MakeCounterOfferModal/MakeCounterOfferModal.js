@@ -13,10 +13,12 @@ import {
   FieldTextInput,
   Form,
   Modal,
-  Button,
+  PrimaryButton,
 } from '../../../components';
 
-import IconPriceTag from './IconPriceTag';
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
+import modalCss from '../../../styles/lineupModal.module.css';
 import css from './MakeCounterOfferModal.module.css';
 
 const MakeCounterOfferForm = props => (
@@ -43,7 +45,7 @@ const MakeCounterOfferForm = props => (
         <FormattedMessage id="MakeCounterOfferForm.submitFailed" />
       ) : null;
 
-      const classes = classNames(rootClassName || css.formRoot, className);
+      const classes = classNames(rootClassName || modalCss.form, className);
       const submitInProgress = counterOfferInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
       const currentOfferFormatted = currentOffer ? formatMoney(intl, currentOffer) : '$10.00';
@@ -51,7 +53,7 @@ const MakeCounterOfferForm = props => (
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <FieldCurrencyInput
-            className={css.counterOffer}
+            className={css.currencyField}
             id={formId ? `${formId}.counterOffer` : 'counterOffer'}
             name="counterOffer"
             label={intl.formatMessage({
@@ -67,27 +69,31 @@ const MakeCounterOfferForm = props => (
             validate={required(intl.formatMessage({ id: 'MakeCounterOfferForm.offerRequired' }))}
           />
           <FieldTextInput
-            className={css.counterOfferMessage}
+            className={formCss.field}
+            labelClassName={formCss.label}
+            inputRootClass={formCss.textarea}
             id={formId ? `${formId}.counterOfferMessage` : 'counterOfferMessage'}
             name="counterOfferMessage"
             type="textarea"
             label={intl.formatMessage({ id: 'MakeCounterOfferForm.messageLabel' })}
             placeholder={intl.formatMessage({ id: 'MakeCounterOfferForm.messagePlaceholder' })}
           />
-          <p className={css.errorPlaceholder}>{errorMessageMaybe}</p>
-          <Button
-            className={css.submitButton}
-            type="submit"
-            inProgress={counterOfferInProgress}
-            disabled={submitDisabled}
-            ready={counterOfferSubmitted}
-          >
-            {intl.formatMessage({
-              id: isFinalOffer
-                ? 'MakeCounterOfferForm.submitFinal'
-                : 'MakeCounterOfferForm.submitCounter',
-            })}
-          </Button>
+          {errorMessageMaybe ? <p className={modalCss.submitError}>{errorMessageMaybe}</p> : null}
+          <div className={modalCss.footer}>
+            <PrimaryButton
+              rootClassName={buttonCss.primary}
+              type="submit"
+              inProgress={counterOfferInProgress}
+              disabled={submitDisabled}
+              ready={counterOfferSubmitted}
+            >
+              {intl.formatMessage({
+                id: isFinalOffer
+                  ? 'MakeCounterOfferForm.submitFinal'
+                  : 'MakeCounterOfferForm.submitCounter',
+              })}
+            </PrimaryButton>
+          </div>
         </Form>
       );
     }}
@@ -102,14 +108,20 @@ const CounterOfferInfo = props => {
 
   return (
     <>
-      <p className={css.modalTitle}>
-        <FormattedMessage
-          id={isFinalOffer ? 'MakeCounterOfferModal.titleFinal' : 'MakeCounterOfferModal.titleCounter'}
-        />
-      </p>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="MakeCounterOfferModal.description" values={{ marketplaceName }} />
-      </p>
+      <div className={modalCss.head}>
+        <h2 className={modalCss.title}>
+          <FormattedMessage
+            id={
+              isFinalOffer
+                ? 'MakeCounterOfferModal.titleFinal'
+                : 'MakeCounterOfferModal.titleCounter'
+            }
+          />
+        </h2>
+        <p className={modalCss.description}>
+          <FormattedMessage id="MakeCounterOfferModal.description" values={{ marketplaceName }} />
+        </p>
+      </div>
       <MakeCounterOfferForm
         onSubmit={onMakeCounterOffer}
         initialValues={initialValues}
@@ -156,20 +168,20 @@ const MakeCounterOfferModal = props => {
     currentOffer,
     isFinalOffer = false,
   } = props;
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || modalCss.container, className);
 
   return (
     <Modal
       id={id}
+      scrollLayerClassName={modalCss.scrollLayer}
       containerClassName={classes}
-      contentClassName={css.modalContent}
+      contentClassName={modalCss.content}
       isOpen={isOpen}
       onClose={onCloseModal}
       onManageDisableScrolling={onManageDisableScrolling}
       focusElementId={focusElementId}
       usePortal
     >
-      <IconPriceTag className={css.modalIcon} />
       <CounterOfferInfo
         currentOffer={currentOffer}
         onMakeCounterOffer={onMakeCounterOffer}

@@ -1,0 +1,352 @@
+<meta charset="utf-8">
+<title>LineupBridge Booking Journey</title>
+<style>
+/* Booking journey: every screen and pop-up from "Send offer" to paid, organizer and DJ.
+   Layout: Split · summary for transaction page and checkout, page header above both columns.
+   Copy = live Console text (translations.json, Oct 15) or en.json where Console has no key, with Zoha's
+   copy rules applied: no "!", no full stop on one-sentence lines, "offer · counteroffer · final offer".
+   Names, dates and prices are examples. Light only, like the other design files. */
+:root {
+  color-scheme: light;
+  --page: #eeede9; --paper: #ffffff; --ink: #000000;
+  --grey100: hsl(240 3% 90%); --grey300: hsl(240 3% 70%); --grey600: hsl(240 3% 40%); --grey700: hsl(240 3% 30%);
+  --rule: hsl(240 3% 88%); --rule-strong: hsl(240 3% 80%);
+  --fail: #e7000b; /* --colorFail: errors, and (approved Oct 15) proposed changes */
+  --fail-subtle: #fff0f0; /* --colorFailSubtle: field errors, and changed rows */
+  --tool: #1b1b1d;
+  --radius: 4px; --radius-card: 8px;
+  --logo: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Toolbar (mockup only) */
+.toolbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--tool); color: #f2f2f0; padding: 10px 16px; display: grid; gap: 8px; font-size: 13px; }
+.tb-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.toolbar strong { font-weight: 600; margin-right: auto; }
+.seg { display: inline-flex; flex-wrap: wrap; background: #2c2c30; border-radius: 6px; padding: 3px; gap: 2px; }
+.seg button { font: inherit; color: #c8c8c4; background: transparent; border: 0; padding: 6px 10px; border-radius: 4px; cursor: pointer; min-height: 32px; }
+.seg button[aria-pressed="true"] { background: #f2f2f0; color: #111; }
+.seg-label { color: #9a9a96; margin-right: 6px; display: inline-block; min-width: 58px; }
+.note { color: #a9a9a4; font-size: 12px; line-height: 1.5; }
+.note b { color: #f2f2f0; font-weight: 500; }
+.stage { padding: 24px 16px 64px; }
+.frame { container-type: inline-size; margin: 0 auto; max-width: 1280px; background: var(--page); border-radius: 6px; overflow: clip; box-shadow: 0 12px 40px rgba(0,0,0,.10); }
+.stage[data-view="mobile"] .frame { max-width: 390px; border-radius: 28px; border: 10px solid #111; }
+.stage[data-view="ipad"] .frame { max-width: calc(768px + 24px); border-radius: 24px; border: 12px solid #111; }
+.tag { display: inline-block; font: 500 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #6a5200; background: #fff4d6; border: 1px dashed #d9a93a; border-radius: 3px; padding: 1px 6px; letter-spacing: 0; text-transform: none; justify-self: start; }
+.frame.no-tags .tag { display: none; }
+
+/* Tokens (tokens.md) */
+.page {
+  --lb-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --lb-size-h2: 28px; --lb-size-h3: 18px; --lb-size-lead: 16px; --lb-size-body: 15px; --lb-size-small: 14px; --lb-size-eyebrow: 12px; --lb-size-field-label: 15px; --lb-size-input: 16px;
+  --lb-space-1: 4px; --lb-space-2: 8px; --lb-space-3: 12px; --lb-space-4: 16px; --lb-space-5: 24px; --lb-space-6: 32px; --lb-space-7: 48px; --lb-space-9: 64px;
+  --lb-gutter: var(--lb-space-5); --lb-card-pad: var(--lb-space-5);
+  position: relative; font-family: var(--lb-font); color: var(--ink);
+}
+@container (min-width: 768px) { .page { --lb-size-h2: 34px; --lb-size-h3: 20px; --lb-size-lead: 17px; --lb-size-body: 16px; --lb-size-field-label: 16px; --lb-gutter: var(--lb-space-6); --lb-card-pad: var(--lb-space-6); } }
+@container (min-width: 1024px) { .page { --lb-size-h2: 40px; --lb-size-lead: 18px; } }
+
+.h2 { margin: 0; font-size: var(--lb-size-h2); line-height: 1.15; letter-spacing: -0.015em; font-weight: 600; text-wrap: balance; }
+.h3 { margin: 0; font-size: var(--lb-size-h3); line-height: 1.3; letter-spacing: -0.01em; font-weight: 600; }
+.lead { margin: 0; font-size: var(--lb-size-lead); line-height: 1.55; color: var(--grey700); max-width: 60ch; }
+.body { margin: 0; font-size: var(--lb-size-body); line-height: 1.55; }
+.small { margin: 0; font-size: var(--lb-size-small); line-height: 1.45; color: var(--grey700); }
+.muted { color: var(--grey600); }
+.eyebrow { font-size: var(--lb-size-eyebrow); line-height: 1.3; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--grey600); }
+.eyebrow a { color: inherit; text-decoration: none; }
+.fieldLabel { font-size: var(--lb-size-field-label); line-height: 1.4; font-weight: 600; }
+.optional { font-weight: 400; color: var(--grey600); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 var(--lb-space-5); border-radius: var(--radius); font: 600 15px/1.2 var(--lb-font); border: 1px solid var(--ink); background: var(--ink); color: #fff; cursor: pointer; width: 100%; }
+.btn-secondary { background: var(--paper); color: var(--ink); }
+@media (hover: hover) { .btn:hover { background: hsl(240 3% 20%); color: #fff; } }
+.link { font: 600 14px/1.2 var(--lb-font); color: var(--ink); text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; min-height: 44px; cursor: pointer; justify-self: center; }
+
+/* Shell */
+.topbar { height: 60px; display: flex; align-items: center; padding-inline: var(--lb-gutter); border-bottom: 1px solid var(--rule); }
+.logo { font-family: var(--logo); font-style: italic; font-weight: 700; font-size: 26px; }
+@container (min-width: 768px) { .logo { font-size: 30px; } }
+.layout { max-width: calc(1120px + 2 * var(--lb-gutter)); margin: 0 auto; padding: var(--lb-gutter) var(--lb-gutter) var(--lb-space-9); display: grid; gap: var(--lb-space-6); }
+
+/* Page header (PageHeader, revised Oct 15): eyebrow on its own line, image sits beside title + lead only,
+   centred on that block. Phones: image, eyebrow, title, lead stacked. */
+.head { display: grid; gap: var(--lb-space-3); grid-template-areas: "img" "eye" "text"; justify-items: start; }
+.head-img { grid-area: img; width: 64px; aspect-ratio: 1; max-width: 100%; border-radius: var(--radius-card); background: linear-gradient(135deg, #3a3a40, #0d0d0f); }
+.head .eyebrow { grid-area: eye; }
+.head-text { grid-area: text; display: grid; gap: var(--lb-space-3); min-width: 0; }
+@container (min-width: 768px) {
+  .head { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "eye eye" "img text"; column-gap: var(--lb-space-4); align-items: center; }
+}
+
+/* Split · summary: side first in source (phone order), right column from 1024px */
+.cols { display: grid; gap: var(--lb-space-4); align-items: start; }
+.main, .side { display: grid; gap: var(--lb-space-4); min-width: 0; }
+@container (min-width: 768px) { .cols, .main { gap: var(--lb-space-5); } }
+@container (min-width: 1024px) {
+  .cols { grid-template-columns: minmax(0, 760px) 360px; justify-content: space-between; column-gap: var(--lb-space-7); }
+  .side { grid-column: 2; grid-row: 1; position: sticky; top: var(--lb-space-5); }
+  .main { grid-column: 1; grid-row: 1; }
+}
+
+/* Section card */
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); padding: var(--lb-card-pad); display: grid; gap: var(--lb-space-5); min-width: 0; }
+.card-title { padding-bottom: var(--lb-space-4); border-bottom: 1px solid var(--rule); }
+
+/* Read-only offer details: label over value, builder row grid */
+.dl { display: grid; gap: var(--lb-space-4) var(--lb-space-5); margin: 0; }
+@container (min-width: 768px) { .dl { grid-template-columns: 1fr 1fr; } .dl .full { grid-column: 1 / -1; } }
+.dl div { display: grid; gap: var(--lb-space-1); min-width: 0; align-content: start; }
+.dl dt { font-size: var(--lb-size-small); color: var(--grey600); }
+.dl dd { margin: 0; font-size: var(--lb-size-body); line-height: 1.5; }
+/* Proposed changes (option B, Oct 15): note = small red caption with a red dot; each changed
+   field sits in a pale red row; old value muted + struck, proposal in red 600 */
+.was { color: var(--grey600); text-decoration: line-through; }
+.proposed { color: var(--fail); font-weight: 600; }
+.proposal-note { margin: 0; display: flex; align-items: flex-start; gap: var(--lb-space-2); font-size: var(--lb-size-small); line-height: 1.45; font-weight: 600; color: var(--fail); }
+.proposal-note::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--fail); margin-top: calc((var(--lb-size-small) * 1.45 - 8px) / 2); }
+.dl div.changed { margin: -8px -12px; padding: 8px 12px; border-radius: var(--radius); background: var(--fail-subtle); }
+
+/* Collapsible "Offer summary" card (Oct 15): header = "Offer summary" + venue · date + chevron; the proposal note
+   stays visible when closed (it sits in the header); groups inside, separated by rules */
+.offer { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); padding: var(--lb-card-pad); display: grid; gap: var(--lb-space-5); min-width: 0; }
+.offer-head { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-4); min-height: 44px; cursor: pointer; }
+.offer-head::-webkit-details-marker { display: none; }
+.offer-titles { display: grid; gap: var(--lb-space-1); }
+.offer-titles .proposal-note { margin-top: var(--lb-space-2); }
+.chev { width: 10px; height: 10px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(45deg) translate(-2px, -2px); flex: none; transition: transform .2s; }
+.offer[open] .chev { transform: rotate(225deg); }
+.offer-body { display: grid; gap: var(--lb-space-5); padding-top: var(--lb-space-5); border-top: 1px solid var(--rule); }
+.group { display: grid; gap: var(--lb-space-4); }
+.group + .group { padding-top: var(--lb-space-5); border-top: 1px solid var(--rule); }
+.group-title { margin: 0; font-size: var(--lb-size-small); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
+
+/* Booking summary card */
+.bd { display: grid; gap: var(--lb-space-3); font-size: var(--lb-size-body); font-variant-numeric: tabular-nums; }
+.bd-row { display: flex; justify-content: space-between; gap: var(--lb-space-4); }
+.bd-row span:last-child { white-space: nowrap; }
+.bd-total { border-top: 1px solid var(--rule); padding-top: var(--lb-space-4); font-weight: 600; font-size: var(--lb-size-h3); }
+.bd-notes { display: grid; gap: var(--lb-space-1); }
+.actions { display: grid; gap: var(--lb-space-3); }
+
+/* Actions: in the summary card from 1024px. Below: primary + secondary in a sticky bar
+   (side by side from 768px, stacked on phones), the minor action as a link at the end of the page. */
+.side .actions { display: none; }
+.more { display: grid; justify-items: center; }
+.bar { position: sticky; bottom: 0; z-index: 5; display: grid; gap: var(--lb-space-2); padding: var(--lb-space-3) var(--lb-gutter) calc(var(--lb-space-3) + env(safe-area-inset-bottom, 0px)); background: var(--page); border-top: 1px solid var(--grey100); }
+@container (min-width: 768px) { .bar { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--lb-space-3); } }
+@container (min-width: 1024px) { .side .actions { display: grid; } .more, .bar { display: none; } }
+
+/* Fields */
+.field { display: grid; gap: var(--lb-space-2); min-width: 0; }
+.input { display: flex; align-items: center; gap: var(--lb-space-2); min-height: 48px; padding: 0 var(--lb-space-4); border: 1px solid var(--rule-strong); border-radius: var(--radius); background: var(--paper); font-size: var(--lb-size-input); min-width: 0; }
+.input .ph { color: var(--grey300); flex: 1 1 0; min-width: 0; }
+.input .val { flex: 1 1 0; min-width: 0; }
+.input .unit { color: var(--grey600); }
+.input.select { justify-content: space-between; }
+.input.select::after { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(45deg) translateY(-2px); flex: none; }
+.textarea { min-height: 112px; align-items: flex-start; padding-top: var(--lb-space-3); }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--lb-space-2); align-items: center; }
+.pair .colon { font-weight: 600; color: var(--grey600); }
+.row2 { display: grid; gap: var(--lb-space-5); }
+@container (min-width: 768px) { .row2 { grid-template-columns: 1fr 1fr; } }
+.checkrow { display: flex; gap: var(--lb-space-3); align-items: flex-start; font-size: var(--lb-size-body); line-height: 1.45; }
+.box { width: 18px; height: 18px; flex: none; border: 1px solid var(--ink); border-radius: 3px; background: var(--paper); display: grid; place-items: center; margin-top: 2px; }
+.box::after { content: ""; width: 5px; height: 10px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateY(-1px) rotate(45deg); }
+
+/* Modal pattern: centred card from 768px, bottom sheet on phones. The mockup cuts the page to one
+   screen while a modal is open so the modal sits where it would on a real screen. */
+.page.has-modal { height: 900px; overflow: hidden; }
+@container (max-width: 767px) { .page.has-modal { height: 760px; } }
+.scrim { position: absolute; inset: 0; z-index: 10; background: rgba(0,0,0,.4); display: flex; justify-content: center; align-items: flex-start; padding: 96px var(--lb-gutter) var(--lb-gutter); }
+.modal { position: relative; width: 100%; max-width: 560px; background: var(--paper); border-radius: var(--radius-card); padding: var(--lb-card-pad); display: grid; gap: var(--lb-space-5); }
+.modal-head { display: grid; gap: var(--lb-space-2); padding-right: var(--lb-space-7); }
+.close { position: absolute; top: var(--lb-space-3); right: var(--lb-space-3); width: 44px; height: 44px; display: grid; place-items: center; border: 0; background: transparent; cursor: pointer; border-radius: var(--radius); }
+.close svg { width: 20px; height: 20px; }
+.modal-foot { display: grid; gap: var(--lb-space-3); }
+@container (min-width: 768px) { .modal-foot { grid-auto-flow: column; justify-content: end; } .modal-foot .btn { width: auto; min-width: 200px; } }
+@container (max-width: 767px) { .scrim { padding: 0; align-items: flex-end; } .modal { border-radius: var(--radius-card) var(--radius-card) 0 0; padding-bottom: calc(var(--lb-card-pad) + env(safe-area-inset-bottom, 0px)); } }
+</style>
+
+<div class="toolbar" role="region" aria-label="Mockup controls">
+  <div class="tb-row"><strong>LineupBridge · Booking journey</strong>
+    <span><span class="seg-label">View</span><span class="seg" id="viewSeg">
+      <button type="button" data-view="desktop" aria-pressed="true">Desktop</button>
+      <button type="button" data-view="ipad" aria-pressed="false">iPad 768</button>
+      <button type="button" data-view="mobile" aria-pressed="false">Mobile</button>
+    </span></span>
+    <span><span class="seg-label">Tags</span><span class="seg" id="tagSeg">
+      <button type="button" data-tags="on" aria-pressed="true">Show</button>
+      <button type="button" data-tags="off" aria-pressed="false">Hide</button>
+    </span></span>
+  </div>
+  <div class="tb-row"><span><span class="seg-label">Organizer</span><span class="seg" data-group="org"></span></span></div>
+  <div class="tb-row"><span><span class="seg-label">DJ</span><span class="seg" data-group="dj"></span></span></div>
+  <div class="tb-row"><span><span class="seg-label">Pop-ups</span><span class="seg" data-group="modal"></span></span></div>
+  <div class="note" id="stepNote"></div>
+</div>
+
+<div class="stage" id="stage" data-view="desktop">
+  <div class="frame" id="frame"><div class="page" id="page"></div></div>
+</div>
+
+<script>
+(function () {
+  var DJ = 'DJ Example', ORG = 'Studio Noord';
+  var t = function (s) { return '<span class="tag">' + s + '</span>'; };
+  var eur = function (n) { return '€' + n.toFixed(2); };
+
+  // Offer details: read-only, the builder's four sections, no numbers.
+  // changes: { fee: [old, new], start: [old, new], note } shown as proposed values in red.
+  function details(ch, noteText) {
+    ch = ch || {};
+    var val = function (key, plain) { return ch[key] ? '<span class="was">' + ch[key][0] + '</span><br><span class="proposed">Proposed: ' + ch[key][1] + '</span>' : plain; };
+    var sec = function (title, rows) {
+      return '<section class="group"><h3 class="group-title">' + title + '</h3><dl class="dl">' +
+        rows.map(function (r) { var changed = r[1].indexOf('class="proposed"') > -1 ? ' changed' : ''; return '<div class="' + (r[2] || '') + changed + '"><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl></section>';
+    };
+    // One collapsible "Offer" card (open when the viewer has to react, see screen()).
+    return '<details class="offer"><summary class="offer-head"><span class="offer-titles"><span class="h3">Offer summary</span><span class="small muted">Paradiso · November 21, 2026</span>' +
+      (noteText ? '<span class="proposal-note">' + noteText + '</span>' : '') + '</span><span class="chev" aria-hidden="true"></span></summary>' +
+      '<div class="offer-body">' +
+      sec('Event details', [['Venue name', 'Paradiso'], ['Location', 'Amsterdam'], ['Event name', 'Example Night', 'full'], ['Event date', 'November 21, 2026', 'full'], ['Event start time', '22:00'], ['Event end time', '05:00'], ['Expected attendance', '600', 'full']]) +
+      sec('Set details', [['Set slot', 'Peak time'], ['Set start time', val('start', '01:00')], ['Set duration', val('dur', '3 hours')], ['Headliner', 'Not provided']]) +
+      sec('Fee and logistics', [['Fee', val('fee', '€800'), 'full'], ['Travel included', 'Yes'], ['Accommodation included', 'No']]) +
+      sec('Technical setup', [['Deck setup', 'Pioneer DJM, Vinyl / turntables', 'full'], ['Booth monitors available', 'Yes']].concat(ch.note ? [['DJ technical notes', '<span class="proposed">' + ch.note + '</span>', 'full']] : [])) +
+      sec('Additional note', [['Additional note', 'Load-in from 21:00 via the side entrance', 'full']]) +
+      '</div>' + t('collapsible "Offer" card in every state: open when you have to react, closed while you wait. Header = "Offer summary" + venue · date; the proposal note stays visible when closed') + '</details>';
+  }
+
+  // Booking summary (OrderBreakdown restyled). Labels = live Console / en.json.
+  function summary(role, fee, actions) {
+    var c = fee * 0.05, vat = c * 0.21;
+    var rows = role === 'dj'
+      ? '<div class="bd-row"><span>Performance fee</span><span>' + eur(fee) + '</span></div>' +
+        '<div class="bd-row"><span>LineupBridge fee *</span><span>−' + eur(c) + '</span></div>' +
+        '<div class="bd-row bd-total"><span>You receive</span><span>' + eur(fee - c) + '</span></div>'
+      : '<div class="bd-row"><span>Performance fee</span><span>' + eur(fee) + '</span></div>' +
+        '<div class="bd-row"><span>LineupBridge fee *</span><span>' + eur(c) + '</span></div>' +
+        '<div class="bd-row"><span>VAT (21% on LineupBridge fee)*</span><span>' + eur(vat) + '</span></div>' +
+        '<div class="bd-row bd-total"><span>Total payment</span><span>' + eur(fee + c + vat) + '</span></div>';
+    var notes = '<div class="bd-notes small muted"><span>* 5% of the total booking amount</span>' +
+      (role === 'dj' ? '' : '<span>* VAT is calculated only on the LineupBridge fee, not on the performance fee.</span>') + '</div>';
+    return '<section class="card" aria-label="Booking summary"><h2 class="h3 card-title">Booking summary</h2><div class="bd">' + rows + '</div>' + notes +
+      (actions ? '<div class="actions">' + actions + '</div>' : '') + '</section>';
+  }
+  var total = function (fee) { var c = fee * 0.05; return eur(fee + c + c * 0.21); };
+
+  function btn(label, kind) { return label ? '<button class="btn' + (kind ? ' btn-' + kind : '') + '" type="button">' + label + '</button>' : ''; }
+  function linkBtn(label) { return label ? '<button class="link" type="button">' + label + '</button>' : ''; }
+
+  function screen(s) {
+    var a = s.actions || {};
+    var head = '<header class="head"><div class="head-img" role="img" aria-label="' + DJ + '"></div>' +
+      '<span class="eyebrow"><a href="#">' + DJ + '</a></span>' +
+      '<div class="head-text"><h1 class="h2">' + s.title + '</h1>' + (s.lead ? '<p class="lead">' + s.lead + '</p>' : '') + (s.headTag ? t(s.headTag) : '') + '</div></header>';
+    var any = a.primary || a.secondary || a.link;
+    return '<header class="topbar"><span class="logo">LineupBridge</span></header>' +
+      '<div class="layout">' + head +
+      '<div class="cols"><aside class="side">' + summary(s.role, s.fee, any ? btn(a.primary) + btn(a.secondary, 'secondary') + linkBtn(a.link) : '') + '</aside>' +
+      '<main class="main">' + (a.primary ? s.main.replace('<details class="offer">', '<details class="offer" open>') : s.main) + (a.link ? '<div class="more">' + linkBtn(a.link) + '</div>' : '') + '</main></div></div>' +
+      (a.primary || a.secondary ? '<div class="bar">' + btn(a.primary) + btn(a.secondary, 'secondary') + '</div>' : '');
+  }
+
+  var X = '<button class="close" type="button" aria-label="Close modal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>';
+  function modal(o) {
+    return '<div class="scrim"><div class="modal" role="dialog" aria-label="' + o.title + '">' + X +
+      '<div class="modal-head"><h2 class="h3">' + o.title + '</h2>' + (o.desc ? '<p class="body muted">' + o.desc + '</p>' : '') + '</div>' +
+      (o.fields || '') + '<div class="modal-foot">' + (o.cancel ? btn(o.cancel, 'secondary') : '') + btn(o.submit) + '</div>' + (o.tag ? t(o.tag) : '') + '</div></div>';
+  }
+  var fld = function (label, control, opt) { return '<div class="field"><span class="fieldLabel">' + label + (opt ? ' <span class="optional">(optional)</span>' : '') + '</span>' + control + '</div>'; };
+  var textarea = function (ph) { return '<div class="input textarea"><span class="ph">' + (ph || '') + '</span></div>'; };
+
+  var checkout = '<section class="card"><h2 class="h3 card-title">Payment</h2>' +
+    fld('Payment card details', '<div class="input"><span class="ph">Card number</span><span class="ph" style="flex:0 0 auto">MM / YY  CVC</span></div>') +
+    t('Stripe card element styled as a 48px input; its placeholders come from Stripe') +
+    '<label class="checkrow"><span class="box" aria-hidden="true"></span><span>Save card details for future orders</span></label>' +
+    '<p class="small muted">I authorise LineupBridge to send instructions to the financial institution that issued my card to take payments from my card account in accordance with the terms of my agreement with you.</p>' +
+    '<button class="btn" type="button">Confirm and pay ' + total(900) + '</button></section>';
+
+  // Screens. Each base screen can carry a modal on top.
+  var S = {
+    sent: { role: 'org', fee: 800, title: 'Your offer has been sent', lead: 'You’ll be notified when ' + DJ + ' reacts to your offer', main: details(), actions: { secondary: 'Withdraw offer' },
+      note: 'Right after "Send offer". Offer details are shown to the organizer too (hidden today).' },
+    djOffer: { role: 'dj', fee: 800, title: 'Booking offer', main: details(), actions: { primary: 'Accept offer', secondary: 'Make a counteroffer', link: 'Reject offer' },
+      note: 'The DJ opens the offer. Accept and counteroffer side by side; reject is a quiet link at the end.' },
+    djAccepted: { role: 'dj', fee: 800, title: 'You accepted this offer', lead: ORG + ' has been notified and can finalise this booking', main: details(),
+      headTag: 'Console key exists but the code never uses it: today the DJ sees "Your counter offer has been sent!" after accepting', note: 'After the DJ accepts as-is.' },
+    djCounterSent: { role: 'dj', fee: 950, title: 'Your counteroffer has been sent', lead: ORG + ' has been notified and can now review your proposed changes',
+      main: details({ fee: ['€800', '€950'], start: ['01:00', '00:30'] }), note: 'After the DJ sends a counteroffer. The DJ sees their own proposal in red too.' },
+    orgCounter: { role: 'org', fee: 950, title: DJ + ' made a counteroffer', lead: 'You can now react to the offer',
+      main: details({ fee: ['€800', '€950'], start: ['01:00', '00:30'], note: 'Happy to play longer if we start at 00:30' }, 'The artist has proposed changes to your offer as highlighted in red'),
+      actions: { primary: 'Accept &amp; pay', secondary: 'Make final offer', link: 'Reject the counteroffer' },
+      note: 'The organizer receives the counteroffer. Option B: the note is a red caption with a dot, each changed field sits in a pale red row.' },
+    orgFinalSent: { role: 'org', fee: 900, title: 'You made a final offer', lead: DJ + ' can now react to the offer',
+      main: details({ fee: ['€950', '€900'] }), actions: { secondary: 'Withdraw final offer' }, note: 'After the organizer sends a final offer.' },
+    djFinal: { role: 'dj', fee: 900, title: ORG + ' made a final offer', lead: 'You can now react to the offer',
+      main: details({ fee: ['€950', '€900'], note: 'This is our maximum budget for the night' }), actions: { primary: 'Accept final offer', link: 'Reject final offer' },
+      headTag: 'no existing proposal line for the DJ side ("The artist has proposed…" is organizer wording): only the red values here',
+      note: 'The DJ receives the final offer (offer 3), shown with the same red treatment. Today the DJ only sees the price here.' },
+    djFinalAccepted: { role: 'dj', fee: 900, title: 'You just accepted the final offer', lead: ORG + ' has been notified and can now complete the payment to confirm the booking', main: details(), note: 'After the DJ accepts the final offer.' },
+    djFinalRejected: { role: 'dj', fee: 950, title: 'You just rejected the final offer', lead: ORG + ' has been notified that you rejected their final offer', main: details(), note: 'After the DJ rejects the final offer. The organizer can still accept the counteroffer.' },
+    orgFinalAccepted: { role: 'org', fee: 900, title: DJ + ' has accepted your final offer', lead: 'Make the payment to confirm this booking', main: details(), actions: { primary: 'Accept &amp; pay' },
+      note: 'The DJ accepted the final offer. Paying is the only action left.' },
+    checkout: { role: 'org', fee: 900, title: 'Booking can’t be completed yet', main: checkout,
+      headTag: 'live Console text for the checkout title (CheckoutPage.default-negotiation.title): looks wrong, needs a decision', note: 'Checkout: same header and Booking summary; only the main column changes.' },
+    paid: { role: 'org', fee: 900, title: 'Booking confirmed', lead: 'Your payment has been received. ' + DJ + ' will receive their payout after the performance is completed.', main: details(),
+      headTag: 'today the page after payment forces the pending-payment title ("{customerName}, you have not confirmed payment yet"): wiring bug', note: 'After payment, organizer.' },
+    djConfirmed: { role: 'dj', fee: 900, title: 'Your booking is confirmed', lead: 'Your payout will be released after you complete the performance', main: details(),
+      headTag: 'the "deliver" action of this state is out of scope here', note: 'After payment, DJ.' }
+  };
+
+  var M = {
+    accept: { base: 'djOffer', title: 'Anything to note?', fields: textarea('Add an optional note for the customer…'), submit: 'Accept offer',
+      tag: 'also opens for "Accept final offer". Textarea label is visually hidden in the code. Placeholder says "customer": copy to review', note: 'DJ: Accept offer (and Accept final offer).' },
+    counter: { base: 'djOffer', title: 'Make a counteroffer',
+      fields: fld('Proposed fee', '<div class="input"><span class="val">950</span><span class="unit">€</span></div>') +
+        '<div class="row2">' + fld('Proposed set start time', '<div class="pair"><div class="input select"><span class="val">00</span></div><span class="colon">:</span><div class="input select"><span class="val">30</span></div></div>', true) +
+        fld('Proposed set duration', '<div class="input select"><span class="val">3</span><span class="unit">hours</span></div>', true) + '</div>' +
+        fld('Additional note', textarea(), true),
+      submit: 'Make a counteroffer', note: 'DJ: Make a counteroffer (ProposeChangesModal). Fields exactly as the code renders them today.' },
+    reject: { base: 'djOffer', title: 'Reject this offer?', desc: 'This will reject the offer. This action cannot be undone.',
+      fields: fld('Tell them the reason for your rejection', textarea('Share why you are declining this offer…')), submit: 'Reject offer',
+      note: 'DJ: Reject offer. The same pop-up opens for the organizer\'s "Reject the counteroffer".' },
+    final: { base: 'orgCounter', title: 'Make a final offer', desc: 'Suggest a different price',
+      fields: fld('Performance fee', '<div class="input"><span class="ph">€950.00</span></div>') + fld('Message (optional)', textarea('Add a short note for the event organizer…')),
+      submit: 'Send final offer', tag: 'placeholder speaks to the organizer although the organizer is typing: copy to review. "Message (optional)" has the word in the label, unlike the other pop-ups',
+      note: 'Organizer: Make final offer (MakeCounterOfferModal). Price and a message only.' },
+    rejectFinal: { base: 'djFinal', title: 'Reject final offer', desc: 'Reject this counter-offer? The event organizer can send another offer.', cancel: 'Cancel', submit: 'Reject offer',
+      tag: 'the only pop-up without a title today (body text only); title here = the button label "Reject final offer". Body text is wrong for a final offer: copy to review',
+      note: 'DJ: Reject final offer (RejectCounterOfferConfirmModal). The only pop-up with Cancel.' }
+  };
+
+  var GROUPS = {
+    org: [['sent', '1 Offer sent'], ['orgCounter', '2 Counteroffer received'], ['orgFinalSent', '3 Final offer sent'], ['orgFinalAccepted', '4 Final offer accepted'], ['checkout', '5 Checkout'], ['paid', '6 Paid']],
+    dj: [['djOffer', '1 Offer received'], ['djAccepted', '2a Accepted'], ['djCounterSent', '2b Counteroffer sent'], ['djFinal', '3 Final offer received'], ['djFinalAccepted', '4a Final accepted'], ['djFinalRejected', '4b Final rejected'], ['djConfirmed', '5 Paid']],
+    modal: [['m:accept', 'Accept offer'], ['m:counter', 'Make a counteroffer'], ['m:reject', 'Reject offer'], ['m:final', 'Make a final offer'], ['m:rejectFinal', 'Reject final offer']]
+  };
+
+  var page = document.getElementById('page'), note = document.getElementById('stepNote');
+  Object.keys(GROUPS).forEach(function (g) {
+    var seg = document.querySelector('.seg[data-group="' + g + '"]');
+    GROUPS[g].forEach(function (it) { var b = document.createElement('button'); b.type = 'button'; b.dataset.step = it[0]; b.textContent = it[1]; b.setAttribute('aria-pressed', 'false'); seg.appendChild(b); });
+    seg.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) show(b.dataset.step); });
+  });
+  var base = '<b>Copy</b> = live Console text with your rules (no "!", no full stop on one sentence, offer · counteroffer · final offer). Example data. ';
+  function show(id) {
+    var html, n;
+    if (id.indexOf('m:') === 0) { var m = M[id.slice(2)]; html = screen(S[m.base]) + modal(m); n = m.note; page.classList.add('has-modal'); }
+    else { html = screen(S[id]); n = S[id].note; page.classList.remove('has-modal'); }
+    page.innerHTML = html; note.innerHTML = base + '<b>' + n + '</b>';
+    document.querySelectorAll('.seg[data-group] button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.step === id)); });
+  }
+  function press(sel, attr, val) { document.querySelectorAll(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset[attr] === val)); }); }
+  document.getElementById('viewSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; document.getElementById('stage').dataset.view = b.dataset.view; press('#viewSeg button', 'view', b.dataset.view); });
+  document.getElementById('tagSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; document.getElementById('frame').classList.toggle('no-tags', b.dataset.tags === 'off'); press('#tagSeg button', 'tags', b.dataset.tags); });
+  show('sent');
+})();
+</script>

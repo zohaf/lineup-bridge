@@ -5,9 +5,32 @@ import { Form as FinalForm, Field } from 'react-final-form';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import * as validators from '../../../util/validators';
 
-import { Form, Modal, Button, FieldTextInput, ValidationError } from '../../../components';
+import {
+  Form,
+  Modal,
+  PrimaryButton,
+  FieldTextInput,
+  ValidationError,
+  TimeSelect,
+} from '../../../components';
 
-import css from './ProposeChangesModal.module.css';
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
+import modalCss from '../../../styles/lineupModal.module.css';
+
+const fid = name => `proposeChanges-${name}`;
+
+// "Proposed set start time (optional)": the label text carries "(optional)"; shown in the muted style.
+const labelWithOptional = text => {
+  const marker = '(optional)';
+  if (!text.endsWith(marker)) return text;
+  return (
+    <>
+      {text.slice(0, -marker.length)}
+      <span className={formCss.optional}>{marker}</span>
+    </>
+  );
+};
 
 const composeFeeValidators = intl =>
   validators.composeValidators(
@@ -34,27 +57,30 @@ const ProposeChangesForm = props => {
         const submitDisabled = invalid || submitting || inProgress;
 
         return (
-          <Form onSubmit={handleSubmit}>
+          <Form className={modalCss.form} onSubmit={handleSubmit}>
             {/* Proposed fee */}
             <Field name="proposedFee" validate={composeFeeValidators(intl)}>
               {({ input, meta }) => {
                 const showError = meta.touched && (meta.error || meta.submitError);
                 return (
-                  <div className={css.field}>
-                    <label className={css.label} htmlFor="proposeChanges-fee">
+                  <div className={formCss.field}>
+                    <label className={formCss.label} htmlFor="proposeChanges-fee">
                       {intl.formatMessage({ id: 'ProposeChangesModal.feeLabel' })}
                     </label>
-                    <div className={css.feeInputShell}>
+                    <div
+                      className={classNames(formCss.inputWithUnit, {
+                        [formCss.inputWithUnitError]: showError,
+                      })}
+                    >
                       <input
                         {...input}
                         id="proposeChanges-fee"
                         type="number"
                         min={1}
                         step={1}
-                        className={css.feeInput}
                         autoComplete="off"
                       />
-                      <span className={css.feeSuffix} aria-hidden="true">
+                      <span className={formCss.unit} aria-hidden="true">
                         €
                       </span>
                     </div>
@@ -64,116 +90,75 @@ const ProposeChangesForm = props => {
               }}
             </Field>
 
-            {/* Proposed start time – two selects: hours + minutes */}
-            <Field name="proposedStartTime">
-              {({ input }) => {
-                const curVal = input.value || '';
-                const curH = curVal.includes(':') ? curVal.split(':')[0] : '';
-                const curM = curVal.includes(':') ? curVal.split(':')[1] : '00';
-                return (
-                  <div className={css.field}>
-                    <label className={css.label} htmlFor="proposeChanges-startTimeH">
-                      {intl.formatMessage({ id: 'ProposeChangesModal.startTimeLabel' })}
-                    </label>
-                    <div className={css.timePickerRow}>
-                      <select
-                        id="proposeChanges-startTimeH"
-                        className={css.timeSelect}
-                        value={curH}
-                        onChange={e => {
-                          const h = e.target.value;
-                          input.onChange(h ? `${h}:${curM || '00'}` : '');
-                        }}
-                        onBlur={input.onBlur}
-                      >
-                        <option value="">HH</option>
-                        {Array.from({ length: 24 }, (_, i) => {
-                          const v = String(i).padStart(2, '0');
-                          return (
-                            <option key={v} value={v}>
-                              {v}
-                            </option>
-                          );
-                        })}
-                      </select>
-                      <select
-                        id="proposeChanges-startTimeM"
-                        className={css.timeSelect}
-                        value={curM}
-                        onChange={e => {
-                          if (curH) {
-                            input.onChange(`${curH}:${e.target.value}`);
-                          }
-                        }}
-                        onBlur={input.onBlur}
-                      >
-                        {['00', '15', '30', '45'].map(v => (
-                          <option key={v} value={v}>
-                            {v}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                );
-              }}
-            </Field>
+            <div className={formCss.row2}>
+              {/* Proposed start time: hour + minute selects */}
+              <Field name="proposedStartTime">
+                {({ input, meta }) => (
+                  <TimeSelect
+                    input={input}
+                    meta={meta}
+                    fid={fid}
+                    name="startTime"
+                    allowEmpty
+                    hourPlaceholder="HH"
+                    label={labelWithOptional(
+                      intl.formatMessage({ id: 'ProposeChangesModal.startTimeLabel' })
+                    )}
+                  />
+                )}
+              </Field>
 
-            {/* Proposed set duration */}
-            <Field name="proposedDuration">
-              {({ input }) => {
-                const val = input.value || '';
-                const n = parseInt(val, 10);
-                const plural = Number.isInteger(n) && n === 1 ? 'hour' : 'hours';
-                return (
-                  <div className={css.field}>
-                    <label className={css.label} htmlFor="proposeChanges-duration">
-                      {intl.formatMessage({ id: 'ProposeChangesModal.durationLabel' })}
-                    </label>
-                    <div className={css.durationInputShell}>
-                      <input
-                        {...input}
-                        id="proposeChanges-duration"
-                        type="number"
-                        min={1}
-                        step={1}
-                        placeholder="2"
-                        className={css.durationInput}
-                        autoComplete="off"
-                      />
-                      <span className={css.durationSuffix} aria-hidden="true">
-                        {intl.formatMessage({ id: `ProposeChangesModal.${plural}` })}
-                      </span>
-                    </div>
-                  </div>
-                );
-              }}
-            </Field>
+              {/* Proposed set duration */}
+              <Field name="proposedDuration">
+                {({ input, meta }) => {
+                  const n = parseInt(input.value, 10);
+                  const plural = Number.isInteger(n) && n === 1 ? 'hour' : 'hours';
+                  return (
+                    <TimeSelect
+                      input={input}
+                      meta={meta}
+                      fid={fid}
+                      name="duration"
+                      variant="duration"
+                      placeholder={intl.formatMessage({ id: 'RequestQuoteForm.selectPlaceholder' })}
+                      unit={intl.formatMessage({ id: `ProposeChangesModal.${plural}` })}
+                      label={labelWithOptional(
+                        intl.formatMessage({ id: 'ProposeChangesModal.durationLabel' })
+                      )}
+                    />
+                  );
+                }}
+              </Field>
+            </div>
 
-            {/* Technical notes */}
+            {/* Additional note */}
             <FieldTextInput
-              className={css.field}
+              className={formCss.field}
+              labelClassName={formCss.label}
+              inputRootClass={formCss.textarea}
               id="proposeChanges-notes"
               name="proposedNotes"
               type="textarea"
               label={
                 <>
                   {intl.formatMessage({ id: 'ProposeChangesModal.additionalNoteLabel' })}{' '}
-                  <span className={css.optional}>(optional)</span>
+                  <span className={formCss.optional}>(optional)</span>
                 </>
               }
             />
 
-            {submitError ? <p className={css.errorPlaceholder}>{submitError}</p> : null}
+            {submitError ? <p className={modalCss.submitError}>{submitError}</p> : null}
 
-            <Button
-              className={css.submitButton}
-              type="submit"
-              inProgress={inProgress}
-              disabled={submitDisabled}
-            >
-              <FormattedMessage id="ProposeChangesModal.submit" />
-            </Button>
+            <div className={modalCss.footer}>
+              <PrimaryButton
+                rootClassName={buttonCss.primary}
+                type="submit"
+                inProgress={inProgress}
+                disabled={submitDisabled}
+              >
+                <FormattedMessage id="ProposeChangesModal.submit" />
+              </PrimaryButton>
+            </div>
           </Form>
         );
       }}
@@ -214,7 +199,7 @@ const ProposeChangesModal = props => {
     inProgress = false,
   } = props;
 
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || modalCss.container, className);
 
   const initialValues = {
     proposedFee: currentFee != null ? String(currentFee) : '',
@@ -226,18 +211,21 @@ const ProposeChangesModal = props => {
   return (
     <Modal
       id={id}
+      scrollLayerClassName={modalCss.scrollLayer}
       containerClassName={classes}
-      contentClassName={css.modalContent}
+      contentClassName={modalCss.content}
       isOpen={isOpen}
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
     >
-      <h2 className={css.modalTitle}>
-        <FormattedMessage
-          id={isFinalOffer ? 'ProposeChangesModal.finalOfferTitle' : 'ProposeChangesModal.title'}
-        />
-      </h2>
+      <div className={modalCss.head}>
+        <h2 className={modalCss.title}>
+          <FormattedMessage
+            id={isFinalOffer ? 'ProposeChangesModal.finalOfferTitle' : 'ProposeChangesModal.title'}
+          />
+        </h2>
+      </div>
       <ProposeChangesForm
         onSubmit={onSubmit}
         initialValues={initialValues}

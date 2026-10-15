@@ -44,7 +44,8 @@ code, then into the page. That is the "order of change" in design-system-rules.m
 | `design/layouts.html` | picture | The layouts, plus log in / sign up / after sign up |
 | `design/offer-builder-page.html` + `offer-builder-page.md` | page | Complete your offer (the reference page) |
 | `design/landing-page.html` + `implementation-plan.md` | page | Landing `/` |
-| `design/header.html` + `header.md` + `header-prompt.md` | page part | Header |
+| `design/header.html` + `header.md` + `header-prompt.md` | page part | Header (stage 0, guest bar) |
+| `design/header-journey.html` + `header-height-prompt.md` | page part | Header audit, every scenario, migration plan; stage 1 prompt |
 | `design/footer.html` + `footer.md` + `footer-prompt.md` | page part | Footer |
 | `design/content-pages.html` | page | Console pages (FAQ, terms) as collapsible cards |
 | `design/home-page.html` + `home-page.md` + `home-page-prompt.md` | page | Logged-in home (approved Oct 14) |

@@ -1,86 +1,48 @@
 @import '../../../styles/customMediaQueries.css';
 
-.root {
-  composes: marketplaceModalBaseStyles from global;
-  padding-top: 70px;
+/* FieldCurrencyInput takes no label or input class, so the shared field look is set here
+   (same values as .label and .input in lineupForm.module.css). */
+.currencyField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-label-gap);
+  min-width: 0;
 
-  @media (--viewportMedium) {
-    flex-basis: 567px;
-    min-height: 687px;
-  }
-}
-
-.modalContent {
-  flex-grow: 1;
-}
-
-/* Icon of the modal */
-.modalIcon {
-  composes: marketplaceModalIconStyles from global;
-}
-
-/* Title of the modal */
-.modalTitle {
-  composes: marketplaceModalTitleStyles from global;
-}
-
-/* Paragraph for the Modal */
-.modalMessage {
-  composes: marketplaceModalParagraphStyles from global;
-}
-
-.formRoot {
-  /* Layout: size and positioning */
-  width: 100%;
-  height: auto;
-  margin-top: 24px;
-}
-
-.errorPlaceholder {
-  color: var(--colorFail);
-
-  @media (--viewportMedium) {
+  & label {
     margin: 0;
+    padding: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-field-label);
+    line-height: var(--lb-leading-field-label);
+    font-weight: var(--lb-weight-semibold);
+    color: var(--lb-text-primary);
+  }
+
+  & input {
     width: 100%;
-    min-height: 32px;
-  }
-}
+    min-height: var(--lb-input-height);
+    margin: 0;
+    padding: 0 var(--lb-space-4);
+    border: 1px solid var(--colorGrey200);
+    border-radius: var(--borderRadiusMedium);
+    background-color: var(--colorWhite);
+    box-shadow: none;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-input);
+    color: var(--lb-text-primary);
 
-.optional {
-  font-style: italic;
-  font-weight: var(--fontWeightRegular);
-  color: var(--colorGrey500);
-}
+    &:hover {
+      border-color: var(--colorGrey300);
+    }
 
-.counterOfferMessage {
-  flex-shrink: 0;
-  margin-top: 24px;
-  margin-bottom: 24px;
+    &:focus {
+      outline: 0;
+      border-color: var(--colorBlack);
+      box-shadow: var(--lb-focus-ring);
+    }
 
-  @media (--viewportMedium) {
-    margin-top: 30px;
-  }
-}
-
-.counterOffer {
-  flex-shrink: 0;
-  margin-top: 24px;
-  margin-bottom: 24px;
-
-  @media (--viewportMedium) {
-    margin-top: 30px;
-  }
-}
-
-.submitButton {
-  margin-top: auto;
-  margin-bottom: 96px;
-  flex-shrink: 0;
-
-  @media (--viewportMedium) {
-    display: inline-block;
-    width: 100%;
-    margin-top: 24px;
-    margin-bottom: 0;
+    &::placeholder {
+      color: var(--colorGrey300);
+    }
   }
 }

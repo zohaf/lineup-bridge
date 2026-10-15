@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo prototypes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --beige: #F6F2E9; --orange: #E6A275; --black: #000000;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9d8d3; color: #000; font: 16px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 24px 16px 96px; display: grid; gap: 32px; }
+.label { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #4a4a48; margin: 0 0 8px; }
+
+/* One prototype = one scrollable landing page */
+.proto { --bg: var(--beige); --ink: #000; --ink-2: hsl(240 3% 30%); --dot: #fff; --block: rgba(0,0,0,.05);
+  container: page / inline-size;
+  height: 640px; overflow-y: auto; border-radius: 8px; background: var(--bg); color: var(--ink); position: relative; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.proto[data-bg="black"]  { --bg: var(--black);  --ink: #fff; --ink-2: #a8a8a3; --dot: #6f6f6b; --block: rgba(255,255,255,.06); }
+.proto[data-bg="beige-dark"] { --dot: rgba(0,0,0,.65); }
+
+/* Header */
+.hdr { position: sticky; top: 0; z-index: 5; height: 76px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+.hdr nav { display: flex; gap: 20px; font-size: 14px; letter-spacing: -.01em; }
+.lockup { display: inline-flex; align-items: center; color: var(--ink); text-decoration: none; }
+.lockup svg { display: block; flex: none; }
+.word { font-family: 'Inter Tight', sans-serif; font-weight: 600; letter-spacing: -.02em; line-height: 1.3; white-space: nowrap;
+  display: inline-block; overflow: hidden; max-width: 12em; margin-left: .35em; transition: opacity .25s ease, max-width .35s ease, margin .35s ease; }
+.scrolled .word { opacity: 0; max-width: 0; margin-left: 0; }
+.knob-line { transition: transform .15s linear; }
+.grille-dot { transform-box: fill-box; transform-origin: center; animation: ripple 1.8s ease-in-out infinite; }
+@keyframes ripple { 0%, 60%, 100% { transform: scale(1); opacity: 1; } 30% { transform: scale(1.4); opacity: .55; } }
+
+/* Hero with the cursor-revealed dots */
+.proto { touch-action: pan-y; }
+.hero { position: relative; z-index: 2; margin-top: -76px; min-height: 640px; display: grid; place-items: center; }
+/* Title, subtitle and search copied from landing-page.html (hero, direction B). */
+.hero .copy { position: relative; z-index: 2; width: 100%; max-width: 1120px; text-align: center; padding: 40px 20px 56px; pointer-events: none; }
+.hero h1 { margin: 0; font-size: 36px; line-height: 1.08; font-weight: 600; letter-spacing: -0.03em; text-wrap: balance; }
+.hero .sub { margin: 16px auto 0; color: var(--ink-2); font-size: 17px; max-width: 46ch; }
+.search { pointer-events: auto; margin: 28px auto 0; width: 100%; display: flex; gap: 6px; background: #fff; border: 1px solid hsl(240 3% 88%); border-radius: 6px; padding: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.06); max-width: 520px; text-align: left; }
+.search input { flex: 1; min-width: 0; border: 0; font: 15px var(--font); padding: 0 12px; background: transparent; color: #000; min-height: 44px; }
+.search input::placeholder { color: hsl(240 3% 50%); }
+.search input:focus { outline: none; }
+.search:focus-within { border-color: #000; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 16px; border-radius: 4px; font: 600 14px/1 var(--font); cursor: pointer; border: 1px solid #000; background: #000; color: #fff; transition: background .15s; }
+.btn:hover { background: hsl(240 3% 20%); }
+.br-wide { display: none; }
+@container page (min-width: 768px) { .hero .copy { padding-inline: 32px; } }
+@container page (min-width: 900px) {
+  .br-wide { display: inline; }
+  .hero .copy { padding-block: 120px 128px; }
+  .hero h1 { font-size: 52px; }
+  .hero .sub { font-size: 19px; }
+}
+/* Stays in view while the page scrolls, so the dots follow the mouse everywhere. */
+.mesh { position: sticky; top: 0; height: 640px; margin-bottom: -640px; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .4s ease; --x: 50%; --y: 50%; --r: 295px;
+  background-image: radial-gradient(circle at center, var(--dot) 1.6px, transparent 2.2px); background-size: 9px 9px;
+  -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0,0,0,.55) 45%, transparent 100%);
+          mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0,0,0,.55) 45%, transparent 100%); }
+.proto.on .mesh { opacity: 1; }
+
+/* Following sections (empty, just to scroll through) */
+.sec { position: relative; z-index: 2; min-height: 640px; padding: 96px 16px; display: grid; gap: 16px; align-content: start; max-width: 960px; margin: 0 auto; }
+.sec div { height: 140px; border-radius: 8px; background: var(--block); }
+@media (prefers-reduced-motion: reduce) { .mesh, .word, .knob-line { transition: none; } .grille-dot { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap"></div>
+
+<script>
+const LOGO_H = 20;
+const COLORS = { beige: '#F6F2E9', orange: '#E6A275', black: '#000000' };
+
+// [icon, background, label]
+const PROTOS = [
+  ['grille', 'black',        'Speaker grille · black, gray dots'],
+  ['grille', 'beige',        'Speaker grille · beige, white dots'],
+  ['grille', 'beige-dark',   'Speaker grille · beige, dark gray dots'],
+  ['dot',    'beige',        'Fading dot · beige, white dots'],
+  ['knob',   'beige',        'Knob · beige, white dots'],
+  ['bridge', 'beige',        'Bridge · beige, white dots'],
+];
+
+let _u = 0;
+const ICONS = {
+  // Solid only at the center, then a long gradual fade. The core size follows the scroll (see wire()).
+  dot: (c) => { const id = 'g' + (++_u); return `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><radialGradient id="${id}" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="${c}"/><stop class="dot-core" offset=".12" stop-color="${c}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><circle cx="16" cy="16" r="15" fill="url(#${id})"/></svg>`; },
+  // Each dot pulses with a delay by distance from the center: a ripple out of the speaker.
+  grille: (c) => { let d = ''; for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) { const cx = 4 + x * 4, cy = 4 + y * 4, dist = Math.hypot(cx - 16, cy - 16); if (dist > 13.5) continue; d += `<circle class="grille-dot" style="animation-delay:${(dist * 0.045).toFixed(2)}s" cx="${cx}" cy="${cy}" r="${(1.75 - dist * 0.07).toFixed(2)}"/>`; } return `<svg viewBox="0 0 32 32" aria-hidden="true" fill="${c}">${d}</svg>`; },
+  bridge: (c) => `<svg viewBox="245 465 760 320" aria-hidden="true" fill="${c}"><path d="M365 475 L385 475 C400 525 450 540 625 542 C800 540 850 525 865 475 L885 475 C905 620 945 690 997 772 L994 778 L868 778 L866 772 C880 730 885 660 860 615 C830 568 790 557 625 555 C460 557 420 568 390 615 C365 660 370 730 384 772 L382 778 L256 778 L253 772 C305 690 345 620 365 475 Z"/></svg>`,
+  // Indicator drawn pointing to 12 o'clock, rotated by JS (2 → 12 → 10 o'clock).
+  knob: (c, bg) => `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="${c}"/><g class="knob-line" style="transform-origin:16px 16px;transform:rotate(60deg)"><line x1="16" y1="16" x2="16" y2="6" stroke="${bg}" stroke-width="3" stroke-linecap="round"/></g></svg>`,
+};
+
+function iconColor(icon, bg) {
+  return bg === 'black' ? '#fff' : '#000';
+}
+
+function capHeight() {
+  const c = document.createElement('canvas').getContext('2d');
+  c.font = "600 200px 'Inter Tight'";
+  return c.measureText('H').actualBoundingBoxAscent / 200 || 0.73;
+}
+
+function render() {
+  const fs = (LOGO_H / capHeight()).toFixed(1), ip = Math.round(LOGO_H * 1.15);
+  document.getElementById('wrap').innerHTML = PROTOS.map(([icon, bg, label]) => {
+    const pageBg = COLORS[bg === 'beige-dark' ? 'beige' : bg];
+    const dp = Math.round(LOGO_H * 1.7), dm = Math.round((ip - dp) / 2);
+    const w = icon === 'bridge' ? Math.round(LOGO_H * 2.375) : icon === 'dot' ? dp : ip, h = icon === 'bridge' ? LOGO_H : icon === 'dot' ? dp : ip;
+    // Fading dot: bigger so its visible part matches the height of the L; negative margins keep the spacing.
+    const sz = icon === 'dot' ? ` style="margin:${dm}px"` : '';
+    const svg = ICONS[icon](iconColor(icon, bg), pageBg).replace('<svg', `<svg width="${w}" height="${h}"${sz}`);
+    return `<div>
+      <p class="label">${label}</p>
+      <div class="proto" data-bg="${bg}" data-icon="${icon}">
+        <div class="mesh"></div>
+        <header class="hdr"><a class="lockup" href="#">${svg}<span class="word" style="font-size:${fs}px">LineupBridge</span></a><nav><span>Sign up</span><span>Log in</span></nav></header>
+        <section class="hero"><div class="copy">
+          <h1>Professional DJ booking platform,<br class="br-wide"> from offer to payment</h1>
+          <p class="sub">Structured offers, organized negotiations, confirmed bookings, and secured payments.</p>
+          <form class="search" role="search" onsubmit="return false">
+            <input type="search" aria-label="Search DJs" placeholder="Type a DJ name" autocomplete="off">
+            <button class="btn" type="submit">Search</button>
+          </form>
+        </div></section>
+        <section class="sec"><div></div><div></div><div></div></section>
+        <section class="sec"><div></div><div></div><div></div></section>
+      </div></div>`;
+  }).join('');
+  document.querySelectorAll('.proto').forEach(wire);
+}
+
+function wire(p) {
+  const mesh = p.querySelector('.mesh'), line = p.querySelector('.knob-line'), core = p.querySelector('.dot-core');
+  p.addEventListener('pointermove', e => { const r = p.getBoundingClientRect(); mesh.style.setProperty('--x', (e.clientX - r.left) + 'px'); mesh.style.setProperty('--y', (e.clientY - r.top) + 'px'); p.classList.add('on'); });
+  p.addEventListener('pointerleave', () => p.classList.remove('on'));
+  p.addEventListener('scroll', () => {
+    p.classList.toggle('scrolled', p.scrollTop > 24);
+    // Fading dot: the solid core swells and shrinks once per section.
+    if (core) core.setAttribute('offset', (0.12 + 0.5 * Math.abs(Math.sin(Math.PI * p.scrollTop / p.clientHeight))).toFixed(3));
+    if (!line) return;
+    // Hero = 2 o'clock (60°), section 2 = 12 o'clock (0°), section 3 = 10 o'clock (-60°).
+    const secs = p.querySelectorAll('.sec'), s1 = secs[0].offsetTop, s2 = secs[1].offsetTop, y = p.scrollTop;
+    const a = y <= s1 ? 60 - 60 * (y / s1) : -60 * Math.min(1, (y - s1) / (s2 - s1));
+    line.style.transform = `rotate(${a}deg)`;
+  }, { passive: true });
+}
+
+render();
+document.fonts.load("600 40px 'Inter Tight'").then(render).catch(() => {});
+</script>
+</body>
+</html>

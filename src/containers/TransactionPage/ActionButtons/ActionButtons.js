@@ -7,6 +7,7 @@ import { allowCustomerCounterOffer, allowProviderUpdateOffer } from '../../../ut
 
 import { PrimaryButton, SecondaryButton } from '../../../components';
 
+import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './ActionButtons.module.css';
 
 export const ACTION_BUTTON_1_ID = 'actionButton1';
@@ -143,6 +144,9 @@ const getButtonStatus = (buttonProps, additionalInfo) => {
  * @param {string} [props.errorMessageId] - The translation id of the error message
  * @param {string} [props.timeZone] - The time zone
  * @param {boolean} [props.isCounterpartyInactive] - Whether the counterparty is inactive
+ * @param {'default'|'stack'|'bar'} [props.variant] - LineupBridge look: 'stack' = buttons under each
+ *   other (summary card), 'bar' = sticky bar (stacked on phones, side by side from 768px)
+ * @param {boolean} [props.secondaryAsLink] - render the secondary action as a text link
  */
 const ActionButtons = props => {
   const {
@@ -161,9 +165,18 @@ const ActionButtons = props => {
     errorMessageId,
     timeZone = 'Etc/UTC',
     isCounterpartyInactive,
+    variant = 'default',
+    secondaryAsLink = false,
   } = props;
 
   const intl = useIntl();
+  const isLineup = variant !== 'default';
+  const primaryClassProps = isLineup
+    ? { rootClassName: buttonCss.primary, className: css.lineupButton }
+    : {};
+  const secondaryClassProps = isLineup
+    ? { rootClassName: buttonCss.secondary, className: css.lineupButton }
+    : {};
 
   if (isListingDeleted && isProvider) {
     return null;
@@ -191,32 +204,30 @@ const ActionButtons = props => {
   const isVisible = (actionButtonName, buttonStatus) =>
     actionButtonOrder.includes(actionButtonName) && !buttonStatus.hidden;
 
-  const visiblePrimary =
-    !!primaryButtonProps && isVisible('primary', primaryButtonStatus);
-  const visibleSecondary =
-    !!secondaryButtonProps && isVisible('secondary', secondaryButtonStatus);
-  const visibleTertiary =
-    !!tertiaryButtonProps && isVisible('tertiary', tertiaryButtonStatus);
+  const visiblePrimary = !!primaryButtonProps && isVisible('primary', primaryButtonStatus);
+  const visibleSecondary = !!secondaryButtonProps && isVisible('secondary', secondaryButtonStatus);
+  const visibleTertiary = !!tertiaryButtonProps && isVisible('tertiary', tertiaryButtonStatus);
   const visibleButtonCount =
     (visiblePrimary ? 1 : 0) + (visibleSecondary ? 1 : 0) + (visibleTertiary ? 1 : 0);
   const hasMultipleButtons = visibleButtonCount > 1;
   const renderingOrder =
-    hasMultipleButtons || containerId === 'desktop'
+    isLineup || hasMultipleButtons || containerId === 'desktop'
       ? actionButtonOrder
       : [...actionButtonOrder].reverse();
 
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || (isLineup ? css.lineupRoot : css.root), className);
+  const wrapperClasses = isLineup
+    ? variant === 'bar'
+      ? css.lineupBar
+      : css.lineupStack
+    : classNames(css.actionButtonsWrapper, { [css.multipleButtons]: !!hasMultipleButtons });
 
   return showButtons ? (
     <div className={classes}>
       <div className={css.actionErrors}>
         {primaryErrorMessage || secondaryErrorMessage || tertiaryErrorMessage}
       </div>
-      <div
-        className={classNames(css.actionButtonsWrapper, {
-          [css.multipleButtons]: !!hasMultipleButtons,
-        })}
-      >
+      <div className={wrapperClasses}>
         {renderingOrder.map(buttonType => {
           if (buttonType === 'primary') {
             if (!primaryButtonProps) {
@@ -227,6 +238,7 @@ const ActionButtons = props => {
             return hasValidData && !hidden ? (
               <div className={css.actionButtonWrapper} key={buttonType}>
                 <PrimaryButton
+                  {...primaryClassProps}
                   id={`${containerId}_${ACTION_BUTTON_1_ID}`}
                   inProgress={primaryButtonProps.inProgress}
                   disabled={primaryDisabled}
@@ -243,14 +255,27 @@ const ActionButtons = props => {
             const secondaryDisabled = disabled || !!secondaryButtonProps?.inProgress;
             return secondaryButtonProps && hasValidData && !hidden ? (
               <div className={css.actionButtonWrapper} key={buttonType}>
-                <SecondaryButton
-                  id={`${containerId}_${ACTION_BUTTON_2_ID}`}
-                  inProgress={secondaryButtonProps?.inProgress}
-                  disabled={secondaryDisabled}
-                  onClick={secondaryButtonProps.onAction}
-                >
-                  {secondaryButtonProps.buttonText}
-                </SecondaryButton>
+                {secondaryAsLink ? (
+                  <button
+                    type="button"
+                    className={css.linkButton}
+                    id={`${containerId}_${ACTION_BUTTON_2_ID}`}
+                    disabled={secondaryDisabled}
+                    onClick={secondaryButtonProps.onAction}
+                  >
+                    {secondaryButtonProps.buttonText}
+                  </button>
+                ) : (
+                  <SecondaryButton
+                    {...secondaryClassProps}
+                    id={`${containerId}_${ACTION_BUTTON_2_ID}`}
+                    inProgress={secondaryButtonProps?.inProgress}
+                    disabled={secondaryDisabled}
+                    onClick={secondaryButtonProps.onAction}
+                  >
+                    {secondaryButtonProps.buttonText}
+                  </SecondaryButton>
+                )}
                 {disabled && <div className={css.finePrint}>{reason}</div>}
               </div>
             ) : null;
@@ -261,6 +286,7 @@ const ActionButtons = props => {
             return tertiaryButtonProps && hasValidData && !hidden ? (
               <div className={css.actionButtonWrapper} key={buttonType}>
                 <SecondaryButton
+                  {...secondaryClassProps}
                   id={`${containerId}_${ACTION_BUTTON_3_ID}`}
                   inProgress={tertiaryButtonProps?.inProgress}
                   disabled={tertiaryDisabled}

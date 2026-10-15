@@ -38,16 +38,19 @@ words as today. Only the social links come from Console.
 Beige page background, 1px `--colorGrey100` rule above, full width with `--lb-gutter` side padding
 (same inset as the topbar).
 
-- **Desktop (from 1024px):** row 1 has logo + slogan on the left, FAQ and Contact us on the right. A 1px rule, then
-  row 2: copyright, Privacy policy, Terms of use, Payment terms on the left, social icons on the right.
-- **iPad 768:** same, but the copyright drops to its own line under the legal links.
-- **Mobile:** everything stacked and left-aligned: logo, slogan, help links, rule, legal links,
-  copyright, social icons.
+- **Desktop (from 1024px):** row 1 has logo + slogan on the left and the social icons on the right,
+  level with the logo. A 1px rule, then row 2: copyright, Privacy policy, Terms of use, Payment
+  terms on the left, FAQ and Contact us on the right, all on one line.
+- **iPad 768:** same split. FAQ and Contact us stay on one line, level with the legal links (the
+  right group aligns with the first line on the left). The copyright drops to its own line, tight
+  under the legal links.
+- **Mobile:** everything stacked and left-aligned: logo, slogan, social icons, rule, legal links,
+  copyright, FAQ and Contact us.
 
 Type and color:
 
 - Slogan: `.small` in `--lb-text-secondary`.
-- Help links: `.small`, 600, black.
+- Help links (FAQ, Contact us): `.small` in `--lb-text-muted`, the same Muted link as the legal links.
 - Legal links and copyright: `.small` in `--lb-text-muted`. Links turn black and underlined on hover.
 - Social icons: 20px, muted, black on hover.
 - No `|` separators: the gaps do the work. Every link and icon is at least 44px tall.
@@ -55,7 +58,15 @@ Type and color:
 Spacing:
 
 - Padding: 32/24px on phones, 48/32px from 768px (top/bottom).
-- 32px between the rows. Logo → slogan 8px. Links 24px apart.
+- No gap between the two rows. From 768px, 16px (`--lb-space-4`) under the brand row so the rule
+  never touches the slogan. 8px (`--lb-space-2`) between the rule and the link row.
+- Logo → slogan 8px. Slogan → social icons 8px on mobile. Links 24px apart.
+- Copyright: no extra space above it (the 44px link boxes already give it room).
+- Social icons from 768px: level with the logo. The visible icon (not its 44px tap box) is centred on
+  the logo letters (cap top to baseline), which sit at 40% of the logo image height in
+  `brand-logo.png`: `margin-top: calc(var(--lb-logo-footer) * 0.4 - 22px)`. Re-measure if the logo
+  image changes.
+- List items (`.navItem`, `.socialItem`) reset the template's global `li` padding (5px / 3px) to 0.
 
 ## Decisions (Oct 13, 2026)
 
@@ -69,7 +80,16 @@ Spacing:
    (the same keys as the template): facebook, instagram, linkedin, pinterest, tiktok, twitter (X),
    youtube.
 3. **Copyright year:** the current year, from code. The wording stays as it is today.
-4. **Sizes:** the logo is 24px high (`--lb-logo-footer`), social icons are 20px (`--lb-icon-social`).
+4. **Sizes:** the logo is 38px high (`--lb-logo-footer`), social icons are 20px (`--lb-icon-social`).
 5. **Link styles:** Footer link (FAQ, Contact us) and Muted link (legal links), added to the UI
    library.
 6. The search page has no footer (template default). That stays as it is.
+
+## Changes (Oct 14, 2026)
+
+1. Logo 24px → 38px.
+2. Row gap removed; spacing per the list above.
+3. Social icons level with the logo on iPad and desktop (option 1 of two tried; the other was level
+   with the slogan baseline).
+4. FAQ / Contact us fixed to one line on the right, level with the legal links (they wrapped on iPad
+   and sat a few px low on desktop).

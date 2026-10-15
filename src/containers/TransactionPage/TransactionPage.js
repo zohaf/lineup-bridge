@@ -79,6 +79,7 @@ import ProposeChangesModal from './ProposeChangesModal/ProposeChangesModal';
 import DeclineOfferModal from './DeclineOfferModal/DeclineOfferModal';
 import AcceptOfferModal from './AcceptOfferModal/AcceptOfferModal';
 import TransactionPanel from './TransactionPanel/TransactionPanel';
+import NegotiationPanel from './NegotiationPanel/NegotiationPanel';
 
 import {
   makeTransition,
@@ -856,12 +857,21 @@ export const TransactionPageComponent = props => {
     ) : null;
 
   // ── Offer details card for DJ in QUOTE_REQUESTED (read-only; CTAs in aside) ──
+  // Negotiation: the offer always shows under the page title as a collapsible "Offer" card, open
+  // when the viewer has to react (a primary action), closed while they wait. Other processes:
+  // only where the state data asks for it.
   const offerDetailsSlot =
-    isDataAvailable && stateDataForPanel?.showOfferDetailsCard && transaction && customer ? (
+    isDataAvailable &&
+    (isNegotiationProcessName(processName) || stateDataForPanel?.showOfferDetailsCard) &&
+    transaction &&
+    customer ? (
       <OfferDetailsCard
         transaction={transaction}
         customer={customer}
         showProposedChanges={!stateDataForPanel.showAgreedOfferDetails}
+        collapsible={isNegotiationProcessName(processName)}
+        defaultOpen={!!stateDataForPanel?.primaryButtonProps}
+        viewerRole={transactionRole}
       />
     ) : null;
 
@@ -977,7 +987,7 @@ export const TransactionPageComponent = props => {
       showListingImage={showListingImage}
       offerSummarySlot={offerSummarySlot}
       offerDetailsSlot={offerDetailsSlot}
-      actionButtons={containerId => (
+      actionButtons={(containerId, extraProps = {}) => (
         <ActionButtons
           containerId={containerId}
           listingTypeConfig={foundListingTypeConfig}
@@ -992,6 +1002,7 @@ export const TransactionPageComponent = props => {
           {...getDataValidationResult(transaction, process)}
           timeZone={listing?.attributes?.availabilityPlan?.timezone || 'Etc/UTC'}
           isCounterpartyInactive={isCounterpartyInactive}
+          {...extraProps}
         />
       )}
       activityFeed={
@@ -1094,20 +1105,13 @@ export const TransactionPageComponent = props => {
       )
     : null;
 
-  return (
-    <Page
-      title={intl.formatMessage(
-        { id: 'TransactionPage.schemaTitle' },
-        { title: listingTitle, h1: pageHeading }
-      )}
-      scrollingDisabled={scrollingDisabled}
-    >
-      <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
-        <div className={css.root}>{panel}</div>
-        {!isNegotiationProcess && (
-          <ReviewModal
-            id="ReviewOrderModal"
-            isOpen={isReviewModalOpen}
+  const useNegotiationPanel = isNegotiationProcess && isDataAvailable;
+  const modals = (
+    <>
+      {!isNegotiationProcess && (
+        <ReviewModal
+          id="ReviewOrderModal"
+          isOpen={isReviewModalOpen}
           focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_1_ID}`}
           onCloseModal={() => setReviewModalOpen(false)}
           onManageDisableScrolling={onManageDisableScrolling}
@@ -1116,127 +1120,152 @@ export const TransactionPageComponent = props => {
           reviewSent={reviewSubmitted}
           sendReviewInProgress={sendReviewInProgress}
           sendReviewError={sendReviewError}
-            marketplaceName={config.marketplaceName}
-          />
-        )}
-        {process?.transitions?.DISPUTE ? (
-          <DisputeModal
-            id="DisputeOrderModal"
-            isOpen={isDisputeModalOpen}
-            focusElementId={`${actionButtonContainer}_disputeOrderButton`}
-            onCloseModal={() => setDisputeModalOpen(false)}
-            onManageDisableScrolling={onManageDisableScrolling}
-            onDisputeOrder={onDisputeOrder(
-              transaction?.id,
-              process.transitions.DISPUTE,
-              onTransition,
-              setDisputeSubmitted
-            )}
-            disputeSubmitted={disputeSubmitted}
-            disputeInProgress={transitionInProgress === process.transitions.DISPUTE}
-            disputeError={transitionError}
-          />
-        ) : null}
-        {process?.transitions?.REQUEST_CHANGES ? (
-          <RequestChangesModal
-            id="RequestChangesModal"
-            isOpen={isRequestChangesModalOpen}
-            focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_2_ID}`}
-            onCloseModal={() => setRequestChangesModalOpen(false)}
-            onManageDisableScrolling={onManageDisableScrolling}
-            onChangeRequest={onChangeRequest(
-              transaction?.id,
-              process.transitions.REQUEST_CHANGES,
-              onTransition,
-              onSendMessage,
-              config,
-              setRequestChangesModalOpen,
-              setChangeRequestSubmitted
-            )}
-            changeRequestSubmitted={changeRequestSubmitted}
-            changeRequestInProgress={transitionInProgress === process.transitions.REQUEST_CHANGES}
-            changeRequestError={transitionError}
-          />
-        ) : null}
-        {showMakeCounterOfferModal ? (
-          <MakeCounterOfferModal
-            id="MakeCounterOfferModal"
-            isOpen={isMakeCounterOfferModalOpen}
-            onCloseModal={() => setMakeCounterOfferModalOpen(false)}
-            focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_3_ID}`}
-            onManageDisableScrolling={onManageDisableScrolling}
-            onMakeCounterOffer={onMakeCounterOffer(
-              transaction?.id,
-              transactionRole === CUSTOMER
-                ? process?.transitions?.CUSTOMER_MAKE_COUNTER_OFFER
-                : process?.transitions?.PROVIDER_MAKE_COUNTER_OFFER,
-              onTransition,
-              transactionRole,
-              currency,
-              setMakeCounterOfferModalOpen,
-              setCounterOfferSubmitted,
-              onSendMessage,
-              config
-            )}
-            currentOffer={currentOffer}
-            counterOfferSubmitted={counterOfferSubmitted}
-            counterOfferInProgress={counterOffers.includes(transitionInProgress)}
-            counterOfferError={transitionError}
-            currencyConfig={currencyConfig}
-            isFinalOffer={transactionRole === CUSTOMER}
-          />
-        ) : null}
-        {process?.transitions?.PROVIDER_REJECT_COUNTER_OFFER ? (
-          <RejectCounterOfferConfirmModal
-            id="RejectCounterOfferConfirmModal"
-            isOpen={isRejectCounterOfferModalOpen}
-            onCloseModal={() => setRejectCounterOfferModalOpen(false)}
-            focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_2_ID}`}
-            onManageDisableScrolling={onManageDisableScrolling}
-            onConfirmReject={onConfirmRejectCounterOffer}
-            inProgress={transitionInProgress === process.transitions.PROVIDER_REJECT_COUNTER_OFFER}
-          />
-        ) : null}
-        <ProposeChangesModal
-          id="ProposeChangesModal"
-          isOpen={isProposeChangesModalOpen}
-          onClose={() => setProposeChangesModalOpen(false)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          onSubmit={onSubmitProposeChanges}
-          currentFee={transaction?.attributes?.protectedData?.offerAmount}
-          currentStartTime={transaction?.attributes?.protectedData?.bookingStartTime}
-          currentDuration={transaction?.attributes?.protectedData?.durationHours}
-          currentNotes={transaction?.attributes?.protectedData?.additionalNotes}
-          inProgress={transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST}
+          marketplaceName={config.marketplaceName}
         />
-        <AcceptOfferModal
-          id="AcceptOfferModal"
-          isOpen={isAcceptOfferModalOpen}
-          onClose={closeAcceptOfferModal}
+      )}
+      {process?.transitions?.DISPUTE ? (
+        <DisputeModal
+          id="DisputeOrderModal"
+          isOpen={isDisputeModalOpen}
+          focusElementId={`${actionButtonContainer}_disputeOrderButton`}
+          onCloseModal={() => setDisputeModalOpen(false)}
           onManageDisableScrolling={onManageDisableScrolling}
-          onConfirm={onConfirmAcceptOffer}
-          inProgress={
-            transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST ||
-            transitionInProgress === process?.transitions?.PROVIDER_ACCEPT_COUNTER_OFFER
-          }
+          onDisputeOrder={onDisputeOrder(
+            transaction?.id,
+            process.transitions.DISPUTE,
+            onTransition,
+            setDisputeSubmitted
+          )}
+          disputeSubmitted={disputeSubmitted}
+          disputeInProgress={transitionInProgress === process.transitions.DISPUTE}
+          disputeError={transitionError}
         />
-        <DeclineOfferModal
-          id="DeclineOfferModal"
-          isOpen={isDeclineOfferModalOpen}
-          onClose={() => setDeclineOfferModalOpen(false)}
+      ) : null}
+      {process?.transitions?.REQUEST_CHANGES ? (
+        <RequestChangesModal
+          id="RequestChangesModal"
+          isOpen={isRequestChangesModalOpen}
+          focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_2_ID}`}
+          onCloseModal={() => setRequestChangesModalOpen(false)}
           onManageDisableScrolling={onManageDisableScrolling}
-          onConfirm={onConfirmDeclineOffer}
-          inProgress={transitionInProgress === process?.transitions?.REJECT_REQUEST}
+          onChangeRequest={onChangeRequest(
+            transaction?.id,
+            process.transitions.REQUEST_CHANGES,
+            onTransition,
+            onSendMessage,
+            config,
+            setRequestChangesModalOpen,
+            setChangeRequestSubmitted
+          )}
+          changeRequestSubmitted={changeRequestSubmitted}
+          changeRequestInProgress={transitionInProgress === process.transitions.REQUEST_CHANGES}
+          changeRequestError={transitionError}
         />
-        <DeclineOfferModal
-          id="CustomerRejectOfferModal"
-          isOpen={isCustomerRejectModalOpen}
-          onClose={() => setCustomerRejectModalOpen(false)}
+      ) : null}
+      {showMakeCounterOfferModal ? (
+        <MakeCounterOfferModal
+          id="MakeCounterOfferModal"
+          isOpen={isMakeCounterOfferModalOpen}
+          onCloseModal={() => setMakeCounterOfferModalOpen(false)}
+          focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_3_ID}`}
           onManageDisableScrolling={onManageDisableScrolling}
-          onConfirm={onConfirmCustomerReject}
-          inProgress={transitionInProgress === process?.transitions?.CUSTOMER_REJECT_OFFER}
+          onMakeCounterOffer={onMakeCounterOffer(
+            transaction?.id,
+            transactionRole === CUSTOMER
+              ? process?.transitions?.CUSTOMER_MAKE_COUNTER_OFFER
+              : process?.transitions?.PROVIDER_MAKE_COUNTER_OFFER,
+            onTransition,
+            transactionRole,
+            currency,
+            setMakeCounterOfferModalOpen,
+            setCounterOfferSubmitted,
+            onSendMessage,
+            config
+          )}
+          currentOffer={currentOffer}
+          counterOfferSubmitted={counterOfferSubmitted}
+          counterOfferInProgress={counterOffers.includes(transitionInProgress)}
+          counterOfferError={transitionError}
+          currencyConfig={currencyConfig}
+          isFinalOffer={transactionRole === CUSTOMER}
         />
-      </LayoutSingleColumn>
+      ) : null}
+      {process?.transitions?.PROVIDER_REJECT_COUNTER_OFFER ? (
+        <RejectCounterOfferConfirmModal
+          id="RejectCounterOfferConfirmModal"
+          isOpen={isRejectCounterOfferModalOpen}
+          onCloseModal={() => setRejectCounterOfferModalOpen(false)}
+          focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_2_ID}`}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onConfirmReject={onConfirmRejectCounterOffer}
+          inProgress={transitionInProgress === process.transitions.PROVIDER_REJECT_COUNTER_OFFER}
+        />
+      ) : null}
+      <ProposeChangesModal
+        id="ProposeChangesModal"
+        isOpen={isProposeChangesModalOpen}
+        onClose={() => setProposeChangesModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        onSubmit={onSubmitProposeChanges}
+        currentFee={transaction?.attributes?.protectedData?.offerAmount}
+        currentStartTime={transaction?.attributes?.protectedData?.bookingStartTime}
+        currentDuration={transaction?.attributes?.protectedData?.durationHours}
+        currentNotes={transaction?.attributes?.protectedData?.additionalNotes}
+        inProgress={transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST}
+      />
+      <AcceptOfferModal
+        id="AcceptOfferModal"
+        isOpen={isAcceptOfferModalOpen}
+        onClose={closeAcceptOfferModal}
+        onManageDisableScrolling={onManageDisableScrolling}
+        onConfirm={onConfirmAcceptOffer}
+        inProgress={
+          transitionInProgress === process?.transitions?.MAKE_OFFER_FROM_REQUEST ||
+          transitionInProgress === process?.transitions?.PROVIDER_ACCEPT_COUNTER_OFFER
+        }
+      />
+      <DeclineOfferModal
+        id="DeclineOfferModal"
+        isOpen={isDeclineOfferModalOpen}
+        onClose={() => setDeclineOfferModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        onConfirm={onConfirmDeclineOffer}
+        inProgress={transitionInProgress === process?.transitions?.REJECT_REQUEST}
+      />
+      <DeclineOfferModal
+        id="CustomerRejectOfferModal"
+        isOpen={isCustomerRejectModalOpen}
+        onClose={() => setCustomerRejectModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        onConfirm={onConfirmCustomerReject}
+        inProgress={transitionInProgress === process?.transitions?.CUSTOMER_REJECT_OFFER}
+      />
+    </>
+  );
+
+  return (
+    <Page
+      title={intl.formatMessage(
+        { id: 'TransactionPage.schemaTitle' },
+        { title: listingTitle, h1: pageHeading }
+      )}
+      scrollingDisabled={scrollingDisabled}
+    >
+      {useNegotiationPanel ? (
+        // Negotiation: Split · summary layout with the same props as TransactionPanel
+        <NegotiationPanel
+          {...panel.props}
+          topbar={<TopbarContainer />}
+          footer={<FooterContainer />}
+        >
+          {modals}
+        </NegotiationPanel>
+      ) : (
+        <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
+          <div className={css.root}>{panel}</div>
+          {modals}
+        </LayoutSingleColumn>
+      )}
     </Page>
   );
 };

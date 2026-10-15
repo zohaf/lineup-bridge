@@ -4,8 +4,9 @@ import classNames from 'classnames';
 import css from './PageHeader.module.css';
 
 /**
- * Page header: optional image, optional eyebrow, title and optional lead.
- * Sits on the page background. All content comes in as props.
+ * Page header: optional eyebrow, optional image, title and optional lead.
+ * The eyebrow sits on its own line; the image sits beside the title and lead, centred on them
+ * (from 768px). Phones: image, eyebrow, title, lead stacked. All content comes in as props.
  *
  * @component
  * @param {Object} props
@@ -20,15 +21,13 @@ const PageHeader = props => {
   const { className, image, eyebrow, title, lead } = props;
 
   return (
-    <header className={classNames(css.root, className)}>
-      <div className={css.identity}>
-        {image ? <div className={css.image}>{image}</div> : null}
-        <div className={css.titles}>
-          {eyebrow ? <p className={css.eyebrow}>{eyebrow}</p> : null}
-          <h1 className={css.title}>{title}</h1>
-        </div>
+    <header className={classNames(css.root, { [css.withImage]: !!image }, className)}>
+      {image ? <div className={css.image}>{image}</div> : null}
+      {eyebrow ? <p className={css.eyebrow}>{eyebrow}</p> : null}
+      <div className={css.titles}>
+        <h1 className={css.title}>{title}</h1>
+        {lead ? <p className={css.lead}>{lead}</p> : null}
       </div>
-      {lead ? <p className={css.lead}>{lead}</p> : null}
     </header>
   );
 };

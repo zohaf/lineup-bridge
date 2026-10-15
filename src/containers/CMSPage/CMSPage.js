@@ -427,11 +427,7 @@ const HomeNextSteps = props => {
                 };
 
                 const hasPayAction = showPayCta && isCustomerView;
-                const chipTone = needsUserAction
-                  ? 'active'
-                  : activityStatusId === 'Home.activityFinalOfferAccepted'
-                  ? 'success'
-                  : 'neutral';
+                const chipTone = needsUserAction ? 'active' : 'success';
 
                 return (
                   <div

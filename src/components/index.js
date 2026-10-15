@@ -156,5 +156,6 @@ export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/
 
 export { default as LayoutComposer, LayoutSingleColumn, LayoutSideNavigation } from './LayoutComposer';
 export { default as LayoutCentered } from './LayoutCentered/LayoutCentered';
+export { default as LayoutSplit } from './LayoutSplit/LayoutSplit';
 export { default as MaintenanceMode } from './MaintenanceMode/MaintenanceMode';
 export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';

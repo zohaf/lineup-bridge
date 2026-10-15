@@ -9,8 +9,7 @@ and [tokens.md](tokens.md) for token values.
 
 - Design: [design/layouts.html](design/layouts.html) (toolbar: layout, view, tags)
 - Not covered: the landing page and Console content pages (`PageBuilder`) keep their own layout.
-  Parked until redesigned: public profile and listing page (see [bugs.md](bugs.md) 4), transaction
-  page.
+  Transaction page (negotiation) and checkout: Split · summary, see [booking-journey.md](booking-journey.md).
 
 ## 1. The two layouts
 
@@ -21,6 +20,7 @@ One column, centered on the page. The variant sets the column's maximum width.
 | Variant | Max width | Used by |
 | --- | --- | --- |
 | `narrow` | 440px | Log in `/login`, Sign up `/signup`, Password recovery `/recover-password`, Password reset `/reset-password` |
+| `profile` | 600px | Public profile `/l/:slug/:id` (`ListingPage`, spec [public-profile-page.md](public-profile-page.md)) |
 | `form` | 760px | Complete your offer `/l/:slug/:id/request-quote` (`RequestQuotePage`, already redesigned, 760px) |
 | `wide` | 920px | Home `/p/home`, logged-in section (`HomeNextSteps`, `OwnListingsSummary` in `CMSPage.js`, already 920px) |
 
@@ -49,7 +49,7 @@ behaves on phones.
 | Role | Desktop (from 1024px) | Phone and tablet (below 1024px) | Used by |
 | --- | --- | --- | --- |
 | `nav` | Side column on the **left**, 264px, sticky: the **step menu** (below). Main column on the right, max 760px (the same width as a centered form). | The step menu becomes a **row under the topbar** that stays visible while scrolling and scrolls sideways if the items don't fit. | DJ profile builder `/l/:slug/:id/:type/:tab` (`EditListingPage`), Account settings `/account/*` (Contact details, Password, Payout details, Payment methods, Manage account) |
-| `summary` | Main column on the **left** (payment form). Side column on the **right**, 360px, sticky (DJ and price breakdown). | The summary card goes **above** the main column, as a normal card (not collapsible). | Checkout `/l/:slug/:id/checkout` |
+| `summary` | Page header and main column on the **left** (offer details / payment form, max 760px). Side column on the **right**, 360px, sticky below the topbar, level with the first main card (or with the page title when the page has no main content): the "Booking summary" card (price only; the DJ is in the header). | Header, then the summary card, then the main column. Actions: primary + secondary in a sticky bar (side by side from 768px, stacked on phones), the minor action as a text link at the end. | Transaction page, negotiation (`/order/:id`, `/sale/:id`) and checkout `/l/:slug/:id/checkout` (decided Oct 15) |
 
 - Split container: max 1120px, centered. Gap between columns: 48px.
 - Sticky side column: sticks `--lb-space-5` (24px) below the topbar.
@@ -110,6 +110,7 @@ Add to `src/styles/lineupTokens.css`, next to the type and spacing tokens:
 
 ```css
 --lb-width-narrow: 440px;
+--lb-width-profile: 600px;
 --lb-width-form: 760px;
 --lb-width-wide: 920px;
 --lb-width-split: 1120px;
@@ -197,7 +198,7 @@ one intended change: from 768px the space above the content becomes 32px (one gu
 - DJ profile builder: add `StepMenu` to `components.html`, then build `LayoutSplit role="nav"` and
   `StepMenu` together with that page.
 - Account settings: reuse them.
-- Checkout: add `role="summary"` to `LayoutSplit` when checkout is redesigned.
+- Built Oct 15: `LayoutSplit` (summary role only, props `header`, `side`, `after`) for the transaction page and checkout. The `nav` role and `StepMenu` follow with the DJ profile builder.
 
 Each page gets its own spec and design file, like [offer-builder-page.md](offer-builder-page.md).
 This doc only fixes the frame they sit in.
@@ -205,5 +206,5 @@ This doc only fixes the frame they sit in.
 ## 5. Open items
 
 - [ ] Email verification `/verify-email`: centered narrow too? Not listed yet.
-- [ ] Transaction page (offer and negotiation details): which layout, decided with its redesign.
-- [ ] Public profile and listing page: decide which page is which ([bugs.md](bugs.md) 4), then the layout.
+- [x] Transaction page (negotiation): Split · summary; header in the left column, summary level with the first card (or the title when there is no content), Oct 15, 2026.
+- [x] Public profile = listing page `/l/:slug/:id`, Centered `profile` (600px), Oct 14, 2026.

@@ -20,6 +20,8 @@
 
 .main {
   display: grid;
+  /* Children keep their own height; the main area still fills the screen (row 1fr) */
+  align-content: start;
   scroll-margin-top: var(--topbarHeight);
 
   @media (--viewportMedium) {
@@ -46,4 +48,80 @@
 
 .wide {
   --lb-centered-width: var(--lb-width-wide);
+}
+
+/* Split · summary: page header, summary (side) and main column. Source order = phone order
+   (header, summary, main). From 1024px the header and main share the left column and the summary
+   sits on the right, sticky: level with the first main card, or with the title when the page has
+   no main content (.splitAlignTitle). Transaction page (negotiation) and checkout. */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--lb-card-gap);
+  width: 100%;
+  max-width: calc(var(--lb-width-split) + 2 * var(--lb-gutter));
+  margin: 0 auto;
+  padding: var(--lb-page-top) var(--lb-gutter) var(--lb-page-bottom);
+
+  @media (--viewportLarge) {
+    grid-template-columns: minmax(0, var(--lb-width-form)) var(--lb-side-summary);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'header .'
+      'main side';
+    justify-content: space-between;
+    column-gap: var(--lb-split-gap);
+  }
+}
+
+/* No main content (only the header): the summary starts level with the page title, below the
+   eyebrow line (eyebrow line height + PageHeader gap) */
+.splitAlignTitle {
+  @media (--viewportLarge) {
+    grid-template-areas:
+      'header side'
+      'main side';
+
+    & .splitSide {
+      margin-top: calc(var(--lb-size-small) * var(--lb-leading-small) + var(--lb-space-3));
+    }
+  }
+}
+
+/* With a sticky topbar the summary sticks below it, not under it */
+.splitBelowTopbar {
+  --lb-split-sticky-top: calc(var(--lb-topbar-height) + var(--lb-sticky-top));
+}
+
+/* Header → content is 32px (design-system-rules.md); the grid gap gives the card gap */
+.splitHeader {
+  min-width: 0;
+  margin-bottom: calc(var(--lb-space-6) - var(--lb-card-gap));
+}
+
+.splitSide,
+.splitMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-card-gap);
+  min-width: 0;
+}
+
+/* Named areas only exist from 1024px; using them on phones would add implicit columns */
+@media (--viewportLarge) {
+  .splitHeader {
+    grid-area: header;
+  }
+
+  .splitSide {
+    grid-area: side;
+    position: sticky;
+    top: var(--lb-split-sticky-top, var(--lb-sticky-top));
+  }
+
+  .splitMain {
+    grid-area: main;
+  }
 }

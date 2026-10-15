@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
+import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import {
   getBusinessOfferType,
   getLatestBusinessOffer,
+  transitions,
 } from '../../../transactions/transactionProcessNegotiation';
+import { ChevronDown } from 'lucide-react';
+
+import { SectionCard } from '../../../components';
+
 import css from './OfferDetailsCard.module.css';
 
 /**
@@ -15,12 +21,23 @@ import css from './OfferDetailsCard.module.css';
  * @param {Object} props
  * @param {Object} props.transaction - The Sharetribe transaction entity.
  * @param {Object} props.customer - The customer user entity.
+ * @param {boolean} [props.collapsible] - One "Offer summary" card with a header (venue · date) that opens
+ *   and closes; the sections become groups inside it.
+ * @param {boolean} [props.defaultOpen] - With collapsible: open on load.
+ * @param {'customer'|'provider'} [props.viewerRole] - Who is looking; the DJ gets the organizer's
+ *   proposed-changes note while a final offer is pending.
  */
 const OfferDetailsCard = props => {
   const { transaction, customer } = props;
 
-  const { showProposedChanges = true } = props;
+  const {
+    showProposedChanges: showProposedChangesProp = true,
+    collapsible = false,
+    defaultOpen = true,
+    viewerRole,
+  } = props;
   const intl = useIntl();
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   const protectedData = transaction?.attributes?.protectedData || {};
   const listingTitle = transaction?.listing?.attributes?.title || '';
@@ -58,6 +75,22 @@ const OfferDetailsCard = props => {
 
   const latestBusinessOffer = getLatestBusinessOffer(transaction);
   const latestBusinessOfferType = getBusinessOfferType(latestBusinessOffer?.transition);
+
+  // Final offer (offer 3) waiting for the DJ: the fee shows the previous priced offer struck
+  // through and the final offer as the proposed value, for both sides. The DJ's earlier changes
+  // then read as agreed values, not as proposals.
+  const lastTransition = transaction?.attributes?.transitions?.at(-1)?.transition;
+  const isFinalOfferPending =
+    latestBusinessOfferType === 'final-offer' &&
+    lastTransition === transitions.CUSTOMER_MAKE_COUNTER_OFFER;
+  const pricedOffers = (transaction?.attributes?.metadata?.offers || []).filter(offer =>
+    Number.isFinite(Number(offer?.offerInSubunits))
+  );
+  const previousPricedOffer = pricedOffers.length > 1 ? pricedOffers.at(-2) : null;
+  const finalOfferPreviousAmount = previousPricedOffer
+    ? Number(previousPricedOffer.offerInSubunits) / 100
+    : proposedChanges?.proposedFee || offerAmount;
+  const showProposedChanges = showProposedChangesProp && !isFinalOfferPending;
   const isReceivedDjCounterOffer =
     latestBusinessOffer?.by === 'provider' && latestBusinessOfferType === 'counter-offer';
   const latestOfferAmount = latestBusinessOffer?.amount
@@ -134,257 +167,304 @@ const OfferDetailsCard = props => {
 
   const ProposedValue = ({ children }) => <span className={css.proposedValue}>{children}</span>;
 
-  return (
-    <div className={css.root}>
-      {hasProposedChanges ? (
-        <div className={css.proposedBanner}>
-          <FormattedMessage id="OfferDetailsCard.proposedChangesBanner" />
-        </div>
-      ) : null}
+  // One label/value pair. With a proposed value the current value is struck through.
+  const Row = ({ label, value, proposed, full }) => (
+    <div className={classNames(css.row, { [css.rowFull]: full, [css.rowChanged]: !!proposed })}>
+      <dt className={css.rowLabel}>{label}</dt>
+      <dd className={css.rowValue}>
+        {proposed ? <span className={css.previousValue}>{value}</span> : value}
+        {proposed ? <ProposedValue>{proposed}</ProposedValue> : null}
+      </dd>
+    </div>
+  );
 
-      <div className={css.section}>
-        <h3 className={css.sectionTitle}>
-          <FormattedMessage id="OfferDetailsCard.sectionEventDetails" />
-        </h3>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.venueName" />
-          </span>
-          <span className={css.rowValue}>{venueName || notProvided}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.location" />
-          </span>
-          <span className={css.rowValue}>{eventLocation || notProvided}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.eventName" />
-          </span>
-          <span className={css.rowValue}>{eventName || notProvided}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.date" />
-          </span>
-          <span className={css.rowValue}>{formatDate(bookingDate)}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.startTime" />
-          </span>
-          <div className={css.rowValueStack}>
-            <span className={css.rowValue}>{displayedBookingStartTime || notProvided}</span>
-            {showProposedChanges &&
-            proposedChanges?.proposedStartTime &&
-            proposedChanges.proposedStartTime !== bookingStartTime ? (
-              <ProposedValue>
-                <FormattedMessage
-                  id="OfferDetailsCard.proposedLabel"
-                  values={{ value: proposedChanges.proposedStartTime }}
-                />
-              </ProposedValue>
-            ) : null}
-          </div>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.endTime" />
-          </span>
-          <span className={css.rowValue}>{bookingEndTime || notProvided}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.expectedAttendance" />
-          </span>
-          <span className={css.rowValue}>{expectedAttendance || notProvided}</span>
-        </div>
-        {eventType ? (
-          <div className={css.row}>
-            <span className={css.rowLabel}>
-              <FormattedMessage id="OfferDetailsCard.eventType" />
-            </span>
-            <span className={css.rowValue}>
-              {intl.formatMessage({
+  const startTimeProposed =
+    showProposedChanges &&
+    proposedChanges?.proposedStartTime &&
+    proposedChanges.proposedStartTime !== bookingStartTime ? (
+      <FormattedMessage
+        id="OfferDetailsCard.proposedLabel"
+        values={{ value: proposedChanges.proposedStartTime }}
+      />
+    ) : null;
+
+  const durationProposed =
+    showProposedChanges &&
+    proposedChanges?.proposedDuration &&
+    proposedChanges.proposedDuration !== durationHours ? (
+      <FormattedMessage
+        id="OfferDetailsCard.proposedLabel"
+        values={{
+          value: intl.formatMessage(
+            { id: 'OfferDetailsCard.durationValue' },
+            { hours: proposedChanges.proposedDuration }
+          ),
+        }}
+      />
+    ) : null;
+
+  const finalOfferProposed =
+    isFinalOfferPending && latestBusinessOffer?.amount != null ? (
+      <FormattedMessage
+        id="OfferDetailsCard.proposedLabel"
+        values={{ value: `€${latestBusinessOffer.amount / 100}` }}
+      />
+    ) : null;
+
+  const feeProposed = finalOfferProposed ? (
+    finalOfferProposed
+  ) : showProposedChanges && proposedOfferAmount != null && proposedOfferAmount !== offerAmount ? (
+    <FormattedMessage
+      id="OfferDetailsCard.proposedLabel"
+      values={{ value: `€${proposedOfferAmount}` }}
+    />
+  ) : null;
+
+  const Note = ({ label, value, proposed }) => (
+    <div className={classNames(css.row, css.rowFull, { [css.rowChanged]: proposed })}>
+      <dt className={css.rowLabel}>{label}</dt>
+      <dd className={classNames(css.rowValue, css.noteValue, { [css.proposedValue]: proposed })}>
+        {value}
+      </dd>
+    </div>
+  );
+
+  // Standalone: one SectionCard per section. Collapsible: groups inside the one "Offer" card.
+  const Section = ({ title, children }) =>
+    collapsible ? (
+      <section className={css.group}>
+        <h3 className={css.groupTitle}>{title}</h3>
+        {children}
+      </section>
+    ) : (
+      <SectionCard title={title}>{children}</SectionCard>
+    );
+
+  const proposedNoteId = hasProposedChanges
+    ? 'OfferDetailsCard.proposedChangesBanner'
+    : isFinalOfferPending && viewerRole === 'provider'
+    ? 'OfferDetailsCard.proposedChangesBannerOrganizer'
+    : null;
+  const proposedNote = proposedNoteId ? (
+    <p className={css.proposedNote}>
+      <FormattedMessage id={proposedNoteId} />
+    </p>
+  ) : null;
+
+  const sections = (
+    <>
+      <Section title={<FormattedMessage id="OfferDetailsCard.sectionEventDetails" />}>
+        <dl className={css.rows}>
+          <Row
+            label={<FormattedMessage id="OfferDetailsCard.venueName" />}
+            value={venueName || notProvided}
+          />
+          <Row
+            label={<FormattedMessage id="OfferDetailsCard.location" />}
+            value={eventLocation || notProvided}
+          />
+          <Row
+            full
+            label={<FormattedMessage id="OfferDetailsCard.eventName" />}
+            value={eventName || notProvided}
+          />
+          <Row
+            full
+            label={<FormattedMessage id="OfferDetailsCard.date" />}
+            value={formatDate(bookingDate)}
+          />
+          <Row
+            label={<FormattedMessage id="OfferDetailsCard.startTime" />}
+            value={displayedBookingStartTime || notProvided}
+            proposed={startTimeProposed}
+          />
+          <Row
+            label={<FormattedMessage id="OfferDetailsCard.endTime" />}
+            value={bookingEndTime || notProvided}
+          />
+          <Row
+            full
+            label={<FormattedMessage id="OfferDetailsCard.expectedAttendance" />}
+            value={expectedAttendance || notProvided}
+          />
+          {eventType ? (
+            <Row
+              label={<FormattedMessage id="OfferDetailsCard.eventType" />}
+              value={intl.formatMessage({
                 id: `RequestQuoteForm.eventType.${eventType.replace(/_([a-z])/g, (_, c) =>
                   c.toUpperCase()
                 )}`,
                 defaultMessage: eventType.replace(/_/g, ' '),
               })}
-            </span>
-          </div>
-        ) : null}
-        {description ? (
-          <div className={css.descriptionBlock}>
-            <p className={css.descriptionLabel}>
-              <FormattedMessage id="OfferDetailsCard.eventDescription" />
-            </p>
-            <p className={css.descriptionValue}>{description}</p>
-          </div>
-        ) : null}
-      </div>
+            />
+          ) : null}
+          {description ? (
+            <Note
+              label={<FormattedMessage id="OfferDetailsCard.eventDescription" />}
+              value={description}
+            />
+          ) : null}
+        </dl>
+      </Section>
 
-      <div className={css.section}>
-        <h3 className={css.sectionTitle}>
-          <FormattedMessage id="OfferDetailsCard.sectionSetDetails" />
-        </h3>
-        {setTimeNeeded ? (
-          <div className={css.row}>
-            <span className={css.rowLabel}>
-              <FormattedMessage id="OfferDetailsCard.setTimeNeeded" />
-            </span>
-            <span className={css.rowValue}>{formatSetTimeNeeded(setTimeNeeded)}</span>
-          </div>
-        ) : null}
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="RequestQuoteForm.setStartTimeLabel" />
-          </span>
-          <span className={css.rowValue}>{setStartTime || notProvided}</span>
-        </div>
-        {durationHours ? (
-          <div className={css.row}>
-            <span className={css.rowLabel}>
-              <FormattedMessage id="OfferDetailsCard.duration" />
-            </span>
-            <div className={css.rowValueStack}>
-              <span className={css.rowValue}>
+      <Section title={<FormattedMessage id="OfferDetailsCard.sectionSetDetails" />}>
+        <dl className={css.rows}>
+          {setTimeNeeded ? (
+            <Row
+              label={<FormattedMessage id="OfferDetailsCard.setTimeNeeded" />}
+              value={formatSetTimeNeeded(setTimeNeeded)}
+            />
+          ) : null}
+          <Row
+            label={<FormattedMessage id="RequestQuoteForm.setStartTimeLabel" />}
+            value={setStartTime || notProvided}
+          />
+          {durationHours ? (
+            <Row
+              label={<FormattedMessage id="OfferDetailsCard.duration" />}
+              value={
                 <FormattedMessage
                   id="OfferDetailsCard.durationValue"
                   values={{ hours: displayedDurationHours }}
                 />
-              </span>
-              {showProposedChanges &&
-              proposedChanges?.proposedDuration &&
-              proposedChanges.proposedDuration !== durationHours ? (
-                <ProposedValue>
-                  <FormattedMessage
-                    id="OfferDetailsCard.proposedLabel"
-                    values={{
-                      value: intl.formatMessage(
-                        { id: 'OfferDetailsCard.durationValue' },
-                        { hours: proposedChanges.proposedDuration }
-                      ),
-                    }}
-                  />
-                </ProposedValue>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
-        {previousDj ? (
-          <div className={css.row}>
-            <span className={css.rowLabel}>
-              <FormattedMessage id="OfferDetailsCard.previousDj" />
-            </span>
-            <span className={css.rowValue}>{previousDj}</span>
-          </div>
-        ) : null}
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.headliner" />
-          </span>
-          <span className={css.rowValue}>{headliner || notProvided}</span>
-        </div>
-      </div>
+              }
+              proposed={durationProposed}
+            />
+          ) : null}
+          {previousDj ? (
+            <Row label={<FormattedMessage id="OfferDetailsCard.previousDj" />} value={previousDj} />
+          ) : null}
+          <Row
+            label={<FormattedMessage id="OfferDetailsCard.headliner" />}
+            value={headliner || notProvided}
+          />
+        </dl>
+      </Section>
 
-      <div className={css.section}>
-        <h3 className={css.sectionTitle}>
-          <FormattedMessage id="OfferDetailsCard.sectionFeeLogistics" />
-        </h3>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.fee" />
-          </span>
-          <div className={css.rowValueStack}>
-            <span className={css.rowValueFee}>
-              {displayedOfferAmount != null ? `€${displayedOfferAmount}` : notProvided}
-            </span>
-            {showProposedChanges &&
-            proposedOfferAmount != null &&
-            proposedOfferAmount !== offerAmount ? (
-              <ProposedValue>
-                <FormattedMessage
-                  id="OfferDetailsCard.proposedLabel"
-                  values={{ value: `€${proposedOfferAmount}` }}
-                />
-              </ProposedValue>
-            ) : null}
-          </div>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.travelIncluded" />
-          </span>
-          <span className={css.rowValue}>{formatYesNo(travelIncluded)}</span>
-        </div>
-        <div className={css.row}>
-          <span className={css.rowLabel}>
-            <FormattedMessage id="OfferDetailsCard.accommodationIncluded" />
-          </span>
-          <span className={css.rowValue}>{formatYesNo(accommodationIncluded)}</span>
-        </div>
-        {showProposedChanges && proposedChanges?.proposedFeeNotes ? (
-          <div className={css.descriptionBlock}>
-            <p className={css.descriptionLabelProposed}>
-              <FormattedMessage id="OfferDetailsCard.proposedFeeNotes" />
-            </p>
-            <p className={css.proposedDescriptionValue}>{proposedChanges.proposedFeeNotes}</p>
-          </div>
-        ) : null}
-      </div>
+      <Section title={<FormattedMessage id="OfferDetailsCard.sectionFeeLogistics" />}>
+        <dl className={css.rows}>
+          <Row
+            full
+            label={<FormattedMessage id="OfferDetailsCard.fee" />}
+            value={
+              isFinalOfferPending
+                ? `€${finalOfferPreviousAmount}`
+                : displayedOfferAmount != null
+                ? `€${displayedOfferAmount}`
+                : notProvided
+            }
+            proposed={feeProposed}
+          />
+          <Row
+            label={<FormattedMessage id="OfferDetailsCard.travelIncluded" />}
+            value={formatYesNo(travelIncluded)}
+          />
+          <Row
+            label={<FormattedMessage id="OfferDetailsCard.accommodationIncluded" />}
+            value={formatYesNo(accommodationIncluded)}
+          />
+          {showProposedChanges && proposedChanges?.proposedFeeNotes ? (
+            <Note
+              proposed
+              label={<FormattedMessage id="OfferDetailsCard.proposedFeeNotes" />}
+              value={proposedChanges.proposedFeeNotes}
+            />
+          ) : null}
+        </dl>
+      </Section>
 
       {hasTechnicalSection ? (
-        <div className={css.section}>
-          <h3 className={css.sectionTitle}>
-            <FormattedMessage id="OfferDetailsCard.sectionTechnicalSetup" />
-          </h3>
-          {deckSetupDisplay ? (
-            <div className={css.row}>
-              <span className={css.rowLabel}>
-                <FormattedMessage id="OfferDetailsCard.deckSetup" />
-              </span>
-              <span className={css.rowValue}>{deckSetupDisplay}</span>
-            </div>
-          ) : technicalSetup ? (
-            <div className={css.row}>
-              <span className={css.rowLabel}>
-                <FormattedMessage id="OfferDetailsCard.technicalSetup" />
-              </span>
-              <span className={css.rowValue}>{technicalSetup}</span>
-            </div>
-          ) : null}
-          {boothMonitorsAvailable ? (
-            <div className={css.row}>
-              <span className={css.rowLabel}>
-                <FormattedMessage id="OfferDetailsCard.boothMonitors" />
-              </span>
-              <span className={css.rowValue}>{formatYesNo(boothMonitorsAvailable)}</span>
-            </div>
-          ) : null}
-          {showProposedChanges && proposedChanges?.proposedNotes ? (
-            <div className={css.descriptionBlock}>
-              <p className={css.descriptionLabelProposed}>
-                <FormattedMessage id="OfferDetailsCard.proposedTechnicalNotes" />
-              </p>
-              <p className={css.proposedDescriptionValue}>{proposedChanges.proposedNotes}</p>
-            </div>
-          ) : null}
-        </div>
+        <Section title={<FormattedMessage id="OfferDetailsCard.sectionTechnicalSetup" />}>
+          <dl className={css.rows}>
+            {deckSetupDisplay ? (
+              <Row
+                full
+                label={<FormattedMessage id="OfferDetailsCard.deckSetup" />}
+                value={deckSetupDisplay}
+              />
+            ) : technicalSetup ? (
+              <Row
+                full
+                label={<FormattedMessage id="OfferDetailsCard.technicalSetup" />}
+                value={technicalSetup}
+              />
+            ) : null}
+            {boothMonitorsAvailable ? (
+              <Row
+                label={<FormattedMessage id="OfferDetailsCard.boothMonitors" />}
+                value={formatYesNo(boothMonitorsAvailable)}
+              />
+            ) : null}
+            {showProposedChanges && proposedChanges?.proposedNotes ? (
+              <Note
+                proposed
+                label={<FormattedMessage id="OfferDetailsCard.proposedTechnicalNotes" />}
+                value={proposedChanges.proposedNotes}
+              />
+            ) : null}
+          </dl>
+        </Section>
       ) : null}
 
       {includedDetails ? (
-        <div className={css.section}>
-          <h3 className={css.sectionTitle}>
-            <FormattedMessage id="RequestQuoteForm.additionalNotesLabel" />
-          </h3>
-          <div className={css.descriptionBlock}>
-            <p className={css.descriptionValue}>{includedDetails}</p>
-          </div>
-        </div>
+        <Section title={<FormattedMessage id="RequestQuoteForm.additionalNotesLabel" />}>
+          <p className={css.noteValue}>{includedDetails}</p>
+        </Section>
       ) : null}
-    </div>
+    </>
+  );
+
+  if (!collapsible) {
+    return (
+      <div className={css.root}>
+        {proposedNote}
+        {sections}
+      </div>
+    );
+  }
+
+  const bodyId = `offerDetails-${transaction?.id?.uuid || 'body'}`;
+  const headerSummary = [venueName, bookingDate ? formatDate(bookingDate) : null].filter(Boolean);
+
+  return (
+    <section className={css.offer}>
+      <h2 className={css.offerHeading}>
+        <button
+          type="button"
+          className={css.offerToggle}
+          aria-expanded={isOpen}
+          aria-controls={bodyId}
+          onClick={() => setIsOpen(open => !open)}
+        >
+          <span className={css.offerTitles}>
+            <span className={css.offerTitle}>
+              <FormattedMessage id="OfferDetailsCard.offerSummaryTitle" />
+            </span>
+            {headerSummary.length > 0 ? (
+              <span className={css.offerSummary}>
+                {headerSummary.map((item, i) => (
+                  <React.Fragment key={i}>
+                    {i > 0 ? <span aria-hidden="true"> · </span> : null}
+                    {item}
+                  </React.Fragment>
+                ))}
+              </span>
+            ) : null}
+          </span>
+          <ChevronDown
+            className={classNames(css.offerChevron, { [css.offerChevronOpen]: isOpen })}
+            size={20}
+            strokeWidth={2}
+            absoluteStrokeWidth
+            aria-hidden="true"
+          />
+        </button>
+      </h2>
+      {proposedNote}
+      <div id={bodyId} className={css.offerBody} hidden={!isOpen}>
+        {sections}
+      </div>
+    </section>
   );
 };
 

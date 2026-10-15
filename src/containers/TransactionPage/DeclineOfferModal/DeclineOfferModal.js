@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
-import { Modal, Button } from '../../../components';
+import { Modal, PrimaryButton } from '../../../components';
 
-import css from './DeclineOfferModal.module.css';
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
+import modalCss from '../../../styles/lineupModal.module.css';
 
 /**
  * Confirmation modal before the DJ declines a customer's offer.
@@ -33,7 +35,7 @@ const DeclineOfferModal = props => {
   const intl = useIntl();
   const [message, setMessage] = useState('');
 
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || modalCss.container, className);
 
   const handleConfirm = () => {
     onConfirm({ message: message.trim() });
@@ -47,27 +49,30 @@ const DeclineOfferModal = props => {
   return (
     <Modal
       id={id}
+      scrollLayerClassName={modalCss.scrollLayer}
       containerClassName={classes}
-      contentClassName={css.modalContent}
+      contentClassName={modalCss.content}
       isOpen={isOpen}
       onClose={handleClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
     >
-      <h2 className={css.title}>
-        <FormattedMessage id="DeclineOfferModal.title" />
-      </h2>
-      <p className={css.description}>
-        <FormattedMessage id="DeclineOfferModal.description" />
-      </p>
+      <div className={modalCss.head}>
+        <h2 className={modalCss.title}>
+          <FormattedMessage id="DeclineOfferModal.title" />
+        </h2>
+        <p className={modalCss.description}>
+          <FormattedMessage id="DeclineOfferModal.description" />
+        </p>
+      </div>
 
-      <div className={css.field}>
-        <label className={css.label} htmlFor="declineOffer-message">
+      <div className={formCss.field}>
+        <label className={formCss.label} htmlFor="declineOffer-message">
           {intl.formatMessage({ id: 'DeclineOfferModal.messageLabel' })}
         </label>
         <textarea
           id="declineOffer-message"
-          className={css.textarea}
+          className={formCss.textarea}
           rows={4}
           value={message}
           onChange={e => setMessage(e.target.value)}
@@ -75,10 +80,14 @@ const DeclineOfferModal = props => {
         />
       </div>
 
-      <div className={css.actions}>
-        <Button className={css.confirmButton} onClick={handleConfirm} inProgress={inProgress}>
+      <div className={modalCss.footer}>
+        <PrimaryButton
+          rootClassName={buttonCss.primary}
+          onClick={handleConfirm}
+          inProgress={inProgress}
+        >
           <FormattedMessage id="DeclineOfferModal.confirm" />
-        </Button>
+        </PrimaryButton>
       </div>
     </Modal>
   );

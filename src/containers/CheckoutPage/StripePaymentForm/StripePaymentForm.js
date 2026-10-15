@@ -27,6 +27,7 @@ import {
 
 import ShippingDetails from '../ShippingDetails/ShippingDetails';
 
+import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './StripePaymentForm.module.css';
 
 /**
@@ -69,19 +70,18 @@ const stripeErrorTranslation = (intl, stripeError) => {
 const stripeElementsOptions = {};
 
 // card (being a Stripe Elements component), can have own styling passed to it.
-// However, its internal width-calculation seems to break if font-size is too big
-// compared to component's own width.
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+// Same look as the shared text input (lineupForm.module.css): system font, 16px (iOS does not
+// zoom at 16px), black text, --colorGrey300 placeholder. Stripe's iframe cannot read CSS variables.
 const cardStyles = {
   base: {
-    fontFamily: 'Suisse Intl, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
-    fontSize: isMobile ? '14px' : '16px',
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontSize: '16px',
     fontSmoothing: 'antialiased',
     lineHeight: '24px',
-    letterSpacing: '-0.1px',
-    color: '#4A4A4A',
+    color: 'hsl(0, 0%, 0%)',
     '::placeholder': {
-      color: '#B2B2B2',
+      color: 'hsl(240, 3%, 70%)',
     },
   },
 };
@@ -114,7 +114,6 @@ const OneTimePaymentWithCardElement = props => {
           name="saveAfterOnetimePayment"
           label={labelText}
           value="saveAfterOnetimePayment"
-          useSuccessColor
         />
         <span className={css.saveForLaterUseLegalInfo}>
           <FormattedMessage
@@ -343,16 +342,6 @@ class StripePaymentForm extends Component {
       this.card = elements.create('card', { style: cardStyles });
       this.card.mount(element || this.cardContainer);
       this.card.addEventListener('change', this.handleCardValueChange);
-      // EventListener is the only way to simulate breakpoints with Stripe.
-      window.addEventListener('resize', () => {
-        if (this.card) {
-          if (window.innerWidth < 768) {
-            this.card.update({ style: { base: { fontSize: '14px', lineHeight: '24px' } } });
-          } else {
-            this.card.update({ style: { base: { fontSize: '18px', lineHeight: '24px' } } });
-          }
-        }
-      });
     }
   }
 
@@ -475,8 +464,7 @@ class StripePaymentForm extends Component {
     const selectedPaymentMethod = getPaymentMethod(paymentMethod, hasDefaultPaymentMethod);
     const { customerMessageOnly = false } = this.props;
     // Minimal checkout: never show listing location/pickup (still show shipping form when required).
-    const showLocationShippingDetails =
-      !customerMessageOnly || askShippingDetails;
+    const showLocationShippingDetails = !customerMessageOnly || askShippingDetails;
     // Minimal checkout: do not mount Stripe Elements (avoids card validation errors with no UI).
     const shouldRenderPaymentFragment =
       !customerMessageOnly && billingDetailsNeeded && !loadingData;
@@ -556,8 +544,7 @@ class StripePaymentForm extends Component {
 
     const showAdditionalInfoHeading =
       !customerMessageOnly &&
-      (showInitialMessageInput ||
-        (hasTransactionFieldConfigs && showTransactionFields));
+      (showInitialMessageInput || (hasTransactionFieldConfigs && showTransactionFields));
 
     const preventFormSubmit = e => e.preventDefault();
 
@@ -688,6 +675,7 @@ class StripePaymentForm extends Component {
             <span className={css.errorMessage}>{paymentErrorMessage}</span>
           ) : null}
           <PrimaryButton
+            rootClassName={buttonCss.primary}
             className={css.submitButton}
             type="button"
             inProgress={submitInProgress}

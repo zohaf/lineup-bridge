@@ -1,171 +1,213 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* Payment form in the LineupBridge look (design/booking-journey.html, "Checkout"): section titles
+   like the SectionCard title, library labels and 48px inputs, outlined checkbox, black primary.
+   Template fields inside (billing address) are styled through element selectors. */
+
 .root {
   display: flex;
   flex-direction: column;
+  gap: var(--lb-field-gap);
 }
 
-.locationWrapper {
-  margin-bottom: 40px;
-}
 
+/* "Payment", "Billing details": same as the SectionCard title row */
 .heading {
-  composes: p from global;
-  font-weight: var(--fontWeightBold);
-  padding: 0;
-  margin-bottom: 16px;
+  composes: h3 from '../../../styles/lineupType.module.css';
+  margin: 0 0 var(--lb-field-gap);
+  padding: 0 0 var(--lb-space-4);
+  border-bottom: 1px solid var(--colorGrey100);
 }
 
 .locationDetails {
-  padding: 0;
-  margin: 0;
+  composes: body from '../../../styles/lineupType.module.css';
 }
 
-.card {
-  composes: marketplaceInputStyles from global;
+.paymentLabel {
+  composes: label from '../../../styles/lineupForm.module.css';
+  display: block;
+  margin-bottom: var(--lb-label-gap);
+}
 
-  @media (--viewportMedium) {
-    padding: 11px 0 11px 16px;
+/* Stripe card element: the shared 48px input box (Stripe adds the StripeElement--focus class) */
+.card {
+  display: flex;
+  align-items: center;
+  min-height: var(--lb-input-height);
+  padding: 0 var(--lb-space-4);
+  border: 1px solid var(--colorGrey200);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorWhite);
+
+  & > div {
+    flex: 1;
+  }
+
+  &:hover {
+    border-color: var(--colorGrey300);
+  }
+
+  &:global(.StripeElement--focus) {
+    border-color: var(--colorBlack);
+    box-shadow: var(--lb-focus-ring);
   }
 }
 
+
 .cardError {
-  border: var(--borderErrorField);
+  border-color: var(--colorFail);
+  background-color: var(--colorFailSubtle);
 }
 
 .error {
-  color: var(--colorFail);
-  font-size: 13px;
+  composes: error from '../../../styles/lineupForm.module.css';
+  display: block;
+  margin-top: var(--lb-label-gap);
 }
 
 .errorMessage {
-  margin-top: 24px;
-  color: var(--colorFail);
+  composes: error from '../../../styles/lineupForm.module.css';
+  display: block;
+}
+
+.spinner {
+  margin: 0;
 }
 
 .transactionFieldsContainer,
 .paymentMethodSelector {
-  margin-bottom: 36px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 40px;
-  }
+  margin-bottom: var(--lb-field-gap);
 }
 
+/* Save card: outlined checkbox (design-system rule 8), legal text under it */
 .saveForLaterUse {
-  padding-top: 6px;
-  margin-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
+  margin-top: var(--lb-space-4);
+}
 
-  @media (--viewportMedium) {
-    padding-top: 8px;
-    margin-top: 0px;
-    margin-bottom: 48px;
+/* Template checkbox icon restyled like lineupForm .consentTile: outlined box, black tick, no fill */
+.saveForLaterUseCheckbox.saveForLaterUseCheckbox,
+.sameAddressCheckbox.sameAddressCheckbox {
+  display: block;
+
+  & label {
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    padding: 0;
+  }
+
+  & label > span:first-child {
+    height: auto;
+    margin: var(--lb-space-1) var(--lb-space-3) 0 0;
+  }
+
+  & svg g g path:nth-child(1) {
+    display: none;
+  }
+
+  & svg g g path:nth-child(2) {
+    stroke: var(--colorGrey600);
+  }
+
+  & input:checked + label svg g g path:nth-child(2) {
+    stroke: var(--colorBlack);
+  }
+
+  & input:checked + label svg > g > path {
+    fill: var(--colorBlack);
   }
 }
 
-.saveForLaterUseCheckbox {
-  display: inline-block;
-  padding: 2px 0 3px 0;
-
-  @media (--viewportMedium) {
-    padding: 1px 0 0px 0;
-  }
-}
-
-.saveForLaterUseLabel {
-  composes: h5 from global;
-
-  color: var(--colorGrey700);
-  margin-top: 3px;
-  margin-bottom: 0px;
+.saveForLaterUseLabel,
+.sameAddressLabel {
+  composes: body from '../../../styles/lineupType.module.css';
+  color: var(--lb-text-primary);
   cursor: pointer;
 }
 
 .saveForLaterUseLegalInfo {
-  composes: h5 from global;
-
-  color: var(--colorGrey600);
-  display: inline-block;
-  padding: 0px 0 0px 26px;
-  margin-top: -2px;
-  margin-bottom: 2px;
-
-  @media (--viewportMedium) {
-    margin-top: -1px;
-    margin-bottom: 1px;
-  }
+  composes: small from '../../../styles/lineupType.module.css';
+  color: var(--lb-text-muted);
 }
 
+/* Billing details: template FieldTextInput / FieldSelect, shown with the shared field look */
 .billingDetails {
-  margin-bottom: 48px;
-}
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
 
-.sameAddressCheckbox {
-  display: block;
-  margin: 24px 0;
-}
+  & .heading {
+    margin-bottom: 0;
+  }
 
-.messageLabel {
-  margin: 0 0 5px 0;
+  & label {
+    margin: 0 0 var(--lb-label-gap);
+    padding: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-field-label);
+    line-height: var(--lb-leading-field-label);
+    font-weight: var(--lb-weight-semibold);
+    color: var(--lb-text-primary);
+  }
 
-  @media (--viewportMedium) {
-    margin: 0 0 6px 0;
+  & input,
+  & select {
+    width: 100%;
+    min-height: var(--lb-input-height);
+    margin: 0;
+    padding: 0 var(--lb-space-4);
+    border: 1px solid var(--colorGrey200);
+    border-radius: var(--borderRadiusMedium);
+    background-color: var(--colorWhite);
+    box-shadow: none;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-input);
+    color: var(--lb-text-primary);
+
+    &:hover {
+      border-color: var(--colorGrey300);
+    }
+
+    &:focus {
+      outline: 0;
+      border-color: var(--colorBlack);
+      box-shadow: var(--lb-focus-ring);
+    }
+
+    &::placeholder {
+      color: var(--colorGrey300);
+    }
   }
 }
 
-.messageOptional {
-  color: var(--colorGrey300);
-}
 
-.message {
-  border-bottom-color: var(--colorGrey300);
-}
 
+
+/* Button right after the fields (no template gap); full width on phones, auto from 768px */
 .submitContainer {
-  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+}
 
-  @media (--viewportLarge) {
-    margin-top: 72px;
+.submitButton {
+  width: 100%;
+
+  @media (--viewportMedium) {
+    width: auto;
+    min-width: 200px;
+    align-self: flex-start;
   }
 }
 
 .paymentInfo {
-  composes: h5 from global;
-
-  color: var(--colorGrey600);
-  text-align: center;
-  margin: 28px 0 0 0;
-
-  @media (--viewportLarge) {
-    font-size: 14px;
-    padding: 2px 0 6px 0;
-    margin: 24px 0 0 0;
-  }
-}
-
-.submitButton {
-  margin-top: 22px;
-
-  @media (--viewportMedium) {
-    margin-top: 26px;
-  }
-  @media (--viewportLarge) {
-    margin-top: 16px;
-  }
+  composes: small from '../../../styles/lineupType.module.css';
+  color: var(--lb-text-muted);
 }
 
 .missingStripeKey {
-  color: var(--colorFail);
-}
-
-/* Minimal checkout: Stripe card + billing stay mounted but off-screen */
-.hiddenPaymentMount {
-  position: fixed;
-  left: -9999px;
-  top: 0;
-  width: min(420px, 100vw);
-  height: 480px;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
+  composes: error from '../../../styles/lineupForm.module.css';
 }

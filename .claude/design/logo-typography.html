@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo typography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..800&family=Figtree:wght@400..800&family=Inter+Tight:wght@400..800&family=Jost:wght@400..800&family=Manrope:wght@400..800&family=Plus+Jakarta+Sans:wght@400..800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --page: #eeede9; --paper: #ffffff; --ink: #000000; --ink-2: #4a4a48; --ink-3: #6f6f6b; --rule: #d9d8d3; --tool: #1b1b1d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9d8d3; color: var(--ink); font: 16px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+.toolbar { position: sticky; top: 0; z-index: 50; background: var(--tool); color: #f2f2f0; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; font-size: 13px; }
+.toolbar label { display: inline-flex; gap: 8px; align-items: center; }
+.toolbar select { font: inherit; background: #f2f2f0; color: #111; border: 0; border-radius: 4px; padding: 6px 8px; min-height: 32px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 32px 16px 96px; }
+section.block { background: var(--page); border-radius: 6px; padding: 32px 16px; margin-bottom: 32px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+@media (min-width: 768px) { section.block { padding: 48px 40px; } }
+h2 { font-size: 28px; line-height: 1.15; letter-spacing: -.015em; margin: 0 0 8px; font-weight: 600; }
+h3 { font-size: 18px; line-height: 1.3; letter-spacing: -.01em; margin: 0; font-weight: 600; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; }
+.lead { color: var(--ink-2); max-width: 72ch; margin: 0 0 32px; }
+.small { font-size: 14px; color: var(--ink-3); margin: 0; }
+.chip { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .02em; padding: 2px 8px; border-radius: 999px; background: #f2f2f0; color: var(--ink-2); }
+
+/* Wordmark: set by JS through these variables */
+.mark { font-family: var(--m-family); font-weight: var(--m-weight); letter-spacing: var(--m-track); line-height: 1; white-space: nowrap; color: var(--ink); }
+.lockup { display: inline-flex; align-items: center; gap: var(--m-gap, 8px); text-decoration: none; color: var(--ink); }
+.lockup svg { display: block; flex: none; }
+
+/* Device previews */
+.devices { display: grid; gap: 24px; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 900px) { .devices { grid-template-columns: 0.9fr 1.6fr; } .devices .d-desktop { grid-column: 1 / -1; } }
+.device h3 { margin-bottom: 8px; font-size: 14px; color: var(--ink-3); font-weight: 600; }
+.viewport { position: relative; overflow: hidden; border-radius: 10px; border: 1px solid var(--rule); background: var(--page); box-shadow: 0 8px 30px rgba(0,0,0,.08); }
+.screen { position: absolute; top: 0; left: 0; transform-origin: 0 0; background: var(--page); display: flex; flex-direction: column; }
+.lp-hdr { height: 60px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid #e3e2dd; }
+.lp-hdr nav { display: flex; gap: 20px; font-size: 14px; letter-spacing: -.01em; }
+.lp-hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 16px 56px; }
+.lp-hero h1 { margin: 0; font-weight: 600; font-size: 36px; line-height: 1.1; letter-spacing: -.02em; max-width: 20ch; }
+.lp-hero p { color: var(--ink-2); font-size: 17px; line-height: 1.5; margin: 16px 0 0; max-width: 46ch; }
+.lp-search { margin-top: 28px; display: flex; gap: 6px; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.06); width: 100%; max-width: 520px; text-align: left; }
+.lp-search span { flex: 1; padding: 0 12px; color: var(--ink-3); font-size: 15px; display: flex; align-items: center; min-height: 44px; }
+.lp-search b { background: var(--ink); color: #fff; font-size: 15px; font-weight: 600; border-radius: 6px; padding: 0 18px; display: flex; align-items: center; }
+/* White variation: black page, white logo and text; the search box stays white. */
+.screen[data-theme="black"] { --page: #000; --ink: #fff; --ink-2: #a8a8a3; --dot: #6f6f6b; color: #fff; }
+.screen[data-theme="black"] .lp-hdr { border-bottom-color: rgba(255,255,255,.12); }
+.screen[data-theme="black"] .lp-search { --ink: #000; --ink-3: #6f6f6b; border-color: #d9d8d3; }
+.lp-hdr, .lp-hero { position: relative; z-index: 1; }
+/* Animation from logo-landing-prototypes.html: grille ripple, and dots revealed around the cursor. */
+.grille-dot { transform-box: fill-box; transform-origin: center; animation: ripple 1.8s ease-in-out infinite; }
+@keyframes ripple { 0%, 60%, 100% { transform: scale(1); opacity: 1; } 30% { transform: scale(1.4); opacity: .55; } }
+.mesh { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .4s ease; --dot: #fff; --x: 50%; --y: 50%; --r: 295px;
+  background-image: radial-gradient(circle at center, var(--dot) 1.6px, transparent 2.2px); background-size: 9px 9px;
+  -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0,0,0,.55) 45%, transparent 100%);
+          mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0,0,0,.55) 45%, transparent 100%); }
+.screen[data-theme="black"] .mesh { --dot: #6f6f6b; }
+.screen.on .mesh { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .mesh { transition: none; } .grille-dot { animation: none; } }
+/* Phone: icon only, no "LineupBridge" text. */
+.screen.w375 .lp-hdr .mark { display: none; }
+.screen.w768 .lp-hdr, .screen.w1280 .lp-hdr { padding: 0 28px; }
+.screen.w768 .lp-hero h1 { font-size: 44px; } .screen.w768 .lp-hero p { font-size: 18px; }
+.screen.w1280 .lp-hero h1 { font-size: 52px; max-width: 22ch; } .screen.w1280 .lp-hero p { font-size: 19px; }
+.screen.w1280 .lp-hero { padding-bottom: 96px; }
+
+/* Specimen grid */
+.specimens { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 768px) { .specimens { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1200px) { .specimens { grid-template-columns: 1fr 1fr 1fr; } }
+.spec { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 20px; cursor: pointer; text-align: left; font: inherit; color: inherit; display: flex; flex-direction: column; gap: 14px; }
+.spec:hover { border-color: #a9a8a3; }
+.spec[aria-pressed="true"] { outline: 2px solid var(--ink); outline-offset: -1px; }
+.spec .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.spec .num { font-size: 12px; font-weight: 600; color: var(--ink-3); }
+.spec .big { font-size: 40px; }
+.spec .mini { display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 12px; background: var(--page); border-radius: 6px; }
+.spec .mini nav { font-size: 13px; letter-spacing: -.01em; display: flex; gap: 14px; }
+.spec .pair { border-top: 1px solid var(--rule); padding-top: 12px; }
+.spec .pair .eb { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.spec .pair .t { font-size: 20px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; margin-top: 4px; }
+.spec .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; color: var(--ink-3); }
+.spec .meta b { color: var(--ink); font-size: 14px; display: block; }
+.spec .why { font-size: 14px; color: var(--ink-2); margin: 0; }
+.spec .why b { color: var(--ink); }
+.ref { opacity: .85; }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 720px; }
+table.cmp th, table.cmp td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.cmp th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); font-weight: 600; }
+.scroll-x { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="toolbar" role="toolbar" aria-label="Typography controls">
+  <b>LineupBridge · logo typography</b>
+  <label>Font <select id="selFont"></select></label>
+  <label>Weight <select id="selWeight"><option>500</option><option selected>600</option><option>700</option><option>800</option></select></label>
+  <label>Colour <select id="selTheme">
+    <option value="white">Black logo on light</option>
+    <option value="black">White logo on black</option>
+  </select></label>
+  <label>Logo height <select id="selSize"><option>14</option><option selected>16</option><option>18</option><option>20</option></select></label>
+</div>
+
+<div class="wrap">
+
+<section class="block">
+  <p class="eyebrow">Logo typography · built on the brand exploration</p>
+  <h2>The landing page, as it would ship</h2>
+  <p class="lead">Fixed: the speaker grille icon in black, the beige page, the header from <code>header.md</code> (60px bar, links 14px / 400) and the hero from the landing design. Only the wordmark changes. Pick a font in the toolbar or click any card below; all three screens update. "Logo height" is the height of the capital L, so every font is compared at the same visual size.</p>
+  <div class="devices">
+    <div class="device d-phone"><h3>Phone · 375 · icon only</h3><div class="viewport" data-w="375" data-h="720"></div></div>
+    <div class="device d-tablet"><h3>iPad · 768</h3><div class="viewport" data-w="768" data-h="800"></div></div>
+    <div class="device d-desktop"><h3>Desktop · 1280</h3><div class="viewport" data-w="1280" data-h="720"></div></div>
+  </div>
+</section>
+
+<section class="block">
+  <p class="eyebrow">Shortlist</p>
+  <h2>Simple, confident, not a copy of Inter</h2>
+  <p class="lead">The brief: subtle, clear, no colour, no funk, and a logo that is not just the UI font again. With one colour and one family style, hierarchy can only come from three things: <b>shape</b> (geometric circles vs grotesk ovals), <b>width</b> (compact vs open) and <b>weight</b> (the logo one step heavier than the 600 headings, or two weights inside the name). Each option below changes one of those and nothing else. All are free to use as a logo, and each card measures its x-height against your system font live, so it sits on the same line as the header links. Inter Tight is kept as the reference you liked.</p>
+  <div class="specimens" id="specimens"></div>
+</section>
+
+<section class="block">
+  <p class="eyebrow">Side by side</p>
+  <h2>How they differ from the UI font</h2>
+  <div class="scroll-x">
+    <table class="cmp">
+      <thead><tr><th>#</th><th>Font</th><th>Differs by</th><th>Character</th><th>Watch for</th></tr></thead>
+      <tbody id="cmpRows"></tbody>
+    </table>
+  </div>
+  <p class="small" style="margin-top:16px">Next, once you've narrowed it to two or three: I outline the chosen font into an SVG wordmark, adjust the spacing between letters by hand (especially "pB" and "dg"), and test it at 16px next to the grille. Then <code>tokens.md</code> and <code>header.md</code> get updated before any code changes.</p>
+</section>
+
+</div>
+
+<script>
+const SYS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+const FONTS = [
+  { id: 'system', n: '01', name: 'Our system font', family: SYS, w: 600, track: '-0.015em', tag: 'The product voice',
+    diff: 'Nothing: set exactly like the "Why LineupBridge" heading', char: 'The logo is the product. Zero download, maximum consistency.',
+    watch: 'Renders as SF, Segoe or Roboto depending on the device. SF and Segoe cannot be outlined into a logo file (licence), so the image version would be drawn in Inter, its closest free twin.' },
+  { id: 'geist', n: '02', name: 'Geist', family: "'Geist', sans-serif", w: 600, track: '-0.03em', tag: 'Swiss precision',
+    diff: 'Shape: squarer curves, flat cut ends', char: 'Vercel\'s typeface. Engineered, calm, very sharp at small sizes.',
+    watch: 'The closest to Inter here; the difference shows mainly in "g", "e" and the B.' },
+  { id: 'hanken', n: '03', name: 'Hanken Grotesk', family: "'Hanken Grotesk', sans-serif", w: 700, track: '-0.02em', tag: 'Compact grotesk',
+    diff: 'Width: slightly narrower and tighter', char: 'Clean Swiss grotesk with a compact, upright stance. Quiet authority.',
+    watch: 'At 600 it is close to the UI; it needs 700 to separate.' },
+  { id: 'schibsted', n: '04', name: 'Schibsted Grotesk', family: "'Schibsted Grotesk', sans-serif", w: 700, track: '-0.02em', tag: 'Sturdy',
+    diff: 'Weight and density: heavier, firmer letters', char: 'Drawn for a news brand. Serious, trustworthy, a little editorial without being a serif.',
+    watch: 'Heavy at 800; 700 is the sweet spot.' },
+  { id: 'manrope', n: '05', name: 'Manrope', family: "'Manrope', sans-serif", w: 700, track: '-0.02em', tag: 'Open modern',
+    diff: 'Shape: semi-geometric, open and even', char: 'Modern and composed, with very even rhythm. Reads as considered, not trendy.',
+    watch: 'Its "g" is single-storey, which softens the name slightly.' },
+  { id: 'dmsans', n: '06', name: 'DM Sans', family: "'DM Sans', sans-serif", w: 600, track: '-0.03em', tag: 'Geometric, soft',
+    diff: 'Shape: round, circular bowls', char: 'Low contrast and friendly, still professional. Round "e", "d", "p" echo the round grille icon.',
+    watch: 'Wide by default; needs tight spacing to stay crisp.' },
+  { id: 'jakarta', n: '07', name: 'Plus Jakarta Sans', family: "'Plus Jakarta Sans', sans-serif", w: 700, track: '-0.03em', tag: 'Confident geometric',
+    diff: 'Shape and x-height: geometric with a tall x-height', char: 'Assured and contemporary; the tall lowercase makes the name feel bigger at the same height.',
+    watch: 'Very common on startup sites; less ownable.' },
+  { id: 'figtree', n: '08', name: 'Figtree', family: "'Figtree', sans-serif", w: 600, track: '-0.02em', tag: 'Clean geometric',
+    diff: 'Shape: crisp geometry, simple joins', char: 'Light on its feet and clear. The most "simplified workflow" of the set.',
+    watch: 'At small sizes it can look lighter than its weight; try 700.' },
+  { id: 'albert', n: '09', name: 'Albert Sans', family: "'Albert Sans', sans-serif", w: 700, track: '-0.02em', tag: 'Scandinavian',
+    diff: 'Shape: geometric with Nordic restraint', char: 'Inspired by Scandinavian design: plain, honest, balanced. Fits a beige, colourless palette well.',
+    watch: 'Distinct mostly in "g", "a" and the round dots; subtle in the header.' },
+  { id: 'sora', n: '10', name: 'Sora', family: "'Sora', sans-serif", w: 600, track: '-0.035em', tag: 'Wide and steady',
+    diff: 'Width: wider, more open letters', char: 'Calm and spacious with a slight technical edge. Width gives it presence without extra weight.',
+    watch: 'The longest wordmark of the set; fine at 20px, check the phone header.' },
+  { id: 'jost', n: '11', name: 'Jost, capitals (Waking Up style)', family: "'Jost', sans-serif", w: 500, track: '0.08em', caps: true, tag: 'Like wakingup.com',
+    diff: 'Case and spacing: all capitals, widely spaced, geometric', char: 'The Waking Up treatment: a Futura-style geometric sans in medium-weight capitals with open spacing. Calm, quiet, premium. Their logo is a custom drawing; Jost is the closest free match.',
+    watch: 'Capitals make the name long; the logo height has to come down to fit the header. Lowercase-to-capitals is the biggest change from today.' },
+  { id: 'intertight', n: 'Ref', name: 'Inter Tight (your favourite)', family: "'Inter Tight', sans-serif", w: 600, track: '-0.02em', tag: 'Reference',
+    diff: 'Spacing only: same shapes as the UI', char: 'Most seamless; kept for comparison.',
+    watch: 'Too close to the UI to give the logo its own hierarchy.' },
+];
+
+// Shortlist (Oct 15): 01, 05, 06, 07, 08, 11 and Inter Tight.
+const SHORTLIST = ['system', 'manrope', 'dmsans', 'jakarta', 'figtree', 'jost', 'intertight'];
+FONTS.splice(0, FONTS.length, ...FONTS.filter(f => SHORTLIST.includes(f.id)));
+
+const state = { font: 'intertight', weight: 600, theme: 'white', size: 16 };
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+// Speaker grille icon, exactly as in the brand exploration.
+function grille(px) {
+  let d = '';
+  for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) {
+    const cx = 4 + x * 4, cy = 4 + y * 4, dist = Math.hypot(cx - 16, cy - 16);
+    if (dist > 13.5) continue;
+    d += `<circle class="grille-dot" style="animation-delay:${(dist * 0.045).toFixed(2)}s" cx="${cx}" cy="${cy}" r="${(1.75 - dist * 0.07).toFixed(2)}"/>`;
+  }
+  return `<svg width="${px}" height="${px}" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">${d}</svg>`;
+}
+
+// Measure cap height and x-height (fraction of the em) with canvas.
+const metrics = {};
+function measure(f, w) {
+  const c = document.createElement('canvas').getContext('2d');
+  c.font = `${w} 200px ${f.family}`;
+  return { x: c.measureText('x').actualBoundingBoxAscent / 200, cap: c.measureText('H').actualBoundingBoxAscent / 200 };
+}
+let SYSM = { x: 0.52, cap: 0.7 };
+
+function wordmark(f, w, capPx) {
+  const m = metrics[f.id] || { cap: 0.72 };
+  const size = (capPx / m.cap).toFixed(2);
+  return `<span class="mark" style="--m-family:${f.family.replace(/"/g, "'")};--m-weight:${w};--m-track:${f.track};font-size:${size}px${f.caps ? ';text-transform:uppercase' : ''}">LineupBridge</span>`;
+}
+function lockup(f, w, capPx) {
+  const icon = Math.round(capPx * 1.3);
+  return `<span class="lockup" style="--m-gap:${Math.round(capPx * 0.45)}px">${grille(icon)}${wordmark(f, w, capPx)}</span>`;
+}
+
+function screen(w) {
+  const f = FONTS.find(x => x.id === state.font);
+  return `<div class="screen w${w}" data-theme="${state.theme}" style="width:${w}px">
+    <div class="mesh"></div>
+    <div class="lp-hdr">${lockup(f, state.weight, +state.size)}<nav><span>Sign up</span><span>Log in</span></nav></div>
+    <div class="lp-hero">
+      <h1>Professional DJ booking platform, from offer to payment</h1>
+      <p>Structured offers, organized negotiations, confirmed bookings, and secured payments.</p>
+      <div class="lp-search"><span>Type a DJ name</span><b>Search</b></div>
+    </div>
+  </div>`;
+}
+
+function renderDevices() {
+  $$('.viewport').forEach(v => {
+    const w = +v.dataset.w, h = +v.dataset.h;
+    v.style.maxWidth = w + 'px';
+    v.innerHTML = screen(w);
+    const s = Math.min(1, v.clientWidth / w);
+    const scr = v.firstElementChild;
+    scr.style.height = h + 'px';
+    scr.style.transform = `scale(${s})`;
+    v.style.height = (h * s) + 'px';
+    // Dots follow the cursor; coordinates are divided by the scale because the screen is shrunk to fit.
+    const mesh = scr.querySelector('.mesh');
+    v.onpointermove = e => { const r = v.getBoundingClientRect(); mesh.style.setProperty('--x', (e.clientX - r.left) / s + 'px'); mesh.style.setProperty('--y', (e.clientY - r.top) / s + 'px'); scr.classList.add('on'); };
+    v.onpointerleave = () => scr.classList.remove('on');
+  });
+}
+
+function fmtDelta(r) { const p = Math.round((r - 1) * 100); return (p > 0 ? '+' : '') + p + '%'; }
+
+function renderSpecimens() {
+  $('#specimens').innerHTML = FONTS.map(f => {
+    const m = metrics[f.id];
+    return `<button type="button" class="spec ${f.id === 'intertight' ? 'ref' : ''}" data-id="${f.id}" aria-pressed="${f.id === state.font}">
+      <div class="top"><h3><span class="num">${f.n}</span>&nbsp; ${f.name}</h3><span class="chip">${f.tag}</span></div>
+      <div class="big">${wordmark(f, f.w, 28)}</div>
+      <div class="mini">${lockup(f, f.w, 15)}<nav><span>Sign up</span><span>Log in</span></nav></div>
+      <div class="meta"><div>Weight<b>${f.w}</b></div><div>x-height vs system<b>${m ? fmtDelta(m.x / SYSM.x) : '…'}</b></div></div>
+      <p class="why"><b>${f.diff}.</b> ${f.char}</p>
+      <div class="pair"><div class="eb">Why LineupBridge</div><div class="t">From discovery to payment</div></div>
+    </button>`;
+  }).join('');
+  $$('.spec').forEach(b => b.onclick = () => select(b.dataset.id, true));
+}
+
+function renderTable() {
+  $('#cmpRows').innerHTML = FONTS.map(f => `<tr><td>${f.n}</td><td>${wordmark(f, f.w, 14)}<div class="small" style="margin-top:4px">${f.name}, ${f.w}</div></td><td>${f.diff}</td><td>${f.char}</td><td>${f.watch}</td></tr>`).join('');
+}
+
+function select(id, fromCard) {
+  state.font = id;
+  state.weight = FONTS.find(f => f.id === id).w;
+  $('#selFont').value = id; $('#selWeight').value = String(state.weight);
+  render();
+  if (fromCard) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function render() { renderDevices(); renderSpecimens(); }
+
+$('#selFont').innerHTML = FONTS.map(f => `<option value="${f.id}">${f.n} · ${f.name}</option>`).join('');
+$('#selFont').onchange = e => select(e.target.value, false);
+$('#selWeight').onchange = e => { state.weight = +e.target.value; renderDevices(); };
+$('#selTheme').onchange = e => { state.theme = e.target.value; renderDevices(); };
+$('#selSize').onchange = e => { state.size = e.target.value; renderDevices(); };
+window.addEventListener('resize', renderDevices);
+
+select('intertight', false); renderTable();
+Promise.all(FONTS.map(f => document.fonts.load(`${f.w} 40px ${f.family}`).catch(() => {}))).then(() => {
+  SYSM = measure({ family: SYS }, 600);
+  FONTS.forEach(f => metrics[f.id] = measure(f, f.w));
+  render(); renderTable();
+});
+</script>
+</body>
+</html>

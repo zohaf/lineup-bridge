@@ -15,6 +15,9 @@
   --grey700: hsl(240 3% 30%);
   --rule: hsl(240 3% 88%);
   --rule-strong: hsl(240 3% 80%);
+  --attention: #ffaa00;     /* --colorAttention */
+  --attention-dark: #b25900; /* --colorAttentionDark */
+  --attention-subtle: #fff7f0; /* --colorAttentionSubtle */
   --success: #138041;
   --success-subtle: #f0fff6;
   --fail: #e7000b;          /* --colorFail */
@@ -163,19 +166,19 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .btn.is-loading::after { animation: none; } }
 .link { color: var(--ink); font-weight: 600; font-size: var(--lb-size-small); text-decoration: underline; text-underline-offset: 3px; }
-.link-footer { color: var(--ink); font-weight: 600; font-size: var(--lb-size-small); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
-.link-footer:hover { text-decoration: underline; text-underline-offset: 3px; }
 .link-muted { color: var(--grey600, hsl(240 3% 40%)); font-weight: 400; font-size: var(--lb-size-small); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
 .link-muted:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 .social-link { width: 44px; height: 44px; display: inline-grid; place-items: center; color: hsl(240 3% 40%); }
 .social-link:hover { color: var(--ink); }
-.social-link svg { width: 20px; height: 20px; fill: currentColor; }
-.lib-footer { border-top: 1px solid hsl(240 3% 90%); padding: 32px 24px 24px; display: grid; gap: 32px; background: #eeede9; border-radius: 8px; }
-.lib-footer .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; }
+.social-link svg { width: 20px; height: 20px; fill: currentColor; fill-rule: evenodd; }
+.lib-footer { border-top: 1px solid hsl(240 3% 90%); padding: 48px 32px 32px; display: grid; background: #eeede9; border-radius: 8px; }
+.lib-footer .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 8px 32px; padding-bottom: 16px; }
+.lib-footer .top .social-row { margin: calc((38px - 44px) / 2) -12px 0 0; display: flex; gap: 4px; }
 .lib-footer .brand { display: grid; gap: 8px; }
-.lib-footer .wordmark { font-family: "Times New Roman MT", "Times New Roman", Times, serif; font-style: italic; font-weight: 700; font-size: 24px; line-height: 1; }
-.lib-footer .meta { border-top: 1px solid hsl(240 3% 90%); padding-top: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 32px; font-size: var(--lb-size-small); color: hsl(240 3% 40%); }
-.lib-footer .legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px; }
+.lib-footer .wordmark { font-family: "Times New Roman MT", "Times New Roman", Times, serif; font-style: italic; font-weight: 700; font-size: 38px; line-height: 1; }
+.lib-footer .meta { border-top: 1px solid hsl(240 3% 90%); padding-top: 8px; display: flex; flex-wrap: nowrap; justify-content: space-between; align-items: flex-start; gap: 8px 32px; font-size: var(--lb-size-small); color: hsl(240 3% 40%); }
+.lib-footer .legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px; flex: 1 1 auto; min-width: 0; }
+.lib-footer .meta > .btn-row { flex-wrap: nowrap; flex-shrink: 0; }
 
 /* Chips */
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--page); color: var(--grey700); border: 1px solid var(--rule); }
@@ -196,6 +199,12 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
 .item-link .chip { grid-area: chip; justify-self: end; }
 .item-price { grid-area: price; justify-self: end; font-size: var(--lb-size-body); font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .item-link .btn { grid-area: pay; margin-top: var(--lb-space-3); }
+/* Notice banner */
+.notice { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--lb-space-1) var(--lb-space-3); align-items: start; padding: var(--lb-space-4); background: var(--attention-subtle); border: 1px solid var(--attention); border-radius: var(--radius-card); }
+.notice svg { width: 20px; height: 20px; color: var(--attention-dark); margin-top: 1px; }
+.notice-title { margin: 0; font-size: var(--lb-size-body); line-height: 1.4; font-weight: 600; }
+.notice-msg { margin: 0; grid-column: 2; font-size: var(--lb-size-small); line-height: 1.45; color: var(--grey700); }
+.notice .btn { grid-column: 2; justify-self: start; margin-top: var(--lb-space-2); min-height: 44px; }
 @media (hover: hover) { .item-link:hover .item-name { text-decoration: underline; text-underline-offset: 3px; } }
 @media (min-width: 768px) {
   .item-row { padding-block: var(--lb-space-5); }
@@ -204,6 +213,19 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
   .item-link { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "name chip price" "date chip price" "pay pay pay"; column-gap: var(--lb-space-5); }
   .item-link .btn { justify-self: end; }
 }
+
+/* Header menu */
+.hm-bar { display: flex; align-items: center; justify-content: space-between; height: var(--lb-topbar-height); padding: 0 var(--lb-gutter); background: var(--page); border: 1px solid var(--grey100); }
+.hm-actions { display: flex; align-items: center; gap: 0 var(--lb-space-5); position: relative; }
+.hm-link { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--lb-size-small); letter-spacing: var(--lb-tracking-nav); color: var(--ink); text-decoration: none; }
+.hm-link.is-current { text-decoration: underline; text-underline-offset: 3px; }
+.hm-trigger { display: grid; place-items: center; min-width: 44px; min-height: 44px; border: 0; background: transparent; padding: 0; cursor: pointer; position: relative; }
+.hm-avatar { display: grid; place-items: center; width: var(--lb-avatar-header); height: var(--lb-avatar-header); border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 12px; font-weight: 600; }
+.hm-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--fail, #e7000b); }
+.hm-panel { position: absolute; top: calc(100% + var(--lb-space-1)); right: 0; width: var(--lb-menu-width); background: var(--paper); border: 1px solid var(--grey100); border-radius: var(--radius-card); box-shadow: var(--lb-shadow-search); padding: var(--lb-space-1) 0; }
+.hm-item { display: flex; align-items: center; min-height: 44px; padding: 0 var(--lb-space-4); font-size: var(--lb-size-small); color: var(--ink); text-decoration: none; }
+.hm-item.is-current { font-weight: 600; }
+.hm-greeting { display: block; padding: var(--lb-space-3) var(--lb-space-4) var(--lb-space-1); font-size: var(--lb-size-small); color: var(--grey600); }
 </style>
 
 <div class="sheet">
@@ -225,6 +247,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
     <a href="#buttons">Buttons</a>
     <a href="#chips">Status chips</a>
     <a href="#item-rows">Item rows</a>
+    <a href="#notice-banner">Notice banner</a>
     <a href="#hero-search">Hero search</a>
     <a href="#footer">Footer</a>
   </nav>
@@ -464,6 +487,22 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
       </div>
       <ul class="rules"><li>Rows sit inside one <code>SectionCard</code> per group (approved Oct 14: one card per group, not one card per item). 1px rule between rows, 16px (phone) / 24px (768+) above and below (<code>--lb-row-pad</code>).</li><li><b>Action row:</b> title (<code>.fieldLabel</code> size, 600) → 8px → text (<code>.body</code>, secondary) → button. Phone: button full width under the text. From 768px: text left, button right (auto, min 200px), vertically centred.</li><li><b>Link row:</b> the whole row opens a page (<code>role="link"</code>, Enter/Space). <b>The price is always at the right end</b> (600, tabular numbers, right-aligned, so amounts line up down the list), the status chip just before it. Phone: title · price on the first line, date · chip on the second. From 768px: title over date on the left, then chip, then price. An optional action (for example Pay) is its own line under the row: full width on phones, right-aligned from 768px (approved Oct 14).</li><li>Link row hover (pointer only, <code>@media (hover: hover)</code>): the title underlines (offset 3px). No card lift, no shadow.</li><li>Row buttons are always secondary: a page can show several rows with an action, and only one primary button is allowed per view.</li></ul>
     </section>
+    <section class="block" id="notice-banner">
+      <div class="block-head"><h2 class="reset h3">Notice banner</h2><p class="reset code">Component <b>NoticeBanner</b> · attention colors · icon + title + message + one secondary button · first used on the public profile (spec <b>public-profile-page.md</b>)</p></div>
+      <div class="specimen on-page">
+        <div class="notice" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><p class="reset notice-title">Complete your payout setup</p><p class="reset notice-msg">Your account is approved, but you won't receive booking requests until your payout setup is complete.</p><a class="btn btn-secondary" href="#notice-banner">Set up payouts</a></div>
+      </div>
+      <ul class="rules"><li>Anatomy: lucide <code>CircleAlert</code> 20px in <code>--colorAttentionDark</code> · title <code>.label</code> 600 · message <code>.small</code> in <code>--colorGrey700</code> · one secondary button, 44px, under the message. Padding 16px, 8px radius. Fill <code>--colorAttentionSubtle</code>, 1px <code>--colorAttention</code> border. No new colors.</li><li>Only for something that blocks the user's business (payout details today). One per page. Persistent: not dismissible, not a toast; it goes away by itself once the problem is solved. Shown together with any other page state.</li><li>First in the page column, under the topbar, at the column width. <code>role="status"</code>.</li><li>The button is secondary: the page keeps one primary button. The text above is the existing Home copy (<code>Home.completePayoutTitleDj</code>, <code>Home.completePayoutMessageDj</code>, <code>Home.pendingApprovalCtaDj</code>).</li></ul>
+    </section>
+    <section class="block" id="header-menu">
+      <div class="block-head"><h2 class="reset h3">Header menu</h2><p class="reset code">Component <b>HeaderMenu</b> · trigger + panel · dropdown from 768px, full-width panel under the bar on phones · spec <b>header.md</b></p></div>
+      <div class="specimen on-page">
+        <div class="hm-bar"><span class="wordmark">LineupBridge</span><div class="hm-actions"><a class="hm-link is-current" href="#header-menu" aria-current="page">Home</a><a class="hm-link" href="#header-menu">Find a DJ</a>
+          <button class="hm-trigger" type="button" aria-expanded="true" aria-label="Open menu"><span class="hm-avatar">RR</span></button>
+          <div class="hm-panel"><span class="hm-greeting">Hello Rodhad</span><a class="hm-item" href="#header-menu">Account settings</a><a class="hm-item" href="#header-menu">Log out</a></div></div></div>
+      </div>
+      <ul class="rules"><li>Trigger: initials avatar 32px (<code>--lb-avatar-header</code>), no chevron, 44px tap area, <code>aria-expanded</code>. Guest on phones: lucide <code>Menu</code> icon.</li><li>Dropdown (768px and up): white, 1px <code>--colorGrey100</code>, 8px radius, <code>--lb-shadow-search</code>, <code>--lb-menu-width</code> 240px, 44px rows, current page 600.</li><li>Phone panel: full width under the bar, 48px rows, no divider lines, scrim <code>--lb-scrim</code> behind, Log out last.</li><li>Closes on Esc, outside click or choosing an item; focus returns to the trigger. Red unread dot on the avatar (phones) and next to Home (768px and up).</li></ul>
+    </section>
     <section class="block" id="hero-search">
       <div class="block-head"><h2 class="reset h3">Hero search</h2><p class="reset code">Component <b>HeroSearch</b> · one white bar, max 520px (<b>--lb-width-search</b>) · landing hero only</p></div>
       <div class="specimen on-page">
@@ -473,19 +512,19 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
       <ul class="rules"><li>1px <code>--colorGrey100</code> border, <code>--borderRadiusMedium</code>, 4px inner padding and gap, shadow <code>--lb-shadow-search</code>.</li><li>Keyword input without its own border, 16px text, existing placeholder. Primary button inline on the right at every width.</li><li>Focus: the bar's border turns black.</li></ul>
     </section>
     <section class="block" id="footer">
-      <div class="block-head"><h2 class="reset h3">Footer</h2><p class="reset code">Component <b>Footer</b> · logo 24px · help links · legal links + copyright · social icons from Console · spec <b>footer.md</b></p></div>
+      <div class="block-head"><h2 class="reset h3">Footer</h2><p class="reset code">Component <b>Footer</b> · logo 38px · social icons from Console · legal links + copyright · help links · spec <b>footer.md</b></p></div>
       <div class="specimen">
-        <div class="btn-row"><a class="link-footer" href="#footer">FAQ</a><a class="link-muted" href="#footer">Privacy policy</a><a class="social-link" href="#footer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4Zm5.3-9.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4 2.3 2.3 4 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.9 1.9 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.9-.2 5.6-1.9 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1C21.7 4 20 2.3 16.1 2.1 15 2 14.7 2 12 2Z"/></svg></a></div>
+        <div class="btn-row"><a class="link-muted" href="#footer">Privacy policy</a><a class="social-link" href="#footer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4Zm5.3-9.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4 2.3 2.3 4 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.9 1.9 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.9-.2 5.6-1.9 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1C21.7 4 20 2.3 16.1 2.1 15 2 14.7 2 12 2Z"/></svg></a></div>
       </div>
       <div class="specimen">
         <footer class="lib-footer">
           <div class="top"><div class="brand"><span class="wordmark">LineupBridge</span><span class="reset" style="font-size:var(--lb-size-small);color:hsl(240 3% 30%)">Built for the electronic music industry</span></div>
-            <div class="btn-row" style="gap:0 24px"><a class="link-footer" href="#footer">FAQ</a><a class="link-footer" href="#footer">Contact us</a></div></div>
+            <div class="social-row"><a class="social-link" href="#footer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4Zm5.3-9.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4 2.3 2.3 4 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.9 1.9 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.9-.2 5.6-1.9 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1C21.7 4 20 2.3 16.1 2.1 15 2 14.7 2 12 2Z"/></svg></a></div></div>
           <div class="meta"><div class="legal"><span>© 2026 LineupBridge. All rights reserved</span><a class="link-muted" href="#footer">Privacy policy</a><a class="link-muted" href="#footer">Terms of use</a><a class="link-muted" href="#footer">Payment terms</a></div>
-            <div><a class="social-link" href="#footer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4Zm5.3-9.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4 2.3 2.3 4 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.9 1.9 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.9-.2 5.6-1.9 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1C21.7 4 20 2.3 16.1 2.1 15 2 14.7 2 12 2Z"/></svg></a></div></div>
+            <div class="btn-row" style="gap:0 24px"><a class="link-muted" href="#footer">FAQ</a><a class="link-muted" href="#footer">Contact us</a></div></div>
         </footer>
       </div>
-      <ul class="rules"><li><b>Footer link</b>: 14px, 600, black, no underline; underline (offset 3px) on hover. For FAQ and Contact us.</li><li><b>Muted link</b>: 14px, 400, <code>--lb-text-muted</code>; black and underlined on hover. For legal links.</li><li><b>Social icon</b>: 20px (<code>--lb-icon-social</code>), muted, black on hover, 44px tap area. Shared <code>SocialIcon</code>: template paths with a viewBox added (approved exception to rule 5).</li><li>Footer logo: 24px high (<code>--lb-logo-footer</code>). Full layout per view in <code>design/footer.html</code>.</li></ul>
+      <ul class="rules"><li><b>Muted link</b>: 14px, 400, <code>--lb-text-muted</code>; black and underlined on hover. For the legal links and for FAQ / Contact us.</li><li><b>Social icon</b>: 20px (<code>--lb-icon-social</code>), muted, black on hover, 44px tap area. Shared <code>SocialIcon</code>: template paths with a viewBox added (approved exception to rule 5).</li><li>Social icons sit right of the brand, level with the logo (visible icon centred on the logo). FAQ / Contact us sit right of the legal links, on the same line.</li><li>Footer logo: 38px high (<code>--lb-logo-footer</code>). Full layout per view in <code>design/footer.html</code>.</li></ul>
     </section>
   </main>
 </div>

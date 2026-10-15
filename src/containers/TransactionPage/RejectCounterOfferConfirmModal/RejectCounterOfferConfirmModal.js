@@ -5,7 +5,8 @@ import { FormattedMessage } from '../../../util/reactIntl';
 
 import { Modal, PrimaryButton, SecondaryButton } from '../../../components';
 
-import css from './RejectCounterOfferConfirmModal.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
+import modalCss from '../../../styles/lineupModal.module.css';
 
 /**
  * Confirms rejecting the organizer's counter-offer (provider negotiation).
@@ -34,27 +35,42 @@ const RejectCounterOfferConfirmModal = props => {
     rootClassName,
   } = props;
 
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || modalCss.container, className);
 
   return (
     <Modal
       id={id}
+      scrollLayerClassName={modalCss.scrollLayer}
       containerClassName={classes}
-      contentClassName={css.modalContent}
+      contentClassName={modalCss.content}
       isOpen={isOpen}
       onClose={onCloseModal}
       onManageDisableScrolling={onManageDisableScrolling}
       focusElementId={focusElementId}
       usePortal
     >
-      <p className={css.body}>
-        <FormattedMessage id="RejectCounterOfferConfirmModal.body" />
-      </p>
-      <div className={css.actions}>
-        <SecondaryButton onClick={onCloseModal} disabled={inProgress}>
+      <div className={modalCss.head}>
+        <h2 className={modalCss.title}>
+          <FormattedMessage id="TransactionPage.default-negotiation.provider.finalOffer.reject" />
+        </h2>
+        <p className={modalCss.description}>
+          <FormattedMessage id="RejectCounterOfferConfirmModal.body" />
+        </p>
+      </div>
+      <div className={modalCss.footer}>
+        <SecondaryButton
+          rootClassName={buttonCss.secondary}
+          onClick={onCloseModal}
+          disabled={inProgress}
+        >
           <FormattedMessage id="RejectCounterOfferConfirmModal.cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={onConfirmReject} inProgress={inProgress} disabled={inProgress}>
+        <PrimaryButton
+          rootClassName={buttonCss.primary}
+          onClick={onConfirmReject}
+          inProgress={inProgress}
+          disabled={inProgress}
+        >
           <FormattedMessage id="RejectCounterOfferConfirmModal.confirm" />
         </PrimaryButton>
       </div>

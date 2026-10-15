@@ -444,3 +444,17 @@
 .spinner {
   margin: auto;
 }
+
+/* Negotiation checkout: OrderBreakdown inside the Booking summary card. It arrives with
+   .orderBreakdown's 48px side margins; the card padding replaces them. */
+.summaryBreakdown {
+  min-width: 0;
+}
+
+/* Doubled class so this wins over .orderBreakdown whatever the CSS load order */
+.summaryBreakdown.summaryBreakdown {
+  & > * {
+    margin: 0;
+    padding: 0;
+  }
+}

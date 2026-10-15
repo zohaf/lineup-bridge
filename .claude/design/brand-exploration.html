@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700&family=Instrument+Serif&family=Inter+Tight:wght@600&family=Space+Grotesk:wght@600&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --page: #eeede9; --paper: #ffffff; --ink: #000000; --ink-2: #4a4a48; --ink-3: #6f6f6b;
+  --rule: #d9d8d3; --orange: #D77645; --tool: #1b1b1d;
+  --mark-font: "Times New Roman MT", "Times New Roman", Times, serif;
+  --mark-weight: 700; --mark-style: italic; --mark-stretch: 100%; --mark-track: 0;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9d8d3; color: var(--ink); font: 16px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+.toolbar { position: sticky; top: 0; z-index: 50; background: var(--tool); color: #f2f2f0; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; font-size: 13px; }
+.toolbar label { display: inline-flex; gap: 8px; align-items: center; }
+.toolbar select { font: inherit; background: #f2f2f0; color: #111; border: 0; border-radius: 4px; padding: 6px 8px; min-height: 32px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 32px 16px 96px; }
+section.block { background: var(--page); border-radius: 6px; padding: 32px 16px; margin-bottom: 32px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+@media (min-width: 768px) { section.block { padding: 48px 40px; } }
+h1 { font-size: 36px; line-height: 1.1; letter-spacing: -.02em; margin: 0 0 12px; font-weight: 600; }
+h2 { font-size: 28px; line-height: 1.15; letter-spacing: -.015em; margin: 0 0 8px; font-weight: 600; }
+h3 { font-size: 18px; line-height: 1.3; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 600; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; }
+.lead { color: var(--ink-2); max-width: 70ch; margin: 0 0 32px; }
+.small { font-size: 14px; color: var(--ink-3); margin: 0; }
+.grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid.two { grid-template-columns: 1fr 1fr; } .grid.three { grid-template-columns: repeat(3, 1fr); } }
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 24px; position: relative; }
+.card.pick { outline: 2px solid var(--ink); outline-offset: -1px; }
+.chip { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .02em; padding: 2px 8px; border-radius: 999px; background: #f2f2f0; color: var(--ink-2); }
+.chip.ok { background: #e3f1e6; color: #1d6b34; } .chip.warn { background: #fff4d6; color: #6a5200; }
+
+/* Wordmark */
+.mark { font-family: var(--mark-font); font-weight: var(--mark-weight); font-style: var(--mark-style); font-stretch: var(--mark-stretch); letter-spacing: var(--mark-track); line-height: 1; white-space: nowrap; }
+
+/* Header mock */
+.hdr { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid #e6e5e0; background: var(--page); }
+.hdr nav { display: flex; gap: 20px; font-size: 14px; letter-spacing: -.01em; }
+.lockup { display: inline-flex; align-items: center; gap: .35em; color: var(--ink); text-decoration: none; }
+.lockup svg { display: block; flex: none; }
+.frame { border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--page); }
+.frame .hero { padding: 40px 16px 48px; }
+.frame .hero h1 { font-size: 36px; }
+@media (min-width: 768px) { .frame .hero { padding: 56px 40px; } .frame .hero h1 { font-size: 44px; } }
+.frame .hero p { color: var(--ink-2); max-width: 52ch; margin: 0; font-size: 17px; }
+
+/* Font cards */
+.fcard .big { font-size: 44px; margin: 8px 0 20px; color: var(--ink); }
+.fcard .in-hdr { display: flex; align-items: center; justify-content: space-between; height: 60px; border: 1px solid #e6e5e0; border-radius: 6px; padding: 0 12px; background: var(--page); margin-bottom: 16px; }
+.fcard .in-hdr span.nav { font-size: 14px; letter-spacing: -.01em; }
+.fcard .with-ui { border-top: 1px solid var(--rule); padding-top: 16px; margin-top: 4px; }
+.fcard .with-ui .eb { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.fcard .with-ui .t { font-size: 22px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; margin: 4px 0; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; font-size: 13px; }
+.metrics div { background: #f7f7f5; border-radius: 6px; padding: 8px; }
+.metrics b { display: block; font-size: 16px; }
+.fcard button.use { position: absolute; top: 16px; right: 16px; font: 600 13px/1 var(--font); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--ink); background: var(--paper); cursor: pointer; }
+.fcard.pick button.use { background: var(--ink); color: #fff; }
+
+/* Icons */
+.icons { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .icons { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .icons { grid-template-columns: repeat(3, 1fr); } }
+.icon-row { display: flex; align-items: flex-end; gap: 12px; margin: 8px 0 16px; flex-wrap: wrap; }
+.icon-row .tile { display: grid; place-items: center; width: 80px; height: 80px; border-radius: 10px; }
+.tile.light { background: var(--page); } .tile.dark { background: #111; } .tile.orange { background: var(--orange); }
+.tab { display: inline-flex; align-items: center; gap: 6px; background: #e8e7e3; border-radius: 8px 8px 0 0; padding: 6px 10px; font-size: 12px; color: var(--ink-2); }
+.icard button.use { font: 600 13px/1 var(--font); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--ink); background: var(--paper); cursor: pointer; margin-top: 12px; }
+.icard.pick button.use { background: var(--ink); color: #fff; }
+
+/* Scroll demo */
+.scroller { height: 360px; overflow-y: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--page); position: relative; }
+.scroller .hdr { position: sticky; top: 0; z-index: 2; }
+.swap { position: relative; display: inline-grid; align-items: center; }
+.swap > * { grid-area: 1 / 1; transition: opacity .25s ease, transform .25s ease; }
+.swap .s-icon { opacity: 0; transform: scale(.7); }
+.scrolled .swap .s-word { opacity: 0; transform: translateY(-6px); }
+.scrolled .swap .s-icon { opacity: 1; transform: none; }
+.filler { padding: 32px 16px; color: var(--ink-3); }
+.filler div { height: 120px; border-radius: 8px; background: #e6e5e0; margin-bottom: 16px; }
+
+/* Mesh hero */
+.mesh-hero { position: relative; overflow: hidden; background: var(--page); border-radius: 8px; border: 1px solid var(--rule); min-height: 520px; touch-action: pan-y; }
+.mesh-hero .content { position: relative; z-index: 2; padding: 0; pointer-events: none; }
+.mesh-hero .content .hero { padding: 72px 16px; text-align: center; }
+.mesh-hero .content .hero h1 { margin: 0 auto 16px; max-width: 18ch; }
+.mesh-hero .content .hero p { margin: 0 auto; }
+.mesh { position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity .4s ease;
+  --x: 50%; --y: 50%; --r: 220px;
+  -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0,0,0,.55) 45%, transparent 100%);
+          mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0,0,0,.55) 45%, transparent 100%); }
+.mesh-hero.on .mesh { opacity: 1; }
+.mesh[data-p="perforated"] { background-image: radial-gradient(circle at center, rgba(0,0,0,.22) 1.6px, transparent 2.2px); background-size: 9px 9px; }
+.mesh[data-p="grille"] { background-image: radial-gradient(circle at center, rgba(0,0,0,.18) 1.4px, transparent 1.9px), radial-gradient(circle at center, rgba(0,0,0,.18) 1.4px, transparent 1.9px); background-size: 10px 17.3px; background-position: 0 0, 5px 8.66px; }
+.mesh[data-p="woven"] { background-image: repeating-linear-gradient(45deg, rgba(0,0,0,.10) 0 1px, transparent 1px 6px), repeating-linear-gradient(-45deg, rgba(0,0,0,.10) 0 1px, transparent 1px 6px); }
+.mesh[data-p="orange"] { background-image: radial-gradient(circle at center, rgba(215,118,69,.55) 1.6px, transparent 2.2px); background-size: 9px 9px; }
+.mesh-hero.static .mesh { opacity: 1; -webkit-mask-image: linear-gradient(#000, #000); mask-image: linear-gradient(#000, #000); }
+@media (prefers-reduced-motion: reduce) { .mesh, .swap > * { transition: none; } }
+.ref-list { margin: 0; padding-left: 20px; color: var(--ink-2); }
+.ref-list li { margin-bottom: 6px; }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.cmp th, table.cmp td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.cmp th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); }
+.scroll-x { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="toolbar" role="toolbar" aria-label="Exploration controls">
+  <b>LineupBridge · brand exploration</b>
+  <label>Wordmark font
+    <select id="selFont"></select>
+  </label>
+  <label>Icon
+    <select id="selIcon"></select>
+  </label>
+  <label>Icon color
+    <select id="selColor"><option value="ink">Black</option><option value="orange">Orange</option></select>
+  </label>
+  <label>Logo height
+    <select id="selSize"><option>18</option><option selected>20</option><option>24</option><option>28</option></select>
+  </label>
+</div>
+
+<div class="wrap">
+
+<!-- 0. Diagnosis -->
+<section class="block">
+  <p class="eyebrow">0 · Diagnosis</p>
+  <h2>Why the current wordmark stopped working</h2>
+  <p class="lead">The bold italic Times was drawn for a big, 52px, editorial header. Now the whole product speaks in the system sans at 600, so the logo is the only serif and the only italic on the page. At 20–28px its thin hairlines and slant make it look like it belongs to a different company. Two ways out, both used by established brands: <b>(a)</b> a wordmark that shares the UI's skeleton (Linear, Vercel, Stripe, Anthropic), or <b>(b)</b> a deliberate contrast on exactly one axis — style, width or spacing — with matched x-height, plus a small icon that does the recognisable work (Peec, Spotify, Apple).</p>
+  <div class="frame">
+    <div class="hdr"><a class="lockup" data-lockup="word" href="#"></a><nav><span>Sign up</span><span>Log in</span></nav></div>
+    <div class="hero">
+      <h1>Professional DJ booking platform, from offer to payment</h1>
+      <p>Structured offers, organized negotiations, confirmed bookings, and secured payments.</p>
+    </div>
+  </div>
+  <p class="small" style="margin-top:12px">Live: change the font and logo height in the toolbar. The header follows <code>header.md</code>: 60px bar, links 14px / 400 / -0.01em. Peec reference: 20px tall logo in a 60px bar.</p>
+</section>
+
+<!-- 1. Typography -->
+<section class="block">
+  <p class="eyebrow">1 · Wordmark typography</p>
+  <h2>Five fonts that sit with the system font</h2>
+  <p class="lead">The method, so the choice isn't a matter of taste alone: <b>(1)</b> match x-height to the UI font within ~10%, so the wordmark and the 14px nav links sit on the same visual line; <b>(2)</b> contrast on one axis only (classification, width or spacing), never two; <b>(3)</b> it must hold at 18–20px and in one color; <b>(4)</b> it must be free to license as a wordmark (all five are SIL Open Font License, so we can outline the letters and own the drawing). The x-height and cap-height ratios below are <b>measured live in your browser</b> against the system font you are seeing.</p>
+  <div class="grid two" id="fontCards"></div>
+</section>
+
+<!-- 2. Icons -->
+<section class="block">
+  <p class="eyebrow">2 · Brand icon</p>
+  <h2>Five marks from the DJ booth</h2>
+  <p class="lead">Each one has to work at 16px as a favicon, on beige, black and orange, and say one thing. The established rule (Apple, Spotify, Airbnb): a mark is a simple filled shape with one idea, readable as a silhouette. Pick one with <b>Use</b> and it flows into the lockups below.</p>
+  <div class="icons" id="iconCards"></div>
+</section>
+
+<!-- 3. Lockups -->
+<section class="block">
+  <p class="eyebrow">3 · How the logo shows up</p>
+  <h2>Three established header patterns</h2>
+  <p class="lead">All three use the font, icon, color and height from the toolbar.</p>
+  <div class="grid three">
+    <div>
+      <h3>A · Icon + name</h3>
+      <p class="small" style="margin-bottom:12px">Peec, Spotify, Notion. Safest for a new brand: the name teaches the icon.</p>
+      <div class="frame"><div class="hdr"><a class="lockup" data-lockup="both" href="#"></a><nav><span>Log in</span></nav></div></div>
+    </div>
+    <div>
+      <h3>B · Icon only</h3>
+      <p class="small" style="margin-bottom:12px">Apple. Only works once people already know you. Good for the phone header and favicon.</p>
+      <div class="frame"><div class="hdr"><a class="lockup" data-lockup="icon" href="#"></a><nav><span>Log in</span></nav></div></div>
+    </div>
+    <div>
+      <h3>C · Name, then icon on scroll</h3>
+      <p class="small" style="margin-bottom:12px">Anthropic-style. Name at the top, collapses to the icon once you scroll. Scroll inside the box.</p>
+      <div class="scroller" id="scroller">
+        <div class="hdr"><a class="lockup" data-lockup="swap" href="#"></a><nav><span>Log in</span></nav></div>
+        <div class="filler"><div></div><div></div><div></div><div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Mesh background -->
+<section class="block">
+  <p class="eyebrow">4 · Landing background</p>
+  <h2>Speaker mesh under the beige, revealed by the cursor</h2>
+  <p class="lead">Plain beige by default; move the mouse (or drag a finger) over the hero and a speaker grille appears around the pointer and fades away. It's one CSS mask plus ~10 lines of JS, no images and no library, so it costs almost nothing to build or load. The text and buttons stay above it and are never covered.</p>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; font-size:14px">
+    <label>Pattern <select id="selMesh">
+      <option value="perforated">Perforated metal (square)</option>
+      <option value="grille">Speaker grille (hex)</option>
+      <option value="woven">Woven cloth</option>
+      <option value="orange">Perforated, orange</option>
+    </select></label>
+    <label>Reveal size <select id="selR"><option value="140px">Small</option><option value="220px" selected>Medium</option><option value="340px">Large</option></select></label>
+    <label><input type="checkbox" id="chkStatic"> Show the whole pattern</label>
+  </div>
+  <div class="mesh-hero" id="meshHero">
+    <div class="mesh" id="mesh" data-p="perforated"></div>
+    <div class="content">
+      <div class="hdr" style="background:transparent; border-color:transparent"><a class="lockup" data-lockup="both" href="#"></a><nav><span>Sign up</span><span>Log in</span></nav></div>
+      <div class="hero">
+        <h1>Professional DJ booking platform, from offer to payment</h1>
+        <p>Structured offers, organized negotiations, confirmed bookings, and secured payments.</p>
+      </div>
+    </div>
+  </div>
+  <p class="small" style="margin-top:12px">Notes: on touch screens there's no hover, so the reveal follows a finger drag; otherwise the page is plain beige. With reduced motion the fade is instant. Keep it to the hero only: everywhere else, the background stays calm.</p>
+</section>
+
+<!-- 5. References -->
+<section class="block">
+  <p class="eyebrow">5 · References and recommendation</p>
+  <h2>Where the patterns come from</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>Established patterns used here</h3>
+      <ul class="ref-list">
+        <li><b>Peec AI:</b> small icon + name in a 60px bar, logo ~20px.</li>
+        <li><b>Apple:</b> icon alone in the nav.</li>
+        <li><b>Anthropic:</b> wordmark that gives way to the mark.</li>
+        <li><b>Linear, Vercel, Stripe:</b> wordmark drawn from the same family as the UI.</li>
+        <li><b>Braun / Dieter Rams, Teenage Engineering:</b> perforated grilles, knobs and mono labelling as brand language.</li>
+        <li><b>Resident Advisor, DICE, Boiler Room:</b> wide or heavy grotesks in nightlife branding.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>My recommendation to start from</h3>
+      <p style="margin:0 0 8px">Wordmark in <b>Instrument Serif</b> (keeps the serif you already own, loses the italic and the thin bold) or <b>Inter Tight</b> (most seamless). Icon: <b>the fading dot</b> or <b>the knob</b>. Header: pattern <b>A</b> at 20px, icon-only on the phone. Background: <b>perforated, medium reveal</b>, hero only.</p>
+      <p class="small">Next step once you choose: we trace the wordmark into an SVG (letters outlined, spacing adjusted by hand), then update <code>tokens.md</code>, <code>header.md</code> and the logo asset.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const FONTS = [
+  { id: 'times', name: 'Times New Roman MT, bold italic (today)', family: "'Times New Roman MT', 'Times New Roman', Times, serif", weight: 700, style: 'italic', stretch: '100%', track: '0',
+    axis: 'Contrast on two axes: serif and italic', chip: ['warn', 'Control'],
+    why: 'High stroke contrast plus slant. Beautiful large; at 20–28px the hairlines thin out and it reads as a different brand from the UI.' },
+  { id: 'intertight', name: 'Inter Tight, 600', family: "'Inter Tight', sans-serif", weight: 600, style: 'normal', stretch: '100%', track: '-0.02em',
+    axis: 'No contrast: same skeleton as the UI', chip: ['ok', 'Most seamless'],
+    why: 'Inter is drawn on the same neo-grotesk model as San Francisco; the Tight cut is spaced for display. The pattern of Linear and Vercel. Risk: generic unless the icon carries the personality.' },
+  { id: 'instrument', name: 'Instrument Serif, regular', family: "'Instrument Serif', serif", weight: 400, style: 'normal', stretch: '100%', track: '-0.01em',
+    axis: 'One axis: serif vs sans', chip: ['ok', 'Closest successor'],
+    why: 'Upright, condensed, editorial serif. Keeps the serif DNA of today\'s logo without the italic and the heavy-bold hairlines. Very common on current product landing pages.' },
+  { id: 'archivo', name: 'Archivo Expanded, 700', family: "'Archivo', sans-serif", weight: 700, style: 'normal', stretch: '125%', track: '-0.01em',
+    axis: 'One axis: width', chip: ['', 'Nightlife'],
+    why: 'Wide grotesk, the language of club flyers and festival posters. Same family type as the UI, contrast comes from width only. Needs a smaller height to match.' },
+  { id: 'spacegrotesk', name: 'Space Grotesk, 600', family: "'Space Grotesk', sans-serif", weight: 600, style: 'normal', stretch: '100%', track: '-0.02em',
+    axis: 'One axis: quirky geometric details', chip: ['', 'Tech / audio'],
+    why: 'Geometric sans with idiosyncratic terminals (a, G, R). Feels like audio software. Close enough to the UI to sit together; distinct enough to be a mark.' },
+  { id: 'spacemono', name: 'Space Mono, 700', family: "'Space Mono', monospace", weight: 700, style: 'normal', stretch: '100%', track: '-0.04em',
+    axis: 'One axis: monospaced spacing', chip: ['', 'Hardware label'],
+    why: 'The lettering on mixers and drum machines. Strongest DJ-equipment signal; least formal. Long name in mono is wide, so it works best small and lowercase-free.' },
+];
+
+const ICONS = {
+  dot: { name: 'Fading dot', idea: 'The favicon you have, given depth: a sound source whose intensity falls off, like a speaker cone seen head on.', risk: 'At 16px the fade softens; keep a solid core.',
+    svg: (c) => `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><radialGradient id="g${uid()}" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="${c}"/><stop offset=".45" stop-color="${c}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><circle cx="16" cy="16" r="15" fill="url(#g${lastUid})"/></svg>` },
+  grille: { name: 'Speaker grille', idea: 'A circle of perforations, larger in the middle: the speaker mesh as a halftone. Ties directly to the mesh background.', risk: 'Detail disappears at 16px; use a simpler 3×3 version for the favicon.',
+    svg: (c) => { let d = ''; for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) { const cx = 4 + x * 4, cy = 4 + y * 4, dist = Math.hypot(cx - 16, cy - 16); if (dist > 13.5) continue; const r = 1.75 - dist * 0.07; d += `<circle cx="${cx}" cy="${cy}" r="${r.toFixed(2)}"/>`; } return `<svg viewBox="0 0 32 32" aria-hidden="true" fill="${c}">${d}</svg>`; } },
+  knob: { name: 'Knob', idea: 'A rotary knob turned to two o\'clock: fine-tuning your lineup. One line on a dot, so it survives 16px.', risk: 'Needs the indicator angle to stay fixed everywhere.',
+    svg: (c, bg) => `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="${c}"/><line x1="16" y1="16" x2="23.5" y2="9" stroke="${bg}" stroke-width="3" stroke-linecap="round"/></svg>` },
+  faders: { name: 'Faders', idea: 'Three mixer channels, caps at different heights: three DJs, one balanced lineup.', risk: 'Close to generic "equalizer" icons; needs precise proportions.',
+    svg: (c) => `<svg viewBox="0 0 32 32" aria-hidden="true" fill="${c}"><rect x="6" y="4" width="2" height="24" rx="1" opacity=".35"/><rect x="15" y="4" width="2" height="24" rx="1" opacity=".35"/><rect x="24" y="4" width="2" height="24" rx="1" opacity=".35"/><rect x="3" y="16" width="8" height="6" rx="2"/><rect x="12" y="7" width="8" height="6" rx="2"/><rect x="21" y="12" width="8" height="6" rx="2"/></svg>` },
+  lineup: { name: 'Lineup', idea: 'A row of dots with one filled: the slot that is booked. Literal to the name, extends the dot favicon.', risk: 'Wide shape; at 16px use the single filled dot.',
+    svg: (c) => `<svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="${c}" stroke-width="2"><circle cx="5" cy="16" r="3.5"/><circle cx="27" cy="16" r="3.5"/></g><circle cx="16" cy="16" r="5.5" fill="${c}"/></svg>` },
+};
+let _u = 0, lastUid = 0; function uid() { lastUid = ++_u; return lastUid; }
+
+const state = { font: 'times', icon: 'dot', color: 'ink', size: 20 };
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const colorHex = () => state.color === 'orange' ? '#D77645' : '#000000';
+
+function applyFont() {
+  const f = FONTS.find(x => x.id === state.font), r = document.documentElement.style;
+  r.setProperty('--mark-font', f.family); r.setProperty('--mark-weight', f.weight);
+  r.setProperty('--mark-style', f.style); r.setProperty('--mark-stretch', f.stretch); r.setProperty('--mark-track', f.track);
+}
+// Font size so the wordmark's cap height equals the chosen logo height.
+function markSize(f, h) { const cap = f.metrics ? f.metrics.cap : 0.66; return (h / cap).toFixed(1); }
+
+function renderLockups() {
+  const f = FONTS.find(x => x.id === state.font), h = +state.size, fs = markSize(f, h);
+  const icon = (px) => ICONS[state.icon].svg(colorHex(), '#eeede9').replace('<svg', `<svg width="${px}" height="${px}"`);
+  const word = `<span class="mark" style="font-size:${fs}px">LineupBridge</span>`;
+  $$('[data-lockup]').forEach(el => {
+    const t = el.dataset.lockup, ip = Math.round(h * 1.15);
+    if (t === 'word') el.innerHTML = word;
+    if (t === 'icon') el.innerHTML = icon(Math.round(h * 1.3));
+    if (t === 'both') el.innerHTML = icon(ip) + word;
+    if (t === 'swap') el.innerHTML = `<span class="swap"><span class="s-word">${word}</span><span class="s-icon">${icon(Math.round(h * 1.3))}</span></span>`;
+  });
+}
+
+function renderFontCards() {
+  $('#fontCards').innerHTML = FONTS.map(f => `
+    <div class="card fcard ${f.id === state.font ? 'pick' : ''}" data-id="${f.id}">
+      <button class="use" type="button">${f.id === state.font ? 'In use' : 'Use'}</button>
+      <span class="chip ${f.chip[0]}">${f.chip[1]}</span>
+      <h3 style="margin-top:10px">${f.name}</h3>
+      <div class="mark big" style="font-family:${f.family};font-weight:${f.weight};font-style:${f.style};font-stretch:${f.stretch};letter-spacing:${f.track}">LineupBridge</div>
+      <div class="in-hdr"><span class="mark" style="font-family:${f.family};font-weight:${f.weight};font-style:${f.style};font-stretch:${f.stretch};letter-spacing:${f.track};font-size:${markSize(f, 20)}px">LineupBridge</span><span class="nav">Sign up &nbsp; Log in</span></div>
+      <div class="metrics">
+        <div>x-height<b>${f.metrics ? f.metrics.x.toFixed(3) : '…'}</b></div>
+        <div>vs system x<b>${f.metrics ? fmtDelta(f.metrics.x / SYS.x) : '…'}</b></div>
+        <div>Stroke<b>${f.id === 'times' ? 'High contrast' : f.id === 'instrument' ? 'Medium' : 'Low'}</b></div>
+      </div>
+      <p class="small" style="margin-bottom:6px"><b style="color:var(--ink)">${f.axis}.</b> ${f.why}</p>
+      <div class="with-ui"><div class="eb">Why LineupBridge</div><div class="t">From discovery to payment</div><p class="small">Structured offers, organized negotiations, confirmed bookings, and secured payments.</p></div>
+    </div>`).join('');
+  $$('#fontCards .use').forEach(b => b.onclick = () => { state.font = b.closest('.fcard').dataset.id; $('#selFont').value = state.font; update(); });
+}
+function fmtDelta(r) { const p = Math.round((r - 1) * 100); return (p > 0 ? '+' : '') + p + '%' + (Math.abs(p) <= 10 ? ' ✓' : ''); }
+
+function renderIconCards() {
+  $('#iconCards').innerHTML = Object.entries(ICONS).map(([id, ic]) => `
+    <div class="card icard ${id === state.icon ? 'pick' : ''}" data-id="${id}">
+      <h3>${ic.name}</h3>
+      <div class="icon-row">
+        <div class="tile light">${ic.svg('#000', '#eeede9').replace('<svg', '<svg width="52" height="52"')}</div>
+        <div class="tile dark">${ic.svg('#D77645', '#111').replace('<svg', '<svg width="52" height="52"')}</div>
+        <div class="tile orange">${ic.svg('#000', '#D77645').replace('<svg', '<svg width="52" height="52"')}</div>
+      </div>
+      <div class="tab">${ic.svg('#000', '#e8e7e3').replace('<svg', '<svg width="16" height="16"')} LineupBridge</div>
+      <p class="small" style="margin-top:12px"><b style="color:var(--ink)">${ic.idea}</b> ${ic.risk}</p>
+      <button class="use" type="button">${id === state.icon ? 'In use' : 'Use'}</button>
+    </div>`).join('');
+  $$('#iconCards .use').forEach(b => b.onclick = () => { state.icon = b.closest('.icard').dataset.id; $('#selIcon').value = state.icon; update(); });
+}
+
+function update() { applyFont(); renderLockups(); renderFontCards(); renderIconCards(); }
+
+// Measure x-height and cap height (em fraction) with canvas.
+const SYS = { x: 0.52, cap: 0.70 };
+function measure(family, weight, style) {
+  const c = document.createElement('canvas').getContext('2d');
+  c.font = `${style} ${weight} 200px ${family}`;
+  const x = c.measureText('x').actualBoundingBoxAscent / 200, cap = c.measureText('H').actualBoundingBoxAscent / 200;
+  return { x, cap };
+}
+
+$('#selFont').innerHTML = FONTS.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+$('#selIcon').innerHTML = Object.entries(ICONS).map(([id, ic]) => `<option value="${id}">${ic.name}</option>`).join('');
+$('#selFont').onchange = e => { state.font = e.target.value; update(); };
+$('#selIcon').onchange = e => { state.icon = e.target.value; update(); };
+$('#selColor').onchange = e => { state.color = e.target.value; update(); };
+$('#selSize').onchange = e => { state.size = e.target.value; update(); };
+update();
+
+Promise.all(FONTS.map(f => document.fonts.load(`${f.style} ${f.weight} 40px ${f.family}`).catch(() => {}))).then(() => {
+  Object.assign(SYS, measure('-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 600, 'normal'));
+  FONTS.forEach(f => f.metrics = measure(f.family, f.weight, f.style));
+  update();
+});
+
+// Scroll collapse demo
+const sc = $('#scroller'); sc.addEventListener('scroll', () => sc.classList.toggle('scrolled', sc.scrollTop > 24));
+
+// Mesh reveal
+const hero = $('#meshHero'), mesh = $('#mesh');
+hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect(); mesh.style.setProperty('--x', (e.clientX - r.left) + 'px'); mesh.style.setProperty('--y', (e.clientY - r.top) + 'px'); hero.classList.add('on'); });
+hero.addEventListener('pointerleave', () => hero.classList.remove('on'));
+$('#selMesh').onchange = e => mesh.dataset.p = e.target.value;
+$('#selR').onchange = e => mesh.style.setProperty('--r', e.target.value);
+$('#chkStatic').onchange = e => hero.classList.toggle('static', e.target.checked);
+</script>
+</body>
+</html>

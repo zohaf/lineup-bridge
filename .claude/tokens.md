@@ -96,7 +96,10 @@ All spacing is a multiple of 4px.
 | Header (topbar) height | 60px | 60px | `--lb-topbar-height` |
 | Header logo height | 28px | 28px | `--lb-logo-header` |
 | Header link letter spacing | -0.01em | -0.01em | `--lb-tracking-nav` |
-| Footer logo height | 24px | 24px | `--lb-logo-footer` |
+| Header avatar | 32px | 32px | `--lb-avatar-header` |
+| Header menu width (dropdown) | full width | 240px | `--lb-menu-width` |
+| Header menu scrim (phone) | `rgba(0, 0, 0, 0.4)` | none | `--lb-scrim` (the value the template's modals already use) |
+| Footer logo height | 38px | 38px | `--lb-logo-footer` |
 | Social icon size | 20px | 20px | `--lb-icon-social` |
 | Hero search bar: max width | 520px | 520px | `--lb-width-search` |
 | Hero search bar: shadow | `0 6px 24px rgba(0,0,0,.06)` | same | `--lb-shadow-search` |

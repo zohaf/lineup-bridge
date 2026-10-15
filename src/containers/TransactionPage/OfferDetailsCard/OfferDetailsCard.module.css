@@ -1,140 +1,201 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* Read-only offer: the offer builder's four sections as SectionCards, no numbers.
+   Label over value; two columns from 768px. Proposed changes: red values in a pale red row, note as a red caption (option B, Oct 15). */
+
 .root {
-  margin-bottom: 24px;
-}
-
-.header {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 6px;
+  flex-direction: column;
+  gap: var(--lb-card-gap);
+  min-width: 0;
 }
 
-.avatar {
-  flex-shrink: 0;
-}
+/* "The artist has proposed changes…": a small red caption with a red dot (option B, Oct 15) */
+.proposedNote {
+  composes: small from '../../../styles/lineupType.module.css';
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lb-space-2);
+  font-weight: var(--lb-weight-semibold);
+  color: var(--colorFail);
 
-.headerText {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey700);
-  margin: 0;
-}
-
-/* ── Sections ── */
-
-.section {
-  border: 1px solid var(--colorGrey100);
-  border-radius: 8px;
-  padding: 18px;
-  margin-bottom: 12px;
-
-  @media (--viewportMedium) {
-    padding: 24px;
+  /* Dot centred on the first line of the caption */
+  &::before {
+    content: '';
+    flex: none;
+    margin-top: calc((var(--lb-size-small) * var(--lb-leading-small) - var(--lb-space-2)) / 2);
+    width: var(--lb-space-2);
+    height: var(--lb-space-2);
+    border-radius: 50%;
+    background-color: var(--colorFail);
   }
 }
 
-.sectionTitle {
-  composes: marketplaceSmallFontStyles from global;
-  font-weight: var(--fontWeightSemiBold);
-  color: var(--colorGrey900);
-  margin: 0 0 12px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 12px;
+.rows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--lb-space-4) var(--lb-space-5);
+  margin: 0;
+
+  @media (--viewportMedium) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .row {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 6px 0;
+  flex-direction: column;
+  gap: var(--lb-space-1);
+  min-width: 0;
+}
+
+/* A changed field: pale red fill. Padding and negative margin cancel out, so the text stays on
+   the same line as the fields around it. */
+.rowChanged {
+  margin: calc(-1 * var(--lb-space-2)) calc(-1 * var(--lb-space-3));
+  padding: var(--lb-space-2) var(--lb-space-3);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorFailSubtle);
+}
+
+.rowFull {
+  @media (--viewportMedium) {
+    grid-column: 1 / -1;
+  }
 }
 
 .rowLabel {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey700);
-  margin: 0;
-  flex-shrink: 0;
-  min-width: 120px;
+  composes: small from '../../../styles/lineupType.module.css';
+  color: var(--lb-text-muted);
 }
 
 .rowValue {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey900);
+  composes: body from '../../../styles/lineupType.module.css';
+  display: flex;
+  flex-direction: column;
   margin: 0;
-  text-align: right;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
-.rowValueFee {
-  composes: rowValue;
-  font-weight: var(--fontWeightSemiBold);
-  font-size: 14px;
-}
-
-.descriptionBlock {
-  padding: 6px 0 0 0;
-}
-
-.descriptionLabel {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey700);
-  margin: 0 0 4px 0;
-}
-
-.descriptionValue {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorGrey900);
-  margin: 0;
+.noteValue {
+  composes: body from '../../../styles/lineupType.module.css';
   white-space: pre-line;
 }
 
-.notProvided {
-  color: var(--colorGrey500);
-  font-style: italic;
-}
-
-/* ── Proposed changes ── */
-
-.proposedBanner {
-  composes: marketplaceSmallFontStyles from global;
-  background-color: var(--colorFail);
-  color: var(--colorWhite);
-  padding: 10px 18px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-weight: var(--fontWeightSemiBold);
-  font-size: 13px;
-}
-
-.rowValueStack {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
+.previousValue {
+  color: var(--lb-text-muted);
+  text-decoration: line-through;
 }
 
 .proposedValue {
-  composes: marketplaceSmallFontStyles from global;
   color: var(--colorFail);
-  font-weight: var(--fontWeightSemiBold);
-  margin: 0;
-  font-size: 13px;
+  font-weight: var(--lb-weight-semibold);
 }
 
-.descriptionLabelProposed {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorFail);
-  font-weight: var(--fontWeightSemiBold);
-  margin: 0 0 4px 0;
-  font-size: 13px;
+.notProvided {
+  color: var(--lb-text-muted);
 }
 
-.proposedDescriptionValue {
-  composes: marketplaceSmallFontStyles from global;
-  color: var(--colorFail);
+/* Collapsible "Offer" card (transaction page): header row = "Offer", venue · date and a chevron;
+   the proposed-changes note stays visible when closed; sections become groups inside the card. */
+.offer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+  min-width: 0;
+  padding: var(--lb-card-pad);
+  border: 1px solid var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorWhite);
+}
+
+.offerHeading {
   margin: 0;
-  white-space: pre-line;
+  padding: 0;
+}
+
+/* The whole header row is the button (44px+ tap target) */
+.offerToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-4);
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--lb-text-primary);
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--colorBlack);
+    outline-offset: var(--lb-space-1);
+    border-radius: var(--borderRadiusMedium);
+  }
+}
+
+.offerTitles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-1);
+  min-width: 0;
+}
+
+.offerTitle {
+  composes: h3 from '../../../styles/lineupType.module.css';
+}
+
+.offerSummary {
+  composes: small from '../../../styles/lineupType.module.css';
+  color: var(--lb-text-muted);
+}
+
+.offerChevron {
+  flex: none;
+  color: var(--colorBlack);
+  /* sanitize.css sets svg { fill: currentColor }, which beats the icon's fill="none" */
+  fill: none;
+  transition: transform 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.offerChevronOpen {
+  transform: rotate(180deg);
+}
+
+/* Open body: a rule under the header, groups separated by rules */
+.offerBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+  padding-top: var(--lb-field-gap);
+  border-top: 1px solid var(--colorGrey100);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-4);
+  min-width: 0;
+
+  & + .group {
+    padding-top: var(--lb-field-gap);
+    border-top: 1px solid var(--colorGrey100);
+  }
+}
+
+.groupTitle {
+  composes: label from '../../../styles/lineupType.module.css';
+  margin: 0;
+  color: var(--lb-text-primary);
 }

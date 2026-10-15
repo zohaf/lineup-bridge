@@ -72,6 +72,17 @@
   --lb-page-top: var(--lb-gutter);
   --lb-page-bottom: var(--lb-space-9);
 
+  /* Layout (Split · summary): transaction page and checkout */
+  --lb-width-split: 1120px;
+  --lb-side-summary: 360px;
+  --lb-split-gap: var(--lb-space-7);
+  --lb-sticky-top: var(--lb-space-5);
+
+  /* Modal */
+  --lb-width-modal: 560px;
+  --lb-modal-top: var(--lb-space-10);
+  --lb-scrim: rgba(0, 0, 0, 0.4);
+
   /* Form */
   --lb-size-field-label: 15px;
   --lb-leading-field-label: 1.4;
@@ -88,7 +99,6 @@
   --lb-tracking-nav: -0.01em;
   --lb-avatar-header: 32px;
   --lb-menu-width: 240px;
-  --lb-scrim: rgba(0, 0, 0, 0.4);
 
   /* Footer */
   --lb-logo-footer: 24px;

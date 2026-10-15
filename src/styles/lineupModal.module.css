@@ -1,0 +1,99 @@
+@import './customMediaQueries.css';
+
+/* Shared modal pattern (design/booking-journey.html, "Pop-ups"). Pass into the template Modal:
+   scrollLayerClassName={modalCss.scrollLayer} containerClassName={modalCss.container}
+   contentClassName={modalCss.content}. Phones: bottom sheet. From 768px: centred card. */
+
+.scrollLayer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--lb-scrim);
+
+  @media (--viewportMedium) {
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    padding: var(--lb-modal-top) var(--lb-gutter) var(--lb-gutter);
+  }
+}
+
+/* transform makes the template's fixed close button sit in this card, not on the screen corner */
+.container {
+  position: relative;
+  transform: translateZ(0);
+  width: 100%;
+  padding: var(--lb-card-pad);
+  padding-bottom: calc(var(--lb-card-pad) + env(safe-area-inset-bottom, 0px));
+  border-radius: 8px 8px 0 0;
+  background-color: var(--colorWhite);
+
+  @media (--viewportMedium) {
+    max-width: var(--lb-width-modal);
+    padding-bottom: var(--lb-card-pad);
+    border-radius: 8px;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+  min-width: 0;
+}
+
+/* Title and optional description; right padding keeps clear of the close button */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
+  padding-right: var(--lb-space-10);
+}
+
+.title {
+  composes: h3 from './lineupType.module.css';
+}
+
+.description {
+  composes: body from './lineupType.module.css';
+  color: var(--lb-text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+}
+
+/* Buttons: stacked full width on phones, right-aligned in a row from 768px (secondary first) */
+.footer {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--lb-space-3);
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  & > * {
+    width: 100%;
+
+    @media (--viewportMedium) {
+      width: auto;
+      min-width: 200px;
+    }
+  }
+}
+
+.submitError {
+  composes: error from './lineupForm.module.css';
+}

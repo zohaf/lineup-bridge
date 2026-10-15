@@ -1,19 +1,33 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Phones: image, eyebrow, title, lead stacked. From 768px: eyebrow on its own line, image beside
+   title + lead, centred on that block (design/booking-journey.html). */
 .root {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'image'
+    'eyebrow'
+    'titles';
+  justify-items: start;
   gap: var(--lb-space-3);
 }
 
-.identity {
-  display: flex;
-  align-items: center;
-  gap: var(--lb-space-4);
+@media (--viewportMedium) {
+  .withImage {
+    grid-template-columns: var(--lb-space-9) minmax(0, 1fr);
+    grid-template-areas:
+      'eyebrow eyebrow'
+      'image titles';
+    align-items: center;
+    column-gap: var(--lb-space-4);
+  }
 }
 
 .image {
-  flex: none;
-  width: var(--lb-space-10);
-  height: var(--lb-space-10);
+  grid-area: image;
+  width: var(--lb-space-9);
+  height: var(--lb-space-9);
   overflow: hidden;
   border-radius: 8px;
   background-color: var(--colorGrey100);
@@ -26,15 +40,9 @@
   }
 }
 
-.titles {
-  display: flex;
-  flex-direction: column;
-  gap: var(--lb-space-2);
-  min-width: 0;
-}
-
 .eyebrow {
   composes: eyebrow from '../../styles/lineupType.module.css';
+  grid-area: eyebrow;
   font-size: var(--lb-size-small);
   line-height: var(--lb-leading-small);
 
@@ -47,6 +55,14 @@
       text-underline-offset: 3px;
     }
   }
+}
+
+.titles {
+  grid-area: titles;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+  min-width: 0;
 }
 
 .title {

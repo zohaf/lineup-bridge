@@ -71,3 +71,81 @@
   color: var(--colorGrey700);
   margin-top: 4px;
 }
+
+/* LineupBridge look (variant 'stack' / 'bar'), design/booking-journey.html */
+.lineupRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+  width: 100%;
+
+  & .actionErrors {
+    text-align: left;
+  }
+
+  /* composes is not allowed in nested selectors, so the .small type values are repeated here */
+  & .actionError,
+  & .error {
+    margin: 0;
+    padding: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-small);
+    line-height: var(--lb-leading-small);
+    font-weight: var(--lb-weight-regular);
+    color: var(--colorFail);
+  }
+
+  & .finePrint {
+    margin: var(--lb-space-1) 0 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-small);
+    line-height: var(--lb-leading-small);
+    color: var(--lb-text-muted);
+  }
+}
+
+.lineupStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+}
+
+/* Sticky bar: stacked on phones, side by side (equal width) from 768px */
+.lineupBar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: var(--lb-space-3);
+
+    & > * {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+}
+
+.lineupButton {
+  width: 100%;
+}
+
+/* Minor action (reject): a text link, centred, 44px tap height */
+.linkButton {
+  composes: link from '../../../styles/lineupButtons.module.css';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+
+  &:disabled {
+    color: var(--lb-text-muted);
+    cursor: not-allowed;
+  }
+}
