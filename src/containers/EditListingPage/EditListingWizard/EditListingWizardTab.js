@@ -5,8 +5,11 @@ import { Helmet } from 'react-helmet-async';
 import {
   LISTING_PAGE_PARAM_TYPE_DRAFT,
   LISTING_PAGE_PARAM_TYPE_NEW,
+  LISTING_PAGE_PENDING_APPROVAL_VARIANT,
+  createSlug,
 } from '../../../util/urlHelpers';
 import { ensureListing } from '../../../util/data';
+import { LISTING_STATE_PENDING_APPROVAL } from '../../../util/types';
 import { createResourceLocatorString } from '../../../util/routes';
 import { isFieldOnOwnStep } from '../../../util/listingFieldWizardSections';
 
@@ -76,6 +79,22 @@ const redirectAfterDraftUpdate = (listingId, params, tab, marketplaceTabs, histo
   // Redirect to next tab
   const nextPathParams = pathParamsToNextTab(currentPathParams, tab, marketplaceTabs);
   const to = createResourceLocatorString('EditListingPage', routes, nextPathParams, {});
+  history.push(to);
+};
+
+// Editing a published profile: after saving a step, show the public profile
+const redirectToPublicProfile = (listing, history, routes) => {
+  const { id, attributes } = listing;
+  const slug = createSlug(attributes.title);
+  const isPendingApproval = attributes.state === LISTING_STATE_PENDING_APPROVAL;
+  const to = isPendingApproval
+    ? createResourceLocatorString(
+        'ListingPageVariant',
+        routes,
+        { id: id.uuid, slug, variant: LISTING_PAGE_PENDING_APPROVAL_VARIANT },
+        {}
+      )
+    : createResourceLocatorString('ListingPage', routes, { id: id.uuid, slug }, {});
   history.push(to);
 };
 
@@ -165,6 +184,8 @@ const EditListingWizardTab = props => {
         if (isNewListingFlow && tab !== AVAILABILITY) {
           const listingId = r.data.data.id;
           automaticRedirectsForNewListingFlow(tab, listingId);
+        } else if (!isNewListingFlow && tab !== AVAILABILITY) {
+          redirectToPublicProfile(r.data.data, history, routeConfiguration);
         }
       })
       .catch(e => {

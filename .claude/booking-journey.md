@@ -165,6 +165,8 @@ the "Order breakdown" card. See journey issue 1 for the title.
 
 ## 4. Journey issues (not UI-only, need a decision)
 
+**Now tracked in [bugs.md](bugs.md) section 7** (Oct 15); the list below is the original review.
+
 1. **Wrong message after paying.** After payment the organizer lands on
    `/order/:id?bookingRequestSuccess=1`, which forces the `pending-payment` title "The DJ has
    received your request. Check your inbox…", although the booking is paid. The flag is kept in
@@ -208,7 +210,7 @@ the "Order breakdown" card. See journey issue 1 for the title.
 - `OfferDetailsCard`, `ActionButtons` (variants `stack` / `bar`), the five pop-ups restyled
 - Checkout (negotiation only) on `LayoutSplit`
 - Offer sent / booking offer have no line items (`request-quote` sets none), so there is no Booking summary yet: on desktop the actions sit in an untitled card in the side column; below 1024px the sticky bar as usual. Showing the price here needs `privileged-set-line-items` on `request-quote` (process change, wiring pass)
-- **Not yet:** the Stripe payment form's inner fields and button, the copy changes in Console
+- Stripe payment form restyled (fields, checkbox, button). **Not yet:** the copy changes in Console
 
 Next after the decisions: `design/booking-journey.html` with Mobile, iPad 768 and Desktop views of
 steps 1, 2, 4, 7 and 8, then the build prompts.

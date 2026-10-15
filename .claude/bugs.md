@@ -91,3 +91,105 @@ settings instead of the app. ("Fix it" going there makes sense: that's where the
 **To decide:** should Later go to the home page (`/p/home`)? It's a one-line link change, not part of
 the redesign.
 
+## 7. Booking journey (offer → payment): open items
+
+From the booking journey redesign, Oct 15, 2026 (spec: [booking-journey.md](booking-journey.md),
+design: `design/booking-journey.html`). The redesign is built and pushed to `main`; these are what
+it left open. Process code: `src/containers/TransactionPage/TransactionPage.stateDataNegotiation.js`,
+offer history: `src/transactions/transactionProcessNegotiation.js`. Live copy is in Console
+(`translations.json`), not `en.json`.
+
+### Wiring and logic
+
+- [ ] **7.1 Wrong message after paying.** After checkout the organizer lands on
+  `/order/:id?bookingRequestSuccess=1` (`CheckoutPageWithPayment.js` ~line 362). `TransactionPage.js`
+  then forces the `pending-payment` title (live: "{customerName}, you have not confirmed payment
+  yet") and keeps the flag in `sessionStorage`, so it repeats for the whole session. Should show the
+  `offer-accepted` text ("Booking confirmed" · "Your payment has been received…").
+- [ ] **7.2 DJ accepts unchanged → both sides read "counteroffer".** Root cause (confirmed in
+  code): "Accept offer" and "Make a counteroffer" both run `make-offer-from-request`;
+  `getBusinessOfferType` (`transactionProcessNegotiation.js`) labels both "counter-offer". Effects:
+  DJ title "Your counteroffer has been sent" (`stateDataNegotiation.js` ~285) instead of the
+  existing "You just accepted an offer."; organizer Home card "Counteroffer from {name}"
+  (`CMSPage.js` ~364), activity feed (`ActivityFeed.js` ~396), proposed-changes view
+  (`OfferDetailsCard.js` ~95) and "Reject the counteroffer" / "Make final offer" actions. Fix:
+  treat a provider make-offer without `protectedData.proposedChanges` as an accept and show
+  `provider.offer-pending.accepted-offer.*` (in Console, unused). The Console default
+  `provider.offer-pending.title` also says "Your counter offer has been sent!", so the code fix is
+  needed either way. Full title table: [negotiation-flow.md](negotiation-flow.md).
+- [ ] **7.3** Merged into 7.2.
+- [ ] **7.4 Offer 1 / 2 / 3 content.** How each offer is stored and whether later offers overwrite
+  earlier ones (`protectedData.proposedChanges`, `metadata.offers`). See `.vscode/offerFlow.md`.
+  Now that the offer shows in every state, stale red "Proposed" values may appear.
+- [ ] **7.5 No price before the DJ responds.** `transition/request-quote` sets no line items, so
+  "Offer sent" and "Booking offer" have no Booking summary. Needs `privileged-set-line-items` on
+  `request-quote` in `ext/transaction-processes/default-negotiation/process.edn` **and** in the
+  Sharetribe backend.
+- [ ] **7.6 DJ notes are invisible.** The "Anything to note?" note and the rejection reason are sent
+  as messages, but the message feed is hidden for the negotiation process.
+- [ ] **7.7 `OfferSummaryBlock` is dead code.** `showOfferSummaryBlock` is set by no state. Delete or
+  reuse.
+
+### Copy (fix in Console and `en.json` together)
+
+- [ ] **7.8** Checkout title (`CheckoutPage.default-negotiation.title`) is "Booking can’t be
+  completed yet".
+- [ ] **7.9** Template words: "order", "Complete order", "delivers the order", and
+  `StripePaymentForm.submitConfirmPaymentFinePrint` "…won't receive money before delivering the item".
+- [ ] **7.10** Copy rules not applied yet: no "!", no full stop on one-sentence lines, "counteroffer"
+  as one word (Console writes "counter offer" in about a dozen keys).
+- [ ] **7.11** "Performance Fee" and "LineupBridge Fee" with capitals (should be sentence case).
+- [ ] **7.12** `RejectCounterOfferConfirmModal.body` says "The event organizer can send another
+  offer", untrue after a final offer.
+- [ ] **7.13** Placeholders aimed at the wrong person: `AcceptOfferModal.messagePlaceholder`
+  ("…for the customer…") and `MakeCounterOfferForm.messagePlaceholder` ("…for the event organizer…",
+  typed by the organizer).
+- [ ] **7.14** Add the two new keys to Console: `OfferDetailsCard.offerSummaryTitle`,
+  `OfferDetailsCard.proposedChangesBannerOrganizer`.
+
+### Design decisions
+
+- [ ] **7.15** Checkout billing address: name only, or one address-search field (Stripe Address
+  Element). Check first whether VAT / invoicing needs the address.
+- [ ] **7.16** Modal close button still shows the template's "CLOSE" text + X.
+- [ ] **7.17** Final offer modal label "Message (optional)" puts "(optional)" in the label text,
+  unlike the other modals.
+- [ ] **7.18** Older design-system items: unit word "min" and half-hour durations (data change);
+  duration range 1–12 hours; broken global font-weight tokens.
+- [ ] **7.19** Account settings menu: numbers or no numbers (`layouts.md`).
+
+### To verify
+
+- [ ] **7.20** The push to `main` (Oct 15) ran no format check, tests or build; three merge conflicts
+  were resolved by hand (`lineupLayout.module.css`, `design-system-rules.md`, `components.html`).
+- [ ] **7.21** "Make a counteroffer" minutes changed from 00/15/30/45 to 00/30: check offers saved
+  with :15 or :45 still show.
+- [ ] **7.22** The checkout restyle (`StripePaymentForm`) applies to every checkout type, not just
+  negotiation.
+
+## 8. After payment: the performance date is the date that counts
+
+Oct 15, 2026. Rule (Zoha): the performance date and time agreed in the offer
+(`protectedData.bookingDate` + `bookingStartTime`) decides everything after payment, not the
+payment date. Spec: [negotiation-flow.md](negotiation-flow.md) "After payment".
+
+- [ ] **8.1 Refund before the gig (dangerous).** `transition/auto-cancel` and
+  `auto-cancel-from-changes-requested` in `ext/transaction-processes/default-negotiation/process.edn`
+  refund the organizer in full 75 days after payment if the DJ has not marked the performance.
+  Sharetribe timers cannot read the performance date (this process has no booking), so the timer
+  cannot follow it. Fix: remove both auto-cancel transitions (refunds only by the operator, per the
+  terms after MVP). Process change: needs Zoha's OK and a push to Sharetribe. **Do it before
+  launch:** a transaction keeps the process version it started on, so bookings made before the fix
+  keep the 75-day timer.
+- [ ] **8.2 "I've completed the performance" before the gig.** The DJ can press it right after
+  payment. Fix (code, small): show it only from the performance date and time. "Confirm
+  performance" and "Request changes" then follow automatically (they need the DJ's step first).
+- [ ] **8.3 The 8.2 guard is UI only.** `transition/deliver` is not privileged, so the SDK can
+  still call it early. Post-MVP: make it privileged and check the date on the server.
+- [ ] **8.4 Event time zone is not stored.** The 8.2 check uses the viewer's clock. Also verify
+  that `bookingDate` (`toISOString().slice(0, 10)` in `RequestQuotePage.js`) does not shift a day
+  east of UTC.
+- [ ] **8.5 "Request changes" for a live gig.** Proposal: "Report a problem" (payout held, team
+  resolves). Waiting for the terms (post-MVP).
+- [ ] **8.6 "Payment expired" has no title.** No `payment-expired` title key in Console or
+  `en.json`, so the page shows the raw key after an unpaid checkout (15 minutes).
