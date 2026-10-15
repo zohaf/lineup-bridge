@@ -91,3 +91,30 @@ settings instead of the app. ("Fix it" going there makes sense: that's where the
 **To decide:** should Later go to the home page (`/p/home`)? It's a one-line link change, not part of
 the redesign.
 
+
+## 8. After payment: the performance date is the date that counts
+
+Oct 15, 2026. Rule (Zoha): the performance date and time agreed in the offer
+(`protectedData.bookingDate` + `bookingStartTime`) decides everything after payment, not the
+payment date. Spec: [negotiation-flow.md](negotiation-flow.md) "After payment".
+
+- [ ] **8.1 Refund before the gig (dangerous).** `transition/auto-cancel` and
+  `auto-cancel-from-changes-requested` in `ext/transaction-processes/default-negotiation/process.edn`
+  refund the organizer in full 75 days after payment if the DJ has not marked the performance.
+  Sharetribe timers cannot read the performance date (this process has no booking), so the timer
+  cannot follow it. Fix: remove both auto-cancel transitions (refunds only by the operator, per the
+  terms after MVP). Process change: needs Zoha's OK and a push to Sharetribe. **Do it before
+  launch:** a transaction keeps the process version it started on, so bookings made before the fix
+  keep the 75-day timer.
+- [ ] **8.2 "I've completed the performance" before the gig.** The DJ can press it right after
+  payment. Fix (code, small): show it only from the performance date and time. "Confirm
+  performance" and "Request changes" then follow automatically (they need the DJ's step first).
+- [ ] **8.3 The 8.2 guard is UI only.** `transition/deliver` is not privileged, so the SDK can
+  still call it early. Post-MVP: make it privileged and check the date on the server.
+- [ ] **8.4 Event time zone is not stored.** The 8.2 check uses the viewer's clock. Also verify
+  that `bookingDate` (`toISOString().slice(0, 10)` in `RequestQuotePage.js`) does not shift a day
+  east of UTC.
+- [ ] **8.5 "Request changes" for a live gig.** Proposal: "Report a problem" (payout held, team
+  resolves). Waiting for the terms (post-MVP).
+- [ ] **8.6 "Payment expired" has no title.** No `payment-expired` title key in Console or
+  `en.json`, so the page shows the raw key after an unpaid checkout (15 minutes).

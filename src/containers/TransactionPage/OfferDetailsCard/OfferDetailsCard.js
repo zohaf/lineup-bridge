@@ -74,7 +74,10 @@ const OfferDetailsCard = props => {
   );
 
   const latestBusinessOffer = getLatestBusinessOffer(transaction);
-  const latestBusinessOfferType = getBusinessOfferType(latestBusinessOffer?.transition);
+  const latestBusinessOfferType = getBusinessOfferType(
+    latestBusinessOffer?.transition,
+    protectedData
+  );
 
   // Final offer (offer 3) waiting for the DJ: the fee shows the previous priced offer struck
   // through and the final offer as the proposed value, for both sides. The DJ's earlier changes
