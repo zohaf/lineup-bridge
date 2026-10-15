@@ -8,11 +8,7 @@ import appSettings from '../../config/settings.js';
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
-import {
-  createResourceLocatorString,
-  findRouteByRouteName,
-  pathByRouteName,
-} from '../../util/routes';
+import { createResourceLocatorString, findRouteByRouteName } from '../../util/routes';
 import {
   LINE_ITEM_OFFER,
   LINE_ITEM_REQUEST,
@@ -342,11 +338,6 @@ export const TransactionPageComponent = props => {
   const bookingRequestSuccess =
     new URLSearchParams(location?.search || '').get('bookingRequestSuccess') === '1';
 
-  const persistedBookingRequestSuccess =
-    typeof window !== 'undefined' && params?.id
-      ? sessionStorage.getItem(`bookingRequestSuccess:${params.id}`) === '1'
-      : false;
-
   const config = useConfiguration();
   const routeConfiguration = useRouteConfiguration();
   const intl = useIntl();
@@ -354,15 +345,6 @@ export const TransactionPageComponent = props => {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (!bookingRequestSuccess || !params?.id) {
-      return;
-    }
-    sessionStorage.setItem(`bookingRequestSuccess:${params.id}`, '1');
-    const cleanPath = pathByRouteName('OrderDetailsPage', routeConfiguration, { id: params.id });
-    history.replace(cleanPath);
-  }, [bookingRequestSuccess, params?.id, history, routeConfiguration]);
 
   const { listing, provider, customer, booking } = transaction || {};
   const txTransitions = transaction?.attributes?.transitions || [];
@@ -401,7 +383,7 @@ export const TransactionPageComponent = props => {
   };
 
   // If payment is pending, redirect to CheckoutPage (skip when arriving from message-only checkout success)
-  const skipPendingPaymentRedirect = bookingRequestSuccess || persistedBookingRequestSuccess;
+  const skipPendingPaymentRedirect = bookingRequestSuccess;
 
   if (
     transaction?.id &&
@@ -817,7 +799,7 @@ export const TransactionPageComponent = props => {
 
   const forceMinimalFromCheckoutSuccess =
     isCustomerRole &&
-    (bookingRequestSuccess || persistedBookingRequestSuccess) &&
+    bookingRequestSuccess &&
     (isBookingProcess(processName) ||
       isPurchaseProcess(processName) ||
       isNegotiationProcessName(processName));
@@ -874,10 +856,6 @@ export const TransactionPageComponent = props => {
         viewerRole={transactionRole}
       />
     ) : null;
-
-  const headingTitleMessageId = forceMinimalFromCheckoutSuccess
-    ? `TransactionPage.${processName}.${transactionRole}.pending-payment.title`
-    : undefined;
 
   const hasLineItems = transaction?.attributes?.lineItems?.length > 0;
   const unitLineItem = hasLineItems
@@ -980,7 +958,6 @@ export const TransactionPageComponent = props => {
       onSendMessage={onSendMessage}
       onOpenDisputeModal={onOpenDisputeModal}
       stateData={stateDataForPanel}
-      headingTitleMessageId={headingTitleMessageId}
       transactionRole={transactionRole}
       showBookingLocation={showBookingLocation}
       hasViewingRights={hasViewingRights}

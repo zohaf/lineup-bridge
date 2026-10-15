@@ -171,7 +171,11 @@ const EnhancedCheckoutPage = props => {
   const authorDisplayName = userDisplayNameAsString(listing?.author, '');
   const title = processName
     ? intl.formatMessage(
-        { id: `CheckoutPage.${processName}.title` },
+        {
+          id: isNegotiationProcess(processName)
+            ? 'NegotiationTitle.checkout.title'
+            : `CheckoutPage.${processName}.title`,
+        },
         { listingTitle, authorDisplayName }
       )
     : 'Checkout page is loading data';

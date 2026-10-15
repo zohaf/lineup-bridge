@@ -443,8 +443,13 @@ export const getLatestBusinessOffer = transaction => {
     : null;
 };
 
-export const getBusinessOfferType = transition => {
+export const getBusinessOfferType = (transition, protectedData) => {
   if (transition === transitions.REQUEST_QUOTE) {
+    return 'initial-offer';
+  }
+  // Accepting and making a counteroffer both run make-offer-from-request.
+  // Only a counteroffer saves proposedChanges.
+  if (transition === transitions.MAKE_OFFER_FROM_REQUEST && !protectedData?.proposedChanges) {
     return 'initial-offer';
   }
   if (transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER) {
@@ -516,7 +521,10 @@ export const getNegotiationSummary = transaction => {
 
   return {
     latestBusinessOffer,
-    latestBusinessOfferType: getBusinessOfferType(latestBusinessOffer?.transition),
+    latestBusinessOfferType: getBusinessOfferType(
+      latestBusinessOffer?.transition,
+      attributes.protectedData
+    ),
     latestBusinessAction,
     currentBusinessState: {
       processState,
