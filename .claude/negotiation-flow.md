@@ -86,7 +86,7 @@ transition or saved data. "Accept offer" and "Make a counteroffer" both run
 
 # After payment: performance and payout
 
-Discovery Oct 15 (engineer + product owner). **Proposal, awaiting Zoha's approval.**
+Discovery Oct 15 (engineer + product owner).
 
 ## What the process does
 
@@ -100,19 +100,23 @@ Paid → DJ marks the performance done → organizer confirms (payout to the DJ)
 - 14 days after the DJ marks it, the performance is confirmed automatically (payout).
 - Reviews exist in the process but are hidden (`suppressReviewUi`); 7 days later it closes.
 
-## Actions, live text today, proposal
+## Titles from payment to completion
 
-| # | Who · action | Sees today (live) | Proposed title · lead |
-| --- | --- | --- | --- |
-| P1 | Organizer pays | "{customerName}, you have not confirmed payment yet." (bug 7.1) | Your booking is confirmed · Your payment has been received. {providerName} will receive their payout after the performance (row 6) |
-| – | DJ, booking paid | "Your booking is confirmed!" · "Your payout will be released after you complete the performance." | Your booking is confirmed · Your payout will be released after {customerName} confirms the performance |
-| P2 | DJ: "I've completed the performance" | "The performance has been completed" | You marked the performance as completed · {customerName} has been notified and can now confirm the performance |
-| – | Organizer, to react | "The performance has been completed" · "Please confirm that the DJ completed the performance as agreed" | {providerName} marked the performance as completed · Confirm the performance within 14 days, or it is confirmed automatically |
-| P3 | Organizer: "Confirm performance" | "Booking complete" · "This booking is complete." (code override; Console "You confirmed the performance!" unused) | You confirmed the performance · {providerName} has been notified and will receive their payout |
-| – | DJ after P3 | "Booking complete" | {customerName} confirmed the performance · Your payout has been released |
-| P4 | Organizer: "Request changes" (pop-up) | "Changes requested" · "You'll be notified when {providerName} delivers the changes." | See decision 2 |
-| P5 | DJ: "I've delivered the changes" | "The performance has been completed" | See decision 2 |
-| P6 | Nobody acts for 14 days | "Booking complete" | The performance has been confirmed · (DJ) Your payout has been released |
+**Approved by Zoha, Oct 15**, except "Changes requested" (open, bugs.md 8.5).
+
+Title · lead. "Today" = live Console text, or the code override.
+
+| Stage | Organizer today | Organizer proposed | DJ today | DJ proposed |
+| --- | --- | --- | --- | --- |
+| Paying (15 min) | {customerName}, you have not confirmed payment yet. | Your payment is being processed | Payment hasn't been confirmed yet. | {customerName} is completing the payment |
+| Payment expired | no text (key missing, shows the key) | Your payment was not completed · The booking was not confirmed | no text | {customerName} did not complete the payment · The booking was not confirmed |
+| Booking confirmed | Booking confirmed! · Your payment has been received. {providerName} will receive their payout after the performance is completed (hidden by bug 7.1) | Your booking is confirmed · Your payment has been received. {providerName} will receive their payout after the performance | Your booking is confirmed! · Your payout will be released after you complete the performance. | Your booking is confirmed · Your payout will be released after {customerName} confirms the performance |
+| DJ marked the performance | The performance has been completed · Please confirm that the DJ completed the performance as agreed | {providerName} marked the performance as completed · Confirm the performance within 14 days, or it is confirmed automatically | The performance has been completed · {customerName} can accept the what you delivered or request changes. | You marked the performance as completed · {customerName} has been notified and can now confirm the performance |
+| Organizer confirmed | Booking complete · This booking is complete. | You confirmed the performance · {providerName} has been notified and will receive their payout | Booking complete · This booking is complete. | {customerName} confirmed the performance · Your payout has been released |
+| Confirmed automatically (14 days) | Booking complete · This booking is complete. | The performance has been confirmed · It was confirmed automatically after 14 days | Booking complete · This booking is complete. | The performance has been confirmed · Your payout has been released |
+| Changes requested | Changes requested · You'll be notified when {providerName} delivers the changes. | open (bugs.md 8.5) | Changes requested · Deliver the requested changes and notify {customerName} to receive your payment. | open (8.5) |
+| Canceled by the team | The order was canceled. | The booking was canceled · Your payment has been refunded | The order was canceled. | The booking was canceled · {customerName} has been refunded |
+| 7 days after confirming | Booking complete · This booking is complete. | Booking complete · This booking is complete | same | same |
 
 ## UI
 
@@ -121,12 +125,10 @@ All states render in `NegotiationPanel` (redesigned). Not redesigned: `RequestCh
 in this process. Bug: after paying, the `bookingRequestSuccess` flag forces the payment title and
 **hides all buttons for the rest of the browser session**, including "Confirm performance".
 
-## Decisions (Zoha)
+## Decisions (Zoha, Oct 15)
 
-1. **75-day auto-cancel with refund.** Change the timer to run from the event date (process change
-   in Sharetribe), or keep? Recommendation: from the event date.
-2. **"Request changes" makes no sense for a live gig.** Recommendation: rename to "Report a
-   problem": the payout is held and the LineupBridge team resolves it (operator); hide "I've
-   delivered the changes".
-3. **"I've completed the performance" before the event.** Recommendation: show it from the event
-   start time (code only).
+- **The performance date and time decide, not the payment date.** Neither "I've completed the
+  performance" nor "Confirm performance" before it; no refund before it. Bugs:
+  [bugs.md](bugs.md) section 8.
+- Refunds follow the terms (after MVP).
+- Titles from payment to completion approved; "Request changes" still open.

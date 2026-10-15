@@ -84,6 +84,8 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     headingTitleMessageId: `NegotiationTitle.${key}.title`,
     extraInfoMessageId: `NegotiationTitle.${key}.lead`,
   });
+  // Same, with a different text for the organizer and the DJ.
+  const roleTitle = key => actionTitle(`${key}.${transactionRole === CUSTOMER ? 'organizer' : 'dj'}`);
   const finalOfferResponseMessage = isDjFinalOfferAccepted
     ? 'TransactionPage.ActivityFeed.default-negotiation.final-offer-accepted'
     : isDjFinalOfferRejected
@@ -122,14 +124,12 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     suppressReviewUi: true,
   };
 
-  const terminalOutcome = {
-    headingTitleMessageId: `TransactionPage.default-negotiation.${
-      transactionRole === CUSTOMER ? 'customer' : 'provider'
-    }.booking-complete.title`,
-    extraInfoMessageId: `TransactionPage.default-negotiation.${
-      transactionRole === CUSTOMER ? 'customer' : 'provider'
-    }.booking-complete.extraInfo`,
-  };
+  // The organizer confirmed (or the team did) vs. confirmed automatically after 14 days
+  const completedTitle =
+    latestTransition === transitions.AUTO_ACCEPT_DELIVERABLE
+      ? roleTitle('performanceConfirmedAuto')
+      : roleTitle('performanceConfirmed');
+  const terminalOutcome = actionTitle('bookingComplete');
 
   return new ConditionalResolver([processState, transactionRole])
     .cond([states.INQUIRY, PROVIDER], () => {
@@ -462,6 +462,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     .cond([states.OFFER_ACCEPTED, PROVIDER], () => {
       return {
         ...sharedStateData,
+        ...actionTitle('bookingConfirmedDj'),
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showOfferDetailsCard: true,
@@ -508,6 +509,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
 
       return {
         ...sharedStateData,
+        ...actionTitle('performanceMarked.organizer'),
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showOfferDetailsCard: true,
@@ -524,6 +526,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     .cond([states.DELIVERED, PROVIDER], () => {
       return {
         ...sharedStateData,
+        ...actionTitle('performanceMarked.dj'),
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showOfferDetailsCard: true,
@@ -552,7 +555,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         ...sharedStateData,
         showDetailCardHeadings: true,
         showExtraInfo: true,
-        ...terminalOutcome,
+        ...completedTitle,
       };
     })
     .cond([states.REVIEWED_BY_PROVIDER, CUSTOMER], () => {
@@ -583,10 +586,35 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
       return {
         ...sharedStateData,
         showDetailCardHeadings: true,
+        ...actionTitle('paying.organizer'),
         showExtraInfo: false,
         showOfferDetailsCard: true,
         showAgreedOfferDetails: true,
         minimalPostBookingRequestCustomerView: true,
+      };
+    })
+    .cond([states.PENDING_PAYMENT, PROVIDER], () => {
+      return {
+        ...sharedStateData,
+        ...actionTitle('paying.dj'),
+        showDetailCardHeadings: true,
+        showExtraInfo: false,
+      };
+    })
+    .cond([states.PAYMENT_EXPIRED, _], () => {
+      return {
+        ...sharedStateData,
+        ...roleTitle('paymentExpired'),
+        showDetailCardHeadings: true,
+        showExtraInfo: true,
+      };
+    })
+    .cond([states.CANCELED, _], () => {
+      return {
+        ...sharedStateData,
+        ...roleTitle('bookingCanceled'),
+        showDetailCardHeadings: true,
+        showExtraInfo: true,
       };
     })
     .default(() => {
