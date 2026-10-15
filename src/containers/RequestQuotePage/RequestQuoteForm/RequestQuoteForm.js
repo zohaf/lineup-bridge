@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Form as FinalForm, Field } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
@@ -84,15 +84,21 @@ export const RequestQuoteForm = props => {
 
   const deckSetupOptions = getDeckSetupOptions(intl);
 
+  // Stable reference: a new object per render makes Final Form re-initialize (reset values) on re-render
+  const initialValues = useMemo(
+    () => ({
+      deckSetup: [],
+      bookingStartTime: `${DEFAULT_START_HOUR}:${DEFAULT_MINUTE}`,
+      bookingEndTime: `${DEFAULT_END_HOUR}:${DEFAULT_MINUTE}`,
+      setStartTime: `${DEFAULT_START_HOUR}:${DEFAULT_MINUTE}`,
+    }),
+    []
+  );
+
   return (
     <FinalForm
       mutators={{ ...arrayMutators }}
-      initialValues={{
-        deckSetup: [],
-        bookingStartTime: `${DEFAULT_START_HOUR}:${DEFAULT_MINUTE}`,
-        bookingEndTime: `${DEFAULT_END_HOUR}:${DEFAULT_MINUTE}`,
-        setStartTime: `${DEFAULT_START_HOUR}:${DEFAULT_MINUTE}`,
-      }}
+      initialValues={initialValues}
       onSubmit={onSubmit}
       {...restProps}
       render={formRenderProps => {
