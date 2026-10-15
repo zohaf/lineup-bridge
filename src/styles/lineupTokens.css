@@ -69,6 +69,7 @@
   --lb-width-narrow: 440px;
   --lb-width-form: 760px;
   --lb-width-wide: 920px;
+  --lb-width-profile: 600px;
   --lb-page-top: var(--lb-gutter);
   --lb-page-bottom: var(--lb-space-9);
 
@@ -101,7 +102,7 @@
   --lb-menu-width: 240px;
 
   /* Footer */
-  --lb-logo-footer: 24px;
+  --lb-logo-footer: 38px;
   --lb-icon-social: 20px;
 
   /* Hero */

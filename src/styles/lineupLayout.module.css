@@ -125,3 +125,7 @@
     grid-area: main;
   }
 }
+
+.profile {
+  --lb-centered-width: var(--lb-width-profile);
+}

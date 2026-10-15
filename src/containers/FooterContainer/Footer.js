@@ -63,7 +63,7 @@ const Footer = props => {
             {socialLinks.map(({ href, platform }) => {
               const name = PLATFORM_NAMES[platform] || platform;
               return (
-                <li key={`${platform}-${href}`}>
+                <li key={`${platform}-${href}`} className={css.socialItem}>
                   <ExternalLink
                     className={css.socialLink}
                     href={href}
@@ -102,12 +102,12 @@ const Footer = props => {
           </NamedLink>
         </div>
         <ul className={css.nav}>
-          <li>
+          <li className={css.navItem}>
             <NamedLink className={buttonCss.linkMuted} name="CMSPage" params={{ pageId: 'faq' }}>
               <FormattedMessage id="Footer.faq" />
             </NamedLink>
           </li>
-          <li>
+          <li className={css.navItem}>
             <NamedLink
               className={buttonCss.linkMuted}
               name="CMSPage"

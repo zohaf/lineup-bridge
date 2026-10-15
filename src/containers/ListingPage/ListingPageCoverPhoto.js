@@ -50,15 +50,15 @@ import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
 
 // Shared components
 import {
-  H2,
-  H3,
+  Button,
   H4,
   Page,
   NamedLink,
   NamedRedirect,
   OrderPanel,
-  LayoutSingleColumn,
-  SectionText,
+  LayoutCentered,
+  PageHeader,
+  SectionCard,
 } from '../../components';
 
 // Related components and modules
@@ -88,11 +88,13 @@ import {
 import SectionHero from './SectionHero';
 import CustomListingFields from './CustomListingFields';
 import ActionBarMaybe from './ActionBarMaybe';
-import SectionLocationText from './SectionLocationText';
-
 import css from './ListingPage.module.css';
+import buttonCss from '../../styles/lineupButtons.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
+const MIN_LENGTH_FOR_LONG_WORDS_IN_DESCRIPTION = 20;
+const PROFILE_PHOTO_COUNT = 2;
+const LEAD_SEPARATOR = ' · ';
 
 const { UUID } = sdkTypes;
 
@@ -324,6 +326,15 @@ export const ListingPageComponent = props => {
   const noIndexMaybe =
     currentListing.attributes.state === LISTING_STATE_CLOSED ? { noIndex: true } : {};
 
+  const isClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
+  const genreConfig = listingConfig.listingFields.find(f => f.key === 'genre');
+  const genreLabels = []
+    .concat(publicData.genre || [])
+    .map(value => genreConfig?.enumOptions?.find(o => `${o.option}` === value)?.label)
+    .filter(Boolean);
+  const address = String(publicData.location?.address || '').trim();
+  const leadText = [...genreLabels, address].filter(Boolean).join(LEAD_SEPARATOR) || null;
+
   const handleHeroPhotoTileClick = index => {
     setHeroCarouselStartIndex(index);
     setImageCarouselOpen(true);
@@ -383,83 +394,121 @@ export const ListingPageComponent = props => {
         },
       }}
     >
-      <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
+      <LayoutCentered
+        variant="profile"
+        className={css.profilePage}
+        topbar={topbar}
+        footer={<FooterContainer />}
+      >
+        {actionBar ? <div className={css.profileBars}>{actionBar}</div> : null}
         {showListingImage ? (
           <SectionHero
+            className={css.profilePhotos}
+            gridClassName={css.profilePhotoGrid}
+            gridImageCount={PROFILE_PHOTO_COUNT}
             listing={currentListing}
             isOwnListing={isOwnListing}
             imageCarouselOpen={imageCarouselOpen}
             onImageCarouselClose={() => setImageCarouselOpen(false)}
             onManageDisableScrolling={onManageDisableScrolling}
-            actionBar={actionBar}
             variantPrefix={config.layout.listingImage.variantPrefix}
             carouselStartIndex={heroCarouselStartIndex}
             onPhotoTileClick={handleHeroPhotoTileClick}
           />
-        ) : (
-          isOwnListing && <div className={css.actionBarContainerForNoListingImage}>{actionBar}</div>
-        )}
-        <div className={css.contentWrapperForHeroLayout}>
-          <div className={css.mainColumnForHeroLayout}>
-            <div
-              className={showListingImage ? css.listingMainHeading : css.noListingImageHeadingHero}
-            >
-              {showListingImage ? (
-                <H2 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H2>
-              ) : (
-                <H3
-                  as="h1"
-                  className={classNames(css.orderPanelTitle, {
-                    [css.titleMarginForOwnListingNoImage]: isOwnListing,
-                  })}
-                >
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H3>
-              )}
+        ) : null}
+
+        <PageHeader
+          title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
+          lead={leadText}
+        />
+
+        <SectionCard>
+          {showDescription && description ? (
+            <div className={css.profileGroup}>
+              <p className={css.profileBio}>
+                {richText(description, {
+                  linkify: true,
+                  longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS_IN_DESCRIPTION,
+                  longWordClass: css.longWord,
+                  breakChars: '/',
+                })}
+              </p>
             </div>
-            {showDescription && <SectionText text={description} showAsIngress />}
+          ) : null}
+          <CustomListingFields
+            publicData={publicData}
+            metadata={metadata}
+            listingFieldConfigs={listingConfig.listingFields.filter(
+              fieldConfig => fieldConfig.key !== 'genre'
+            )}
+            categoryConfiguration={config.categoryConfiguration}
+            intl={intl}
+            rootClassName={css.profileGroup}
+            linksClassNames={{
+              headingClassName: css.profileLinksHeading,
+              listClassName: css.profileLinksList,
+              linkClassName: css.profileLink,
+              iconClassName: css.profileLinkIcon,
+            }}
+          />
+        </SectionCard>
 
-            <CustomListingFields
-              publicData={publicData}
-              metadata={metadata}
-              listingFieldConfigs={listingConfig.listingFields}
-              categoryConfiguration={config.categoryConfiguration}
-              intl={intl}
-            />
-
-            <SectionLocationText publicData={publicData} />
-          </div>
-          <div className={css.orderColumnForHeroLayout}>
-            <OrderPanel
-              className={css.orderPanel}
-              listing={currentListing}
-              isOwnListing={isOwnListing}
-              onSubmit={handleOrderSubmit}
-              title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
-              titleDesktop={
-                <H4 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H4>
-              }
-              payoutDetailsWarning={isOwnListing ? null : payoutDetailsWarning}
-              author={ensuredAuthor}
-              hideListingTitleInPanel
-              hideOrderPanelAuthor
-              compactBookingSidebar
-              onManageDisableScrolling={onManageDisableScrolling}
-              onContactUser={onContactUser}
-              {...restOfProps}
-              validListingTypes={config.listing.listingTypes}
-              marketplaceCurrency={config.currency}
-              dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
-              marketplaceName={config.marketplaceName}
-              showListingImage={showListingImage}
-            />
-          </div>
-        </div>
-      </LayoutSingleColumn>
+        {isNegotiation && unitType === OFFER ? (
+          isOwnListing ? (
+            <div className={css.profileAction}>
+              <NamedLink
+                className={classNames(buttonCss.primary, css.profileActionButton)}
+                name="EditListingPage"
+                params={{
+                  id: listingId.uuid,
+                  slug: listingSlug,
+                  type: listingPathParamType,
+                  tab: listingTab,
+                }}
+              >
+                <FormattedMessage id="NegotiationRequestQuoteForm.editProfile" />
+              </NamedLink>
+            </div>
+          ) : isClosed ? null : (
+            <div className={css.profileAction}>
+              <Button
+                rootClassName={buttonCss.primary}
+                className={css.profileActionButton}
+                type="button"
+                onClick={() => handleOrderSubmit({})}
+              >
+                <FormattedMessage id="NegotiationRequestQuoteForm.nextCta" />
+              </Button>
+            </div>
+          )
+        ) : (
+          <OrderPanel
+            className={css.orderPanel}
+            listing={currentListing}
+            isOwnListing={isOwnListing}
+            onSubmit={handleOrderSubmit}
+            title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
+            titleDesktop={
+              <H4 as="h1" className={css.orderPanelTitle}>
+                <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+              </H4>
+            }
+            payoutDetailsWarning={isOwnListing ? null : payoutDetailsWarning}
+            author={ensuredAuthor}
+            hideListingTitleInPanel
+            hideOrderPanelAuthor
+            compactBookingSidebar
+            onManageDisableScrolling={onManageDisableScrolling}
+            onContactUser={onContactUser}
+            {...restOfProps}
+            validListingTypes={config.listing.listingTypes}
+            marketplaceCurrency={config.currency}
+            dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
+            marketplaceName={config.marketplaceName}
+            showListingImage={showListingImage}
+          />
+        )}
+      </LayoutCentered>
     </Page>
   );
 };
