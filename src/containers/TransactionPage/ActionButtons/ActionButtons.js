@@ -27,6 +27,16 @@ const hasReachedMaxDurationSinceTransition = (condition, transitions, timeZone) 
 const hasReachedMaxTransitions = (condition, transitions) => {
   return transitions.length >= condition.max;
 };
+// Date is YYYY-MM-DD and time is HH:mm, both read in the viewer's local time.
+// Without a valid date the button stays visible.
+const isBeforePerformance = condition => {
+  const [y, m, d] = (condition.date || '').split('-').map(Number);
+  const [h = 0, min = 0] = (condition.time || '').split(':').map(Number);
+  if ([y, m, d, h, min].some(Number.isNaN) || !y) {
+    return false;
+  }
+  return new Date() < new Date(y, m - 1, d, h, min);
+};
 const checkCondition = (condition, additionalInfo) => {
   const { transitions, timeZone, listingTypeConfig } = additionalInfo;
 
@@ -35,6 +45,9 @@ const checkCondition = (condition, additionalInfo) => {
   }
   if (condition.type === 'maxTransitions') {
     return hasReachedMaxTransitions(condition, transitions);
+  }
+  if (condition.type === 'beforePerformance') {
+    return isBeforePerformance(condition);
   }
   if (condition.type === 'providerUpdateOfferHidden') {
     // hide the button if the provider update offer is not allowed

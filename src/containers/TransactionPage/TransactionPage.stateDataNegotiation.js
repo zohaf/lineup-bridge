@@ -467,7 +467,17 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showOfferDetailsCard: true,
         showAgreedOfferDetails: true,
         showActionButtons: true,
-        primaryButtonProps: actionButtonProps(transitions.DELIVER, PROVIDER),
+        primaryButtonProps: actionButtonProps(transitions.DELIVER, PROVIDER, {
+          // Hidden until the performance date and time
+          conditions: [
+            {
+              type: 'beforePerformance',
+              action: 'hide',
+              date: transaction?.attributes?.protectedData?.bookingDate,
+              time: transaction?.attributes?.protectedData?.bookingStartTime,
+            },
+          ],
+        }),
       };
     })
     .cond([states.DELIVERED, CUSTOMER], () => {
