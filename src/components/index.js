@@ -84,6 +84,7 @@ export { default as ErrorMessage } from './ErrorMessage/ErrorMessage';
 export { default as ImageFromFile } from './ImageFromFile/ImageFromFile';
 export { default as LinkedLogo } from './Logo/LinkedLogo';
 export { default as SiteHeader } from './SiteHeader/SiteHeader';
+export { default as HeaderMenu, HeaderMenuItem, HeaderMenuGreeting } from './HeaderMenu/HeaderMenu';
 export { default as ListingLink } from './ListingLink/ListingLink';
 export { default as PaginationLinks } from './PaginationLinks/PaginationLinks';
 export { default as ReviewRating } from './ReviewRating/ReviewRating';
@@ -144,7 +145,6 @@ export { default as SavedCardDetails } from './SavedCardDetails/SavedCardDetails
 export const SectionText = loadable(() => import(/* webpackChunkName: "SectionText" */ './CustomExtendedDataSection/SectionText'));
 export { default as StripeConnectAccountStatusBox } from './StripeConnectAccountStatusBox/StripeConnectAccountStatusBox';
 export { default as StripePaymentAddress } from './StripePaymentAddress/StripePaymentAddress';
-export { default as TopbarSimplified } from './TopbarSimplified/TopbarSimplified';
 
 
 // Forms

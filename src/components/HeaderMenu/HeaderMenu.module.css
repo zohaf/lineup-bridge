@@ -1,0 +1,135 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Guest: below 768px only, the links are in the bar from 768px */
+.phoneOnly {
+  @media (--viewportMedium) {
+    display: none;
+  }
+}
+
+.trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lb-text-primary);
+  cursor: pointer;
+}
+
+/* Unread dot: on the trigger below 768px (from 768px it sits next to Home) */
+.dot {
+  position: absolute;
+  top: var(--lb-space-2);
+  right: var(--lb-space-2);
+  width: var(--lb-space-2);
+  height: var(--lb-space-2);
+  border-radius: 50%;
+  background-color: var(--colorFail);
+
+  @media (--viewportMedium) {
+    display: none;
+  }
+}
+
+.scrim {
+  position: fixed;
+  top: var(--lb-topbar-height);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--lb-scrim);
+
+  @media (--viewportMedium) {
+    display: none;
+  }
+}
+
+/* Phone: full width under the bar */
+.panel {
+  display: none;
+  position: fixed;
+  top: var(--lb-topbar-height);
+  right: 0;
+  left: 0;
+  max-height: calc(100vh - var(--lb-topbar-height));
+  overflow-y: auto;
+  padding: var(--lb-space-2) 0;
+  background-color: var(--colorWhite);
+  border-bottom: 1px solid var(--colorGrey100);
+
+  @media (--viewportMedium) {
+    top: calc(100% + var(--lb-space-1));
+    right: 0;
+    left: auto;
+    width: var(--lb-menu-width);
+    padding: var(--lb-space-1) 0;
+    border: 1px solid var(--colorGrey100);
+    border-radius: 8px;
+    box-shadow: var(--lb-shadow-search);
+    position: absolute;
+  }
+}
+
+.panelOpen {
+  display: block;
+}
+
+.greeting {
+  composes: small from '../../styles/lineupType.module.css';
+  margin: 0;
+  padding: var(--lb-space-3) var(--lb-gutter) var(--lb-space-1);
+  color: var(--colorGrey600);
+
+  @media (--viewportMedium) {
+    padding: var(--lb-space-3) var(--lb-space-4) var(--lb-space-1);
+  }
+}
+
+.item {
+  composes: small from '../../styles/lineupType.module.css';
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 var(--lb-gutter);
+  border: 0;
+  background: transparent;
+  color: var(--lb-text-primary);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  @media (--viewportMedium) {
+    min-height: 44px;
+    padding: 0 var(--lb-space-4);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--colorGrey50);
+      text-decoration: none;
+    }
+  }
+}
+
+.current {
+  font-weight: var(--lb-weight-semibold);
+}
+
+/* Items that are in the bar from 768px */
+.phoneOnlyItem {
+  @media (--viewportMedium) {
+    display: none;
+  }
+}

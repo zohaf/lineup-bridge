@@ -29,10 +29,10 @@ import {
   NamedLink,
   Page,
   PrimaryButton,
-  TopbarSimplified,
   CustomExtendedDataField,
 } from '../../components';
 
+import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import { getTransactionTypeData } from './CheckoutPageTransactionHelpers.js';
 
 import DetailsSideCard from './DetailsSideCard';
@@ -152,7 +152,7 @@ export const CheckoutPageWithInquiryProcess = props => {
 
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
-      <TopbarSimplified />
+      <TopbarContainer />
       <div className={css.contentContainer}>
         <MobileListingImage
           listingTitle={listingTitle}

@@ -16,11 +16,20 @@ import css from './SiteHeader.module.css';
  * @param {string} props.ariaLabel accessible name of the nav
  * @param {string} props.logoAlt alt text of the logo
  * @param {Object?} props.linkToExternalSite passed to LinkedLogo
+ * @param {Object?} props.logoLinkProps route name and params that replace the logo's default target (landing page)
  * @param {ReactNode?} props.children items on the right
  * @returns {JSX.Element} site header
  */
 const SiteHeader = props => {
-  const { className, rootClassName, ariaLabel, logoAlt, linkToExternalSite, children } = props;
+  const {
+    className,
+    rootClassName,
+    ariaLabel,
+    logoAlt,
+    linkToExternalSite,
+    logoLinkProps,
+    children,
+  } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   return (
@@ -32,6 +41,7 @@ const SiteHeader = props => {
         layout="desktop"
         alt={logoAlt}
         linkToExternalSite={linkToExternalSite}
+        {...logoLinkProps}
       />
       {children ? <div className={css.actions}>{children}</div> : null}
     </nav>

@@ -86,6 +86,9 @@
   --lb-topbar-height: 60px;
   --lb-logo-header: 28px;
   --lb-tracking-nav: -0.01em;
+  --lb-avatar-header: 32px;
+  --lb-menu-width: 240px;
+  --lb-scrim: rgba(0, 0, 0, 0.4);
 
   /* Footer */
   --lb-logo-footer: 24px;

@@ -153,8 +153,9 @@
 
   /* ================ Topbar related ================ */
 
-  --topbarHeight: 56px;
-  --topbarHeightDesktop: 72px;
+  /* Header height: one value at every width (--lb-topbar-height, lineupTokens.css) */
+  --topbarHeight: var(--lb-topbar-height);
+  --topbarHeightDesktop: var(--lb-topbar-height);
 
   --TopbarMobileMenu_topMargin: 96px;
 

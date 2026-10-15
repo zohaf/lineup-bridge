@@ -39,245 +39,9 @@
   fill: var(--colorWhite);
 }
 
-.container {
-  /* Size */
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 72px;
-  padding-top: 24px;
-
-  /* Layout for child components */
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
-  background-color: var(--colorPageBackground);
-
-  box-shadow: none;
-
-  @media (--viewportMedium) {
-    min-height: 120px;
-    padding-top: 24px;
-  }
-
-  @media (--viewportLarge) {
-    display: none;
-  }
-}
-
-.topbarMobileLogoRoot {
-  min-height: 0 !important;
-  height: auto !important;
-  margin: 0 !important;
-}
-
-/* Match the footer logo size in the mobile header. */
-.topbarMobileLogoHalf {
-  max-height: 48px !important;
-  width: auto;
-}
-
-@media (--viewportMedium) {
-  .topbarMobileLogoHalf {
-    max-height: 96px !important;
-  }
-}
-
-.logoutButton {
-  margin: 0;
-}
-
-/* Child component's size (and positioning) should be given here */
-.menu,
-.searchMenu {
-  /* Font */
-  composes: h5 from global;
-  color: var(--colorGrey700);
-
-  /* Layout */
-  display: flex;
-  width: 66px;
-  margin: 0;
-  border-width: 0px;
-  background-color: transparent;
-
-  /* Hovers */
-  &:enabled {
-    cursor: pointer;
-  }
-  &:enabled:hover,
-  &:enabled:active {
-    background-color: transparent;
-    box-shadow: none;
-  }
-  &:disabled {
-    background-color: transparent;
-    cursor: auto;
-  }
-}
-
-.menu {
-  padding: 15px 24px;
-  position: relative;
-
-  @media (--viewportMedium) {
-    padding: 21px 24px;
-  }
-}
-.searchMenu {
-  padding: 12px 24px;
-
-  @media (--viewportMedium) {
-    padding: 18px 24px;
-  }
-}
-
-.menuIcon,
-.searchMenuIcon {
-  margin: 9px 0;
-}
-
-.notificationDot {
-  /* Dimensions */
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-
-  /* Position */
-  position: absolute;
-  top: 17px;
-  right: 17px;
-
-  /* Style: red dot with white border */
-  background-color: var(--colorFail);
-  border: 2px solid var(--colorWhite);
-
-  animation-name: notificationPop;
-  animation-duration: 0.1s;
-  animation-delay: 0.1s;
-  animation-fill-mode: forwards;
-
-  animation-timing-function: ease-in;
-  opacity: 0;
-  transform: scale(0);
-
-  @media (--viewportMedium) {
-    top: 23px;
-  }
-}
-
-@keyframes notificationPop {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.desktop {
-  display: none;
-
-  @media (--viewportLarge) {
-    display: block;
-  }
-}
-
-/* Icon component styles */
-.rootMenuIcon {
-  fill: var(--colorGrey700);
-}
-.rootSearchIcon {
-  stroke: var(--colorGrey700);
-}
-
-.searchContainer {
-  position: relative;
-  height: 100%;
-  margin-top: 94px;
-}
-
-.mobileHelp {
-  color: var(--colorGrey600);
-  margin: 0 24px;
-
-  /* Absolute position to avoid affecting the layout of the autocomplete
-   predictions list */
-  position: absolute;
-  top: 73px;
-}
-
-/* ================ Modal ================ */
-
-.modalContainer {
-  composes: marketplaceModalInMobileBaseStyles from global;
-  height: unset;
-  min-height: 100vh;
-  padding: 0;
-  padding: var(--modalPadding);
-
-  @media (--viewportMedium) {
-    flex-basis: 576px;
-    flex-grow: 1;
-    min-height: max(100%, 100vh);
-    height: auto;
-    padding: 24px;
-    background-color: var(--colorPageBackground);
-    border-bottom: none;
-  }
-}
-.modalContainerSearchForm {
-  composes: modalContainer;
-  padding: 0;
-  @media (--viewportMedium) {
-    padding: var(--modalPaddingMedium);
-  }
-}
-
 .missingInformationModal {
   composes: marketplaceModalBaseStyles from global;
   padding-top: 70px;
-}
-
-/* Title of the modal */
-.modalTitle {
-  composes: marketplaceModalTitleStyles from global;
-}
-
-/* Paragraph for the Modal */
-.modalMessage {
-  composes: marketplaceModalParagraphStyles from global;
-}
-
-/* Make the email pop */
-.email {
-  font-weight: var(--fontWeightHighlightEmail);
-}
-
-.helperLink {
-  composes: marketplaceModalHelperLink from global;
-}
-
-.helperText {
-  composes: marketplaceModalHelperText from global;
-}
-
-.error {
-  composes: marketplaceModalPasswordMargins from global;
-}
-
-.bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
-
-  /* Align the helper links to the left since there isn't a Primary Button anymore */
-  text-align: left;
-}
-
-.modalIcon {
-  composes: marketplaceModalIconStyles from global;
 }
 
 .genericError {
@@ -328,4 +92,47 @@
   @media (--viewportMedium) {
     margin: 0;
   }
+}
+
+/* Header links in the bar (SiteHeader): from 768px, below it they are in the HeaderMenu panel */
+.barLink.barLink {
+  position: relative;
+  display: none;
+
+  @media (--viewportMedium) {
+    display: inline-flex;
+  }
+}
+
+.barLinkCurrent.barLinkCurrent {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* A button that looks like a header link */
+.barButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Unread dot next to Home */
+.barDot {
+  width: var(--lb-space-2);
+  height: var(--lb-space-2);
+  margin-left: var(--lb-space-1);
+  border-radius: 50%;
+  background-color: var(--colorFail);
+}
+
+.avatar {
+  composes: avatarBase from '../../../components/Avatar/Avatar.module.css';
+  width: var(--lb-avatar-header);
+  height: var(--lb-avatar-header);
+}
+
+.avatarInitials {
+  composes: label from '../../../styles/lineupType.module.css';
+  color: inherit;
 }

@@ -34,10 +34,10 @@ import {
   Page,
   PageHeader,
   ResponsiveImage,
-  TopbarSimplified,
 } from '../../components/index.js';
 
 // Import modules from this directory
+import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import HeadingDetails from './HeadingDetails.js';
 import RequestQuoteForm from './RequestQuoteForm/RequestQuoteForm.js';
 
@@ -207,7 +207,7 @@ const RequestQuotePageComponent = props => {
         variant="form"
         className={css.content}
         stickyTopbar={false}
-        topbar={<TopbarSimplified />}
+        topbar={<TopbarContainer />}
       >
         <PageHeader
           image={
@@ -301,7 +301,7 @@ const EnhancedRequestQuotePage = props => {
     />
   ) : (
     <Page title={pageTitle} scrollingDisabled={scrollingDisabled}>
-      <TopbarSimplified />
+      <TopbarContainer />
     </Page>
   );
 };

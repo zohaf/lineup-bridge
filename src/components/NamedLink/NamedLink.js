@@ -71,6 +71,7 @@ export const NamedLink = withRouter(props => {
     className,
     style = {},
     activeClassName = 'NamedLink_active',
+    'aria-current': ariaCurrent,
   } = props;
 
   const onOver = () => {
@@ -87,6 +88,7 @@ export const NamedLink = withRouter(props => {
 
   const focusHandlers = id && holdFocus ? { onFocus: handleFocus, onBlur: handleBlur } : {};
   const ariaLabelMaybe = ariaLabel ? { ['aria-label']: ariaLabel } : {};
+  const ariaCurrentMaybe = ariaCurrent ? { 'aria-current': ariaCurrent } : {};
 
   // <a> element props
   const aElemProps = {
@@ -95,6 +97,7 @@ export const NamedLink = withRouter(props => {
     style,
     title,
     ...ariaLabelMaybe,
+    ...ariaCurrentMaybe,
     ...focusHandlers,
   };
 

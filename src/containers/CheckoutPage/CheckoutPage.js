@@ -28,9 +28,10 @@ import { confirmCardPayment, retrievePaymentIntent } from '../../ducks/stripe.du
 import { savePaymentMethod } from '../../ducks/paymentMethods.duck';
 
 // Import shared components
-import { IconSpinner, NamedRedirect, Page, TopbarSimplified } from '../../components';
+import { IconSpinner, NamedRedirect, Page } from '../../components';
 
 // Session helpers file needs to be imported before CheckoutPageWithPayment and CheckoutPageWithInquiryProcess
+import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import { storeData, clearData, handlePageData } from './CheckoutPageSessionHelpers';
 
 // Import modules from this directory
@@ -212,7 +213,7 @@ const EnhancedCheckoutPage = props => {
     />
   ) : (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
-      <TopbarSimplified />
+      <TopbarContainer />
       <IconSpinner className={css.spinner} />
     </Page>
   );
