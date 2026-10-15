@@ -68,6 +68,22 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     transactionRole === CUSTOMER &&
     hasCustomerFinalOffer &&
     latestTransition === transitions.PROVIDER_ACCEPT_COUNTER_OFFER;
+  // The DJ rejected the final offer. The negotiation ends here, even though the process returns
+  // to offer-pending.
+  const isCustomerFinalOfferRejected =
+    transactionRole === CUSTOMER &&
+    hasCustomerFinalOffer &&
+    latestTransition === transitions.PROVIDER_REJECT_COUNTER_OFFER;
+  // Accept offer and make a counteroffer both run make-offer-from-request,
+  // only a counteroffer saves proposedChanges.
+  const isDjMakeOfferFromRequest = latestTransition === transitions.MAKE_OFFER_FROM_REQUEST;
+  const hasProposedChanges = !!transaction?.attributes?.protectedData?.proposedChanges;
+  // The title and lead the person sees right after their own action. The keys are our own
+  // (NegotiationTitle.*), so hosted translations cannot override them.
+  const actionTitle = key => ({
+    headingTitleMessageId: `NegotiationTitle.${key}.title`,
+    extraInfoMessageId: `NegotiationTitle.${key}.lead`,
+  });
   const finalOfferResponseMessage = isDjFinalOfferAccepted
     ? 'TransactionPage.ActivityFeed.default-negotiation.final-offer-accepted'
     : isDjFinalOfferRejected
@@ -169,6 +185,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     .cond([states.QUOTE_REQUESTED, CUSTOMER], () => {
       return {
         ...sharedStateData,
+        ...actionTitle('offerSent'),
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showActionButtons: true,
@@ -231,12 +248,24 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
                 'TransactionPage.default-negotiation.customer.finalOfferAccepted.extraInfo',
             }
           : {}),
-        showActionButtons: true,
-        primaryButtonProps: actionButtonProps(
-          transitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER,
-          CUSTOMER,
-          overwritesForAcceptOffer
-        ),
+        ...(latestTransition === transitions.CUSTOMER_WITHDRAW_COUNTER_OFFER
+          ? actionTitle('finalOfferWithdrawn')
+          : {}),
+        ...(isCustomerFinalOfferRejected
+          ? {
+              headingTitleMessageId:
+                'TransactionPage.default-negotiation.customer.offer-rejected.title',
+              showExtraInfo: false,
+            }
+          : {}),
+        showActionButtons: !isCustomerFinalOfferRejected,
+        primaryButtonProps: isCustomerFinalOfferRejected
+          ? undefined
+          : actionButtonProps(
+              transitions.REQUEST_PAYMENT_TO_ACCEPT_OFFER,
+              CUSTOMER,
+              overwritesForAcceptOffer
+            ),
         ...(hasCustomerFinalOffer
           ? {}
           : {
@@ -282,23 +311,11 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showOfferDetailsCard: isDjFinalOfferAccepted,
         showAgreedOfferDetails: isDjFinalOfferAccepted,
         showActionButtons: false,
-        ...(latestBusinessOfferType === 'counter-offer'
-          ? {
-              headingTitleMessageId:
-                'TransactionPage.default-negotiation.provider.counterOfferSent.title',
-              extraInfoMessageId:
-                'TransactionPage.default-negotiation.provider.counterOfferSent.extraInfo',
-            }
+        ...(isDjMakeOfferFromRequest
+          ? actionTitle(hasProposedChanges ? 'counterofferSent' : 'offerAccepted')
           : {}),
         ...(isDjFinalOfferAccepted || isDjFinalOfferRejected
-          ? {
-              headingTitleMessageId: `TransactionPage.default-negotiation.provider.finalOffer.${
-                isDjFinalOfferAccepted ? 'accepted' : 'rejected'
-              }.title`,
-              extraInfoMessageId: `TransactionPage.default-negotiation.provider.finalOffer.${
-                isDjFinalOfferAccepted ? 'accepted' : 'rejected'
-              }.extraInfo`,
-            }
+          ? actionTitle(isDjFinalOfferAccepted ? 'finalOfferAccepted' : 'finalOfferRejected')
           : {}),
       };
     })
@@ -364,6 +381,7 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     .cond([states.CUSTOMER_OFFER_PENDING, CUSTOMER], () => {
       return {
         ...sharedStateData,
+        ...actionTitle('finalOfferSent'),
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showActionButtons: true,
@@ -410,11 +428,31 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
       };
     })
     .cond([states.OFFER_REJECTED, _], () => {
-      return { ...sharedStateData, showDetailCardHeadings: true, showBreakDown: false };
+      return {
+        ...sharedStateData,
+        showDetailCardHeadings: true,
+        showBreakDown: false,
+        ...(transactionRole === CUSTOMER && latestTransition === transitions.CUSTOMER_REJECT_OFFER
+          ? actionTitle('counterofferRejected')
+          : {}),
+      };
+    })
+    .cond([states.REQUEST_REJECTED, _], () => {
+      return {
+        ...sharedStateData,
+        showDetailCardHeadings: true,
+        ...(transactionRole === CUSTOMER && latestTransition === transitions.WITHDRAW_REQUEST
+          ? actionTitle('offerWithdrawn')
+          : {}),
+        ...(transactionRole === PROVIDER && latestTransition === transitions.REJECT_REQUEST
+          ? actionTitle('offerRejected')
+          : {}),
+      };
     })
     .cond([states.OFFER_ACCEPTED, CUSTOMER], () => {
       return {
         ...sharedStateData,
+        ...actionTitle('bookingConfirmed'),
         showDetailCardHeadings: true,
         showExtraInfo: true,
         showOfferDetailsCard: true,

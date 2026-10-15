@@ -393,7 +393,10 @@ export const ActivityFeed = props => {
       const negotiationOffer = offerInSubunits
         ? formatMoneyWithoutCents(intl, new Money(offerInSubunits, currency))
         : null;
-      const businessOfferType = getBusinessOfferType(transitionName);
+      const businessOfferType = getBusinessOfferType(
+        transitionName,
+        transaction.attributes?.protectedData
+      );
       const isOfferFromCurrentUser = transition.by === ownRole;
       const offerTitleId = businessOfferType
         ? `Home.${businessOfferType === 'final-offer' ? 'finalOffer' : businessOfferType === 'counter-offer' ? 'counterOffer' : 'offer'}${isOfferFromCurrentUser ? 'To' : 'From'}`
