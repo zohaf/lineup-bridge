@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { useField } from 'react-final-form';
 
 // Import config and utils
 import { useIntl } from '../../util/reactIntl';
@@ -18,13 +19,57 @@ import {
   validateYoutubeURL,
 } from '../../util/validators';
 // Import shared components
-import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '../../components';
+import {
+  FieldCheckboxGroup,
+  FieldSelect,
+  FieldTextInput,
+  FieldBoolean,
+  CheckboxTileGroup,
+} from '../../components';
+
+import formCss from '../../styles/lineupForm.module.css';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
 const getLabel = fieldConfig => fieldConfig?.saveConfig?.label || fieldConfig?.label;
+
+// Library look (lineupStyle): a trailing "(optional)" in a config label is shown in the muted style
+const OPTIONAL_SUFFIX = /^(.*\S)\s+(\(optional\))$/;
+const getLineupLabel = fieldConfig => {
+  const label = getLabel(fieldConfig);
+  const match = typeof label === 'string' ? label.match(OPTIONAL_SUFFIX) : null;
+  return match ? (
+    <>
+      {match[1]} <span className={formCss.optional}>{match[2]}</span>
+    </>
+  ) : (
+    label
+  );
+};
+
+// FieldTextInput in the library look: label, box and error classes. The error look on the box needs
+// the field's meta, which FieldTextInput does not pass out when inputRootClass is given.
+const LineupTextInput = props => {
+  const { name, type } = props;
+  const { meta } = useField(name, { subscription: { touched: true, invalid: true } });
+  const hasError = meta.touched && meta.invalid;
+  const boxClass = type === 'textarea' ? formCss.textarea : formCss.input;
+  return (
+    <FieldTextInput
+      {...props}
+      rootClassName={formCss.field}
+      labelClassName={formCss.label}
+      inputRootClass={classNames(boxClass, { [formCss.inputError]: hasError })}
+    />
+  );
+};
+
+const TextInput = props => {
+  const { lineupStyle, ...rest } = props;
+  return lineupStyle ? <LineupTextInput {...rest} /> : <FieldTextInput {...rest} />;
+};
 
 const CustomFieldEnum = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
@@ -65,7 +110,7 @@ const CustomFieldEnum = props => {
 };
 
 const CustomFieldMultiEnum = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, lineupStyle, hideLabel } = props;
   const { enumOptions = [], saveConfig, key: fieldKey } = fieldConfig || {};
   const { isRequired, requiredMessage } = saveConfig || {};
   const label = getLabel(fieldConfig);
@@ -73,6 +118,19 @@ const CustomFieldMultiEnum = props => {
     ? { validate: nonEmptyArray(requiredMessage || defaultRequiredMessage) }
     : {};
   const isGenre = fieldKey === 'genre';
+
+  if (enumOptions && lineupStyle) {
+    return (
+      <CheckboxTileGroup
+        id={formId ? `${formId}.${name}` : name}
+        name={name}
+        label={label}
+        hideLabel={hideLabel}
+        options={createFilterOptions(enumOptions)}
+        {...validateMaybe}
+      />
+    );
+  }
 
   return enumOptions ? (
     <FieldCheckboxGroup
@@ -90,10 +148,10 @@ const CustomFieldMultiEnum = props => {
 };
 
 const CustomFieldText = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, lineupStyle } = props;
   const { placeholderMessage, isRequired, requiredMessage, multiline = true } =
     fieldConfig?.saveConfig || {};
-  const label = getLabel(fieldConfig);
+  const label = lineupStyle ? getLineupLabel(fieldConfig) : getLabel(fieldConfig);
   const validateMaybe = isRequired
     ? { validate: required(requiredMessage || defaultRequiredMessage) }
     : {};
@@ -101,8 +159,9 @@ const CustomFieldText = props => {
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
 
   return (
-    <FieldTextInput
-      className={css.customField}
+    <TextInput
+      lineupStyle={lineupStyle}
+      className={lineupStyle ? null : css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type={multiline ? 'textarea' : 'text'}
@@ -115,10 +174,10 @@ const CustomFieldText = props => {
 };
 
 const CustomFieldLong = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, lineupStyle } = props;
   const { minimum, maximum, saveConfig } = fieldConfig;
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
-  const label = getLabel(fieldConfig);
+  const label = lineupStyle ? getLineupLabel(fieldConfig) : getLabel(fieldConfig);
   const placeholder =
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderLong' });
   const numberTooSmallMessage = intl.formatMessage(
@@ -139,8 +198,9 @@ const CustomFieldLong = props => {
   };
 
   return (
-    <FieldTextInput
-      className={css.customField}
+    <TextInput
+      lineupStyle={lineupStyle}
+      className={lineupStyle ? null : css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type="number"
@@ -193,9 +253,9 @@ const CustomFieldBoolean = props => {
 };
 
 const CustomFieldYoutube = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, lineupStyle } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
-  const label = getLabel(fieldConfig);
+  const label = lineupStyle ? getLineupLabel(fieldConfig) : getLabel(fieldConfig);
   const placeholder =
     placeholderMessage ||
     intl.formatMessage({ id: 'CustomExtendedDataField.placeholderYoutubeVideoURL' });
@@ -212,8 +272,9 @@ const CustomFieldYoutube = props => {
   };
 
   return (
-    <FieldTextInput
-      className={css.customField}
+    <TextInput
+      lineupStyle={lineupStyle}
+      className={lineupStyle ? null : css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type="text"
@@ -234,6 +295,11 @@ const CustomFieldYoutube = props => {
  *
  * @param {Object} props should contain fieldConfig that defines schemaType, enumOptions?, and
  * saveConfig for the field.
+ * @param {boolean?} props.lineupStyle opt-in library look (design-system-rules.md): text, number and
+ *   YouTube fields use the shared form classes, multi-enum fields use CheckboxTileGroup. Enum and
+ *   boolean fields keep the template look. Without it every field renders exactly as before.
+ * @param {boolean?} props.hideLabel with lineupStyle, multi-enum only: the legend is kept for screen
+ *   readers only (when a card title already says it)
  */
 const CustomExtendedDataField = props => {
   const intl = useIntl();

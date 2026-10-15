@@ -118,3 +118,53 @@
     text-decoration: none;
   }
 }
+
+/* Library look (lineupStyle) */
+.lineupRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-card-gap);
+}
+
+.lineupTerms {
+  composes: small from '../../styles/lineupType.module.css';
+  margin: 0;
+  color: var(--lb-text-secondary);
+
+  & a {
+    font-weight: var(--lb-weight-semibold);
+    color: var(--lb-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* Saved details: label over value, like the booking journey's read-only details */
+.savedList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-4);
+  margin: 0;
+
+  & div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lb-space-1);
+  }
+
+  & dt {
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-small);
+    line-height: var(--lb-leading-small);
+    color: var(--lb-text-muted);
+  }
+
+  & dd {
+    margin: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-body);
+    line-height: var(--lb-leading-body);
+    color: var(--lb-text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+}

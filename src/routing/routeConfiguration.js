@@ -16,7 +16,7 @@ const AuthenticationPage = loadable(() => import(/* webpackChunkName: "Authentic
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
 const ContactPage = loadable(() => import(/* webpackChunkName: "ContactPage" */ '../containers/ContactPage/ContactPage'));
-const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
+const AccountSettingsPage = loadable(() => import(/* webpackChunkName: "AccountSettingsPage" */ '../containers/AccountSettingsPage/AccountSettingsPage'));
 const DjProfileGuidelinesPage = loadable(() => import(/* webpackChunkName: "DjProfileGuidelinesPage" */ '../containers/DjProfileGuidelinesPage/DjProfileGuidelinesPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ '../containers/EmailVerificationPage/EmailVerificationPage'));
@@ -26,8 +26,6 @@ const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ 
 const ListingPageCoverPhoto = loadable(() => import(/* webpackChunkName: "ListingPageCoverPhoto" */ /* webpackPrefetch: true */ '../containers/ListingPage/ListingPageCoverPhoto'));
 const ListingPageCarousel = loadable(() => import(/* webpackChunkName: "ListingPageCarousel" */ /* webpackPrefetch: true */ '../containers/ListingPage/ListingPageCarousel'));
 const ManageListingsPage = loadable(() => import(/* webpackChunkName: "ManageListingsPage" */ '../containers/ManageListingsPage/ManageListingsPage'));
-const ManageAccountPage = loadable(() => import(/* webpackChunkName: "ManageAccountPage" */ '../containers/ManageAccountPage/ManageAccountPage'));
-const PasswordChangePage = loadable(() => import(/* webpackChunkName: "PasswordChangePage" */ '../containers/PasswordChangePage/PasswordChangePage'));
 const PasswordRecoveryPage = loadable(() => import(/* webpackChunkName: "PasswordRecoveryPage" */ '../containers/PasswordRecoveryPage/PasswordRecoveryPage'));
 const PasswordResetPage = loadable(() => import(/* webpackChunkName: "PasswordResetPage" */ '../containers/PasswordResetPage/PasswordResetPage'));
 const PaymentMethodsPage = loadable(() => import(/* webpackChunkName: "PaymentMethodsPage" */ '../containers/PaymentMethodsPage/PaymentMethodsPage'));
@@ -216,7 +214,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'ProfileSettingsLegacyRedirect',
       auth: true,
       authPage: 'LoginPage',
-      component: () => <NamedRedirect name="ContactDetailsPage" />,
+      component: () => <NamedRedirect name="AccountSettingsPage" />,
     },
 
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
@@ -316,22 +314,23 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'AccountSettingsPage',
       auth: true,
       authPage: 'LoginPage',
-      component: () => <NamedRedirect name="ContactDetailsPage" />,
+      component: AccountSettingsPage,
+      loadData: pageDataLoadingAPI.AccountSettingsPage.loadData,
     },
     {
+      // Contact details, password and manage account are one page now (AccountSettingsPage)
       path: '/account/contact-details',
       name: 'ContactDetailsPage',
       auth: true,
       authPage: 'LoginPage',
-      component: ContactDetailsPage,
-      loadData: pageDataLoadingAPI.ContactDetailsPage.loadData,
+      component: () => <NamedRedirect name="AccountSettingsPage" />,
     },
     {
       path: '/account/change-password',
       name: 'PasswordChangePage',
       auth: true,
       authPage: 'LoginPage',
-      component: PasswordChangePage,
+      component: () => <NamedRedirect name="AccountSettingsPage" />,
     },
     {
       path: '/account/payments',
@@ -362,7 +361,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'ManageAccountPage',
       auth: true,
       authPage: 'LoginPage',
-      component: ManageAccountPage,
+      component: () => <NamedRedirect name="AccountSettingsPage" />,
     },
     {
       path: '/terms-of-service',

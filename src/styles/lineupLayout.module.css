@@ -90,9 +90,37 @@
   }
 }
 
-/* With a sticky topbar the summary sticks below it, not under it */
+/* With a sticky topbar the side column sticks below it, not under it */
 .splitBelowTopbar {
   --lb-split-sticky-top: calc(var(--lb-topbar-height) + var(--lb-sticky-top));
+  --lb-split-bar-top: var(--lb-topbar-height);
+}
+
+/* Split · nav: the step menu (side) first, then header and main. Below 1024px the side is a row
+   under the topbar, edge to edge and sticky; the page header starts one page top below it.
+   From 1024px the side is the left column (sticky) and header + main share the right column.
+   Account settings and the public profile builder. */
+.splitNav .splitSide {
+  position: sticky;
+  top: var(--lb-split-bar-top, 0);
+  z-index: calc(var(--zIndexTopbar) - 1);
+  margin: calc(-1 * var(--lb-page-top)) calc(-1 * var(--lb-gutter))
+    calc(var(--lb-page-top) - var(--lb-card-gap));
+}
+
+@media (--viewportLarge) {
+  .splitNav {
+    grid-template-columns: var(--lb-side-nav) minmax(0, var(--lb-width-form));
+    grid-template-areas:
+      'side header'
+      'side main';
+    justify-content: center;
+  }
+
+  .splitNav .splitSide {
+    top: var(--lb-split-sticky-top, var(--lb-sticky-top));
+    margin: 0;
+  }
 }
 
 /* Header → content is 32px (design-system-rules.md); the grid gap gives the card gap */

@@ -9,10 +9,7 @@ import { displayDescription, displayLocation } from '../../../../util/configHelp
 import { useConfiguration } from '../../../../context/configurationContext.js';
 import { propTypes } from '../../../../util/types';
 import { isValidCurrencyForTransactionProcess } from '../../../../util/fieldHelpers';
-import {
-  isGenreField,
-  isLinkField,
-} from '../../../../util/listingFieldWizardSections';
+import { isGenreField, isLinkField } from '../../../../util/listingFieldWizardSections';
 import { getApplicableListingFieldConfigs } from '../editListingFieldHelpers';
 import {
   maxLength,
@@ -30,8 +27,10 @@ import {
   FieldTextInput,
   FieldLocationAutocompleteInput,
   CustomExtendedDataField,
-  H4,
+  SectionCard,
 } from '../../../../components';
+import formCss from '../../../../styles/lineupForm.module.css';
+import buttonCss from '../../../../styles/lineupButtons.module.css';
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
 
@@ -39,7 +38,7 @@ const TITLE_MAX_LENGTH = 60;
 
 const identity = v => v;
 
-const renderListingField = (fieldConfig, formId, intl) => {
+const renderListingField = (fieldConfig, formId, intl, hideLabel = false) => {
   const { key, scope } = fieldConfig || {};
   const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
   return (
@@ -51,12 +50,15 @@ const renderListingField = (fieldConfig, formId, intl) => {
         id: 'EditListingDetailsForm.defaultRequiredMessage',
       })}
       formId={formId}
+      lineupStyle
+      hideLabel={hideLabel}
     />
   );
 };
 
 /**
- * Custom extended data fields grouped into Genre, Links, and any remaining fields.
+ * Custom extended data fields grouped into Genre, Links, and any remaining fields, each group in its
+ * own SectionCard. Fields edited on their own wizard step (isFieldOnOtherStep) are left out.
  */
 const GroupedListingFields = props => {
   const {
@@ -65,73 +67,40 @@ const GroupedListingFields = props => {
     selectedCategories,
     formId,
     intl,
-    additionalListingFieldsOnly,
+    isFieldOnOtherStep,
   } = props;
 
   const applicable = getApplicableListingFieldConfigs(
     listingFieldsConfig,
     listingType,
     selectedCategories
-  );
+  ).filter(f => !isFieldOnOtherStep || !isFieldOnOtherStep(f));
 
   const genreFieldConfigs = applicable.filter(isGenreField);
   const linkFieldConfigs = applicable.filter(isLinkField);
   const otherFieldConfigs = applicable.filter(f => !isGenreField(f) && !isLinkField(f));
 
-  if (additionalListingFieldsOnly) {
-    if (otherFieldConfigs.length === 0) {
-      return null;
-    }
-    return (
-      <div className={css.listingFieldsGrouped}>
-        <div className={css.fieldSection}>
-          <H4 as="h2" className={css.fieldSectionTitle}>
-            <FormattedMessage id="EditListingDetailsForm.sectionAdditional" />
-          </H4>
-          {otherFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
-        </div>
-      </div>
-    );
-  }
-
-  const hasAnySection =
-    genreFieldConfigs.length > 0 ||
-    linkFieldConfigs.length > 0 ||
-    otherFieldConfigs.length > 0;
-
-  if (!hasAnySection) {
-    return null;
-  }
-
   return (
-    <div className={css.listingFieldsGrouped}>
+    <>
       {genreFieldConfigs.length > 0 ? (
-        <div className={css.fieldSection}>
-          <H4 as="h2" className={css.fieldSectionTitle}>
-            <FormattedMessage id="EditListingDetailsForm.sectionGenre" />
-          </H4>
-          {genreFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
-        </div>
+        <SectionCard title={<FormattedMessage id="EditListingDetailsForm.sectionGenre" />}>
+          {/* The field's own legend says "Genre" too: kept for screen readers only */}
+          {genreFieldConfigs.map(fc => renderListingField(fc, formId, intl, true))}
+        </SectionCard>
       ) : null}
 
       {linkFieldConfigs.length > 0 ? (
-        <div className={css.fieldSection}>
-          <H4 as="h2" className={css.fieldSectionTitle}>
-            <FormattedMessage id="EditListingDetailsForm.sectionLinks" />
-          </H4>
+        <SectionCard title={<FormattedMessage id="EditListingDetailsForm.sectionLinks" />}>
           {linkFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
-        </div>
+        </SectionCard>
       ) : null}
 
       {otherFieldConfigs.length > 0 ? (
-        <div className={css.fieldSection}>
-          <H4 as="h2" className={css.fieldSectionTitle}>
-            <FormattedMessage id="EditListingDetailsForm.sectionAdditional" />
-          </H4>
+        <SectionCard title={<FormattedMessage id="EditListingDetailsForm.sectionAdditional" />}>
           {otherFieldConfigs.map(fc => renderListingField(fc, formId, intl))}
-        </div>
+        </SectionCard>
       ) : null}
-    </div>
+    </>
   );
 };
 
@@ -148,7 +117,11 @@ const ErrorMessage = props => {
   ) : null;
 
   if (errorMessage) {
-    return <p className={css.error}>{errorMessage}</p>;
+    return (
+      <p className={formCss.formError} role="alert">
+        {errorMessage}
+      </p>
+    );
   }
   return null;
 };
@@ -353,7 +326,7 @@ const EditListingDetailsForm = props => (
         listingFieldsConfig = [],
         listingCurrency,
         values,
-        hideGenreAndLinksInProfileForm = false,
+        isFieldOnOtherStep = null,
       } = formRenderProps;
 
       const intl = useIntl();
@@ -398,9 +371,7 @@ const EditListingDetailsForm = props => (
         : showDescriptionMaybe;
 
       const showCityMaybe = listingTypeConfig && displayLocation(listingTypeConfig);
-      const showCity = hasCategories
-        ? allCategoriesChosen && showCityMaybe
-        : showCityMaybe;
+      const showCity = hasCategories ? allCategoriesChosen && showCityMaybe : showCityMaybe;
 
       const showListingFields = hasCategories ? allCategoriesChosen : listingType;
 
@@ -412,6 +383,11 @@ const EditListingDetailsForm = props => (
       });
 
       const classes = classNames(css.root, className);
+      // Library error look on a field's box (FieldTextInput does not add it with inputRootClass)
+      const inputClass = (name, base) => {
+        const state = formApi.getFieldState(name);
+        return classNames(base, { [formCss.inputError]: !!(state?.touched && state?.invalid) });
+      };
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
       const hasMandatoryListingTypeData = listingType && transactionProcessAlias && unitType;
@@ -424,8 +400,6 @@ const EditListingDetailsForm = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          <ErrorMessage fetchErrors={fetchErrors} />
-
           <FieldSelectListingType
             name="listingType"
             listingTypes={selectableListingTypes}
@@ -448,63 +422,73 @@ const EditListingDetailsForm = props => (
             />
           )}
 
-          {showTitle && isCompatibleCurrency && (
-            <FieldTextInput
-              id={`${formId}title`}
-              name="title"
-              className={css.title}
-              type="text"
-              label={intl.formatMessage({ id: 'EditListingDetailsForm.djTitle' })}
-              placeholder={intl.formatMessage({
-                id: 'EditListingDetailsForm.djTitlePlaceholder',
-              })}
-              maxLength={TITLE_MAX_LENGTH}
-              validate={composeValidators(required(titleRequiredMessage), maxLength60Message)}
-              autoFocus={autoFocus}
-            />
-          )}
+          {(showTitle || showDescription || showCity) && isCompatibleCurrency ? (
+            <SectionCard>
+              {showTitle ? (
+                <FieldTextInput
+                  id={`${formId}title`}
+                  name="title"
+                  rootClassName={formCss.field}
+                  labelClassName={formCss.label}
+                  inputRootClass={inputClass('title', formCss.input)}
+                  type="text"
+                  label={intl.formatMessage({ id: 'EditListingDetailsForm.djTitle' })}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDetailsForm.djTitlePlaceholder',
+                  })}
+                  maxLength={TITLE_MAX_LENGTH}
+                  validate={composeValidators(required(titleRequiredMessage), maxLength60Message)}
+                  autoFocus={autoFocus}
+                />
+              ) : null}
 
-          {showDescription && isCompatibleCurrency && (
-            <FieldTextInput
-              id={`${formId}description`}
-              name="description"
-              className={css.description}
-              type="textarea"
-              label={intl.formatMessage({ id: 'EditListingDetailsForm.djDescription' })}
-              placeholder={intl.formatMessage({
-                id: 'EditListingDetailsForm.djDescriptionPlaceholder',
-              })}
-              validate={required(
-                intl.formatMessage({
-                  id: 'EditListingDetailsForm.djDescriptionRequired',
-                })
-              )}
-            />
-          )}
+              {showDescription ? (
+                <FieldTextInput
+                  id={`${formId}description`}
+                  name="description"
+                  rootClassName={formCss.field}
+                  labelClassName={formCss.label}
+                  inputRootClass={inputClass('description', formCss.textarea)}
+                  type="textarea"
+                  label={intl.formatMessage({ id: 'EditListingDetailsForm.djDescription' })}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDetailsForm.djDescriptionPlaceholder',
+                  })}
+                  validate={required(
+                    intl.formatMessage({
+                      id: 'EditListingDetailsForm.djDescriptionRequired',
+                    })
+                  )}
+                />
+              ) : null}
 
-          {showCity && isCompatibleCurrency && (
-            <FieldLocationAutocompleteInput
-              rootClassName={css.locationCity}
-              inputClassName={css.locationAutocompleteInput}
-              iconClassName={css.locationAutocompleteInputIcon}
-              predictionsClassName={css.predictionsRoot}
-              validClassName={css.validLocation}
-              name="location"
-              id={`${formId}location`}
-              label={intl.formatMessage({ id: 'EditListingDetailsForm.city' })}
-              placeholder={intl.formatMessage({
-                id: 'EditListingDetailsForm.cityPlaceholder',
-              })}
-              useDefaultPredictions={false}
-              format={identity}
-              valueFromForm={values.location}
-              restrictAutocompleteToCities
-              validate={composeValidators(
-                autocompleteSearchRequired(cityRequiredMessage),
-                autocompletePlaceSelected(cityNotRecognizedMessage)
-              )}
-            />
-          )}
+              {showCity ? (
+                <FieldLocationAutocompleteInput
+                  rootClassName={classNames(formCss.field, css.city)}
+                  labelClassName={formCss.label}
+                  inputClassName={inputClass('location', formCss.input)}
+                  iconClassName={css.cityIcon}
+                  predictionsClassName={css.cityPredictions}
+                  validClassName={css.validLocation}
+                  name="location"
+                  id={`${formId}location`}
+                  label={intl.formatMessage({ id: 'EditListingDetailsForm.city' })}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDetailsForm.cityPlaceholder',
+                  })}
+                  useDefaultPredictions={false}
+                  useDarkText
+                  format={identity}
+                  valueFromForm={values.location}
+                  restrictAutocompleteToCities
+                  validate={composeValidators(
+                    autocompleteSearchRequired(cityRequiredMessage),
+                    autocompletePlaceSelected(cityNotRecognizedMessage)
+                  )}
+                />
+              ) : null}
+            </SectionCard>
+          ) : null}
 
           {showListingFields && isCompatibleCurrency && (
             <GroupedListingFields
@@ -513,12 +497,12 @@ const EditListingDetailsForm = props => (
               selectedCategories={pickSelectedCategories(values)}
               formId={formId}
               intl={intl}
-              additionalListingFieldsOnly={hideGenreAndLinksInProfileForm}
+              isFieldOnOtherStep={isFieldOnOtherStep}
             />
           )}
 
           {!isCompatibleCurrency && listingType && (
-            <p className={css.error}>
+            <p className={formCss.formError}>
               <FormattedMessage
                 id="EditListingDetailsForm.incompatibleCurrency"
                 values={{ marketplaceName, marketplaceCurrency }}
@@ -526,15 +510,18 @@ const EditListingDetailsForm = props => (
             </p>
           )}
 
-          <Button
-            className={css.submitButton}
-            type="submit"
-            inProgress={submitInProgress}
-            disabled={submitDisabled}
-            ready={submitReady}
-          >
-            {saveActionMsg}
-          </Button>
+          <div className={css.actions}>
+            <ErrorMessage fetchErrors={fetchErrors} />
+            <Button
+              rootClassName={classNames(buttonCss.primary, buttonCss.formButton)}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+              ready={submitReady}
+            >
+              {saveActionMsg}
+            </Button>
+          </div>
         </Form>
       );
     }}

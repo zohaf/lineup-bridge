@@ -1,37 +1,22 @@
-@import '../../../../styles/customMediaQueries.css';
-
+/* Genre / Links step: page header, then one card with the fields and the button under it.
+   Header → content is 32px (design-system-rules.md). */
 .root {
-  width: 100%;
-  height: auto;
   display: flex;
-  flex: 1;
   flex-direction: column;
-  padding-top: 1px;
-
-  @media (--viewportMedium) {
-    padding-top: 2px;
-  }
+  gap: var(--lb-space-6);
+  width: 100%;
+  min-width: 0;
 }
 
 .formRoot {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  width: 100%;
+  gap: var(--lb-card-gap);
+  min-width: 0;
 }
 
-.error {
-  color: var(--colorFail);
-}
-
-.submitButton {
-  margin-top: auto;
-  margin-bottom: 24px;
-  flex-shrink: 0;
-
-  @media (--viewportLarge) {
-    display: inline-block;
-    width: 241px;
-    margin-top: 48px;
-  }
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
 }

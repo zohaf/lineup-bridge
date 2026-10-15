@@ -1,0 +1,509 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LineupBridge Account and Public Profile Setup</title>
+<style>
+/* Account setup (both user types) and the DJ public profile builder, on Split · nav.
+   Content = the current code: live Console text (translations.json, Oct 15), en.json where Console has
+   no key, listing fields from configListing.js merged with Console (configHelpers.js mergeListingConfig).
+   Blue tags = changes Zoha approved on Oct 15. Orange tags = open questions. Names are examples.
+   Light only, like the other design files. DRAFT. */
+:root {
+  color-scheme: light;
+  --page: #eeede9; --paper: #ffffff; --ink: #000000;
+  --grey100: hsl(240 3% 90%); --grey300: hsl(240 3% 70%); --grey600: hsl(240 3% 40%); --grey700: hsl(240 3% 30%);
+  --rule: hsl(240 3% 88%); --rule-strong: hsl(240 3% 80%);
+  --success: #138041; --success-subtle: #f0fff6;
+  --fail: #e7000b; --fail-subtle: #fff0f0;
+  --attention: #ffaa00; --attention-dark: #b25900; --attention-subtle: #fff7f0;
+  --tool: #1b1b1d; --radius: 4px; --radius-card: 8px;
+  --logo: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+/* Toolbar (mockup only) */
+.toolbar { position: sticky; top: 0; z-index: 30; background: var(--tool); color: #f2f2f0; padding: 10px 16px; display: grid; gap: 8px; font-size: 13px; }
+.tb-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.toolbar strong { font-weight: 600; margin-right: auto; }
+.seg { display: inline-flex; flex-wrap: wrap; background: #2c2c30; border-radius: 6px; padding: 3px; gap: 2px; }
+.seg button { font: inherit; color: #c8c8c4; background: transparent; border: 0; padding: 6px 10px; border-radius: 4px; cursor: pointer; min-height: 32px; }
+.seg button[aria-pressed="true"] { background: #f2f2f0; color: #111; }
+.seg-label { color: #9a9a96; margin-right: 6px; display: inline-block; min-width: 58px; }
+.note { color: #a9a9a4; font-size: 12px; line-height: 1.5; }
+.note b { color: #f2f2f0; font-weight: 500; }
+.stage { padding: 24px 16px 32px; }
+.frame { container-type: inline-size; margin: 0 auto; max-width: 1280px; background: var(--page); border-radius: 6px; overflow: clip; box-shadow: 0 12px 40px rgba(0,0,0,.10); }
+.stage[data-view="mobile"] .frame { max-width: 390px; border-radius: 28px; border: 10px solid #111; }
+.stage[data-view="ipad"] .frame { max-width: calc(768px + 24px); border-radius: 24px; border: 12px solid #111; }
+.tag { display: inline-block; font: 500 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #6a5200; background: #fff4d6; border: 1px dashed #d9a93a; border-radius: 3px; padding: 1px 6px; letter-spacing: 0; text-transform: none; justify-self: start; text-align: left; }
+.tag.ch { color: #0b3d91; background: #e8f0ff; border-color: #7aa2e3; }
+.tag.q { color: #8a3b00; background: #ffe9d9; border-color: #e08a4a; }
+.frame.no-tags .tag { display: none; }
+.frame.no-tags .chg { outline: 0; }
+.chg { outline: 1px dashed #7aa2e3; outline-offset: 3px; border-radius: 2px; }
+
+/* Notes under the frame (mockup only) */
+.notes { max-width: 1280px; margin: 0 auto 64px; padding: 0 16px; font-size: 14px; line-height: 1.5; color: #222; display: grid; gap: 20px; }
+.notes h2 { font-size: 16px; margin: 0 0 8px; }
+.notes ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.notes code { font-size: 12.5px; }
+
+/* Tokens (tokens.md + layouts.md) */
+.page {
+  --lb-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --lb-size-h2: 28px; --lb-size-h3: 18px; --lb-size-lead: 16px; --lb-size-body: 15px; --lb-size-small: 14px; --lb-size-eyebrow: 12px; --lb-size-field-label: 15px; --lb-size-input: 16px;
+  --lb-space-1: 4px; --lb-space-2: 8px; --lb-space-3: 12px; --lb-space-4: 16px; --lb-space-5: 24px; --lb-space-6: 32px; --lb-space-7: 48px; --lb-space-9: 64px;
+  --lb-gutter: var(--lb-space-5); --lb-card-pad: var(--lb-space-5); --lb-card-gap: var(--lb-space-4);
+  --lb-width-form: 760px; --lb-width-split: 1120px; --lb-side-nav: 264px; --lb-split-gap: var(--lb-space-7);
+  --lb-page-top: var(--lb-gutter); --lb-page-bottom: var(--lb-space-9); --lb-sticky-top: var(--lb-space-5);
+  --topbar: 60px;
+  position: relative; font-family: var(--lb-font); color: var(--ink); font-size: var(--lb-size-body); line-height: 1.55;
+}
+@container (min-width: 768px) { .page { --lb-size-h2: 34px; --lb-size-h3: 20px; --lb-size-lead: 17px; --lb-size-body: 16px; --lb-size-field-label: 16px; --lb-gutter: var(--lb-space-6); --lb-card-pad: var(--lb-space-6); --lb-card-gap: var(--lb-space-5); } }
+@container (min-width: 1024px) { .page { --lb-size-h2: 40px; --lb-size-lead: 18px; } }
+
+/* Type roles */
+.h2 { margin: 0; font-size: var(--lb-size-h2); line-height: 1.15; letter-spacing: -0.015em; font-weight: 600; text-wrap: balance; }
+.h3 { margin: 0; font-size: var(--lb-size-h3); line-height: 1.3; letter-spacing: -0.01em; font-weight: 600; }
+.lead { margin: 0; font-size: var(--lb-size-lead); line-height: 1.55; color: var(--grey700); max-width: 60ch; }
+.body { margin: 0; font-size: var(--lb-size-body); line-height: 1.55; }
+.small { margin: 0; font-size: var(--lb-size-small); line-height: 1.45; color: var(--grey700); }
+.muted { color: var(--grey600); }
+.fieldLabel { font-size: var(--lb-size-field-label); line-height: 1.4; font-weight: 600; }
+.optional { font-weight: 400; color: var(--grey600); }
+.link { font: 600 14px/1.2 var(--lb-font); color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.ul { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 var(--lb-space-5); border-radius: var(--radius); font: 600 15px/1.2 var(--lb-font); border: 1px solid var(--ink); background: var(--ink); color: #fff; width: 100%; }
+.btn-secondary { background: var(--paper); color: var(--ink); }
+@container (min-width: 768px) { .btn.auto { width: auto; min-width: 200px; justify-self: start; } }
+
+/* Shell: header (header.md) and footer */
+.topbar { height: var(--topbar); display: flex; align-items: center; gap: var(--lb-space-5); padding-inline: var(--lb-gutter); border-bottom: 1px solid var(--grey100); background: var(--page); position: sticky; top: 0; z-index: 4; }
+.logo { font-family: var(--logo); font-style: italic; font-weight: 700; font-size: 26px; line-height: 1; margin-right: auto; }
+.navlink { font-size: 14px; letter-spacing: -0.01em; display: none; }
+@container (min-width: 768px) { .navlink { display: inline; } }
+.av { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 600; flex: none; }
+.footer { border-top: 1px solid var(--grey100); padding: var(--lb-space-6) var(--lb-gutter) var(--lb-space-5); display: flex; flex-wrap: wrap; gap: var(--lb-space-3) var(--lb-space-5); align-items: center; }
+.footer .logo { font-size: 24px; margin-right: 0; }
+
+/* Split · nav (layouts.md) */
+.split { width: 100%; max-width: calc(var(--lb-width-split) + 2 * var(--lb-gutter)); margin-inline: auto; padding: var(--lb-page-top) var(--lb-gutter) var(--lb-page-bottom); display: grid; gap: var(--lb-space-5); align-content: start; }
+.main { display: grid; gap: var(--lb-card-gap); min-width: 0; align-content: start; }
+.main > .head { margin-bottom: calc(var(--lb-space-6) - var(--lb-card-gap)); }
+.side { min-width: 0; }
+@container (min-width: 1024px) {
+  .split { grid-template-columns: var(--lb-side-nav) minmax(0, var(--lb-width-form)); column-gap: var(--lb-split-gap); justify-content: center; align-items: start; }
+  .side { position: sticky; top: calc(var(--topbar) + var(--lb-sticky-top)); }
+}
+.head { display: grid; gap: var(--lb-space-3); }
+
+/* Step menu (StepMenu). Builder: numbers, done = tick, current = 2px outline (rule 8: no fill).
+   Account: no numbers, current = black bar; phones: labels in a row. */
+.stepsWrap { position: sticky; top: var(--topbar); z-index: 3; background: var(--page); margin: calc(-1 * var(--lb-page-top)) calc(-1 * var(--lb-gutter)) 0; padding: var(--lb-space-2) var(--lb-gutter); border-bottom: 1px solid var(--grey100); display: grid; gap: var(--lb-space-2); }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--lb-space-3); }
+.steps a { display: flex; align-items: center; justify-content: center; gap: var(--lb-space-3); min-height: 44px; min-width: 44px; color: var(--ink); text-decoration: none; font-size: var(--lb-size-body); white-space: nowrap; }
+.num { width: 28px; height: 28px; flex: none; border-radius: 50%; border: 1px solid var(--ink); display: grid; place-items: center; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.num svg { width: 14px; height: 14px; }
+.steps a[aria-current] { font-weight: 600; }
+.steps a[aria-current] .num { border-width: 2px; }
+.steps a[aria-disabled="true"] { color: var(--grey300); }
+.steps a[aria-disabled="true"] .num { border-color: var(--grey300); color: var(--grey300); }
+.stepLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.steps.nonum { gap: var(--lb-space-5); overflow-x: auto; scrollbar-width: none; }
+.steps.nonum .stepLabel { position: static; width: auto; height: auto; clip-path: none; overflow: visible; }
+.steps.nonum a { justify-content: flex-start; min-width: 0; }
+.steps.nonum a[aria-current] { box-shadow: inset 0 -2px 0 var(--ink); }
+@container (min-width: 1024px) {
+  .stepsWrap { position: static; margin: 0; padding: var(--lb-space-3) var(--lb-space-5); background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); }
+  .steps { flex-direction: column; gap: var(--lb-space-1); }
+  .steps a { justify-content: flex-start; }
+  .stepLabel { position: static; width: auto; height: auto; clip-path: none; overflow: visible; }
+  .steps.nonum { gap: var(--lb-space-1); overflow: visible; }
+  .steps.nonum a[aria-current] { box-shadow: inset 2px 0 0 var(--ink); padding-left: var(--lb-space-3); margin-left: calc(-1 * var(--lb-space-3)); }
+}
+
+/* Section card */
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-card); padding: var(--lb-card-pad); display: grid; gap: var(--lb-space-5); min-width: 0; }
+.card-title { padding-bottom: var(--lb-space-4); border-bottom: 1px solid var(--rule); }
+
+/* Fields */
+.field { display: grid; gap: var(--lb-space-2); min-width: 0; }
+fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend.fieldLabel { padding: 0; margin-bottom: var(--lb-space-2); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.input { display: flex; align-items: center; gap: var(--lb-space-2); min-height: 48px; padding: 0 var(--lb-space-4); border: 1px solid var(--rule-strong); border-radius: var(--radius); background: var(--paper); font-size: var(--lb-size-input); min-width: 0; }
+.input .ph { color: var(--grey300); flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.input .val { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.input .inbtn { font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.input svg { width: 16px; height: 16px; flex: none; }
+.input.err { border-color: var(--fail); background: var(--fail-subtle); }
+.textarea { min-height: 112px; align-items: flex-start; padding-top: var(--lb-space-3); }
+.textarea .val, .textarea .ph { white-space: pre-line; }
+.helper { margin: 0; font-size: var(--lb-size-small); line-height: 1.45; color: var(--grey600); }
+.helper.ok { color: var(--success); }
+.errmsg { margin: 0; font-size: var(--lb-size-small); line-height: 1.45; color: var(--fail); }
+.formerr { margin: 0; font-size: var(--lb-size-small); line-height: 1.45; color: var(--fail); font-weight: 600; }
+.row2 { display: grid; gap: var(--lb-space-5); }
+@container (min-width: 768px) { .row2 { grid-template-columns: 1fr 1fr; } }
+.phone { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: var(--lb-space-2); }
+
+/* Checkbox tiles (CheckboxTileGroup) */
+.checks { display: grid; grid-template-columns: 1fr; gap: var(--lb-space-2); }
+@container (min-width: 768px) { .checks { grid-template-columns: repeat(3, 1fr); } }
+.check { display: flex; align-items: center; gap: var(--lb-space-3); min-height: 44px; padding: 0 var(--lb-space-3); border: 1px solid var(--rule-strong); border-radius: var(--radius); font-size: var(--lb-size-body); background: var(--paper); }
+.check.on { border-color: var(--ink); }
+.box { width: 18px; height: 18px; flex: none; border: 1px solid var(--grey600); border-radius: 3px; background: var(--paper); display: grid; place-items: center; }
+.on .box { border-color: var(--ink); }
+.on .box::after { content: ""; width: 5px; height: 10px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateY(-1px) rotate(45deg); }
+/* Choice tiles (lineupForm .choiceTiles, as in sign up) */
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--lb-space-2); }
+.tile { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 48px; padding: 0 var(--lb-space-3); border: 1px solid var(--rule-strong); border-radius: var(--radius); background: var(--paper); font: 600 15px/1.2 var(--lb-font); }
+.tile.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+
+/* Photos: 4:3, the listingImage aspect ratio (Console layout.json). Public profile crops to square. */
+.photos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--lb-space-2); }
+@container (min-width: 768px) { .photos { gap: var(--lb-space-3); } }
+.ph-img { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-card); background: linear-gradient(135deg, #3a3a40, #0d0d0f); overflow: hidden; }
+.ph-img.b { background: linear-gradient(160deg, #6b5a4a, #1d1712); }
+.ph-img.c { background: linear-gradient(200deg, #2f4a5c, #0b1218); }
+.rm { position: absolute; top: var(--lb-space-2); right: var(--lb-space-2); width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; display: grid; place-items: center; }
+.rm svg { width: 16px; height: 16px; }
+.add { aspect-ratio: 4 / 3; border: 1px dashed var(--grey300); border-radius: var(--radius-card); background: var(--paper); display: grid; place-content: center; text-align: center; gap: var(--lb-space-1); padding: var(--lb-space-3); }
+.add b { font-size: var(--lb-size-small); font-weight: 600; }
+.add span { font-size: 12px; color: var(--grey600); }
+.add.err { border-color: var(--fail); background: var(--fail-subtle); }
+
+/* Avatar row */
+.avrow { display: flex; align-items: center; gap: var(--lb-space-4); flex-wrap: wrap; }
+.avbig { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg, #3a3a40, #0d0d0f); flex: none; }
+.avrow .btn { width: auto; }
+
+/* Notice banner (NoticeBanner) */
+.notice { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--lb-space-1) var(--lb-space-3); align-items: start; padding: var(--lb-space-4); background: var(--attention-subtle); border: 1px solid var(--attention); border-radius: var(--radius-card); }
+.notice svg { width: 20px; height: 20px; color: var(--attention-dark); margin-top: 1px; }
+.notice-title { margin: 0; font-size: var(--lb-size-body); line-height: 1.4; font-weight: 600; }
+.notice-msg { margin: 0; grid-column: 2; font-size: var(--lb-size-small); line-height: 1.45; color: var(--grey700); }
+.notice .btn { grid-column: 2; justify-self: start; margin-top: var(--lb-space-2); min-height: 44px; width: auto; }
+
+/* Stripe status */
+.status { display: grid; gap: var(--lb-space-2); }
+.status-ok { display: flex; gap: var(--lb-space-2); align-items: center; color: var(--success); }
+.status-ok svg { width: 20px; height: 20px; flex: none; }
+.cardrow { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-4); min-height: 48px; padding: 0 var(--lb-space-4); border: 1px solid var(--rule-strong); border-radius: var(--radius); font-variant-numeric: tabular-nums; }
+.stripe { min-height: 48px; border: 1px solid var(--rule-strong); border-radius: var(--radius); display: flex; align-items: center; padding: 0 var(--lb-space-4); color: var(--grey300); font-size: var(--lb-size-input); }
+.stripe.err { border-color: var(--fail); background: var(--fail-subtle); }
+
+/* Modal (lineupModal) */
+.page.has-modal { height: 900px; overflow: hidden; }
+@container (max-width: 767px) { .page.has-modal { height: 820px; } }
+.scrim { position: absolute; inset: 0; z-index: 10; background: rgba(0,0,0,.4); display: flex; justify-content: center; align-items: flex-start; padding: 96px var(--lb-gutter) var(--lb-gutter); }
+.modal { position: relative; width: 100%; max-width: 560px; background: var(--paper); border-radius: var(--radius-card); padding: var(--lb-card-pad); display: grid; gap: var(--lb-space-5); }
+.modal-head { display: grid; gap: var(--lb-space-2); padding-right: var(--lb-space-7); }
+.close { position: absolute; top: var(--lb-space-3); right: var(--lb-space-3); width: 44px; height: 44px; display: grid; place-items: center; }
+.close svg { width: 20px; height: 20px; }
+@container (min-width: 768px) { .modal-foot { display: grid; justify-content: end; } .modal-foot .btn { width: auto; min-width: 200px; } }
+@container (max-width: 767px) { .scrim { padding: 0; align-items: flex-end; } .modal { border-radius: var(--radius-card) var(--radius-card) 0 0; } }
+</style>
+
+<div class="toolbar" role="region" aria-label="Mockup controls">
+  <div class="tb-row"><strong>LineupBridge · Account and public profile setup (draft)</strong>
+    <span><span class="seg-label">User</span><span class="seg" id="userSeg">
+      <button type="button" data-user="dj" aria-pressed="true">DJ</button>
+      <button type="button" data-user="org" aria-pressed="false">Event organizer</button>
+    </span></span>
+    <span><span class="seg-label">State</span><span class="seg" id="stateSeg">
+      <button type="button" data-state="ok" aria-pressed="true">Default</button>
+      <button type="button" data-state="err" aria-pressed="false">Errors</button>
+    </span></span>
+    <span><span class="seg-label">View</span><span class="seg" id="viewSeg">
+      <button type="button" data-view="desktop" aria-pressed="true">Desktop</button>
+      <button type="button" data-view="ipad" aria-pressed="false">iPad 768</button>
+      <button type="button" data-view="mobile" aria-pressed="false">Mobile</button>
+    </span></span>
+    <span><span class="seg-label">Tags</span><span class="seg" id="tagSeg">
+      <button type="button" data-tags="on" aria-pressed="true">Show</button>
+      <button type="button" data-tags="off" aria-pressed="false">Hide</button>
+    </span></span>
+  </div>
+  <div class="tb-row" id="rowPp"><span><span class="seg-label">Public profile</span><span class="seg" data-group="pp"></span></span></div>
+  <div class="tb-row"><span><span class="seg-label">Account</span><span class="seg" data-group="acc"></span></span></div>
+  <div class="note" id="stepNote"></div>
+</div>
+
+<div class="stage" id="stage" data-view="desktop">
+  <div class="frame" id="frame"><div class="page" id="page"></div></div>
+</div>
+
+<section class="notes">
+  <div>
+    <h2>Changes from the current code (approved Oct 15)</h2>
+    <ol>
+      <li>Public profile builder: three steps <b>Profile · Links · Photos</b>. Links leave the Profile form and get their own step (the Links step and its titles already exist in code, today only for the booking process). Genre stays in Profile.</li>
+      <li>"Profile basics" becomes <b>Profile</b> (new: "Profile", edit: "Edit profile"). One person has one public profile, so no edit title names the DJ: "Edit links" and "Edit photos" follow the same rule (Oct 15).</li>
+      <li>Step menu: done steps show a tick, the current step a 2px outline (no black fill, rule 8).</li>
+      <li>Every "listing" the DJ sees in these screens becomes <b>public profile</b>: "Publish public profile", "Failed to update public profile. Please try again.", "Failed to create a draft public profile. Please try again.", "Publishing a new public profile failed.", "Fetching public profile data failed.", "Saved public profile photo". Console edits.</li>
+      <li>Account: Contact details, Password and Manage account become one <b>Account settings</b> page (existing label <code>UserNav.accountSettings</code>), one card each, each card keeps its own save button. Payout details (DJ) and Payment methods (organizer) keep their own page.</li>
+      <li>Password card: Current password first, then New password, each with a <b>Show</b> toggle ("Show" is a new key).</li>
+      <li>Delete account: last card, secondary button; the password is asked in a confirm pop-up (the existing confirm texts move into the library Modal). The "I want to delete my account" checkbox is replaced by the pop-up.</li>
+      <li>Payout (DJ) counts as complete only when Stripe verification is done (green "Your Stripe account is up to date!"). Until then the NoticeBanner shows on Account settings.</li>
+    </ol>
+  </div>
+  <div>
+    <h2>Open questions</h2>
+    <ol>
+      <li><b>Photos:</b> the code requires one photo ("You need to add at least one photo."). You said the first two are mandatory: that is a validation change and needs a new message (for example "two photos"), wording to approve.</li>
+      <li><b>Payout rule in code:</b> today "payout set" = <code>currentUser.attributes.stripeConnected</code> (CMSPage.js:163), true right after the basic form. Your rule needs the Stripe account's verification state instead, on Home, the public profile banner and here.</li>
+      <li><b>Delete text:</b> "removes your personal data, user profile, and listings from the marketplace" is shared by both user types. Change "listings" to "public profile" for DJs only, or leave it?</li>
+      <li><b>Links step button:</b> needs keys for the negotiation process (<code>…default-negotiation.new.saveLinks</code> = "Next", <code>…edit.saveLinks</code> = "Save changes"). Existing words, new keys.</li>
+    </ol>
+  </div>
+</section>
+
+<script>
+(function () {
+  var DJ = 'DJ Example', EMAIL = 'dj@example.com', ORG = 'Studio Noord', OEMAIL = 'hello@example.com';
+  var t = function (s) { return '<span class="tag">' + s + '</span>'; };
+  var ch = function (s) { return '<span class="tag ch">Change ' + s + '</span>'; };
+  var q = function (s) { return '<span class="tag q">Open ' + s + '</span>'; };
+  var I = {
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>',
+    ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>'
+  };
+  /* Genre: Console options + local "Melodic techno", "Experimental" removed, sorted A–Z (configHelpers.js) */
+  var GENRES = ['Acid', 'Afro House', 'Deep House', 'Disco', 'Downtempo', 'Electro', 'Electronica', 'Hard Techno', 'House', 'Indie Dance', 'Melodic House', 'Melodic techno', 'Minimal', 'Progressive House', 'Psytrance', 'Tech house', 'Techno', 'Trance'];
+  var PICKED = { 'Acid': 1, 'Minimal': 1, 'Techno': 1 };
+  /* Links: configListing.js, order from configHelpers.js linkFieldOrder. Only Resident Advisor is required. */
+  var LINKS = [
+    { label: 'Resident Advisor', ph: 'https://ra.co/dj/...', val: 'https://ra.co/dj/djexample', req: true },
+    { label: 'Website', ph: 'https://your-site.com', val: 'https://djexample.com' },
+    { label: 'SoundCloud', ph: 'https://soundcloud.com/...', val: '' },
+    { label: 'Spotify', ph: 'https://open.spotify.com/artist/...', val: '' },
+    { label: 'Instagram', ph: '@handle or profile URL', val: '@djexample' }
+  ];
+
+  var user = 'dj', err = false, screen = 'profile';
+  var isDj = function () { return user === 'dj'; };
+
+  /* ---------- shell ---------- */
+  function topbar() {
+    return '<header class="topbar"><span class="logo">LineupBridge</span><span class="navlink">Home</span>' +
+      (isDj() ? '<span class="navlink">My public profile</span><span class="av">DE</span>' : '<span class="navlink">Find a DJ</span><span class="av">SN</span>') + '</header>';
+  }
+  function footer() { return '<footer class="footer"><span class="logo">LineupBridge</span><span class="small">Built for the electronic music industry</span></footer>'; }
+  function split(menu, main, opts) {
+    opts = opts || {};
+    return topbar() + '<div class="split"><aside class="side"><nav class="stepsWrap" aria-label="' + (opts.aria || 'Steps') + '">' + menu + '</nav></aside>' +
+      '<main class="main">' + main + '</main></div>' + (opts.footer ? footer() : '');
+  }
+  function head(title, lead) { return '<div class="head"><h1 class="h2">' + title + '</h1>' + (lead ? '<p class="lead">' + lead + '</p>' : '') + '</div>'; }
+
+  /* ---------- fields ---------- */
+  function input(label, value, ph, o) {
+    o = o || {};
+    var e = err && o.err;
+    return '<div class="field"><span class="fieldLabel">' + label + (o.optional ? ' <span class="optional">(optional)</span>' : '') + '</span>' +
+      '<div class="input' + (o.textarea ? ' textarea' : '') + (e ? ' err' : '') + '">' +
+      (value && (!e || o.keep) ? '<span class="val">' + value + '</span>' : '<span class="ph">' + (ph || '') + '</span>') + (o.after || '') + '</div>' +
+      (e ? '<p class="errmsg">' + o.err + '</p>' : o.helper ? '<p class="helper' + (o.helperOk ? ' ok' : '') + '">' + o.helper + '</p>' : '') + (o.tag || '') + '</div>';
+  }
+  function select(label, ph, o) {
+    o = o || {};
+    var e = err && o.err;
+    return '<div class="field"><span class="fieldLabel">' + label + (o.optional ? ' <span class="optional">' + o.optional + '</span>' : '') + '</span><div class="input' + (e ? ' err' : '') + '"><span class="ph">' + ph + '</span>' + I.down + '</div>' +
+      (e ? '<p class="errmsg">' + o.err + '</p>' : '') + '</div>';
+  }
+  function phone(num, required) {
+    var e = err && required;
+    return '<fieldset class="field"><legend class="fieldLabel">Phone number</legend><div class="phone"><div class="input' + (e ? ' err' : '') + '"><span class="val">+31</span>' + I.down + '</div>' +
+      '<div class="input' + (e ? ' err' : '') + '">' + (e ? '' : '<span class="val">' + num + '</span>') + '</div></div>' +
+      (e ? '<p class="errmsg">A phone number is required.</p>' : '') + t(required ? 'required for DJs (user type phoneNumberSettings)' : 'not required for event organizers') + '</fieldset>';
+  }
+  function formErr(text) { return err ? '<p class="formerr" role="alert">' + text + '</p>' : ''; }
+
+  /* ---------- public profile builder ---------- */
+  var STEPS = ['Profile', 'Links', 'Photos'];
+  function ppMenu(cur, edit) {
+    return '<ol class="steps">' + STEPS.map(function (l, i) {
+      var done = edit ? i !== cur : i < cur;
+      var attr = i === cur ? ' aria-current="step"' : (!edit && i > cur) ? ' aria-disabled="true"' : '';
+      return '<li><a href="#"' + attr + '><span class="num">' + (done ? I.check : i + 1) + '</span><span class="stepLabel">' + l + '</span></a></li>';
+    }).join('') + '</ol>' + ch('1 · 3');
+  }
+  function genreCard() {
+    return '<section class="card"><div class="card-title"><h2 class="h3">Genre</h2></div>' +
+      '<fieldset class="field"><legend class="sr">Genre</legend><div class="checks">' +
+      GENRES.map(function (g) { return '<span class="check' + (PICKED[g] ? ' on' : '') + '"><span class="box"></span>' + g + '</span>'; }).join('') +
+      '</div></fieldset>' + t('optional · section title "Genre" (sectionGenre); the field legend "Genre" stays for screen readers only, so the word is not shown twice') + '</section>';
+  }
+  function profileScreen(edit) {
+    var title = edit ? 'Edit profile' : 'Profile';
+    return split(ppMenu(0, edit),
+      head('<span class="chg">' + title + '</span>') + ch('2') +
+      '<section class="card">' +
+        input('Artist name', edit ? DJ : '', 'Your artist or DJ name', { err: 'You need to add an artist name.', tag: t('max 60 characters: "Must be 60 characters or less"') }) +
+        input('Bio', edit ? 'Hypnotic, long-form techno with acid lines.\nResident at Example Club since 2019.' : '', 'Tell people about your sound, experience, and what to expect.', { textarea: true, err: 'You need to add a bio.' }) +
+        input('City', edit ? 'Amsterdam, Netherlands' : '', 'Search for a city', { err: 'You need to select a city.', tag: t('location autocomplete, cities only · other error: "We didn\'t recognize this city. Please choose one from the list."') }) +
+      '</section>' + genreCard() +
+      formErr(edit ? '<span class="chg">Failed to update public profile. Please try again.</span>' : '<span class="chg">Failed to create a draft public profile. Please try again.</span>') + (err ? ch('4') : '') +
+      '<span class="btn auto">' + (edit ? 'Save changes' : 'Next') + '</span>');
+  }
+  function linksScreen(edit) {
+    return split(ppMenu(1, edit),
+      head(edit ? '<span class="chg">Edit links</span>' : 'Links') + (edit ? ch('2') : '') +
+      '<section class="card">' + LINKS.map(function (l) {
+        return input(l.label, edit ? l.val : '', l.ph, { optional: !l.req, err: l.req ? 'Required' : null });
+      }).join('') + t('fields and placeholders from configListing.js · only Resident Advisor is required · "Required" = EditListingDetailsForm.defaultRequiredMessage') + '</section>' +
+      formErr('<span class="chg">Failed to update public profile. Please try again.</span>') +
+      '<span class="btn auto">' + (edit ? 'Save changes' : 'Next') + '</span>' + q('4 · button key'));
+  }
+  function photosScreen(edit) {
+    var imgs = err ? [] : ['', ' b', ' c'];
+    return split(ppMenu(2, edit),
+      (edit ? ch('2') : '') + head(edit ? '<span class="chg">Edit photos</span>' : 'Photos', 'Upload photos and videos of you performing, the crowds, your setup, or something else.') +
+      '<section class="card"><div class="photos">' + imgs.map(function (c) {
+        return '<div class="ph-img' + c + '"><span class="rm" aria-label="Remove image">' + I.x + '</span></div>';
+      }).join('') + '<div class="add' + (err ? ' err' : '') + '"><b>+ Add a photo…</b><span>.JPG or .PNG. Max. 20 MB</span></div></div>' +
+      (err ? '<p class="errmsg">You need to add at least one photo.</p><p class="errmsg">The maximum file size is 20 MB. Please try again.</p>' : '') +
+      t('4:3, the listingImage ratio in Console · public profile shows the first two, cropped square') + q('1 · two photos required?') + '</section>' +
+      formErr('<span class="chg">Publishing a new public profile failed.</span>') +
+      '<span class="btn auto' + (edit ? '' : ' chg') + '">' + (edit ? 'Save changes' : 'Publish public profile') + '</span>' + (edit ? '' : ch('4 · was "Publish listing"')));
+  }
+
+  /* ---------- account ---------- */
+  function accItems() { return isDj() ? ['Account settings', 'Payout details'] : ['Account settings', 'Payment methods']; }
+  function accMenu(current) {
+    return '<ol class="steps nonum">' + accItems().map(function (l) {
+      return '<li><a href="#"' + (l === current ? ' aria-current="page"' : '') + '><span class="stepLabel">' + l + '</span></a></li>';
+    }).join('') + '</ol>';
+  }
+  function notice() {
+    return '<div class="notice" role="status">' + I.alert + '<p class="notice-title">Complete your payout setup</p>' +
+      '<p class="notice-msg">Your account is approved, but you won\'t receive booking requests until your payout setup is complete.</p>' +
+      '<span class="btn btn-secondary">Set up payouts</span></div>' + ch('8 · shown until Stripe is verified');
+  }
+  function accountScreen(o) {
+    o = o || {};
+    var email = isDj() ? EMAIL : OEMAIL;
+    var pwd = function (label, ph, e) { return input(label, '', ph, { err: e, after: '<span class="inbtn chg">Show</span>' }); };
+    var emailErr = 'This email address is already in use.';
+    return split(accMenu('Account settings') + ch('5'),
+      (isDj() && !o.modal ? notice() : '') +
+      head('<span class="chg">Account settings</span>') +
+      '<section class="card"><div class="card-title"><h2 class="h3">Profile picture</h2></div>' +
+        '<div class="avrow"><span class="avbig"></span><span class="btn btn-secondary">Change photo</span></div>' +
+        (err ? '<p class="errmsg">The selected image is too large.</p>' : '') + '</section>' +
+      '<section class="card"><div class="card-title"><h2 class="h3">Contact details</h2></div>' +
+        input('Your email address', email, '', err ? { err: emailErr, keep: true } : { helper: 'Your email address is verified.', helperOk: true }) +
+        (err ? t('other errors: "A valid email address is required." · "An email address is required."') : '') +
+        phone('612345678', isDj()) +
+        (err ? '<div class="card-title"><h3 class="h3">Confirm your changes</h3></div><p class="small">To change your email address, please enter your current password.<br>Forgot your password or don\'t have one? <span class="link">Send reset instructions.</span></p>' +
+          input('Current password', '', 'Enter your current password…', { err: 'Please double-check your password.' }) +
+          t('this block appears only after the email is changed') : '') +
+        '<span class="btn auto">Save changes</span></section>' +
+      '<section class="card"><div class="card-title"><h2 class="h3">Password</h2></div>' +
+        pwd('Current password', 'Enter your current password…', 'Please double-check your current password.') +
+        pwd('New password', 'Enter your new password', 'The password should be at least 8 characters.') +
+        (err ? t('other errors: "Current password is required." · "New password is required." · "The password can\'t be longer than 256 characters."') : '') +
+        '<p class="small">Forgot your password or don\'t have one? <span class="link">Send reset instructions.</span></p>' +
+        '<span class="btn auto">Save changes</span>' + ch('6 · current first · "Show" new key') + '</section>' +
+      '<section class="card"><div class="card-title"><h2 class="h3">Delete your account</h2></div>' +
+        '<p class="small">Deleting your LineupBridge account removes your personal data, user profile, and listings from the marketplace. This can\'t be undone.</p>' +
+        '<span class="btn btn-secondary auto chg">Delete account</span>' + ch('7') + q('3 · "listings"') + '</section>',
+      { aria: 'Account settings', footer: true });
+  }
+  function deleteModal() {
+    var email = isDj() ? EMAIL : OEMAIL;
+    return accountScreen({ modal: true }) + '<div class="scrim"><div class="modal" role="dialog" aria-modal="true">' +
+      '<span class="close" aria-label="Close">' + I.x + '</span>' +
+      '<div class="modal-head"><h2 class="h3">Confirm account deletion</h2>' +
+      '<p class="body muted">To delete your account (' + email + '), please enter your current password.</p></div>' +
+      input('Current password', '', 'Enter your current password…', { err: 'Please double-check your password.' }) +
+      '<p class="small">Forgot your password or don\'t have one? <span class="link">Send reset instructions.</span></p>' +
+      formErr('Account deletion failed. Please complete any ongoing transactions before deleting your account or contact support.') +
+      '<div class="modal-foot"><span class="btn">Delete account</span></div>' + ch('7 · existing texts in the library Modal') + '</div></div>';
+  }
+  function payoutScreen(state) {
+    var body;
+    if (state === 'new') {
+      body = '<section class="card"><fieldset class="field"><legend class="fieldLabel">Account type</legend><div class="tiles"><span class="tile on">I\'m an individual</span><span class="tile">I represent a company</span></div></fieldset>' +
+        select('Country', 'Select your country…', { err: 'This field is required.' }) +
+        '<p class="small">By moving forward in the process, you agree to the <span class="link">Stripe Connected Account Agreement</span>.</p></section>' +
+        formErr('Oops, something went wrong. Please try again. If the problem persists, contact support.') +
+        '<span class="btn auto">Save details</span>' + t('then the DJ continues on Stripe');
+    } else if (state === 'verify') {
+      body = '<section class="card"><div class="status">' +
+        (err ? '<h2 class="h3">Something went wrong. Please try again.</h2><p class="small">To receive payments, you need to add your banking details and verify your account.</p>'
+             : '<h2 class="h3">Complete verification to receive payments</h2><p class="small">Stripe needs some more information from you to verify your account.</p>') +
+        '</div><span class="btn auto">Get verified</span>' + ch('8 · payout NOT complete yet') + '</section>';
+    } else {
+      body = '<section class="card"><div class="status-ok">' + I.ok + '<h2 class="h3">Your Stripe account is up to date!</h2></div>' +
+        '<span class="btn btn-secondary auto">Edit Stripe account</span>' + ch('8 · payout complete only here') + '</section>';
+    }
+    return split(accMenu('Payout details'), head('Payout details') + body, { aria: 'Account settings', footer: true });
+  }
+  function paymentScreen(saved) {
+    var form = '<section class="card"><div class="field"><span class="fieldLabel">Payment card details</span><div class="stripe' + (err ? ' err' : '') + '">•••• •••• •••• ••••</div>' +
+        (err ? '<p class="errmsg">Could not handle payment data. Please try again.</p>' : '') + t('Stripe card element') + '</div>' +
+        '<p class="small">I authorise LineupBridge to send instructions to the financial institution that issued my card to take payments from my card account in accordance with the terms of my agreement with you.</p></section>' +
+      '<section class="card"><div class="card-title"><h2 class="h3">Billing details</h2></div>' +
+        input('Card holder\'s name', '', 'Enter your name…') +
+        input('Street address', '', '123 Example Street', { err: 'Street address is required.' }) +
+        '<div class="row2">' + input('Apt # <span class="optional">• optional</span>', '', 'A 42') + input('Postal code', '', '00100', { err: 'Postal code is required.' }) + '</div>' +
+        '<div class="row2">' + input('City', '', 'Helsinki', { err: 'City is required.' }) + input('State <span class="optional">• optional</span>', '', 'Enter your state') + '</div>' +
+        select('Country', 'Select a country…', { err: 'Country is required.' }) +
+        t('StripePaymentAddress') + '</section>' +
+      '<span class="btn auto">Save payment card</span>';
+    var savedCard = '<section class="card"><div class="cardrow"><span>Visa •••• •••• •••• 4242</span><span class="small">12/28</span></div>' +
+      '<span class="link">Remove payment card</span>' + t('SavedCardDetails · "Use another payment card" in its menu opens the form below · remove asks "Are you sure you want to remove this payment card?"') + '</section>';
+    return split(accMenu('Payment methods'), head('Payment methods') + (saved ? savedCard : form), { aria: 'Account settings', footer: true });
+  }
+
+  /* ---------- screens ---------- */
+  var S = {
+    profile: { group: 'pp', dj: 1, label: 'New: Profile', note: '<b>Split · nav</b> New public profile, step 1 of 3. Same fields as today: Artist name, Bio, City, Genre. Links and Photos are grey until this step is saved.', html: function () { return profileScreen(false); } },
+    links: { group: 'pp', dj: 1, label: 'New: Links', note: '<b>Split · nav</b> Step 2. The five link fields from the code, in the code\'s order. Resident Advisor is the only required one; the others show "(optional)".', html: function () { return linksScreen(false); } },
+    photos: { group: 'pp', dj: 1, label: 'New: Photos', note: '<b>Split · nav</b> Step 3. Photos in the 4:3 ratio the builder uses today. The button publishes the public profile.', html: function () { return photosScreen(false); } },
+    profileEdit: { group: 'pp', dj: 1, label: 'Edit: Profile', note: '<b>Split · nav</b> Published public profile. Every step is done (ticks) and reachable; the current step has the outline.', html: function () { return profileScreen(true); } },
+    linksEdit: { group: 'pp', dj: 1, label: 'Edit: Links', note: '<b>Split · nav</b> Editing links. Title "Edit links": no name, one person has one public profile.', html: function () { return linksScreen(true); } },
+    photosEdit: { group: 'pp', dj: 1, label: 'Edit: Photos', note: '<b>Split · nav</b> Editing photos. Title "Edit photos": no name, one person has one public profile.', html: function () { return photosScreen(true); } },
+    account: { group: 'acc', label: 'Account settings', note: '<b>Split · nav</b> One page for Contact details, Password and Delete. Account menu has no numbers (not a sequence). DJ: the payout banner stays until Stripe is verified.', html: function () { return accountScreen(); } },
+    deleteModal: { group: 'acc', label: 'Delete: confirm pop-up', modal: true, note: '<b>Modal</b> Delete account asks for the current password in the library Modal. Errors: wrong password, ongoing transactions.', html: deleteModal },
+    payoutNew: { group: 'acc', dj: 1, label: 'Payout: not set', note: '<b>Split · nav</b> DJ, before Stripe. The basic choice here does NOT complete the payout setup.', html: function () { return payoutScreen('new'); } },
+    payoutVerify: { group: 'acc', dj: 1, label: 'Payout: verify', note: '<b>Split · nav</b> DJ, Stripe account created but not verified. Payout still incomplete; banner still shows on Account settings and Home.', html: function () { return payoutScreen('verify'); } },
+    payoutDone: { group: 'acc', dj: 1, label: 'Payout: verified', note: '<b>Split · nav</b> DJ, Stripe verified (green). Only now is the payout setup complete and the banner gone.', html: function () { return payoutScreen('done'); } },
+    payment: { group: 'acc', org: 1, label: 'Payment methods: no card', note: '<b>Split · nav</b> Event organizer, no saved card. Same content as today: card, authorisation text, billing details.', html: function () { return paymentScreen(false); } },
+    paymentSaved: { group: 'acc', org: 1, label: 'Payment methods: saved card', note: '<b>Split · nav</b> Event organizer with a saved card (example card).', html: function () { return paymentScreen(true); } }
+  };
+  function visible(k) { var s = S[k]; return isDj() ? !s.org : !s.dj; }
+
+  var page = document.getElementById('page'), frame = document.getElementById('frame');
+  function press(seg, btn) { seg.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); }); }
+  function render() {
+    if (!visible(screen)) screen = isDj() ? 'profile' : 'account';
+    var s = S[screen];
+    page.className = 'page' + (s.modal ? ' has-modal' : '');
+    page.innerHTML = s.html();
+    document.getElementById('stepNote').innerHTML = s.note;
+    document.getElementById('rowPp').hidden = !isDj();
+    document.querySelectorAll('[data-group]').forEach(function (seg) {
+      seg.innerHTML = Object.keys(S).filter(function (k) { return S[k].group === seg.dataset.group && visible(k); })
+        .map(function (k) { return '<button type="button" data-s="' + k + '" aria-pressed="' + (k === screen) + '">' + S[k].label + '</button>'; }).join('');
+    });
+  }
+  document.querySelectorAll('[data-group]').forEach(function (seg) {
+    seg.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; screen = b.dataset.s; render(); });
+  });
+  document.getElementById('userSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); user = b.dataset.user; render(); });
+  document.getElementById('stateSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); err = b.dataset.state === 'err'; render(); });
+  document.getElementById('viewSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); document.getElementById('stage').dataset.view = b.dataset.view; });
+  document.getElementById('tagSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; press(e.currentTarget, b); frame.classList.toggle('no-tags', b.dataset.tags === 'off'); });
+  render();
+})();
+</script>

@@ -8,8 +8,10 @@ import * as validators from '../../../util/validators';
 import { ensureCurrentUser } from '../../../util/data';
 import { isChangePasswordWrongPassword } from '../../../util/errors';
 
-import { Form, PrimaryButton, FieldTextInput, H4 } from '../../../components';
+import { Form, PrimaryButton, FieldPasswordInput } from '../../../components';
 
+import formCss from '../../../styles/lineupForm.module.css';
+import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './PasswordChangeForm.module.css';
 
 const RESET_TIMEOUT = 800;
@@ -65,7 +67,6 @@ class PasswordChangeForm extends Component {
             inProgress = false,
             resetPasswordInProgress = false,
             invalid,
-            pristine,
             ready,
             form,
             values,
@@ -139,13 +140,9 @@ class PasswordChangeForm extends Component {
             ? passwordFailedMessage
             : null;
 
-          const confirmClasses = classNames(css.confirmChangesSection, {
-            [css.confirmChangesSectionVisible]: !pristine,
-          });
-
           const genericFailure =
             changePasswordError && !passwordErrorText ? (
-              <span className={css.error}>
+              <span className={formCss.formError}>
                 <FormattedMessage id="PasswordChangeForm.genericFailure" />
               </span>
             ) : null;
@@ -154,13 +151,13 @@ class PasswordChangeForm extends Component {
           const submitDisabled = invalid || inProgress;
 
           const sendPasswordLink = (
-            <span className={css.helperLink} onClick={this.handleResetPassword} role="button">
+            <span className={buttonCss.link} onClick={this.handleResetPassword} role="button">
               <FormattedMessage id="PasswordChangeForm.resetPasswordLinkText" />
             </span>
           );
 
           const resendPasswordLink = (
-            <span className={css.helperLink} onClick={this.handleResetPassword} role="button">
+            <span className={buttonCss.link} onClick={this.handleResetPassword} role="button">
               <FormattedMessage id="PasswordChangeForm.resendPasswordLinkText" />
             </span>
           );
@@ -199,55 +196,48 @@ class PasswordChangeForm extends Component {
                   });
               }}
             >
-              <div className={css.newPasswordSection}>
-                <FieldTextInput
-                  type="password"
-                  id={formId ? `${formId}.newPassword` : 'newPassword'}
-                  name="newPassword"
-                  autoComplete="new-password"
-                  label={newPasswordLabel}
-                  placeholder={newPasswordPlaceholder}
-                  validate={validators.composeValidators(
-                    newPasswordRequired,
-                    passwordMinLength,
-                    passwordMaxLength
-                  )}
-                />
-              </div>
+              <p className={css.info}>
+                <FormattedMessage id="PasswordChangeForm.confirmChangesInfo" />
+              </p>
 
-              <div className={confirmClasses} aria-hidden={pristine}>
-                <H4 as="h3" className={css.confirmChangesTitle}>
-                  <FormattedMessage id="PasswordChangeForm.confirmChangesTitle" />
-                </H4>
-                <p className={css.confirmChangesInfo}>
-                  <FormattedMessage id="PasswordChangeForm.confirmChangesInfo" />
-                  <br />
-                  <FormattedMessage
-                    id="PasswordChangeForm.resetPasswordInfo"
-                    values={{ resetPasswordLink }}
-                  />
-                </p>
+              <FieldPasswordInput
+                id={formId ? `${formId}.currentPassword` : 'currentPassword'}
+                name="currentPassword"
+                autoComplete="current-password"
+                label={passwordLabel}
+                placeholder={passwordPlaceholder}
+                validate={validators.composeValidators(
+                  passwordRequired,
+                  passwordMinLength,
+                  passwordMaxLength
+                )}
+                customErrorText={passwordTouched ? null : passwordErrorText}
+              />
 
-                <FieldTextInput
-                  className={css.password}
-                  type="password"
-                  id="currentPassword"
-                  name="currentPassword"
-                  disabled={pristine}
-                  autoComplete="current-password"
-                  label={passwordLabel}
-                  placeholder={passwordPlaceholder}
-                  validate={validators.composeValidators(
-                    passwordRequired,
-                    passwordMinLength,
-                    passwordMaxLength
-                  )}
-                  customErrorText={passwordTouched ? null : passwordErrorText}
+              <FieldPasswordInput
+                id={formId ? `${formId}.newPassword` : 'newPassword'}
+                name="newPassword"
+                autoComplete="new-password"
+                label={newPasswordLabel}
+                placeholder={newPasswordPlaceholder}
+                validate={validators.composeValidators(
+                  newPasswordRequired,
+                  passwordMinLength,
+                  passwordMaxLength
+                )}
+              />
+
+              <p className={css.info}>
+                <FormattedMessage
+                  id="PasswordChangeForm.resetPasswordInfo"
+                  values={{ resetPasswordLink }}
                 />
-              </div>
+              </p>
+
               <div className={css.bottomWrapper}>
                 {genericFailure}
                 <PrimaryButton
+                  rootClassName={classNames(buttonCss.primary, buttonCss.formButton)}
                   type="submit"
                   inProgress={inProgress}
                   ready={ready}

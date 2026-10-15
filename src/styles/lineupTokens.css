@@ -73,9 +73,11 @@
   --lb-page-top: var(--lb-gutter);
   --lb-page-bottom: var(--lb-space-9);
 
-  /* Layout (Split · summary): transaction page and checkout */
+  /* Layout (Split): summary = transaction page and checkout, nav = account settings and the
+     public profile builder */
   --lb-width-split: 1120px;
   --lb-side-summary: 360px;
+  --lb-side-nav: 264px;
   --lb-split-gap: var(--lb-space-7);
   --lb-sticky-top: var(--lb-space-5);
 

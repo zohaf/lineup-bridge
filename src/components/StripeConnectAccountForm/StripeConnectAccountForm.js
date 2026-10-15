@@ -11,8 +11,20 @@ import { isStripeError } from '../../util/errors';
 import * as validators from '../../util/validators';
 import { propTypes } from '../../util/types';
 
-import { H4, Button, ExternalLink, FieldSelect, FieldRadioButton, Form } from '../../components';
+import {
+  H4,
+  Button,
+  PrimaryButton,
+  ExternalLink,
+  FieldSelect,
+  FieldRadioButton,
+  Form,
+  SectionCard,
+  SelectField,
+} from '../../components';
 
+import formCss from '../../styles/lineupForm.module.css';
+import buttonCss from '../../styles/lineupButtons.module.css';
 import css from './StripeConnectAccountForm.module.css';
 
 const getSupportedCountryCodes = supportedCountries => supportedCountries.map(c => c.code);
@@ -40,6 +52,7 @@ const CreateStripeAccountFields = props => {
     marketplaceRootURL,
     supportedCountries,
     defaultMCC,
+    lineupStyle,
   } = props;
 
   /*
@@ -76,6 +89,77 @@ const CreateStripeAccountFields = props => {
       formApi.change('businessProfileMCC', defaultMCC);
     }
   }, []);
+
+  const countryOptions = [
+    <option key="placeholder" disabled value="">
+      {intl.formatMessage({ id: 'StripeConnectAccountForm.countryPlaceholder' })}
+    </option>,
+    ...getSupportedCountryCodes(supportedCountries).map(c => (
+      <option key={c} value={c}>
+        {intl.formatMessage({ id: `StripeConnectAccountForm.countryNames.${c}` })}
+      </option>
+    )),
+  ];
+  const countryValidate = validators.required(
+    intl.formatMessage({ id: 'StripeConnectAccountForm.countryRequired' })
+  );
+
+  if (lineupStyle) {
+    // Library look: account type as choice tiles, the library select for country
+    const accountTypes = [
+      { value: 'individual', labelId: 'StripeConnectAccountForm.individualAccount' },
+      { value: 'company', labelId: 'StripeConnectAccountForm.companyAccount' },
+    ];
+    const countryState = formApi.getFieldState('country');
+    const countryHasError = !!(countryState?.touched && countryState?.invalid);
+    return (
+      <>
+        <FieldHidden name="businessProfileURL" />
+        <FieldHidden name="businessProfileMCC" />
+        <Field name="accountType" subscription={{ value: true }}>
+          {() => null}
+        </Field>
+        <div className={formCss.field} role="group" aria-labelledby="accountTypeLabel">
+          <p id="accountTypeLabel" className={formCss.label}>
+            <FormattedMessage id="StripeConnectAccountForm.accountTypeTitle" />
+          </p>
+          <div className={formCss.choiceTiles}>
+            {accountTypes.map(type => {
+              const isSelected = values?.accountType === type.value;
+              return (
+                <button
+                  key={type.value}
+                  type="button"
+                  className={classNames(formCss.choiceTile, {
+                    [formCss.choiceTileSelected]: isSelected,
+                  })}
+                  aria-pressed={isSelected}
+                  disabled={disabled}
+                  onClick={() => formApi.change('accountType', type.value)}
+                >
+                  <FormattedMessage id={type.labelId} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <SelectField
+          id="country"
+          name="country"
+          disabled={disabled}
+          autoComplete="country"
+          label={countryLabel}
+          rootClassName={formCss.field}
+          labelClassName={formCss.label}
+          selectClassName={classNames(formCss.select, { [formCss.inputError]: countryHasError })}
+          longList
+          validate={countryValidate}
+        >
+          {countryOptions}
+        </SelectField>
+      </>
+    );
+  }
 
   return (
     <div className={css.sectionContainer}>
@@ -138,7 +222,37 @@ const UpdateStripeAccountFields = props => {
     savedAccountType,
     submitInProgress,
     stripeBankAccountLastDigits,
+    lineupStyle,
   } = props;
+
+  if (lineupStyle) {
+    // Library look: saved details as read-only label / value rows
+    return (
+      <dl className={css.savedList}>
+        <div>
+          <dt>{accountTypeLabel}</dt>
+          <dd>
+            <FormattedMessage id={`StripeConnectAccountForm.accountTypes.${savedAccountType}`} />
+          </dd>
+        </div>
+        <div>
+          <dt>{countryLabel}</dt>
+          <dd>
+            <FormattedMessage id={`StripeConnectAccountForm.countryNames.${savedCountry}`} />
+          </dd>
+        </div>
+        {!submitInProgress && !!stripeBankAccountLastDigits ? (
+          <div>
+            <dt>
+              <FormattedMessage id="StripeConnectAccountForm.bankAccountLabel" />
+            </dt>
+            <dd>•••• {stripeBankAccountLastDigits}</dd>
+          </div>
+        ) : null}
+      </dl>
+    );
+  }
+
   return (
     <div className={css.savedInformation}>
       <label className={css.accountInformationTitle}>{accountTypeLabel}</label>
@@ -166,7 +280,7 @@ const UpdateStripeAccountFields = props => {
 };
 
 const ErrorsMaybe = props => {
-  const { stripeAccountError, stripeAccountLinkError } = props;
+  const { stripeAccountError, stripeAccountLinkError, lineupStyle } = props;
 
   const errorMessage = isStripeError(stripeAccountError) ? (
     <FormattedMessage
@@ -184,7 +298,11 @@ const ErrorsMaybe = props => {
     <FormattedMessage id="StripeConnectAccountForm.createStripeAccountLinkFailed" />
   ) : null;
 
-  return errorMessage ? <div className={css.error}>{errorMessage}</div> : null;
+  return errorMessage ? (
+    <div className={lineupStyle ? formCss.formError : css.error} role="alert">
+      {errorMessage}
+    </div>
+  ) : null;
 };
 
 /**
@@ -204,6 +322,9 @@ const ErrorsMaybe = props => {
  * @param {string} props.stripeBankAccountLastDigits - The last digits of the Stripe bank account
  * @param {boolean} props.stripeAccountFetched - Whether the Stripe account data is fetched
  * @param {string} props.submitButtonText - The text for the submit button
+ * @param {boolean} [props.lineupStyle] - Opt-in library look (design-system-rules.md): fields, terms,
+ *   errors and button in one SectionCard, account type as choice tiles. Without it the form renders
+ *   as before.
  * @param {Object} props.fieldRenderProps - The field render props
  * @returns {JSX.Element}
  */
@@ -245,6 +366,7 @@ const StripeConnectAccountForm = props => {
           stripeConnected,
           currentUser,
           authScopes,
+          lineupStyle,
         } = fieldRenderProps;
 
         // Check if current user has limited rights in order to disable the submit button
@@ -288,6 +410,7 @@ const StripeConnectAccountForm = props => {
             formApi={formApi}
             values={values}
             intl={intl}
+            lineupStyle={lineupStyle}
           />
         ) : (
           <UpdateStripeAccountFields
@@ -299,6 +422,7 @@ const StripeConnectAccountForm = props => {
             submitInProgress={submitInProgress}
             formApi={formApi}
             values={values}
+            lineupStyle={lineupStyle}
           />
         );
 
@@ -337,6 +461,56 @@ const StripeConnectAccountForm = props => {
               </Button>
             </>
           ) : null;
+
+        // Library look (lineupStyle): the fields, errors, terms and button in one SectionCard; the
+        // children (Stripe status card) follow as their own card
+        if (lineupStyle) {
+          return config.stripe.publishableKey ? (
+            <Form className={classNames(css.lineupRoot, className)} onSubmit={handleSubmit}>
+              <SectionCard>
+                {!stripeConnected || accountDataLoaded ? (
+                  stripeAccountFields
+                ) : (
+                  <p className={formCss.helper}>
+                    <FormattedMessage id="StripeConnectAccountForm.loadingStripeAccountData" />
+                  </p>
+                )}
+                {!stripeConnected || accountDataLoaded ? (
+                  <p className={css.lineupTerms}>
+                    <FormattedMessage
+                      id="StripeConnectAccountForm.stripeToSText"
+                      values={{ stripeConnectedAccountTermsLink }}
+                    />
+                  </p>
+                ) : null}
+                <ErrorsMaybe
+                  stripeAccountError={stripeAccountError}
+                  stripeAccountLinkError={stripeAccountLinkError}
+                  lineupStyle
+                />
+                {!stripeConnected || accountDataLoaded ? (
+                  <PrimaryButton
+                    rootClassName={classNames(buttonCss.primary, buttonCss.formButton)}
+                    type="submit"
+                    inProgress={submitInProgress}
+                    disabled={submitDisabled}
+                    ready={ready}
+                    title={submitButtonTitle}
+                  >
+                    {submitButtonText || (
+                      <FormattedMessage id="StripeConnectAccountForm.submitButtonText" />
+                    )}
+                  </PrimaryButton>
+                ) : null}
+              </SectionCard>
+              {children}
+            </Form>
+          ) : (
+            <p className={formCss.formError}>
+              <FormattedMessage id="StripeConnectAccountForm.missingStripeKey" />
+            </p>
+          );
+        }
 
         // If the Stripe publishable key is not set up, don't show the form
         return config.stripe.publishableKey ? (

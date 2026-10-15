@@ -23,7 +23,7 @@ const EmailVerificationInfo = props => {
   );
 
   const fixEmailLink = (
-    <NamedLink className={buttonCss.link} name="ContactDetailsPage">
+    <NamedLink className={buttonCss.link} name="AccountSettingsPage">
       <FormattedMessage id="AuthenticationPage.fixEmailLinkText" />
     </NamedLink>
   );
@@ -52,7 +52,7 @@ const EmailVerificationInfo = props => {
           </p>
         </div>
 
-        <NamedLink className={css.verifyLater} name="ContactDetailsPage">
+        <NamedLink className={css.verifyLater} name="AccountSettingsPage">
           <span className={css.verifyLaterText}>
             <FormattedMessage id="AuthenticationPage.verifyEmailClose" />
           </span>

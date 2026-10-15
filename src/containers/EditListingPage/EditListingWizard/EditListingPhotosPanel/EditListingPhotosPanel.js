@@ -6,7 +6,7 @@ import { FormattedMessage } from '../../../../util/reactIntl';
 import { LISTING_STATE_DRAFT } from '../../../../util/types';
 
 // Import shared components
-import { H3, ListingLink } from '../../../../components';
+import { PageHeader } from '../../../../components';
 
 // Import modules from this directory
 import EditListingPhotosForm from './EditListingPhotosForm';
@@ -61,45 +61,21 @@ const EditListingPhotosPanel = props => {
   const classes = classNames(rootClass, className);
   const isPublished = listing?.id && listing?.attributes?.state !== LISTING_STATE_DRAFT;
 
-  const panelHeadingProps = isPublished
-    ? {
-        id: 'EditListingPhotosPanel.title',
-        values: { listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> },
-        messageProps: { listingTitle: listing.attributes.title },
-      }
-    : {
-        id: 'EditListingPhotosPanel.createListingTitle',
-        values: { lineBreak: <br /> },
-        messageProps: {},
-      };
+  // One person, one public profile: the title does not name the profile (business-rules.md)
+  const panelHeadingId = isPublished
+    ? 'EditListingPhotosPanel.title'
+    : 'EditListingPhotosPanel.createListingTitle';
+  const panelHeadingValues = { listingTitle: listing?.attributes?.title || '', lineBreak: ' ' };
 
   return (
-    <main className={classes}>
+    <div className={classes}>
       <UpdatePageTitle
-        panelHeading={intl.formatMessage(
-          { id: panelHeadingProps.id },
-          { ...panelHeadingProps.messageProps }
-        )}
+        panelHeading={intl.formatMessage({ id: panelHeadingId }, panelHeadingValues)}
       />
-      <H3 as="h1">
-        <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
-      </H3>
-      <p className={css.intro}>
-        <FormattedMessage id="EditListingPhotosPanel.intro" />
-      </p>
-      {/* <H3 as="h1">
-        {isPublished ? (
-          <FormattedMessage
-            id="EditListingPhotosPanel.title"
-            values={{ listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> }}
-          />
-        ) : (
-          <FormattedMessage
-            id="EditListingPhotosPanel.createListingTitle"
-            values={{ lineBreak: <br /> }}
-          />
-        )}
-      </H3> */}
+      <PageHeader
+        title={<FormattedMessage id={panelHeadingId} values={panelHeadingValues} />}
+        lead={<FormattedMessage id="EditListingPhotosPanel.intro" />}
+      />
       <EditListingPhotosForm
         className={css.form}
         disabled={disabled}
@@ -117,7 +93,7 @@ const EditListingPhotosPanel = props => {
         updateInProgress={updateInProgress}
         listingImageConfig={listingImageConfig}
       />
-    </main>
+    </div>
   );
 };
 

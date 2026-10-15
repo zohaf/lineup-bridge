@@ -1,6 +1,7 @@
 import { authInfo } from '../../ducks/auth.duck';
 import { fetchPageAssets } from '../../ducks/hostedAssets.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchStripeAccount } from '../../ducks/stripeConnectAccount.duck';
 import { loadData as loadInboxData } from '../InboxPage/InboxPage.duck';
 import { queryOwnListings } from '../ManageListingsPage/ManageListingsPage.duck';
 import { createImageVariantConfig } from '../../util/sdkLoader';
@@ -21,11 +22,8 @@ export const loadData = (params, search, config) => async (dispatch, getState) =
     return dispatch(fetchPageAssets(pageAsset, hasFallbackContent));
   }
 
-  const {
-    aspectWidth = 1,
-    aspectHeight = 1,
-    variantPrefix = 'listing-card',
-  } = config?.layout?.listingImage || {};
+  const { aspectWidth = 1, aspectHeight = 1, variantPrefix = 'listing-card' } =
+    config?.layout?.listingImage || {};
   const aspectRatio = aspectHeight / aspectWidth;
 
   await dispatch(fetchPageAssets(pageAsset, hasFallbackContent));
@@ -47,6 +45,14 @@ export const loadData = (params, search, config) => async (dispatch, getState) =
   const currentUser = state.user?.currentUser;
   const roles = getCurrentUserTypeRoles(config, currentUser);
   const inboxTab = roles?.provider && !roles?.customer ? 'sales' : 'orders';
+
+  // DJ payout notice: payout setup is complete only when Stripe verification is done
+  // (src/util/payout.js), which needs the Stripe account data. Not awaited.
+  if (roles?.provider && currentUser?.attributes?.stripeConnected) {
+    dispatch(fetchStripeAccount()).catch(() => {
+      // fetchStripeAccount stores the error; the notice then stays hidden
+    });
+  }
 
   await Promise.all([
     dispatch(loadInboxData({ tab: inboxTab }, '')),

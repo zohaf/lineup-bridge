@@ -1,16 +1,5 @@
-@import '../../../styles/customMediaQueries.css';
-
+/* Each step's panel sits in the main column of LayoutSplit role "nav", which sets the width and the
+   page spacing. */
 .panel {
-  flex-grow: 1;
-  padding: 11px 24px 0 24px;
-
-  @media (--viewportLarge) {
-    padding: 48px 36px 82px 59px;
-    border-left: 1px solid var(--colorGrey100);
-    background-color: var(--colorPageBackground);
-  }
-
-  @media (--viewportLargeWithPaddings) {
-    padding: 48px calc((100% - 1056px) / 2) 82px 59px;
-  }
+  min-width: 0;
 }

@@ -12,27 +12,24 @@ import {
 } from '../../../../util/fieldHelpers';
 import { isBookingProcessAlias } from '../../../../transactions/transaction';
 import { displayLocation } from '../../../../util/configHelpers';
-import { isGenreOrLinkField } from '../../../../util/listingFieldWizardSections';
 
 // Import shared components
-import { H3, ListingLink } from '../../../../components';
+import { PageHeader } from '../../../../components';
 
 // Import modules from this directory
 import ErrorMessage from './ErrorMessage';
 import EditListingDetailsForm from './EditListingDetailsForm';
-import {
-  pickListingFieldsData,
-  initialValuesForListingFields,
-} from '../editListingFieldHelpers';
+import { pickListingFieldsData, initialValuesForListingFields } from '../editListingFieldHelpers';
 import css from './EditListingDetailsPanel.module.css';
 
-const stripGenreAndLinksFromInitialValues = (initialValues, listingFields, hide) => {
-  if (!hide) {
+// Leave out the fields that are edited on their own step (Genre and/or Links)
+const stripFieldsOnOtherSteps = (initialValues, listingFields, isFieldOnOtherStep) => {
+  if (!isFieldOnOtherStep) {
     return initialValues;
   }
   const drop = new Set();
   listingFields.forEach(f => {
-    if (isGenreOrLinkField(f)) {
+    if (isFieldOnOtherStep(f)) {
       drop.add(f.scope === 'public' ? `pub_${f.key}` : `priv_${f.key}`);
     }
   });
@@ -171,9 +168,7 @@ const getInitialValues = (
   const listingType = publicData?.listingType || preselectedListingType;
 
   const nestedCategories = pickCategoryFields(publicData, categoryKey, 1, listingCategories);
-  const listingTypeConfigForLocation = listingTypes.find(
-    conf => conf.listingType === listingType
-  );
+  const listingTypeConfigForLocation = listingTypes.find(conf => conf.listingType === listingType);
   const showLocationField =
     listingTypeConfigForLocation && displayLocation(listingTypeConfigForLocation);
   const { address } = publicData?.location || {};
@@ -250,7 +245,7 @@ const EditListingDetailsPanel = props => {
     config,
     updatePageTitle: UpdatePageTitle,
     intl,
-    hideGenreAndLinksInProfileForm = false,
+    isFieldOnOtherStep = null,
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -295,7 +290,7 @@ const EditListingDetailsPanel = props => {
     }
   }, []);
 
-  const initialValues = stripGenreAndLinksFromInitialValues(
+  const initialValues = stripFieldsOnOtherSteps(
     getInitialValues(
       props,
       existingListingTypeInfo,
@@ -305,7 +300,7 @@ const EditListingDetailsPanel = props => {
       categoryKey
     ),
     listingFields,
-    hideGenreAndLinksInProfileForm
+    isFieldOnOtherStep
   );
 
   const noListingTypesSet = listingTypes?.length === 0;
@@ -314,29 +309,15 @@ const EditListingDetailsPanel = props => {
     hasListingTypesSet && (!hasExistingListingType || hasValidExistingListingType);
   const isPublished = listing?.id && state !== LISTING_STATE_DRAFT;
 
-  const panelHeadingProps = isPublished
-    ? {
-        id: 'EditListingDetailsPanel.djEditTitle',
-        values: { listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> },
-        messageProps: { listingTitle: listing.attributes.title },
-      }
-    : {
-        id: 'EditListingDetailsPanel.djCreateListingTitle',
-        values: { lineBreak: <br /> },
-        messageProps: {},
-      };
+  // One person, one public profile: the title never names the profile (business-rules.md)
+  const panelHeadingId = isPublished
+    ? 'EditListingDetailsPanel.djEditTitle'
+    : 'EditListingDetailsPanel.djCreateListingTitle';
 
   return (
-    <main className={classes}>
-      <UpdatePageTitle
-        panelHeading={intl.formatMessage(
-          { id: panelHeadingProps.id },
-          { ...panelHeadingProps.messageProps }
-        )}
-      />
-      <H3 as="h1">
-        <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
-      </H3>
+    <div className={classes}>
+      <UpdatePageTitle panelHeading={intl.formatMessage({ id: panelHeadingId })} />
+      <PageHeader title={<FormattedMessage id={panelHeadingId} />} />
 
       {canShowEditListingDetailsForm ? (
         <EditListingDetailsForm
@@ -366,8 +347,8 @@ const EditListingDetailsPanel = props => {
               ...[1, 2, 3].reduce((a, i) => ({ ...a, [`${categoryKey}${i}`]: null }), {}),
               ...nestedCategories,
             };
-            const listingFieldsForProfilePick = hideGenreAndLinksInProfileForm
-              ? listingFields.filter(f => !isGenreOrLinkField(f))
+            const listingFieldsForProfilePick = isFieldOnOtherStep
+              ? listingFields.filter(f => !isFieldOnOtherStep(f))
               : listingFields;
             const publicListingFields = pickListingFieldsData(
               rest,
@@ -440,7 +421,7 @@ const EditListingDetailsPanel = props => {
           updateInProgress={updateInProgress}
           fetchErrors={errors}
           autoFocus
-          hideGenreAndLinksInProfileForm={hideGenreAndLinksInProfileForm}
+          isFieldOnOtherStep={isFieldOnOtherStep}
         />
       ) : (
         <ErrorMessage
@@ -449,7 +430,7 @@ const EditListingDetailsPanel = props => {
           invalidExistingListingType={!hasValidExistingListingType}
         />
       )}
-    </main>
+    </div>
   );
 };
 

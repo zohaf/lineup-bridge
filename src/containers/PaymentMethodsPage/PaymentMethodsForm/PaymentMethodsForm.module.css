@@ -1,129 +1,98 @@
-@import '../../../styles/customMediaQueries.css';
-
+/* Payment methods form in the library look, same as the checkout payment form
+   (CheckoutPage/StripePaymentForm): card details card, then the Billing details card. Template
+   fields inside the billing address are styled through element selectors, as on checkout. */
 .root {
   display: flex;
   flex-direction: column;
-  margin-top: 40px;
+  gap: var(--lb-card-gap);
 }
 
+/* Stripe card element: the shared 48px input box (Stripe adds the StripeElement--focus class) */
 .card {
-  composes: marketplaceInputStyles from global;
+  display: flex;
+  align-items: center;
+  min-height: var(--lb-input-height);
+  padding: 0 var(--lb-space-4);
+  border: 1px solid var(--colorGrey200);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorWhite);
 
-  @media (--viewportMedium) {
-    padding: 11px 0 11px 16px;
+  & > div {
+    flex: 1;
   }
+
+  &:hover {
+    border-color: var(--colorGrey300);
+  }
+
+  &:global(.StripeElement--focus) {
+    border-color: var(--colorBlack);
+    box-shadow: var(--lb-focus-ring);
+  }
+}
+
+.cardSuccess {
 }
 
 .cardError {
-  border: var(--borderErrorField);
-}
-
-.error {
-  color: var(--colorFail);
-  font-size: 13px;
-}
-
-.errorMessage {
-  margin-top: 24px;
-  color: var(--colorFail);
-}
-
-.paymentHeading {
-  margin: 0 0 14px 0;
-  color: var(--colorGrey300);
-
-  padding-top: 8px;
-  padding-bottom: 0px;
-
-  @media (--viewportMedium) {
-    margin: 0 0 26px 0;
-  }
-}
-
-.messageHeading {
-  color: var(--colorGrey300);
-  margin: 40px 0 14px 0;
-
-  padding-top: 4px;
-  padding-bottom: 4px;
-
-  @media (--viewportMedium) {
-    margin: 41px 0 26px 0;
-  }
-  @media (--viewportLarge) {
-    margin: 40px 0 26px 0;
-  }
-}
-
-.messageLabel {
-  margin: 0 0 5px 0;
-
-  @media (--viewportMedium) {
-    margin: 0 0 6px 0;
-  }
-}
-
-.messageOptional {
-  color: var(--colorGrey300);
-}
-
-.message {
-  border-bottom-color: var(--colorGrey300);
-}
-
-.submitContainer {
-  margin-top: auto;
-  margin-top: 48px;
-  @media (--viewportLarge) {
-    margin-top: 72px;
-  }
+  border-color: var(--colorFail);
+  background-color: var(--colorFailSubtle);
 }
 
 .infoText {
-  composes: h5 from global;
-
-  color: var(--colorGrey600);
-  padding: 0;
-  margin: 14px 0 0 0;
+  composes: small from '../../../styles/lineupType.module.css';
+  margin: 0;
+  color: var(--lb-text-muted);
 }
 
-.submitButton {
-  margin-top: 22px;
-
-  @media (--viewportMedium) {
-    margin-top: 26px;
-  }
-  @media (--viewportLarge) {
-    margin-top: 17px;
-  }
-}
-
-.missingStripeKey {
-  color: var(--colorFail);
-}
-
-.paymentAddressField {
-  padding-top: 38px;
-}
-
-.formRow {
+/* Billing details: template FieldTextInput / FieldSelect, shown with the shared field look */
+.billingDetails {
   display: flex;
-  justify-content: space-between;
-  flex-shrink: 0;
-  width: 100%;
-  margin-bottom: 24px;
+  flex-direction: column;
+  gap: var(--lb-field-gap);
+
+  & label {
+    margin: 0 0 var(--lb-label-gap);
+    padding: 0;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-field-label);
+    line-height: var(--lb-leading-field-label);
+    font-weight: var(--lb-weight-semibold);
+    color: var(--lb-text-primary);
+  }
+
+  & input,
+  & select {
+    width: 100%;
+    min-height: var(--lb-input-height);
+    margin: 0;
+    padding: 0 var(--lb-space-4);
+    border: 1px solid var(--colorGrey200);
+    border-radius: var(--borderRadiusMedium);
+    background-color: var(--colorWhite);
+    box-shadow: none;
+    font-family: var(--lb-font);
+    font-size: var(--lb-size-input);
+    color: var(--lb-text-primary);
+
+    &:hover {
+      border-color: var(--colorGrey300);
+    }
+
+    &:focus {
+      outline: 0;
+      border-color: var(--colorBlack);
+      box-shadow: var(--lb-focus-ring);
+    }
+
+    &::placeholder {
+      color: var(--colorGrey300);
+    }
+  }
 }
 
-.postalCode {
-  margin-top: 24px;
-  width: calc(40% - 9px);
-}
-
-.city {
-  margin-top: 24px;
-  width: calc(60% - 9px);
-}
-
-.field {
-  margin-top: 24px;
+.submitContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3);
 }

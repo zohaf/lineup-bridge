@@ -16,6 +16,7 @@ import { getFeaturedListingsProps, userDisplayNameAsString } from '../../util/da
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { formatMoney, formatMoneyWithoutCents } from '../../util/currency';
 import { LISTING_STATE_DRAFT, LISTING_STATE_PUBLISHED, propTypes } from '../../util/types';
+import { getPayoutSetupStatus } from '../../util/payout';
 import { getCurrentUserTypeRoles, isUserAuthorized } from '../../util/userHelpers';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import {
@@ -55,6 +56,7 @@ export const CMSPageComponent = props => {
     inProgress,
     error,
     currentUser,
+    stripeAccount,
     ownListings,
     ownListingsLoaded,
     transactions,
@@ -149,6 +151,7 @@ const HomeNextSteps = props => {
     ownListings = [],
     ownListingsLoaded,
     history,
+    stripeAccount,
   } = props;
   const config = useConfiguration();
   const routeConfiguration = useRouteConfiguration() || [];
@@ -160,7 +163,9 @@ const HomeNextSteps = props => {
   const isDj = roles?.provider && !roles?.customer;
   const isApproved = isUserAuthorized(currentUser);
 
-  const hasPayoutDetails = !!currentUser?.attributes?.stripeConnected;
+  // Payout setup is complete only when Stripe verification is done (business-rules.md). While the
+  // Stripe data loads the status is 'unknown' and the payout row stays hidden, so it never flashes.
+  const payoutStatus = getPayoutSetupStatus(currentUser, stripeAccount);
   const hasOwnListings = ownListingsLoaded && ownListings.length > 0;
   const hasPublishedProfile =
     ownListingsLoaded &&
@@ -259,7 +264,7 @@ const HomeNextSteps = props => {
           title={<FormattedMessage id="Home.welcomeBack" values={{ name: displayName }} />}
         />
         {(isOrganizer && transactionsLoaded && offerTxs.length === 0) ||
-        (isDj && (!hasPublishedProfile || !hasPayoutDetails)) ? (
+        (isDj && (!hasPublishedProfile || payoutStatus === 'incomplete')) ? (
           <SectionCard title={<FormattedMessage id="Home.whatsNext" />}>
             <div className={css.itemRows}>
               <NextStepRow
@@ -312,7 +317,7 @@ const HomeNextSteps = props => {
                 ) : null}
               </NextStepRow>
 
-              {isDj && !hasPayoutDetails ? (
+              {isDj && payoutStatus === 'incomplete' ? (
                 <NextStepRow
                   title={
                     <FormattedMessage
@@ -543,6 +548,7 @@ const mapStateToProps = state => {
   const { pageAssetsData, inProgress, error } = state.hostedAssets || {};
   const featuredListingData = state.featuredListings || {};
   const { currentUser } = state.user || {};
+  const { stripeAccount } = state.stripeConnectAccount || {};
   const { transactionRefs = [] } = state.InboxPage || {};
   const transactions = getMarketplaceEntities(state, transactionRefs);
   const transactionsLoaded = !!state.InboxPage?.pagination;
@@ -564,6 +570,7 @@ const mapStateToProps = state => {
     inProgress,
     error,
     currentUser,
+    stripeAccount,
     ownListings,
     ownListingsLoaded,
     transactions,

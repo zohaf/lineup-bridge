@@ -242,3 +242,128 @@
     color: var(--colorGrey700);
   }
 }
+
+/* Library look (lineupStyle), see the UI library (Saved card) */
+.lineup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--lb-space-2);
+  width: 100%;
+}
+
+.lineupMenu {
+  width: 100%;
+  height: auto;
+}
+
+.lineupLabel {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+
+  &:focus-visible .lineupBox {
+    border-color: var(--colorBlack);
+    box-shadow: var(--lb-focus-ring);
+  }
+}
+
+/* Select-style box: 48px, 1px border, chevron on the right */
+.lineupBox {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+  width: 100%;
+  min-height: var(--lb-input-height);
+  padding: 0 var(--lb-space-4);
+  border: 1px solid var(--colorGrey200);
+  border-radius: var(--borderRadiusMedium);
+  background-color: var(--colorWhite);
+  font-family: var(--lb-font);
+  font-size: var(--lb-size-input);
+  font-weight: var(--lb-weight-regular);
+  color: var(--lb-text-primary);
+  font-variant-numeric: tabular-nums;
+
+  &:hover {
+    border-color: var(--colorGrey300);
+  }
+
+  & .savedPaymentMethod {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.lineupBoxExpired {
+  border-color: var(--colorFail);
+  background-color: var(--colorFailSubtle);
+}
+
+.lineupChevron,
+.lineupCheck {
+  flex: none;
+  color: var(--colorBlack);
+  /* sanitize.css sets svg { fill: currentColor }, which beats lucide's fill="none" */
+  fill: none;
+}
+
+.lineupChevron {
+  margin-left: auto;
+}
+
+/* Menu panel: the header menu look */
+.lineupPanel {
+  position: absolute;
+  z-index: var(--zIndexPopup);
+  width: 100% !important; /* the template Menu sets an inline width */
+  margin-top: var(--lb-space-1);
+  padding: var(--lb-space-1) 0;
+  border: 1px solid var(--colorGrey100);
+  border-radius: 8px;
+  background-color: var(--colorWhite);
+  box-shadow: var(--lb-shadow-search);
+}
+
+.lineupItem {
+  &:hover {
+    background-color: var(--colorPageBackground);
+  }
+}
+
+.lineupItemButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--lb-space-4);
+  font-family: var(--lb-font);
+  font-size: var(--lb-size-small);
+  font-weight: var(--lb-weight-regular);
+  color: var(--lb-text-primary);
+  text-align: left;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  & .savedPaymentMethod {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.lineupItemCurrent {
+  font-weight: var(--lb-weight-semibold);
+}
+
+.lineupDelete {
+  composes: link from '../../styles/lineupButtons.module.css';
+  min-height: 44px;
+}
