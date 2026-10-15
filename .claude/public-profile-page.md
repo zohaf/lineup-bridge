@@ -1,67 +1,148 @@
-# Public profile page: UI spec (draft, collecting decisions)
+# Public profile page: UI spec
 
-Oct 14, 2026 · Zoha Fard
+Oct 15, 2026 · Zoha Fard (decisions of Oct 15 added)
 
-UI-only redesign of the DJ's public profile. Follow [design-system-rules.md](design-system-rules.md),
-[tokens.md](tokens.md) and [layouts.md](layouts.md). Status: **collecting rules. Nothing is built
-yet.** When the open items are decided, this spec gets a design file
-(`design/public-profile-page.html`) and a coding prompt (`public-profile-page-prompt.md`).
+UI-only redesign of the DJ's public profile, the listing page `/l/:slug/:id`
+(`src/containers/ListingPage/`, cover photo variant `ListingPageCoverPhoto.js`). Follow
+[design-system-rules.md](design-system-rules.md), [tokens.md](tokens.md) and [layouts.md](layouts.md).
+
+- Design: [design/public-profile-page.html](design/public-profile-page.html) (approved: Square)
+- Build prompt: [public-profile-page-prompt.md](public-profile-page-prompt.md)
 
 ## Rules (decided by Zoha)
 
-1. **The public profile is the listing page** `/l/:slug/:id` (`src/containers/ListingPage/`). This settles
-   [bugs.md](bugs.md) 4 for the redesign. `/u/:id` (`ProfilePage`) is not part of this page.
-2. **One name: "public profile".** In docs, prompts and UI wording, this page is the "public profile",
-   not "listing", "artist profile" or "DJ profile". This uses the existing topbar wording
-   "My public profile" (`TopbarDesktop.myPublicProfileLink`).
-3. **Same page for everyone.** The DJ viewing their own public profile and an event organizer viewing it
-   see the same layout and the same content.
-4. **Only the main button changes, in the same place:**
-   - Event organizer (and logged-out visitor): **"Create new booking"**. Opens the offer builder
-     ("Complete your offer", `RequestQuotePage`).
-   - The DJ on their own public profile: an **edit button** that opens the profile builder
-     (`EditListingPage`).
-5. **The user sequence matters.** Public profile → "Create new booking" → offer builder. The two pages
-   should feel like one continuous flow.
-6. **No content or logic changes** beyond the button rule above. Content stays exactly as in the app.
+1. **The public profile is the listing page** `/l/:slug/:id`. `/u/:id` (`ProfilePage`) is not part of
+   this work. This settles [bugs.md](bugs.md) 4 for the redesign.
+2. **One name: "public profile"** in docs, prompts and UI wording.
+3. **Same page for everyone.** The DJ on their own public profile and an event organizer see the same
+   layout and content. Only the button text and target change, in the same place.
+4. **Centered `profile` layout, 600px** (new variant, [layouts.md](layouts.md)). Little content, so
+   narrower than the offer builder. Phone and iPad as in the design file.
+5. **It does not copy the offer builder header.** No 64px thumbnail. The offer builder keeps its own
+   compact header.
+6. **Two photos, square, side by side** at every width. Square is how the code shows photos today:
+   no new image handling, crops, variants or resizing.
+7. **One sticky area at the end of the profile**: the primary (black) button, with one caption under
+   it when a state needs one. Sticky to the bottom of the screen while scrolling; it comes to rest
+   after the content. Never at the top. The DJ-only bars (`ActionBarMaybe`) are gone: their messages
+   become this caption (see "Button and caption rules").
+8. **No new words.** No content or logic changes beyond the button rules below.
 
-## What the page shows today (from the code and the running app)
+## Page structure (top to bottom)
 
-Variant: cover photo (`ListingPageCoverPhoto.js`, chosen in Console).
+| # | Element | Content (existing) | Built with |
+| --- | --- | --- | --- |
+| 1 | Topbar | Full topbar, sticky | `TopbarContainer`, unchanged |
+| 2 | Notice banner (DJ owner, payout details missing, any profile state) | `Home.completePayoutTitleDj`, `Home.completePayoutMessageDj`, secondary button `Home.pendingApprovalCtaDj` "Set up payouts" → `StripePayoutPage`. Not shown when payouts are set | New shared `NoticeBanner`, first in the column, under the topbar, above the photos, column width |
+| 3 | Photos | First two listing images, square, 2 columns, 8px gap (12px from 768px). Tap opens the existing carousel with **all** images | `SectionHero` → `ListingImageGrid` |
+| 4 | Page header | Title: listing title (`ListingPage.orderTitle`). Lead: Genre option labels and the location address, joined with " · " | `PageHeader` (title + lead, no image, no eyebrow) |
+| 5 | Content card | Bio (listing description), then the Links list, then any other listing fields Console shows (not Genre) | `SectionCard` without title |
+| 6 | Sticky area: button + caption | Button and caption per "Button and caption rules". Caption under the button, centered, `.small` secondary grey, 8px gap. With no button the caption sits alone | Shared primary button class, `.small` |
+| 7 | Footer | | `FooterContainer`, unchanged |
 
-| # | Element | Source |
+## Button and caption rules
+
+Decided Oct 15, 2026. Rule 11 (sentence case) and rule 12 (no final full stop on a one-sentence
+caption) of [design-system-rules.md](design-system-rules.md) apply.
+
+**One caption at a time.** When several states apply, the first in this order wins:
+Draft → Pending approval → Closed → Published.
+
+**Caption style:** `.small`, `--colorGrey700` (secondary grey), under the button, centered, 8px gap.
+With no button, the caption sits alone, centered.
+
+| Who | State | Button | Caption |
+| --- | --- | --- | --- |
+| Visitor (organizer or logged out) | Published | "Create new booking" (`NegotiationRequestQuoteForm.nextCta`) → `RequestQuotePage` | none |
+| Visitor | Closed | none | `ListingPage.closedListing`, no full stop. **Open:** Zoha may choose no caption at all |
+| DJ owner | Published | "Edit public profile" (`NegotiationRequestQuoteForm.editProfile`) → `EditListingPage` | none |
+| DJ owner | Draft | "Finish listing" (`ListingPage.finishListing`) → `EditListingPage` | `ListingPage.ownListingDraft`, no full stop |
+| DJ owner | Pending approval | "Edit public profile" | `ListingPage.ownListingPendingApproval`, no full stop. If Console enables the approval CTA (`CTAButtonMaybe`), it shows as a text link under the caption |
+| DJ owner | Closed | "Edit public profile" | `ListingPage.ownClosedListing`, two sentences, keeps its full stops |
+
+- **Visitor button:** calls the page's existing `handleOrderSubmit({})`, the same handler the current
+  form submits to, so the destination is unchanged. **One tap on phones** (today: bottom bar → empty
+  modal → the same button). Logged out: log in first, then the offer builder (unchanged).
+- **DJ buttons:** a link to `EditListingPage` with the same `editParams` `ActionBarMaybe` uses.
+  `NegotiationRequestQuoteForm.editProfile` is an existing key, unused today; its value becomes
+  sentence case (rule 11) in `en.json` and Console.
+- **Payout details missing is not a caption.** It is the notice banner (row 2), shown together with
+  any state above. `ListingPage.addPayoutDetailsMessage` is no longer shown on this page.
+- **Visitors and payout details:** no caption. The old `payoutDetailsWarning` text under the button is
+  dropped (the decision board says visitors see nothing today either; see "Contradictions").
+- **Any listing that is not negotiation with unit type `offer`:** keep `OrderPanel` as today
+  (fallback; no DJ profile uses it).
+
+### Caption text changes (`en.json`, and the same in Console `translations.json`)
+
+| Key | Today | New |
 | --- | --- | --- |
-| 1 | Photo tiles (all listing images, open the carousel) | `SectionHero` / `ListingImageGrid` |
-| 2 | DJ name (`h1`) | `ListingPage.orderTitle` = `{title}` |
-| 3 | Bio | listing description, `SectionText` |
-| 4 | Links (Website, SoundCloud, Spotify, with icons) | `CustomListingFields` (Console listing fields) |
-| 5 | Genre (pills, e.g. "Techno") | `CustomListingFields` |
-| 6 | Location ("Berlin, Germany") | `SectionLocationText`, `ListingPage.locationTitle` |
-| 7 | Main button | `OrderPanel` → `NegotiationRequestQuoteForm`. Live text "Create new booking" (Console) |
-| – | DJ only, not published: bar with "This listing is pending approval." / draft / closed + "Edit listing" / "Finish listing" | `ActionBarMaybe` |
-| – | DJ only: missing payout details bar | `ActionBarMaybe` |
-| – | Closed public profile (visitor): "This listing is not available right now." | `ActionBarMaybe` / `OrderPanel` |
+| `ListingPage.closedListing` | This listing is not available right now. | This listing is not available right now |
+| `ListingPage.ownListingDraft` | This listing is a draft. | This listing is a draft |
+| `ListingPage.ownListingPendingApproval` | This listing is pending approval. | This listing is pending approval |
+| `ListingPage.ownClosedListing` | Your listing has been closed. It's no longer visible on the marketplace. | unchanged (two sentences) |
+| `NegotiationRequestQuoteForm.editProfile` | Edit public profile | unchanged in `en.json` (already sentence case); check the Console value |
 
-## Findings
+## Notice banner (payout details missing)
 
-- **The DJ's own published public profile has no edit button.** They see "Create new booking", which
-  only scrolls to the top (`handleOrderSubmit`, `isOwnListing`). The bar with "Edit listing" only appears
-  for draft, pending or closed profiles.
-- **Phones need two taps:** the bottom-bar button opens a modal that contains only the same button
-  again; the second tap opens the offer builder.
-- The topbar's "My public profile" opens this page (`Topbar.js` `handleMyPublicProfileClick`).
-- The UI library has no photo grid, pill tags, icon link list or phone bottom bar yet. They are
-  added to `design/components.html` first.
+New shared component `NoticeBanner` ([design-system-rules.md](design-system-rules.md), UI library).
+First in the page column, under the topbar, above the photos, at the column width.
 
-## Open items (decide at the end)
+- Shown for the DJ owner when payout details are missing, in any profile state. Disappears when
+  payouts are set. Persistent, not dismissible. One per page.
+- Text (existing Home copy): `Home.completePayoutTitleDj`, `Home.completePayoutMessageDj`, and a
+  secondary button `Home.pendingApprovalCtaDj` "Set up payouts" → `StripePayoutPage`.
+- Look: `--colorAttentionSubtle` fill, 1px `--colorAttention` border, 8px radius, 16px padding;
+  lucide `CircleAlert` 20px in `--colorAttentionDark`; title `.label` 600; message `.small` grey 700;
+  secondary button 44px. `role="status"`.
 
-- [ ] **Edit button wording.** Existing options: "Edit Public Profile" (`NegotiationRequestQuoteForm.editProfile`,
-      matches rule 2, suggested), "Edit listing", "Edit profile". Check the live Console value. Sentence case
-      ("Edit public profile") would be a Console translation edit.
-- [ ] **Edit button target tab:** the first profile builder tab, like `ActionBarMaybe` `editParams`.
-- [ ] **Edit button style:** primary (same as "Create new booking") or secondary.
-- [ ] **Layout:** Centered `form` 760 (same frame as the offer builder), Split `summary`, or Centered `wide` 920.
-- [ ] **Phone button:** one tap straight to the offer builder (small logic change) or keep two taps.
-- [ ] **Draft / pending / closed / payout bars:** keep their messages; restyle as which component?
-- [ ] New library parts: photo grid, pill tags, icon link list, phone bottom bar.
-- [ ] Update [layouts.md](layouts.md) ("parked" line, open item) and [bugs.md](bugs.md) 4 once the layout is chosen.
+## Photos (how images work today)
+
+- Sharetribe crops listing images on the server into the `listing-card` variants (Console ratio, live
+  4:3). `ListingImageGrid` shows them in a square box (`AspectRatioWrapper 1×1`, `object-fit: cover`,
+  top aligned). This stays exactly as it is.
+- Change: only the first two images are tiles, always 2 columns. One image: one tile in the left
+  column, same size. No images: no photo row.
+
+## Header subheader
+
+- Genre values: the option labels of the `genre` listing field (`publicData.genre` mapped through the
+  field's `enumOptions`), in their saved order.
+- Location: `publicData.location.address`.
+- Joined with " · " (a separator, not a word). Missing parts are left out; no lead if both are empty.
+- Genre is then left out of the fields list in the card. The "Genre" and "Location" labels are no
+  longer shown.
+
+## Content card
+
+- Bio: the listing description (`.body`, keeps line breaks and links as today).
+- Links: existing `SectionLinks` (heading "Links:" and link names are set in code, icons from
+  `SocialLinkIcons`). Icons from the shared icon set: lucide `Globe` for Website, `SocialIcon` for the brands (Resident Advisor now; SoundCloud and Spotify once their SVGs are supplied). Restyled to 44px rows, 20px icon, `.body` 600 text, underline on hover.
+- Groups split by a 1px `--colorGrey100` rule with 24px above and below.
+
+## Out of scope (later)
+
+- Restyling `ActionBarMaybe` elsewhere: it is removed from this page only (its messages become the
+  caption and the notice banner); other pages that use it are untouched.
+- `ProfilePage` `/u/:id`.
+- Adding the photo pair, link list and sticky area to `design/components.html`. (`NoticeBanner` is
+  already there.)
+- Reusing `NoticeBanner` on Home and account pages.
+
+## Still open (Zoha)
+
+1. Closed public profile for visitors: caption (`ListingPage.closedListing`) or nothing.
+2. Whether DJs can book other DJs. Today a DJ sees "Create new booking" on other DJs' profiles; kept
+   as today.
+3. "Listing" vs "public profile" in the captions (rule 2). Today's keys say "listing"; changing them is
+   an `en.json` and Console text change.
+4. The payout banner says "you won't receive booking requests", but organizers can still send offers
+   to a DJ without payout details today. Needs a copy change or a logic change.
+
+## Contradictions found while updating (Oct 15)
+
+- The old spec and build prompt showed `payoutDetailsWarning` to visitors under the button; the
+  decision board says visitors see nothing today. This spec follows the board (no caption). To be
+  confirmed against the code in part 1 of the build prompt.
+- `Home.completePayoutMessageDj` says "booking requests", the rest of the app says "orders" or
+  "bookings" (open item 4).
