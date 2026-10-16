@@ -74,6 +74,7 @@ const LayoutSplit = props => {
                   {
                     [css.splitBelowTopbar]: stickyTopbar,
                     [css.splitNav]: isNav,
+                    [css.splitNavNoHeader]: isNav && !header,
                     [css.splitAlignTitle]: !isNav && sideAlign === 'title',
                   },
                   className

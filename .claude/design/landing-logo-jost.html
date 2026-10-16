@@ -4,7 +4,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@600&display=swap" rel="stylesheet">
 <style>
 /* Landing page from src/containers/LandingPage, logo variant "Speaker grille · black, gray dots".
-   Hero and topbar on black with cursor-revealed gray dots; the wordmark is Jost, two variants (caps / mixed case). */
+   Hero and topbar on black with cursor-revealed gray dots; the wordmark is Jost caps. */
 :root {
   color-scheme: light;
   /* Colors (src/styles/marketplaceDefaults.css) */
@@ -60,7 +60,7 @@
   --lb-width-search: 520px;
   --lb-shadow-search: 0 6px 24px rgba(0, 0, 0, 0.06);
 
-  /* Logo: icon 24px; wordmark 14px in caps, 18px in mixed case */
+  /* Logo: icon 24px; wordmark Jost caps 14px */
   --logo-word: 14px;
   --logo-icon: 24px;
 }
@@ -106,6 +106,8 @@ a { color: inherit; }
   --lb-text-primary: var(--colorWhite); background: transparent; transition: color .2s ease; display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-4); padding: 0 var(--lb-gutter); }
 .topbar.light { --lb-text-primary: var(--colorBlack); background: var(--colorPageBackground); }
 .topbar nav { display: flex; gap: var(--lb-space-5); }
+/* Phones: same side inset as the Why LineupBridge cards (16px), on both sides */
+@media (max-width: 767px) { .topbar { padding: 0 var(--lb-space-4); } }
 .navLink { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--lb-size-small); letter-spacing: -0.01em; color: var(--lb-text-primary); text-decoration: none; }
 .navLink:hover { text-decoration: underline; text-underline-offset: 3px; }
 
@@ -116,8 +118,10 @@ a { color: inherit; }
   display: inline-block; overflow: hidden; max-width: 14em; margin-left: 0.45em; letter-spacing: -0.01em;
   transition: opacity .25s ease, max-width .35s ease, margin .35s ease; }
 [data-logo="caps"] .word { text-transform: uppercase; letter-spacing: 0.06em; }
-[data-logo="mixed"] { --logo-word: 18px; }
 .topbar.scrolled .word { opacity: 0; max-width: 0; margin-left: 0; }
+/* Phones: the header slides away before it reaches the hero title, and comes back when scrolling up */
+.topbar { transition: color .2s ease, transform .3s ease; }
+.topbar.away { transform: translateY(calc(-100% - env(safe-area-inset-top, 0px))); }
 .grille-dot { transform-box: fill-box; transform-origin: center; animation: ripple 1.8s ease-in-out infinite; }
 @keyframes ripple { 0%, 60%, 100% { transform: scale(1); opacity: 1; } 30% { transform: scale(1.4); opacity: .55; } }
 
@@ -212,6 +216,7 @@ a { color: inherit; }
 @media (min-width: 768px) { .footer { padding: var(--lb-space-7) var(--lb-gutter) var(--lb-space-6); } }
 .footer .brand { display: grid; gap: var(--lb-space-2); justify-items: start; }
 @media (min-width: 768px) { .footer .brand { padding-bottom: var(--lb-space-4); } }
+.footer .word { margin-left: 0; }
 .footer .slogan { color: var(--lb-text-secondary); }
 .meta { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--lb-space-2) var(--lb-space-6); padding-top: var(--lb-space-2); border-top: 1px solid var(--colorGrey100); }
 @media (min-width: 768px) { .meta { flex-wrap: nowrap; } }
@@ -223,14 +228,7 @@ a { color: inherit; }
 .muted { display: inline-flex; align-items: center; min-height: 44px; color: var(--lb-text-muted); text-decoration: none; }
 .muted:hover { color: var(--lb-text-primary); text-decoration: underline; text-underline-offset: 3px; }
 
-/* Prototype control: switch the logo variant */
-.switch { position: fixed; z-index: 20; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 2px; padding: 3px;
-  background: var(--colorWhite); border: 1px solid var(--colorGrey200); border-radius: 999px; box-shadow: 0 6px 24px rgba(0,0,0,.12); }
-.switch button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--colorGrey700); font: 600 13px/1 var(--lb-font); cursor: pointer; white-space: nowrap; }
-.switch button[aria-pressed="true"] { background: var(--colorBlack); color: var(--colorWhite); }
-.switch button:focus-visible { outline: 2px solid var(--colorBlack); outline-offset: 2px; }
-
-@media (prefers-reduced-motion: reduce) { .mesh, .word { transition: none; } .grille-dot { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .mesh, .word, .topbar { transition: none; } .grille-dot { animation: none; } }
 </style>
 
 <div id="page" data-logo="caps">
@@ -332,7 +330,7 @@ a { color: inherit; }
 
   <footer class="footer">
     <div class="brand">
-      <a class="lockup" href="#" aria-label="LineupBridge"><span class="logoIcon"></span><span class="word">LineupBridge</span></a>
+      <a class="lockup" href="#" aria-label="LineupBridge"><span class="word">LineupBridge</span></a>
       <p class="small slogan">Built for the electronic music industry</p>
     </div>
     <div class="meta">
@@ -347,10 +345,6 @@ a { color: inherit; }
   </footer>
 </div>
 
-<div class="switch" role="group" aria-label="Logo variant">
-  <button type="button" id="logo-caps" data-logo="caps" aria-pressed="true">Jost caps</button>
-  <button type="button" id="logo-mixed" data-logo="mixed" aria-pressed="false">Jost mixed case</button>
-</div>
 
 <script>
 // Speaker grille icon: each dot pulses with a delay by distance from the center.
@@ -385,8 +379,16 @@ document.documentElement.addEventListener('pointerleave', () => { pointer = null
 // The header turns black on beige once the black sections have scrolled past it.
 const topbar = document.getElementById('topbar');
 const darkArea = document.getElementById('dark-area');
+const heroTitle = document.querySelector('#landing-hero h1');
+const phone = matchMedia('(max-width: 767px)');
+let lastY = scrollY;
 function onScroll() {
-  topbar.classList.toggle('scrolled', scrollY > 24);
+  const y = scrollY, down = y > lastY;
+  lastY = y;
+  topbar.classList.toggle('scrolled', y > 24);
+  if (!phone.matches || y <= 24) topbar.classList.remove('away');
+  else if (down && heroTitle.getBoundingClientRect().top < topbar.offsetHeight + 16) topbar.classList.add('away');
+  else if (!down) topbar.classList.remove('away');
   topbar.classList.toggle('light', darkArea.getBoundingClientRect().bottom <= topbar.offsetHeight);
   paintDots();
 }
@@ -395,13 +397,4 @@ onScroll();
 
 document.getElementById('hero-search').addEventListener('submit', e => e.preventDefault());
 
-// Logo variant switch, also reachable with #caps or #mixed.
-const page = document.getElementById('page');
-const buttons = document.querySelectorAll('.switch button');
-function setLogo(v) {
-  page.dataset.logo = v;
-  buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.logo === v)));
-}
-buttons.forEach(b => b.addEventListener('click', () => setLogo(b.dataset.logo)));
-if (location.hash === '#mixed') setLogo('mixed');
 </script>

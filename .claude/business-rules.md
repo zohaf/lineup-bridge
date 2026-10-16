@@ -1,6 +1,6 @@
 # Business rules
 
-Topics: [Negotiation flow](negotiation-flow.md) (offer, counteroffer, final offer).
+Topics: [Negotiation flow](negotiation-flow.md): offer, counteroffer, final offer, payment and performance, with the title each person sees at every step.
 
 # Account and public profile
 

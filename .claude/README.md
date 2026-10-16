@@ -52,6 +52,7 @@ code, then into the page. That is the "order of change" in design-system-rules.m
 | `auth-page.md` | page spec | Log in / sign up (design is in `layouts.html`) |
 | `hero-prompt.md` | prompt | Landing hero in code |
 | `design/logo-font-study.html`, `logo-sample.png` | study | Logo font research, not a spec |
+| `business-rules.md` | rules | Product decisions; links topic docs (`negotiation-flow.md`) |
 | `bugs.md` | backlog | Bugs and cleanup outside the redesign |
 | `landing-page.md` | old | An old task note (moving the plan doc); can be deleted |
 | `launch.json` | tooling | Preview servers (`design` serves this folder on port 8765) |

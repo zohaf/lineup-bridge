@@ -121,6 +121,13 @@
     top: var(--lb-split-sticky-top, var(--lb-sticky-top));
     margin: 0;
   }
+
+  /* Title inside main (public profile builder): no empty header row, so the step menu is level
+     with the title */
+  .splitNavNoHeader {
+    grid-template-rows: auto;
+    grid-template-areas: 'side main';
+  }
 }
 
 /* Header → content is 32px (design-system-rules.md); the grid gap gives the card gap */
