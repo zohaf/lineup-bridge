@@ -6,7 +6,7 @@
   width: 100%;
   box-sizing: border-box;
   height: var(--lb-topbar-height);
-  padding: 0 var(--lb-gutter);
+  padding: 0 var(--lb-header-side);
   background-color: var(--colorPageBackground);
   border-bottom: 1px solid var(--colorGrey100);
 }
@@ -41,4 +41,16 @@
   display: flex;
   align-items: center;
   gap: 0 var(--lb-space-5);
+}
+
+/* Over the landing page's black sections: black bar, white logo and links */
+.inverse {
+  --lb-text-primary: var(--colorWhite);
+  background-color: var(--colorBlack);
+  border-bottom-color: var(--colorBlack);
+}
+
+/* The logo SVG is black; inverted it is exactly white */
+.inverse .logoImage {
+  filter: invert(1);
 }

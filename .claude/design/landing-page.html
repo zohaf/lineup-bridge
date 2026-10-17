@@ -17,7 +17,7 @@
   --success-subtle: #f0fff6;
   --tool: #1b1b1d;
   --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  --font-mark: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+  --font-mark: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --radius: 4px;            /* --borderRadiusMedium */
   --radius-card: 8px;
@@ -50,10 +50,9 @@ a { color: inherit; }
 @container page (min-width: 768px) { .wrap { padding-inline: 32px; } }
 
 .topbar { height: 60px; display: flex; align-items: center; justify-content: space-between; }
-.logo { font-family: var(--font-mark); font-style: italic; font-weight: var(--mark-weight, 700); font-size: 26px; letter-spacing: -0.01em; text-decoration: none; }
+.logo { font-family: var(--font-mark); font-weight: 600; font-size: 22.7px; letter-spacing: -0.01em; text-decoration: none; } /* logo: cap height 16px */
 .topnav { display: flex; gap: 20px; font-size: 14px; color: var(--ink-2); }
 .topnav a { text-decoration: none; }
-@container page (min-width: 768px) { .topbar { height: 72px; } .logo { font-size: 30px; } }
 
 .section { padding-block: 56px; }
 @container page (min-width: 768px) { .section { padding-block: 96px; } }
@@ -248,18 +247,6 @@ a { color: inherit; }
     <button type="button" id="tagsOn" data-tags="on" aria-pressed="true">On</button>
     <button type="button" id="tagsOff" data-tags="off" aria-pressed="false">Off</button>
   </span></span>
-  <span><label class="seg-label" for="logoFont">Logo font (study)</label><select class="tool-select" id="logoFont">
-    <option value='"Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif|700'>Times New Roman MT (current)</option>
-    <option value='"Newsreader", serif|700'>Newsreader (≈ Tiempos)</option>
-    <option value='"Source Serif 4", serif|700'>Source Serif 4</option>
-    <option value='"EB Garamond", serif|700'>EB Garamond</option>
-    <option value='"Playfair Display", serif|700'>Playfair Display (≈ Canela)</option>
-    <option value='"Bodoni Moda", serif|700'>Bodoni Moda</option>
-    <option value='"Instrument Serif", serif|400'>Instrument Serif (≈ Editorial New)</option>
-    <option value='"Fraunces", serif|700'>Fraunces (≈ Reckless)</option>
-    <option value='"Cormorant Garamond", serif|700'>Cormorant Garamond (≈ Ogg)</option>
-    <option value='"DM Serif Display", serif|400'>DM Serif Display</option>
-  </select></span>
   <span><span class="seg-label">View</span><span class="seg" id="viewSeg">
     <button type="button" id="viewDesktop" data-view="desktop" aria-pressed="true">Desktop</button>
     <button type="button" id="viewMobile" data-view="mobile" aria-pressed="false">Mobile</button>
@@ -413,17 +400,6 @@ a { color: inherit; }
   document.getElementById('viewSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setView(b.dataset.view); });
   document.getElementById('tagSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setTags(b.dataset.tags); });
   document.getElementById('heroSearch').addEventListener('submit', function (e) { e.preventDefault(); });
-  var logoFont = document.getElementById('logoFont');
-  function setLogoFont(val) {
-    var parts = val.split('|');
-    document.documentElement.style.setProperty('--font-mark', parts[0]);
-    document.documentElement.style.setProperty('--mark-weight', parts[1]);
-    try { localStorage.setItem('lb-logo-font-value', val); } catch (e) {}
-  }
-  logoFont.addEventListener('change', function () { setLogoFont(logoFont.value); });
-  var lf = null;
-  try { lf = localStorage.getItem('lb-logo-font-value'); } catch (e) {}
-  if (lf && logoFont.querySelector('option[value="' + lf.replace(/"/g, '\\"') + '"]')) { logoFont.value = lf; setLogoFont(lf); }
   var v = null;
   try { v = localStorage.getItem('lb-view'); } catch (e) {}
   if (v === 'desktop' || v === 'mobile') setView(v);

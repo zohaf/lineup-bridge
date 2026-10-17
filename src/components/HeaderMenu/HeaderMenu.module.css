@@ -64,6 +64,7 @@
   max-height: calc(100vh - var(--lb-topbar-height));
   overflow-y: auto;
   padding: var(--lb-space-2) 0;
+  --lb-text-primary: var(--colorBlack);
   background-color: var(--colorWhite);
   border-bottom: 1px solid var(--colorGrey100);
 

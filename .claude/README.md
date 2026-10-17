@@ -51,6 +51,8 @@ code, then into the page. That is the "order of change" in design-system-rules.m
 | `design/home-page.html` + `home-page.md` + `home-page-prompt.md` | page | Logged-in home (approved Oct 14) |
 | `auth-page.md` | page spec | Log in / sign up (design is in `layouts.html`) |
 | `hero-prompt.md` | prompt | Landing hero in code |
+| `design/brand/brand-guide.html` + `design/brand/logo/` | brand | **Logo and brand spec (Oct 17)**: logo font, spacing, clear space, header placement, colour codes, type scale; logo SVG and PNG files for marketing |
+| `design/final-options-logo-landing.html` | page part | Landing with the final logo and header, with rulers (header 60, side 16/32, cap 16, −0.01em) |
 | `design/logo-font-study.html`, `logo-sample.png` | study | Logo font research, not a spec |
 | `business-rules.md` | rules | Product decisions; links topic docs (`negotiation-flow.md`) |
 | `bugs.md` | backlog | Bugs and cleanup outside the redesign |

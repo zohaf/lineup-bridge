@@ -63,9 +63,8 @@ Spacing:
 - Logo → slogan 8px. Slogan → social icons 8px on mobile. Links 24px apart.
 - Copyright: no extra space above it (the 44px link boxes already give it room).
 - Social icons from 768px: level with the logo. The visible icon (not its 44px tap box) is centred on
-  the logo letters (cap top to baseline), which sit at 40% of the logo image height in
-  `brand-logo.png`: `margin-top: calc(var(--lb-logo-footer) * 0.4 - 22px)`. Re-measure if the logo
-  image changes.
+  the logo letters (cap top to baseline), which sit at 42% of the logo SVG height (L top 0.8px, baseline 16.8px of 21px):
+  `margin-top: calc(var(--lb-logo-footer) * 0.42 - 22px)`. Re-measure if the logo changes.
 - List items (`.navItem`, `.socialItem`) reset the template's global `li` padding (5px / 3px) to 0.
 
 ## Decisions (Oct 13, 2026)
@@ -80,7 +79,7 @@ Spacing:
    (the same keys as the template): facebook, instagram, linkedin, pinterest, tiktok, twitter (X),
    youtube.
 3. **Copyright year:** the current year, from code. The wording stays as it is today.
-4. **Sizes:** the logo is 38px high (`--lb-logo-footer`), social icons are 20px (`--lb-icon-social`).
+4. **Sizes:** the logo is the same SVG as the header, 21px high (`--lb-logo-footer`), social icons are 20px (`--lb-icon-social`).
 5. **Link styles:** Footer link (FAQ, Contact us) and Muted link (legal links), added to the UI
    library.
 6. The search page has no footer (template default). That stays as it is.

@@ -12,3 +12,9 @@
   margin-top: 0;
   padding-top: 0;
 }
+
+/* The window behind the page (seen when it bounces past the top or bottom, and behind the phone's
+   status bar) is black at the top, like the hero, and beige at the bottom, like the footer. */
+:global(html):has(.landingPage) {
+  background: linear-gradient(var(--colorBlack) 50%, var(--colorPageBackground) 50%);
+}

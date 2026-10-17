@@ -17,6 +17,7 @@ import css from './SiteHeader.module.css';
  * @param {string} props.logoAlt alt text of the logo
  * @param {Object?} props.linkToExternalSite passed to LinkedLogo
  * @param {Object?} props.logoLinkProps route name and params that replace the logo's default target (landing page)
+ * @param {boolean?} props.inverse black bar with a white logo and white links (over the landing page's black sections)
  * @param {ReactNode?} props.children items on the right
  * @returns {JSX.Element} site header
  */
@@ -28,9 +29,10 @@ const SiteHeader = props => {
     logoAlt,
     linkToExternalSite,
     logoLinkProps,
+    inverse = false,
     children,
   } = props;
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || css.root, { [css.inverse]: inverse }, className);
 
   return (
     <nav className={classes} aria-label={ariaLabel}>

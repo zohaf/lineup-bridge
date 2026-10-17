@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { Menu as MenuIcon } from 'lucide-react';
 
@@ -80,6 +80,9 @@ const getResolvedCustomLinks = (customLinks, routeConfiguration) => {
  * Top-bar link that goes to marketplace "home" (landing or CMS /p/home).
  * Shown only when logged in — hidden for guests (logo already goes to landing).
  */
+// Landing page: the black area ends with this section (see LandingPage/landingSections.js)
+const LANDING_DARK_END_ID = 'landing-value';
+
 const isHomeTopbarLink = link => {
   if (link.route?.name === 'LandingPage') {
     return true;
@@ -200,6 +203,42 @@ const TopbarComponent = props => {
   const isHomeCurrent =
     resolvedCurrentPage === 'LandingPage' || resolvedCurrentPage === 'CMSPage:home';
 
+  // Landing page: the bar is black while it is over the black hero and Why LineupBridge, and beige
+  // over the rest of the page. It is always shown.
+  const isLandingPage = resolvedCurrentPage === 'LandingPage';
+  const [isOverDark, setIsOverDark] = useState(true);
+  useEffect(() => {
+    if (!isLandingPage) return undefined;
+    let frame = null;
+
+    const update = () => {
+      frame = null;
+      const darkEnd = document.getElementById(LANDING_DARK_END_ID);
+      const barHeight =
+        parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue('--lb-topbar-height')
+        ) || 60;
+      setIsOverDark(darkEnd ? darkEnd.getBoundingClientRect().bottom > barHeight : false);
+    };
+    const onScroll = () => {
+      if (frame === null) {
+        frame = window.requestAnimationFrame(update);
+      }
+    };
+
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
+  }, [isLandingPage]);
+  const isInverse = isLandingPage && isOverDark;
+
   const isFindDjCurrent = SEARCH_PAGES.includes(resolvedCurrentPage);
   const isMyProfileCurrent = resolvedCurrentPage === 'ManageListingsPage';
   const isAccountCurrent =
@@ -296,6 +335,7 @@ const TopbarComponent = props => {
       ariaLabel={navLabel}
       logoAlt={logoAlt}
       linkToExternalSite={config?.topbar?.logoLink}
+      inverse={isInverse}
     >
       <NamedLink
         id="signup-link"
@@ -333,6 +373,7 @@ const TopbarComponent = props => {
       ariaLabel={navLabel}
       logoAlt={logoAlt}
       logoLinkProps={{ name: homeRoute.name, params: homeRoute.params }}
+      inverse={isInverse}
     >
       {homeLabel ? (
         <NamedLink

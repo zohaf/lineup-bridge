@@ -3,7 +3,7 @@
   font-family: var(--lb-font);
 }
 
-/* Dark surface (section 2): swap the text colors only */
+/* Dark surface (hero and section 2): swap the text colors only */
 .landingDark {
   --lb-text-primary: var(--colorWhite);
   --lb-text-secondary: var(--colorGrey200);

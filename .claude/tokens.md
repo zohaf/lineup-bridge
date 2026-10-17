@@ -23,7 +23,7 @@ This file is the single source of truth for type and spacing in the whole app (i
 
 - One family, two weights. Headings, labels and buttons use 600; everything else uses 400.
 - Visitors see San Francisco (Apple), Segoe UI (Windows) or Roboto (Android). Nothing is downloaded.
-- The logo stays an image (Times New Roman MT bold italic) and is not part of this system.
+- The logo is the wordmark LineupBridge in SF Pro Semibold (600), letter spacing −0.01em, cap height 16px (the height of the L). It is used as an outlined SVG (`design/brand/logo/svg/`), not as live text, so it looks the same on every device. Full spec, files and colours: `design/brand/brand-guide.html` (decided Oct 17, 2026).
 
 ## Type scale
 
@@ -94,12 +94,14 @@ All spacing is a multiple of 4px.
 | Button side padding | 24px | 24px | `--lb-space-5` |
 | Footer padding (top / bottom) | 32 / 24px | 48 / 32px | `--lb-space-6` / `--lb-space-5`, `--lb-space-7` / `--lb-space-6` |
 | Header (topbar) height | 60px | 60px | `--lb-topbar-height` |
-| Header logo height | 28px | 28px | `--lb-logo-header` |
+| Header side padding (logo and links) | 16px | 32px | `--lb-header-side` (new; 16px is `--lb-space-4`, 32px is `--lb-space-6`) |
+| Header logo height (SVG, top of the d to the bottom of the g; cap height 16px) | 21px | 21px | `--lb-logo-header` |
+| Logo letter spacing (built into the SVG) | -0.01em | -0.01em | none |
 | Header link letter spacing | -0.01em | -0.01em | `--lb-tracking-nav` |
 | Header avatar | 32px | 32px | `--lb-avatar-header` |
 | Header menu width (dropdown) | full width | 240px | `--lb-menu-width` |
 | Header menu scrim (phone) | `rgba(0, 0, 0, 0.4)` | none | `--lb-scrim` (the value the template's modals already use) |
-| Footer logo height | 38px | 38px | `--lb-logo-footer` |
+| Footer logo height (same logo as the header) | 21px | 21px | `--lb-logo-footer` |
 | Social icon size | 20px | 20px | `--lb-icon-social` |
 | Hero search bar: max width | 520px | 520px | `--lb-width-search` |
 | Hero search bar: shadow | `0 6px 24px rgba(0,0,0,.06)` | same | `--lb-shadow-search` |
