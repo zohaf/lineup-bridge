@@ -1,4 +1,4 @@
-import brandLogo from '../assets/brand-logo.png';
+import brandLogo from '../assets/lineupbridge-logo.svg';
 import brandImage from '../assets/biketribe-brandImage-1500.jpg';
 import facebookImage from '../assets/biketribe-facebook-sharing-1200x630.jpg';
 import twitterImage from '../assets/biketribe-twitter-sharing-600x314.jpg';

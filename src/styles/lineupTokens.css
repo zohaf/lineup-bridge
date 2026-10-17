@@ -98,13 +98,15 @@
 
   /* Header */
   --lb-topbar-height: 60px;
-  --lb-logo-header: 28px;
+  /* Logo SVG height (top of the d to the bottom of the g); cap height 16px */
+  --lb-logo-header: 21px;
+  --lb-header-side: var(--lb-space-4);
   --lb-tracking-nav: -0.01em;
   --lb-avatar-header: 32px;
   --lb-menu-width: 240px;
 
   /* Footer */
-  --lb-logo-footer: 38px;
+  --lb-logo-footer: 21px;
   --lb-icon-social: 20px;
 
   /* Hero */
@@ -123,6 +125,7 @@
 
     --lb-section-pad: var(--lb-space-10);
     --lb-gutter: var(--lb-space-6);
+    --lb-header-side: var(--lb-space-6);
     --lb-header-gap: var(--lb-space-7);
     --lb-card-pad: var(--lb-space-6);
     --lb-card-gap: var(--lb-space-5);

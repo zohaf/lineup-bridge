@@ -8,7 +8,9 @@
   min-height: calc(100svh - var(--lb-topbar-height));
 }
 
+/* Light text on the black background */
 .hero {
+  composes: landingDark from '../landingTokens.module.css';
   display: flex;
   flex-direction: column;
   align-items: center;

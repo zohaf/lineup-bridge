@@ -8,7 +8,7 @@ import LandingSection from './LandingSection';
 import css from './LandingHero.module.css';
 
 /**
- * Section 1: centered hero with the title, subtitle, and keyword search.
+ * Section 1: centered hero on black with the title, subtitle, and keyword search.
  *
  * @component
  * @param {Object} props
@@ -20,7 +20,7 @@ const LandingHero = props => {
   const { sectionId, messageKeyPrefix } = props;
 
   return (
-    <LandingSection id={sectionId} variant="page" className={css.section}>
+    <LandingSection id={sectionId} variant="dark" className={css.section}>
       <div className={css.hero}>
         <h1 className={css.title}>
           <FormattedMessage

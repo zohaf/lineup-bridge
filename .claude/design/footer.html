@@ -9,7 +9,7 @@
   --page: #eeede9; --ink: #000;
   --grey100: hsl(240 3% 90%); --grey300: hsl(240 3% 70%); --grey600: hsl(240 3% 40%); --grey700: hsl(240 3% 30%);
   --tool: #1b1b1d;
-  --logo: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+  --logo: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
@@ -30,7 +30,7 @@ body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-sy
   --lb-size-small: 14px; --lb-leading-small: 1.45;
   --lb-space-1: 4px; --lb-space-2: 8px; --lb-space-3: 12px; --lb-space-4: 16px; --lb-space-5: 24px; --lb-space-6: 32px; --lb-space-7: 48px;
   --lb-gutter: var(--lb-space-5);
-  --lb-logo-footer: 38px; --lb-icon-social: 20px;
+  --lb-logo-footer: 22.7px; /* logo font size: cap height 16px, same as the header */ --lb-icon-social: 20px;
   --lb-text-primary: var(--ink); --lb-text-secondary: var(--grey700); --lb-text-muted: var(--grey600);
 }
 @container (min-width: 768px) { .page { --lb-gutter: var(--lb-space-6); } }
@@ -44,7 +44,7 @@ body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-sy
 }
 .top { display: grid; gap: var(--lb-space-2); }          /* 8px */
 .brand { display: grid; gap: var(--lb-space-2); justify-items: start; }
-.logo { font-family: var(--logo); font-style: italic; font-weight: 700; letter-spacing: -0.01em; line-height: 1;
+.logo { font-family: var(--logo); font-weight: 600; letter-spacing: -0.01em; line-height: 1;
         font-size: var(--lb-logo-footer); height: var(--lb-logo-footer); color: var(--lb-text-primary); text-decoration: none; }
 .slogan { margin: 0; font-size: var(--lb-size-small); line-height: var(--lb-leading-small); color: var(--lb-text-secondary); }
 
@@ -92,7 +92,7 @@ body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-sy
 </div>
 
 <div class="stage" data-view="desktop">
-  <p class="caption"><b>Footer.</b> Logo 38px. Mobile: stacked, slogan → socials 8px. From iPad: logo + slogan left, socials right and level with the logo; under the rule, legal links left and FAQ / Contact us right on the same line, copyright tight underneath (on one line with the legal links from 1024px).</p>
+  <p class="caption"><b>Footer.</b> Logo same as the header (cap height 16px). Mobile: stacked, slogan → socials 8px. From iPad: logo + slogan left, socials right and level with the logo; under the rule, legal links left and FAQ / Contact us right on the same line, copyright tight underneath (on one line with the legal links from 1024px).</p>
   <div class="viewport"><div class="frame">
     <div class="page">
       <div class="ghost">Page content</div>

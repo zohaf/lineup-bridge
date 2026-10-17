@@ -20,7 +20,7 @@
   --tool: #1b1b1d;
   --radius: 4px;
   --radius-card: 8px;
-  --logo: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+  --logo: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
@@ -70,10 +70,8 @@ body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-sy
 .topbar.static { position: static; }
 .topbar .links { margin-left: auto; display: flex; align-items: center; gap: var(--lb-space-4); font-size: 14px; }
 .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); }
-.logo { font-family: var(--logo); font-style: italic; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; line-height: 1; }
-@container (min-width: 768px) { .logo { font-size: 30px; } }
+.logo { font-family: var(--logo); font-weight: 600; font-size: 22.7px; letter-spacing: -0.01em; line-height: 1; } /* logo: cap height 16px */
 .footer { border-top: 1px solid var(--rule); padding: var(--lb-space-6) var(--lb-gutter); display: grid; justify-items: center; gap: var(--lb-space-2); }
-.footer .logo { font-size: 24px; }
 
 /* ===== Layout classes (what lineupLayout.module.css will hold) ===== */
 .centered { width: 100%; margin-inline: auto; padding: var(--lb-page-top) var(--lb-gutter) var(--lb-page-bottom); display: grid; gap: var(--lb-space-6); align-content: start; min-width: 0; }

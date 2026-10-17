@@ -132,7 +132,7 @@
   @media (--viewportMedium) {
     margin-left: 0;
     margin-right: calc(-1 * var(--lb-space-3));
-    margin-top: calc(var(--lb-logo-footer) * 0.4 - 22px);
+    margin-top: calc(var(--lb-logo-footer) * 0.42 - 22px);
   }
 }
 

@@ -20,7 +20,7 @@
   --fail-subtle: #fff0f0; /* --colorFailSubtle */
   --radius: 4px;
   --radius-card: 8px;
-  --logo: "Times New Roman MT", "Times New Roman MT Std", "Times New Roman", Times, serif;
+  --logo: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
@@ -84,8 +84,7 @@ body { margin: 0; background: #d9d8d3; color: var(--ink); font-family: -apple-sy
 
 /* Shell */
 .topbar { height: 60px; display: flex; align-items: center; padding-inline: var(--lb-gutter); border-bottom: 1px solid var(--rule); }
-.logo { font-family: var(--logo); font-style: italic; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; }
-@container (min-width: 768px) { .logo { font-size: 30px; } }
+.logo { font-family: var(--logo); font-weight: 600; font-size: 22.7px; letter-spacing: -0.01em; } /* logo: cap height 16px */
 .layout { display: grid; gap: var(--lb-space-6); padding: var(--lb-space-5) var(--lb-gutter) var(--lb-space-9); max-width: 1120px; margin: 0 auto; }
 .main { display: grid; gap: var(--lb-space-6); min-width: 0; }
 

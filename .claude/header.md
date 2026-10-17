@@ -29,7 +29,10 @@ What each user sees (code + Console, unchanged by this redesign):
 | --- | --- |
 | Logo position | Always on the left. Everything else on the right. |
 | Bar height | 60px at every width (reference: peec.ai). |
-| Logo | The brand image, 28px tall (about 134px wide). |
+| Logo | The wordmark SVG (`design/brand/logo/svg/lineupbridge-logo-black.svg`, white version on black): SF Pro Semibold, letter spacing −0.01em, cap height 16px, 21px tall × 133px wide. Decided Oct 17, 2026; spec in `design/brand/brand-guide.html`. |
+| Logo position in the bar | Centred vertically from the top of the L to the bottom of the p and g: about 20px above and 20px below in the 60px bar. |
+| Side padding | 16px on phones, 32px from 768px (`--lb-header-side`, new; the page gutter stays 24px on phones). The links on the right use the same distance. |
+| Landing page (Oct 17) | The bar is always shown. Over the black hero and Why LineupBridge it is black with a white logo and links; over the beige sections it is beige. The window behind the page is black at the top and beige at the bottom, so no beige shows above the hero when the page bounces. |
 | Sign up / Log in | In the bar at every width, phones included. Styled like peec.ai's menu links but black: 14px (`--lb-size-small`), regular 400, letter spacing -0.01em, no underline; underlined on hover (offset 3px). 44px tap height. |
 | Rule under the bar | 1px `--colorGrey100`. |
 | Items per role | Exactly as in code today. Nothing added, removed or reordered. |
@@ -38,7 +41,8 @@ What each user sees (code + Console, unchanged by this redesign):
 
 ```css
 --lb-topbar-height: 60px;
---lb-logo-header: 28px;
+--lb-logo-header: 21px; /* logo SVG height; cap height 16px */
+--lb-header-side: 16px; /* 32px from 768px */
 --lb-tracking-nav: -0.01em;
 ```
 
@@ -53,7 +57,7 @@ What each user sees (code + Console, unchanged by this redesign):
    They render `SiteHeader` and pass in the links. The role logic is not touched.
 3. **`TopbarSimplified`** renders the same `SiteHeader` with nothing on the right.
 4. **Load time and layout shift:** the bar has a fixed height (`--lb-topbar-height`), and the logo
-   image has width and height set, so nothing moves when the page loads. The guest header is plain
+   SVG has width and height set, so nothing moves when the page loads. The guest header is plain
    links, so it renders on the server with no extra JavaScript. The logged-in menus stay in the
    separately loaded `Topbar` chunk.
 
