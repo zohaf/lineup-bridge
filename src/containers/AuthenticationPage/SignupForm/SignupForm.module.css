@@ -25,6 +25,11 @@
   gap: var(--lb-field-gap);
 }
 
+/* Domain prefix sits flush against the handle */
+.socialHandle {
+  gap: 0;
+}
+
 /* Console user fields (CustomExtendedDataField) take no class props, so their parts are styled from here */
 .customFields {
   display: flex;
