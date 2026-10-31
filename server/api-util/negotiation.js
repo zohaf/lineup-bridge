@@ -124,6 +124,64 @@ exports.throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer = (transitionName, t
   }
 };
 
+const toMinutes = time => {
+  const [h, m] = (time || '').split(':').map(Number);
+  return Number.isInteger(h) && Number.isInteger(m) ? h * 60 + m : null;
+};
+
+/**
+ * Scheduled end of the performance from the agreed offer, as { year, month, day, minutes }.
+ * Same logic as getPerformanceEnd in src/transactions/transactionProcessNegotiation.js.
+ *
+ * @param {Object} protectedData transaction protected data
+ */
+exports.getPerformanceEnd = protectedData => {
+  const { bookingDate, bookingStartTime, bookingEndTime, durationHours, proposedChanges } =
+    protectedData || {};
+  const [year, month, day] = (bookingDate || '').split('-').map(Number);
+  if (![year, month, day].every(Number.isInteger)) {
+    return null;
+  }
+  const start = toMinutes(proposedChanges?.proposedStartTime || bookingStartTime);
+  const duration = Number(proposedChanges?.proposedDuration || durationHours);
+  const end = toMinutes(bookingEndTime);
+
+  const minutes =
+    start != null && duration > 0
+      ? start + duration * 60
+      : end != null
+      ? end + (start != null && end <= start ? 24 * 60 : 0)
+      : start;
+  return minutes == null ? null : { year, month, day, minutes };
+};
+
+// The event time zone is not stored, so the end is read in the earliest time zone (UTC+14):
+// the server never refuses a DJ whose performance has ended, wherever it was.
+const EARLIEST_UTC_OFFSET_MINUTES = 14 * 60;
+
+/**
+ * The DJ can mark the performance as completed only after its scheduled end.
+ * The automatic payout runs 24 hours after that (process.edn, auto-accept-deliverable).
+ *
+ * @param {string} transitionName
+ * @param {Object} protectedData transaction protected data
+ * @param {Date} now
+ */
+exports.throwErrorIfDeliveredBeforePerformanceEnd = (transitionName, protectedData, now) => {
+  const end = exports.getPerformanceEnd(protectedData);
+  if (transitionName !== 'transition/deliver' || !end) {
+    return;
+  }
+  const { year, month, day, minutes } = end;
+  const earliestEnd = Date.UTC(year, month - 1, day, 0, minutes - EARLIEST_UTC_OFFSET_MINUTES);
+  if (now.getTime() < earliestEnd) {
+    const error = new Error('The performance can be marked as completed after it has ended');
+    error.status = 400;
+    error.statusText = 'The performance can be marked as completed after it has ended';
+    throw error;
+  }
+};
+
 const filterRelevantTransitions = (transitions, relevantTransitions) => {
   return transitions.filter(t => relevantTransitions.includes(t.transition));
 };

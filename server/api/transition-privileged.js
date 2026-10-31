@@ -9,6 +9,7 @@ const {
   isIntentionToUpdateOffer,
   throwErrorIfOfferIsSubmittedAfterCustomerFinalOffer,
   throwErrorIfNegotiationOfferHasInvalidHistory,
+  throwErrorIfDeliveredBeforePerformanceEnd,
 } = require('../api-util/negotiation');
 const {
   getSdk,
@@ -114,11 +115,54 @@ const getUpdatedMetadata = (orderData, transition, existingMetadata) => {
     : addOfferToMetadata(existingMetadata, null);
 };
 
+const sendApiResponse = (res, apiResponse) => {
+  const { status, statusText, data } = apiResponse;
+  res
+    .status(status)
+    .set('Content-Type', 'application/transit+json')
+    .send(
+      serialize({
+        status,
+        statusText,
+        data,
+      })
+    )
+    .end();
+};
+
+// default-negotiation: the DJ marks the performance as completed. No line items or metadata,
+// only the check that the performance has ended.
+const deliverAfterPerformanceEnd = (req, res, sdk) => {
+  const { bodyParams, queryParams } = req.body || {};
+
+  transactionPromise(sdk, bodyParams?.id)
+    .then(showTransactionResponse => {
+      const protectedData = showTransactionResponse.data.data.attributes.protectedData;
+      throwErrorIfDeliveredBeforePerformanceEnd(bodyParams.transition, protectedData, new Date());
+      return getTrustedSdk(req);
+    })
+    .then(trustedSdk =>
+      trustedSdk.transactions.transition(
+        { id: bodyParams.id, transition: bodyParams.transition, params: {} },
+        queryParams
+      )
+    )
+    .then(apiResponse => sendApiResponse(res, apiResponse))
+    .catch(e => {
+      handleError(res, e);
+    });
+};
+
 module.exports = (req, res) => {
   const { isSpeculative, orderData, bodyParams, queryParams } = req.body || {};
 
   const sdk = getSdk(req, res);
   const transitionName = bodyParams.transition;
+
+  if (transitionName === 'transition/deliver') {
+    return deliverAfterPerformanceEnd(req, res, sdk);
+  }
+
   let lineItems = null;
   let metadataMaybe = {};
 
@@ -181,20 +225,7 @@ module.exports = (req, res) => {
       }
       return trustedSdk.transactions.transition(body, queryParams);
     })
-    .then(apiResponse => {
-      const { status, statusText, data } = apiResponse;
-      res
-        .status(status)
-        .set('Content-Type', 'application/transit+json')
-        .send(
-          serialize({
-            status,
-            statusText,
-            data,
-          })
-        )
-        .end();
-    })
+    .then(apiResponse => sendApiResponse(res, apiResponse))
     .catch(e => {
       handleError(res, e);
     });

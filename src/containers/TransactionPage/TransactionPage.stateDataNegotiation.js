@@ -4,7 +4,10 @@ import {
   CONDITIONAL_RESOLVER_WILDCARD,
   ConditionalResolver,
 } from '../../transactions/transaction';
-import { getNegotiationSummary } from '../../transactions/transactionProcessNegotiation';
+import {
+  getNegotiationSummary,
+  getPerformanceEnd,
+} from '../../transactions/transactionProcessNegotiation';
 
 /**
  * Get state data against booking process for TransactionPage's UI.
@@ -85,7 +88,8 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
     extraInfoMessageId: `NegotiationTitle.${key}.lead`,
   });
   // Same, with a different text for the organizer and the DJ.
-  const roleTitle = key => actionTitle(`${key}.${transactionRole === CUSTOMER ? 'organizer' : 'dj'}`);
+  const roleTitle = key =>
+    actionTitle(`${key}.${transactionRole === CUSTOMER ? 'organizer' : 'dj'}`);
   const finalOfferResponseMessage = isDjFinalOfferAccepted
     ? 'TransactionPage.ActivityFeed.default-negotiation.final-offer-accepted'
     : isDjFinalOfferRejected
@@ -469,13 +473,12 @@ export const getStateDataForNegotiationProcess = (txInfo, processInfo) => {
         showAgreedOfferDetails: true,
         showActionButtons: true,
         primaryButtonProps: actionButtonProps(transitions.DELIVER, PROVIDER, {
-          // Hidden until the performance date and time
+          // Hidden until the scheduled end of the performance (the server checks it too)
           conditions: [
             {
-              type: 'beforePerformance',
+              type: 'beforePerformanceEnd',
               action: 'hide',
-              date: transaction?.attributes?.protectedData?.bookingDate,
-              time: transaction?.attributes?.protectedData?.bookingStartTime,
+              end: getPerformanceEnd(transaction?.attributes?.protectedData),
             },
           ],
         }),
