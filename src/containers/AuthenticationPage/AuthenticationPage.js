@@ -45,7 +45,7 @@ import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 import TermsAndConditions from './TermsAndConditions/TermsAndConditions';
 import ConfirmSignupForm from './ConfirmSignupForm/ConfirmSignupForm';
 import LoginForm from './LoginForm/LoginForm';
-import SignupForm from './SignupForm/SignupForm';
+import SignupForm, { extractSocialHandle } from './SignupForm/SignupForm';
 import EmailVerificationInfo from './EmailVerificationInfo';
 
 // We need to get ToS asset and get it rendered for the modal on this page.
@@ -219,6 +219,8 @@ export const AuthenticationForms = props => {
       authorizationConfirmation,
       // Role-specific sign-up fields
       artistName,
+      instagram,
+      soundcloud,
       djFullName,
       contactPersonFullName,
       // Existing helper inputs that are mapped into first/last name
@@ -228,13 +230,20 @@ export const AuthenticationForms = props => {
     } = rest;
 
     const artistNameMaybe =
-      typeof artistName === 'string' && artistName.trim()
-        ? { artistName: artistName.trim() }
-        : {};
+      typeof artistName === 'string' && artistName.trim() ? { artistName: artistName.trim() } : {};
+    // The form holds bare handles; full profile URLs are stored so they open directly from Console
+    const instagramMaybe = instagram
+      ? {
+          instagram: `https://www.instagram.com/${extractSocialHandle(instagram, 'instagram.com')}`,
+        }
+      : {};
+    const soundcloudMaybe = soundcloud
+      ? {
+          soundcloud: `https://soundcloud.com/${extractSocialHandle(soundcloud, 'soundcloud.com')}`,
+        }
+      : {};
     const djFullNameMaybe =
-      typeof djFullName === 'string' && djFullName.trim()
-        ? { fullName: djFullName.trim() }
-        : {};
+      typeof djFullName === 'string' && djFullName.trim() ? { fullName: djFullName.trim() } : {};
     const contactPersonFullNameMaybe =
       typeof contactPersonFullName === 'string' && contactPersonFullName.trim()
         ? { contactPersonFullName: contactPersonFullName.trim() }
@@ -250,6 +259,8 @@ export const AuthenticationForms = props => {
         userType,
         ...pickUserFieldsData(restValues, 'public', userType, userFields),
         ...artistNameMaybe,
+        ...instagramMaybe,
+        ...soundcloudMaybe,
       },
       privateData: {
         ...pickUserFieldsData(restValues, 'private', userType, userFields),
@@ -643,14 +654,17 @@ export const AuthenticationPageComponent = props => {
       normalized.includes('organiser') ||
       normalized.includes('event')
     ) {
-      return byLabel(l => l.includes('event') || l.includes('organizer') || l.includes('organiser'));
+      return byLabel(
+        l => l.includes('event') || l.includes('organizer') || l.includes('organiser')
+      );
     }
 
     return null;
   };
 
   const resolvedUserType = resolveUserTypeParam(userTypeParam, userTypes);
-  const preselectedUserType = userTypes.find(conf => conf.userType === resolvedUserType)?.userType || null;
+  const preselectedUserType =
+    userTypes.find(conf => conf.userType === resolvedUserType)?.userType || null;
   const show404 = userTypeParam && !preselectedUserType;
 
   const user = ensureCurrentUser(currentUser);
