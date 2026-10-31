@@ -96,8 +96,12 @@ Paid → DJ marks the performance done → organizer confirms (payout to the DJ)
 - **75 days after payment, if the DJ has not marked the performance: auto-cancel with full refund.**
   Also from "changes requested". A booking made more than ~10 weeks ahead is refunded before the
   gig happens.
-- The DJ can mark the performance done right after payment, before the event date.
-- 14 days after the DJ marks it, the performance is confirmed automatically (payout).
+- The DJ can mark the performance done only after its scheduled end (offer date + start time +
+  set length, counteroffer values if accepted). Hidden in the UI and refused by the server
+  (`transition/deliver` is privileged).
+- 24 hours after the DJ marks it, the performance is confirmed automatically (payout), per the
+  Payment Terms 2.3–2.4 and Terms 8.5–8.7 (24 hours after the scheduled end). The organizer gets a
+  reminder after 12 hours.
 - Reviews exist in the process but are hidden (`suppressReviewUi`); 7 days later it closes.
 
 ## Titles from payment to completion
@@ -111,9 +115,9 @@ Title · lead. "Today" = live Console text, or the code override.
 | Paying (15 min) | {customerName}, you have not confirmed payment yet. | Your payment is being processed | Payment hasn't been confirmed yet. | {customerName} is completing the payment |
 | Payment expired | no text (key missing, shows the key) | Your payment was not completed · The booking was not confirmed | no text | {customerName} did not complete the payment · The booking was not confirmed |
 | Booking confirmed | Booking confirmed! · Your payment has been received. {providerName} will receive their payout after the performance is completed (hidden by bug 7.1) | Your booking is confirmed · Your payment has been received. {providerName} will receive their payout after the performance | Your booking is confirmed! · Your payout will be released after you complete the performance. | Your booking is confirmed · Your payout will be released after {customerName} confirms the performance |
-| DJ marked the performance | The performance has been completed · Please confirm that the DJ completed the performance as agreed | {providerName} marked the performance as completed · Confirm the performance within 14 days, or it is confirmed automatically | The performance has been completed · {customerName} can accept the what you delivered or request changes. | You marked the performance as completed · {customerName} has been notified and can now confirm the performance |
+| DJ marked the performance | The performance has been completed · Please confirm that the DJ completed the performance as agreed | {providerName} marked the performance as completed · Confirm the performance within 24 hours, or it is confirmed automatically | The performance has been completed · {customerName} can accept the what you delivered or request changes. | You marked the performance as completed · {customerName} has been notified and can now confirm the performance |
 | Organizer confirmed | Booking complete · This booking is complete. | You confirmed the performance · {providerName} has been notified and will receive their payout | Booking complete · This booking is complete. | {customerName} confirmed the performance · Your payout has been released |
-| Confirmed automatically (14 days) | Booking complete · This booking is complete. | The performance has been confirmed · It was confirmed automatically after 14 days | Booking complete · This booking is complete. | The performance has been confirmed · Your payout has been released |
+| Confirmed automatically (24 hours) | Booking complete · This booking is complete. | The performance has been confirmed · It was confirmed automatically after 24 hours | Booking complete · This booking is complete. | The performance has been confirmed · Your payout has been released |
 | Changes requested | Changes requested · You'll be notified when {providerName} delivers the changes. | open (bugs.md 8.5) | Changes requested · Deliver the requested changes and notify {customerName} to receive your payment. | open (8.5) |
 | Canceled by the team | The order was canceled. | The booking was canceled · Your payment has been refunded | The order was canceled. | The booking was canceled · {customerName} has been refunded |
 | 7 days after confirming | Booking complete · This booking is complete. | Booking complete · This booking is complete | same | same |

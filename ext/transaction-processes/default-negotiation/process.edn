@@ -193,7 +193,8 @@
    :from :state/offer-accepted,
    :to :state/delivered,
    :actor :actor.role/provider,
-   :actions []}
+   :actions [],
+   :privileged? true}
   {:name :transition/request-changes,
    :from :state/delivered,
    :to :state/changes-requested,
@@ -254,7 +255,7 @@
    :at
    {:fn/plus
     [{:fn/timepoint [:time/last-entered-state :state/delivered]}
-     {:fn/period ["P14D"]}]},
+     {:fn/period ["PT24H"]}]},
    :actions [{:name :action/stripe-create-payout}]}
   {:name :transition/review-1-by-provider,
    :from :state/completed,
@@ -440,7 +441,7 @@
    :at
    {:fn/plus
     [{:fn/timepoint [:time/first-entered-state :state/delivered]}
-     {:fn/period ["P5D"]}]},
+     {:fn/period ["PT12H"]}]},
    :to :actor.role/customer,
    :template :negotiation-accept-order-reminder}
   {:name :notification/operator-delivered-order-customer,
@@ -456,7 +457,7 @@
    :at
    {:fn/plus
     [{:fn/timepoint [:time/first-entered-state :state/delivered]}
-     {:fn/period ["P5D"]}]},
+     {:fn/period ["PT12H"]}]},
    :to :actor.role/customer,
    :template :negotiation-accept-order-reminder}
   {:name :notification/deliver-changes-reminder,

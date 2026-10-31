@@ -180,11 +180,14 @@ payment date. Spec: [negotiation-flow.md](negotiation-flow.md) "After payment".
   cannot follow it. Fix: remove both auto-cancel transitions (refunds only by the operator, per the
   terms after MVP). Process change: needs Zoha's OK and a push to Sharetribe. **Do it before
   launch:** a transaction keeps the process version it started on, so bookings made before the fix
-  keep the 75-day timer.
-- [ ] **8.2 "I've completed the performance" before the gig.** The DJ can press it right after
+  keep the 75-day timer. **Blocker (Oct 31):** Stripe requires the payout within 90 days of the
+  payment ([Sharetribe payments overview](https://www.sharetribe.com/docs/concepts/payments/payments-overview/)),
+  so removing the timer alone breaks payouts for gigs booked 90+ days ahead. Needs a rule first
+  (max booking lead time, or charge closer to the event).
+- [x] **8.2 "I've completed the performance" before the gig.** Done: shown only after the scheduled end. The DJ can press it right after
   payment. Fix (code, small): show it only from the performance date and time. "Confirm
   performance" and "Request changes" then follow automatically (they need the DJ's step first).
-- [ ] **8.3 The 8.2 guard is UI only.** `transition/deliver` is not privileged, so the SDK can
+- [x] **8.3 The 8.2 guard is UI only.** Done Oct 31: `deliver` is privileged and the server refuses it before the end (read in UTC+14, see 8.4). `transition/deliver` is not privileged, so the SDK can
   still call it early. Post-MVP: make it privileged and check the date on the server.
 - [ ] **8.4 Event time zone is not stored.** The 8.2 check uses the viewer's clock. Also verify
   that `bookingDate` (`toISOString().slice(0, 10)` in `RequestQuotePage.js`) does not shift a day
