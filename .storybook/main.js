@@ -11,7 +11,6 @@ const config = {
     '@storybook/addon-docs',
   ],
   framework: { name: '@storybook/react-webpack5', options: {} },
-  staticDirs: ['../public'],
   core: { disableTelemetry: true },
 };
 
