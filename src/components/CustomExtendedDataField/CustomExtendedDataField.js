@@ -295,7 +295,7 @@ const CustomFieldYoutube = props => {
  *
  * @param {Object} props should contain fieldConfig that defines schemaType, enumOptions?, and
  * saveConfig for the field.
- * @param {boolean?} props.lineupStyle opt-in library look (design-system-rules.md): text, number and
+ * @param {boolean?} props.lineupStyle opt-in library look (docs/4-design-system/rules.md): text, number and
  *   YouTube fields use the shared form classes, multi-enum fields use CheckboxTileGroup. Enum and
  *   boolean fields keep the template look. Without it every field renders exactly as before.
  * @param {boolean?} props.hideLabel with lineupStyle, multi-enum only: the legend is kept for screen

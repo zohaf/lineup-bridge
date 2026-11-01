@@ -1,4 +1,4 @@
-/* One white bar around the input and the button, see .claude/design-system-rules.md (Hero search) */
+/* One white bar around the input and the button, see docs/4-design-system/rules.md (Hero search) */
 .root {
   display: flex;
   align-items: center;

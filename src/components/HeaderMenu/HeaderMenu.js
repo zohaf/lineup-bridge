@@ -9,7 +9,7 @@ import css from './HeaderMenu.module.css';
  * Header menu: one trigger and one panel. From 768px the panel is a dropdown under the trigger,
  * below 768px it is a full-width panel under the bar with a scrim. It only displays; the header
  * decides what goes in it. Closes on Esc, outside click or choosing an item, and returns focus to
- * the trigger on Esc. See .claude/design-system-rules.md (Header menu).
+ * the trigger on Esc. See docs/4-design-system/rules.md (Header menu).
  *
  * @component
  * @param {Object} props

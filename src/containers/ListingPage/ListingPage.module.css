@@ -954,7 +954,7 @@
   height: 100%;
 }
 
-/* Public profile (cover photo variant), see .claude/public-profile-page.md */
+/* Public profile (cover photo variant), see docs/5-pages/public-profile.md */
 .profilePage {
   display: flex;
   flex-direction: column;

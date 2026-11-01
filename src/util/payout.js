@@ -1,5 +1,5 @@
 /**
- * Payout helpers. Business rule (.claude/business-rules.md): a DJ's payout setup is complete only
+ * Payout helpers. Business rule (docs/1-product/business-rules.md): a DJ's payout setup is complete only
  * when Stripe verification is done, i.e. the Stripe account exists and Stripe has no past due or
  * currently due requirements. Saving the basic details on our platform is not enough.
  */

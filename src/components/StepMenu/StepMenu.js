@@ -8,7 +8,7 @@ import css from './StepMenu.module.css';
 
 /**
  * Step menu: the side column of LayoutSplit role "nav". Renders no text of its own; items come
- * from the page. See .claude/layouts.md (Step menu) and the UI library (Step menu).
+ * from the page. See docs/4-design-system/layouts.md (Step menu) and the UI library (Step menu).
  * - variant "steps": a real sequence (public profile builder). Numbered circles; a done step shows a
  *   tick, the current step a 2px outline, a step not reached yet is grey and not a link. Below
  *   1024px only the circles show (labels stay for screen readers).

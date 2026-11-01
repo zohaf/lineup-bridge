@@ -1,6 +1,6 @@
 @import '../../styles/customMediaQueries.css';
 
-/* Step menu, see .claude/layouts.md and the UI library. Below 1024px: a row on the page background
+/* Step menu, see docs/4-design-system/layouts.md and the UI library. Below 1024px: a row on the page background
    with a rule underneath (LayoutSplit makes it sticky and edge to edge). From 1024px: a white card. */
 .root {
   padding: var(--lb-space-2) var(--lb-gutter);

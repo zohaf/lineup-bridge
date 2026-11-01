@@ -8,7 +8,7 @@ const PageBuilder = loadable(() =>
 );
 
 // Contact section in the LineupBridge design (Centered · form, one card).
-// See .claude/design/content-pages.html.
+// See docs/5-pages/content-pages.html.
 const SectionContact = props => {
   const { sectionId, title } = props;
   return (

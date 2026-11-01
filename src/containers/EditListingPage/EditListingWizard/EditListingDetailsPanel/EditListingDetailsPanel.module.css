@@ -1,4 +1,4 @@
-/* Profile step: page header, then the form's cards. Header → content is 32px (design-system-rules.md) */
+/* Profile step: page header, then the form's cards. Header → content is 32px (docs/4-design-system/rules.md) */
 .root {
   display: flex;
   flex-direction: column;

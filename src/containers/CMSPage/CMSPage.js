@@ -65,7 +65,7 @@ export const CMSPageComponent = props => {
   } = props;
   const pageId = params.pageId || props.pageId;
   const isHomePage = String(pageId).toLowerCase() === 'home';
-  // Console pages restyled with collapsible cards (see .claude/design/content-pages.html)
+  // Console pages restyled with collapsible cards (see docs/5-pages/content-pages.html)
   const isCollapsiblePage = ['terms-of-use', 'payment-terms', 'faq'].includes(pageId);
   const collapsible = { component: SectionCollapsible };
 

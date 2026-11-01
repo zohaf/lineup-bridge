@@ -34,7 +34,7 @@ const allowShowingExtraInfo = (showExtraInfo, party) => {
  * Split · summary layout: page header (DJ image, DJ name, state title and lead) above a
  * "Booking summary" card and the offer details. Actions sit in the summary card from 1024px;
  * below that, primary and tertiary go in a sticky bar and the secondary action becomes a text
- * link at the end of the page. Design: .claude/design/booking-journey.html.
+ * link at the end of the page. Design: docs/3-journeys/booking.html.
  *
  * Same content and state data as TransactionPanel; only the presentation differs.
  *

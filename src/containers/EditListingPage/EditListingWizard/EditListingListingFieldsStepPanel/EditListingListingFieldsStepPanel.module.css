@@ -1,5 +1,5 @@
 /* Genre / Links step: page header, then one card with the fields and the button under it.
-   Header → content is 32px (design-system-rules.md). */
+   Header → content is 32px (docs/4-design-system/rules.md). */
 .root {
   display: flex;
   flex-direction: column;

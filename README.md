@@ -1,120 +1,130 @@
-# LineupBridge Marketplace
+# LineupBridge
 
-LineupBridge is a professional DJ booking marketplace built on React, Express, and Sharetribe. The
-application supports marketplace discovery, listing and profile management, messaging, bookings,
-payments, authentication, and server-side rendering.
+A marketplace for booking professional DJs. An event organizer sends a DJ a structured offer (date,
+set times, venue, fee), the two negotiate for at most three rounds, and the booking is paid and paid
+out through the platform.
 
-The `landing-page-clean` directory contains the separate coming-soon landing page. This directory
-contains the main marketplace application.
+Product, design and engineering by [Zoha Fard](https://github.com/zohaf).
 
-## Requirements
+| Where       | Link                                                                                      |
+| ----------- | ----------------------------------------------------------------------------------------- |
+| Live app    | [lineupbridge.com](https://www.lineupbridge.com)                                          |
+| Figma       | [LineupBridge design file](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ)           |
+| Storybook   | [Component library](https://claude.ai/artifact/6tPY5AR84QkRBGcw3R6kUH) (`yarn storybook`) |
+| Docs        | [docs/README.md](docs/README.md)                                                          |
+| Coming soon | [lineupbridge-landing](https://github.com/zohaf/lineupbridge-landing) (separate repo)     |
 
-- Node.js 22.22.0 or newer
-- Yarn
-- A Sharetribe marketplace and application
-- A Stripe account configured for the marketplace
-- A Mapbox access token, unless another map provider is configured
+## The application
 
-## Local setup
+LineupBridge is an MVP. It covers one flow from start to end:
 
-From this directory:
+find a DJ → offer → counteroffer → final offer → payment → performance → confirmation → payout
 
-```sh
-yarn install
-yarn config
-yarn dev
-```
+- Two user types: **DJ** (Sharetribe provider) and **event organizer** (Sharetribe customer).
+- Rules: [business rules](docs/1-product/business-rules.md) and
+  [negotiation flow](docs/1-product/negotiation-flow.md).
+- Outside the MVP: refunds (handled per the terms), reviews (in the process, hidden in the UI) and
+  "Request changes" after a performance.
 
-The configuration command creates `.env` and prompts for the required values. The development server
-starts the React frontend and Express API together at `http://localhost:3000`.
+## Design
 
-Never commit `.env` or any other file containing credentials.
+Design moves through six stages, and each stage uses only what the stages before it define. Every
+stage has a folder in [docs/](docs/README.md):
 
-## Environment variables
+| Stage            | Folder                                                         | Output                                    |
+| ---------------- | -------------------------------------------------------------- | ----------------------------------------- |
+| 1. Product       | [1-product/](docs/1-product/)                                  | Business rules and the negotiation flow   |
+| 2. Wireframes    | [2-wireframes/](docs/2-wireframes/README.md)                   | Low-fidelity screens in Figma             |
+| 3. Journeys      | [3-journeys/](docs/3-journeys/)                                | Screens in order per user and goal        |
+| 4. Design system | [4-design-system/](docs/4-design-system/)                      | Rules, tokens, layouts, components, brand |
+| 5. Pages         | [5-pages/](docs/5-pages/)                                      | One spec per page, built from the system  |
+| 6. Claude Code   | [6-working-with-claude/](docs/6-working-with-claude/README.md) | How the agent works inside these rules    |
 
-The most important local settings are:
+The design system exists in three places that describe the same components:
 
-| Variable                             | Purpose                                                    |
-| ------------------------------------ | ---------------------------------------------------------- |
-| `REACT_APP_SHARETRIBE_SDK_CLIENT_ID` | Sharetribe client ID                                       |
-| `SHARETRIBE_SDK_CLIENT_SECRET`       | Secret for privileged Sharetribe API calls                 |
-| `REACT_APP_MARKETPLACE_NAME`         | Marketplace name shown by the app                          |
-| `REACT_APP_MARKETPLACE_ROOT_URL`     | Canonical app URL, without a trailing slash                |
-| `REACT_APP_STRIPE_PUBLISHABLE_KEY`   | Stripe publishable key                                     |
-| `REACT_APP_MAPBOX_ACCESS_TOKEN`      | Mapbox access token                                        |
-| `REACT_APP_ENV`                      | Runtime environment, such as `development` or `production` |
+- **Docs:** [rules](docs/4-design-system/rules.md), [tokens](docs/4-design-system/tokens.md),
+  [layouts](docs/4-design-system/layouts.md) and
+  [every component in every state](docs/4-design-system/components.html).
+- **Figma:** variables, components, layouts, pages, journeys and wireframes, built from the code.
+- **Storybook:** the components rendered by the app's own code, with the app's providers and
+  `en.json` text.
 
-See `.env-template` for optional settings, including social login, analytics, content security
-policy, Sentry, and proxy configuration. The Stripe secret key must also be configured in Sharetribe
-Console; it is not stored in this frontend repository.
+UI text comes from the app only: live Sharetribe Console translations, then `en.json`. A new word
+needs approval ([rules](docs/4-design-system/rules.md)).
 
-## Common commands
+## Engineering
 
-| Command             | Description                                 |
-| ------------------- | ------------------------------------------- |
-| `yarn dev`          | Run the frontend and development API server |
-| `yarn build`        | Build the browser bundle and server bundle  |
-| `yarn start`        | Run the production server after building    |
-| `yarn test`         | Run frontend and component tests            |
-| `yarn test-server`  | Run server tests                            |
-| `yarn test-ci`      | Run the complete CI test suite              |
-| `yarn format`       | Format JavaScript and CSS files             |
-| `yarn format-docs`  | Format Markdown files                       |
-| `yarn config-check` | Verify that `.env` exists                   |
+### Stack
 
-To test the production server locally:
+| Layer      | Technology                                                                              |
+| ---------- | --------------------------------------------------------------------------------------- |
+| Base       | Fork of the [Sharetribe Web Template](https://github.com/sharetribe/web-template) 10.15 |
+| Frontend   | React 18, Redux Toolkit 2, React Router 5, React Final Form 6, React Intl 7             |
+| Server     | Express 5 with server-side rendering                                                    |
+| Platform   | Sharetribe Marketplace API (listings, users, transactions, messages)                    |
+| Payments   | Stripe Connect through Sharetribe                                                       |
+| Styling    | CSS Modules, PostCSS (custom media, nesting), `--lb-*` design tokens                    |
+| Components | Storybook 10                                                                            |
+| Quality    | Jest and Testing Library, Prettier, CircleCI (format check, tests, build)               |
+| Runtime    | Node.js 22.22 or newer, Yarn 4                                                          |
 
-```sh
-yarn build
-yarn start
-```
+### Booking model
 
-## Project structure
+Bookings run on Sharetribe's `default-negotiation` transaction process
+([ext/transaction-processes/](ext/transaction-processes/)). The process allows more paths than the
+product does; the [business rules](docs/1-product/business-rules.md) decide which ones are used, and
+rules Sharetribe does not enforce are enforced in this code (server first, UI second). Counteroffers
+are stored on the transaction and shown as proposed values next to the current terms.
+
+### Where things live
 
 ```text
-src/                       # React application
-|-- components/            # Shared presentational components
-|-- config/                # Local configuration defaults
-|-- containers/            # Page-level components and data loading
-|-- ducks/                 # Shared Redux Toolkit logic
-|-- routing/               # Routes and route configuration
-|-- transactions/          # Client-side transaction process graphs
-|-- translations/          # Localized fallback messages
-|-- util/                  # Shared application utilities
-server/                    # Express server, API routes, and SSR
-public/                    # Static assets and browser entry files
-ext/transaction-processes/ # Sharetribe process definitions
+docs/                      Product, journeys, design system and page specs
+src/styles/lineup*         Design tokens and shared styles (type, layout, buttons, forms, modals)
+src/components/            Shared components; *.stories.js next to each LineupBridge component
+src/containers/            Pages; data loads in each page's loadData for server rendering
+server/                    Express server, SSR and privileged transitions
+ext/transaction-processes/ Sharetribe process definitions
+.storybook/                Storybook setup (reuses the app's webpack config and providers)
+CLAUDE.md, .claude/        Rules, skills, reviewer agents and hooks for Claude Code
 ```
 
-The app loads many configuration and translation assets from Sharetribe Console. Local values in
-`src/config` provide defaults and fallbacks.
+Configuration and translations come from Sharetribe Console as hosted assets and override the local
+defaults in `src/config/` and `src/translations/`.
 
-## Transaction processes
+### How a change is made
 
-The client transaction graphs in `src/transactions` must match the transaction processes configured
-in Sharetribe Console. The repository includes booking, purchase, inquiry, and negotiation flows.
+1. Docs first: the spec or rule in `docs/`.
+2. Tokens and shared styles in `src/styles/lineup*`.
+3. Components, with a story in Storybook.
+4. Pages.
 
-When changing a transaction process, update both the Sharetribe backend and the corresponding
-client-side graph. Review [src/transactions/README.md](src/transactions/README.md) before making
-these changes.
+Template components are restyled through their class props, so upstream Sharetribe updates still
+merge. Transaction process changes need approval and a push to Sharetribe as well as this repo
+([src/transactions/README.md](src/transactions/README.md)).
 
-## Deployment
+Branches: feature branch → `dev` (staging) → `main` (live).
 
-Build the application in the deployment environment and run the production server:
+## Run locally
 
 ```sh
 yarn install
-yarn build
-yarn start
+yarn config      # creates .env (Sharetribe, Stripe and Mapbox keys)
+yarn dev         # app and API at http://localhost:3000
+yarn storybook   # Storybook at http://localhost:6006, no .env needed
 ```
 
-Set all required environment variables in the hosting provider. The production server requires
-`REACT_APP_SHARETRIBE_SDK_CLIENT_ID`, `SHARETRIBE_SDK_CLIENT_SECRET`, `REACT_APP_MARKETPLACE_NAME`,
-and `REACT_APP_MARKETPLACE_ROOT_URL`.
+| Command            | Purpose                                |
+| ------------------ | -------------------------------------- |
+| `yarn test`        | Frontend and component tests           |
+| `yarn test-server` | Server tests                           |
+| `yarn format`      | Prettier for JavaScript and CSS        |
+| `yarn build`       | Production build; `yarn start` runs it |
 
-For Sharetribe platform configuration and API details, see the
+Optional settings are listed in `.env-template`. Never commit `.env`. For the template's own coding
+conventions see [AGENTS.md](AGENTS.md); for the platform see the
 [Sharetribe Developer Docs](https://www.sharetribe.com/docs/).
 
 ## License
 
-This project is licensed under the Apache-2.0 license. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).
