@@ -1,6 +1,6 @@
 # Wireframes
 
-draft · Figma file not linked yet
+draft · Figma: LineupBridge file (linked below)
 
 Low-fidelity screens, one per page, in Figma. They are derived from the built product (October 2026)
 so the design source and the code match; before that, page designs were HTML files (see
@@ -14,4 +14,4 @@ so the design source and the code match; before that, page designs were HTML fil
 | Journeys | Screens in order per journey |
 | Wireframes | Greyscale versions of the pages |
 
-Figma file: _to add_
+Figma file: [LineupBridge](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ)
