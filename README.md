@@ -50,17 +50,19 @@ Console; it is not stored in this frontend repository.
 
 ## Common commands
 
-| Command             | Description                                 |
-| ------------------- | ------------------------------------------- |
-| `yarn dev`          | Run the frontend and development API server |
-| `yarn build`        | Build the browser bundle and server bundle  |
-| `yarn start`        | Run the production server after building    |
-| `yarn test`         | Run frontend and component tests            |
-| `yarn test-server`  | Run server tests                            |
-| `yarn test-ci`      | Run the complete CI test suite              |
-| `yarn format`       | Format JavaScript and CSS files             |
-| `yarn format-docs`  | Format Markdown files                       |
-| `yarn config-check` | Verify that `.env` exists                   |
+| Command                | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| `yarn dev`             | Run the frontend and development API server                    |
+| `yarn build`           | Build the browser bundle and server bundle                     |
+| `yarn start`           | Run the production server after building                       |
+| `yarn test`            | Run frontend and component tests                               |
+| `yarn test-server`     | Run server tests                                               |
+| `yarn test-ci`         | Run the complete CI test suite                                 |
+| `yarn format`          | Format JavaScript and CSS files                                |
+| `yarn format-docs`     | Format Markdown files                                          |
+| `yarn config-check`    | Verify that `.env` exists                                      |
+| `yarn storybook`       | Run Storybook at http://localhost:6006 (no `.env` needed)      |
+| `yarn build-storybook` | Build a static Storybook into `storybook-static/` (gitignored) |
 
 To test the production server locally:
 
@@ -68,6 +70,14 @@ To test the production server locally:
 yarn build
 yarn start
 ```
+
+## Storybook
+
+Stories live next to their components as `*.stories.js` (for example
+`src/components/StatusChip/StatusChip.stories.js`). Configuration is in `.storybook/`: it reuses the
+app's webpack setup from `sharetribe-scripts` and wraps every story in the app's providers with
+local config and `src/translations/en.json`. Hosted Console config and translations are not loaded,
+so text can differ from the live app.
 
 ## Project structure
 
