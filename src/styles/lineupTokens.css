@@ -1,6 +1,6 @@
 @import './customMediaQueries.css';
 
-/* All --lb-* design tokens, see .claude/tokens.md. No font-family here: the app font stays as it is. */
+/* All --lb-* design tokens, see docs/4-design-system/tokens.md. No font-family here: the app font stays as it is. */
 :root {
   /* Font */
   --lb-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,

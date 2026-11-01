@@ -1,6 +1,6 @@
 @import './customMediaQueries.css';
 
-/* Shared form styles, see .claude/design-system-rules.md section 4. Pass these classes into the Field components. */
+/* Shared form styles, see docs/4-design-system/rules.md section 4. Pass these classes into the Field components. */
 
 .field {
   display: flex;

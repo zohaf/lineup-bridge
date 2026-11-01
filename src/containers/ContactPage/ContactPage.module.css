@@ -1,4 +1,4 @@
-/* Contact: Centered · form layout, one card. See .claude/design/content-pages.html. */
+/* Contact: Centered · form layout, one card. See docs/5-pages/content-pages.html. */
 
 .root {
   composes: centered form from '../../styles/lineupLayout.module.css';

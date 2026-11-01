@@ -57,7 +57,7 @@ import css from './AccountSettingsPage.module.css';
 
 /**
  * Account settings: profile picture, contact details, password and delete account on one page
- * (Split · nav). Spec: .claude/account-and-profile-setup.md.
+ * (Split · nav). Spec: docs/3-journeys/account-and-profile-setup.md.
  *
  * @component
  * @param {Object} props

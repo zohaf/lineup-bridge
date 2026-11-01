@@ -1,5 +1,5 @@
 /* Legal pages and FAQ: Centered · form layout, collapsible section cards.
-   See .claude/design/content-pages.html. */
+   See docs/5-pages/content-pages.html. */
 
 .root {
   composes: centered form from '../../../../styles/lineupLayout.module.css';

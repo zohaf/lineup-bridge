@@ -1,4 +1,4 @@
-/* Type and spacing tokens, see .claude/tokens.md */
+/* Type and spacing tokens, see docs/4-design-system/tokens.md */
 .landingPage {
   composes: landingTokens from './landingTokens.module.css';
 }

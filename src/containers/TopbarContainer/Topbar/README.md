@@ -9,4 +9,4 @@ The header of every page: `SiteHeader` (logo on the left, items on the right) wi
   and Log out. Accounts with both roles see both links.
 - The same 60px bar is used on every page, including the offer builder and checkout.
 
-Spec: `.claude/header.md`. Menu design: `.claude/design/components.html` (Header menu).
+Spec: `docs/5-pages/header.md`. Menu design: `docs/4-design-system/components.html` (Header menu).

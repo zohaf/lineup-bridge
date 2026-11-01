@@ -322,7 +322,7 @@ const ErrorsMaybe = props => {
  * @param {string} props.stripeBankAccountLastDigits - The last digits of the Stripe bank account
  * @param {boolean} props.stripeAccountFetched - Whether the Stripe account data is fetched
  * @param {string} props.submitButtonText - The text for the submit button
- * @param {boolean} [props.lineupStyle] - Opt-in library look (design-system-rules.md): fields, terms,
+ * @param {boolean} [props.lineupStyle] - Opt-in library look (docs/4-design-system/rules.md): fields, terms,
  *   errors and button in one SectionCard, account type as choice tiles. Without it the form renders
  *   as before.
  * @param {Object} props.fieldRenderProps - The field render props

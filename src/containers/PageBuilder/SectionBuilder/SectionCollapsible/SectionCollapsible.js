@@ -10,7 +10,7 @@ import css from './SectionCollapsible.module.css';
  * Content comes from Console; only the presentation lives here:
  * section title = page title, description = small text under it,
  * blocks without a title = intro text, blocks with a title = one collapsible card each.
- * See .claude/design/content-pages.html.
+ * See docs/5-pages/content-pages.html.
  *
  * @component
  * @param {Object} props

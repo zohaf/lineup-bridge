@@ -49,7 +49,7 @@
   gap: var(--lb-space-6);
 }
 
-/* Item rows inside a SectionCard, see .claude/design/components.html#item-rows */
+/* Item rows inside a SectionCard, see docs/4-design-system/components.html#item-rows */
 .itemRows {
   display: grid;
   min-width: 0;

@@ -6,7 +6,7 @@ import LayoutComposer from '../LayoutComposer/LayoutComposer';
 import css from '../../styles/lineupLayout.module.css';
 
 /**
- * Split page layout with two roles (see .claude/layouts.md). Renders no text. Built on
+ * Split page layout with two roles (see docs/4-design-system/layouts.md). Renders no text. Built on
  * LayoutComposer like LayoutCentered.
  * - "summary" (default): page header, a main column and a summary column. Phones and tablets:
  *   header, summary, main. From 1024px header and main share the left column and the summary sits
