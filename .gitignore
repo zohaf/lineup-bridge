@@ -17,6 +17,7 @@ yarn-error.log
 
 # Yarn 4 local install state (not portable)
 .yarn/install-state.gz
+storybook-static
 
 # Claude working files (prompts, plans, explorations); not part of the docs
 .claude/work/

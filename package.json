@@ -60,6 +60,9 @@
     "unified": "^9.2.2"
   },
   "devDependencies": {
+    "@storybook/addon-docs": "10.6.5",
+    "@storybook/preset-create-react-app": "10.6.5",
+    "@storybook/react-webpack5": "10.6.5",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -70,7 +73,8 @@
     "cross-env": "10.1.0",
     "inquirer": "^8.2.6",
     "nodemon": "^3.1.11",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "storybook": "10.6.5"
   },
   "resolutions": {
     "moment": "^2.30.1",
@@ -104,7 +108,9 @@
     "test-server": "jest --testPathPattern=server/.*\\.test\\.js$",
     "heroku-postbuild": "yarn run build",
     "postinstall": "patch-package",
-    "translate": "node scripts/translations.js"
+    "translate": "node scripts/translations.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static"
   },
   "browserslist": {
     "production": [

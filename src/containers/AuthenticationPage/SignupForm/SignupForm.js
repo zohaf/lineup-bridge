@@ -15,6 +15,7 @@ import {
   FieldTextInput,
   FieldCheckbox,
   CustomExtendedDataField,
+  ValidationError,
 } from '../../../components';
 
 import UserFieldDisplayName from '../UserFieldDisplayName';
@@ -38,6 +39,78 @@ const isPasswordUsedMoreThanOnce = formValues => {
     return isPasswordRepeated;
   }
   return false;
+};
+
+// Instagram: letters, numbers, periods and underscores, max 30, no leading, trailing or double period.
+// SoundCloud: lowercase letters, numbers, underscores and hyphens (3–25 for new accounts; older
+// profile URLs can be longer, so the upper limit is loose).
+const INSTAGRAM_HANDLE = /^(?!\.)(?!.*\.\.)(?!.*\.$)[a-z0-9._]{1,30}$/;
+const SOUNDCLOUD_HANDLE = /^[a-z0-9_-]{3,50}$/;
+
+// Reduces a pasted profile URL or "@handle" to the bare handle, e.g.
+// "https://www.instagram.com/dj.name/?hl=en" -> "dj.name"
+export const extractSocialHandle = (value, domain) => {
+  if (typeof value !== 'string') return value;
+  let handle = value
+    .trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/^(www\.|m\.)/i, '');
+  if (handle.toLowerCase().startsWith(`${domain}/`)) {
+    handle = handle.slice(domain.length + 1);
+  }
+  return handle
+    .replace(/^@/, '')
+    .split(/[/?#\s]/)[0]
+    .toLowerCase();
+};
+
+// Text input with the profile URL's domain shown in front of the handle
+const FieldSocialHandle = props => {
+  const { name, id, label, domain, validate, submitFailed } = props;
+  return (
+    <Field name={name} validate={validate}>
+      {({ input, meta }) => {
+        const hasError = !!(meta.touched || submitFailed) && !!meta.error;
+        // Normalised on blur, not per keystroke, so a URL typed letter by letter is not cut short
+        const onBlur = event => {
+          input.onChange(extractSocialHandle(input.value, domain));
+          input.onBlur(event);
+        };
+        return (
+          <div className={formCss.field}>
+            <label className={formCss.label} htmlFor={id}>
+              {label}
+            </label>
+            <div
+              className={classNames(formCss.inputWithUnit, css.socialHandle, {
+                [formCss.inputWithUnitError]: hasError,
+              })}
+            >
+              <span className={formCss.unit} aria-hidden="true">
+                {domain}/
+              </span>
+              <input
+                {...input}
+                onBlur={onBlur}
+                id={id}
+                type="text"
+                autoComplete="off"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+            </div>
+            {hasError ? (
+              <ValidationError
+                rootClassName={formCss.error}
+                fieldMeta={{ touched: true, error: meta.error }}
+              />
+            ) : null}
+          </div>
+        );
+      }}
+    </Field>
+  );
 };
 
 // Keeps the API-required first and last name in sync with the business name (event organizers)
@@ -207,6 +280,24 @@ const SignupFormComponent = props => (
       const artistNameRequired = validators.required(
         intl.formatMessage({ id: 'SignupForm.artistNameRequired' })
       );
+      const handleFormatValid = (pattern, domain, message) => value =>
+        !value || pattern.test(extractSocialHandle(value, domain)) ? undefined : message;
+      const instagramValidators = validators.composeValidators(
+        validators.required(intl.formatMessage({ id: 'SignupForm.instagramRequired' })),
+        handleFormatValid(
+          INSTAGRAM_HANDLE,
+          'instagram.com',
+          intl.formatMessage({ id: 'SignupForm.instagramInvalid' })
+        )
+      );
+      const soundcloudValidators = validators.composeValidators(
+        validators.required(intl.formatMessage({ id: 'SignupForm.soundcloudRequired' })),
+        handleFormatValid(
+          SOUNDCLOUD_HANDLE,
+          'soundcloud.com',
+          intl.formatMessage({ id: 'SignupForm.soundcloudInvalid' })
+        )
+      );
       const djFullNameRequired = validators.required(
         intl.formatMessage({ id: 'SignupForm.djFullNameRequired' })
       );
@@ -331,8 +422,13 @@ const SignupFormComponent = props => (
                     name="passwordConfirm"
                     autoComplete="new-password"
                     label={intl.formatMessage({ id: 'SignupForm.passwordConfirmLabel' })}
-                    placeholder={intl.formatMessage({ id: 'SignupForm.passwordConfirmPlaceholder' })}
-                    validate={validators.composeValidators(passwordConfirmRequired, passwordConfirmMatches)}
+                    placeholder={intl.formatMessage({
+                      id: 'SignupForm.passwordConfirmPlaceholder',
+                    })}
+                    validate={validators.composeValidators(
+                      passwordConfirmRequired,
+                      passwordConfirmMatches
+                    )}
                   />
 
                   {/* Hidden first/last name to satisfy submit mapping */}
@@ -354,6 +450,24 @@ const SignupFormComponent = props => (
                     label={intl.formatMessage({ id: 'SignupForm.artistNameLabel' })}
                     placeholder={intl.formatMessage({ id: 'SignupForm.artistNamePlaceholder' })}
                     validate={artistNameRequired}
+                  />
+
+                  <FieldSocialHandle
+                    name="instagram"
+                    id={formId ? `${formId}.instagram` : 'instagram'}
+                    label={intl.formatMessage({ id: 'SignupForm.instagramLabel' })}
+                    domain="instagram.com"
+                    validate={instagramValidators}
+                    submitFailed={submitFailed}
+                  />
+
+                  <FieldSocialHandle
+                    name="soundcloud"
+                    id={formId ? `${formId}.soundcloud` : 'soundcloud'}
+                    label={intl.formatMessage({ id: 'SignupForm.soundcloudLabel' })}
+                    domain="soundcloud.com"
+                    validate={soundcloudValidators}
+                    submitFailed={submitFailed}
                   />
 
                   <FieldTextInput
@@ -411,8 +525,13 @@ const SignupFormComponent = props => (
                     name="passwordConfirm"
                     autoComplete="new-password"
                     label={intl.formatMessage({ id: 'SignupForm.passwordConfirmLabel' })}
-                    placeholder={intl.formatMessage({ id: 'SignupForm.passwordConfirmPlaceholder' })}
-                    validate={validators.composeValidators(passwordConfirmRequired, passwordConfirmMatches)}
+                    placeholder={intl.formatMessage({
+                      id: 'SignupForm.passwordConfirmPlaceholder',
+                    })}
+                    validate={validators.composeValidators(
+                      passwordConfirmRequired,
+                      passwordConfirmMatches
+                    )}
                   />
 
                   {/* Hidden first/last name to satisfy submit mapping */}
@@ -522,22 +641,26 @@ const SignupFormComponent = props => (
 
           <div className={css.bottomWrapper}>
             <div className={css.consent}>
-            {showTermsAndConditions ? (
-              <div className={css.confirmationRow}>
-                <FieldCheckbox
-                  id={formId ? `${formId}.authorizationConfirmation` : 'authorizationConfirmation'}
-                  name="authorizationConfirmation"
-                  label={intl.formatMessage({ id: 'SignupForm.authorizationConfirmationLabel' })}
-                  value="confirmed"
-                  validate={authorizationConfirmationRequired}
-                  className={classNames(formCss.consentTile, {
-                    [formCss.consentTileError]: hasError('authorizationConfirmation'),
-                  })}
-                  textClassName={formCss.consentText}
-                />
-              </div>
-            ) : null}
-            {showTermsAndConditions ? <div className={css.termsRow}>{termsAndConditions}</div> : null}
+              {showTermsAndConditions ? (
+                <div className={css.confirmationRow}>
+                  <FieldCheckbox
+                    id={
+                      formId ? `${formId}.authorizationConfirmation` : 'authorizationConfirmation'
+                    }
+                    name="authorizationConfirmation"
+                    label={intl.formatMessage({ id: 'SignupForm.authorizationConfirmationLabel' })}
+                    value="confirmed"
+                    validate={authorizationConfirmationRequired}
+                    className={classNames(formCss.consentTile, {
+                      [formCss.consentTileError]: hasError('authorizationConfirmation'),
+                    })}
+                    textClassName={formCss.consentText}
+                  />
+                </div>
+              ) : null}
+              {showTermsAndConditions ? (
+                <div className={css.termsRow}>{termsAndConditions}</div>
+              ) : null}
             </div>
             {isPasswordUsedMoreThanOnce(values) ? (
               <div className={formCss.error}>

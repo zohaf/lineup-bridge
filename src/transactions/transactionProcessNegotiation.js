@@ -443,6 +443,35 @@ export const getLatestBusinessOffer = transaction => {
     : null;
 };
 
+const toMinutes = time => {
+  const [h, m] = (time || '').split(':').map(Number);
+  return Number.isInteger(h) && Number.isInteger(m) ? h * 60 + m : null;
+};
+
+// Scheduled end of the performance from the agreed offer, as { year, month, day, minutes }:
+// minutes count from midnight of the performance date and pass 1440 for sets after midnight.
+// An accepted counteroffer's start time and duration replace the organizer's.
+// Same logic on the server: getPerformanceEnd in server/api-util/negotiation.js.
+export const getPerformanceEnd = protectedData => {
+  const { bookingDate, bookingStartTime, bookingEndTime, durationHours, proposedChanges } =
+    protectedData || {};
+  const [year, month, day] = (bookingDate || '').split('-').map(Number);
+  if (![year, month, day].every(Number.isInteger)) {
+    return null;
+  }
+  const start = toMinutes(proposedChanges?.proposedStartTime || bookingStartTime);
+  const duration = Number(proposedChanges?.proposedDuration || durationHours);
+  const end = toMinutes(bookingEndTime);
+
+  const minutes =
+    start != null && duration > 0
+      ? start + duration * 60
+      : end != null
+      ? end + (start != null && end <= start ? 24 * 60 : 0)
+      : start;
+  return minutes == null ? null : { year, month, day, minutes };
+};
+
 export const getBusinessOfferType = (transition, protectedData) => {
   if (transition === transitions.REQUEST_QUOTE) {
     return 'initial-offer';
@@ -465,10 +494,7 @@ const getBusinessState = (latestAction, latestOffer, processState) => {
   const transition = latestAction?.transition;
   const hasFinalOffer = latestOffer?.transition === transitions.CUSTOMER_MAKE_COUNTER_OFFER;
 
-  if (
-    transition === transitions.PROVIDER_ACCEPT_COUNTER_OFFER &&
-    hasFinalOffer
-  ) {
+  if (transition === transitions.PROVIDER_ACCEPT_COUNTER_OFFER && hasFinalOffer) {
     return 'final-offer-accepted';
   }
   if (transition === transitions.PROVIDER_REJECT_COUNTER_OFFER && hasFinalOffer) {
@@ -610,6 +636,8 @@ export const isPrivileged = transition => {
     transitions.PROVIDER_MAKE_COUNTER_OFFER,
     transitions.CUSTOMER_WITHDRAW_COUNTER_OFFER,
     transitions.PROVIDER_REJECT_COUNTER_OFFER,
+    // The server checks that the performance has ended
+    transitions.DELIVER,
   ].includes(transition);
 };
 

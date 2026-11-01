@@ -48,12 +48,15 @@ Paid → DJ marks the performance done → organizer confirms (payout) or reques
 the changes → organizer confirms. Process timers (`process.edn`):
 
 - 75 days after payment without the DJ marking the performance: auto-cancel, full refund.
-- 14 days after the DJ marks it: confirmed automatically (payout).
+- 24 hours after the DJ marks it: confirmed automatically (payout), per the Payment Terms 2.3–2.4 and
+  Terms 8.5–8.7. The organizer gets a reminder after 12 hours.
 - Reviews exist in the process but are hidden (`suppressReviewUi`).
 
 Decisions:
 - The performance date and time decide, not the payment date: no "I've completed the performance", no
-  "Confirm performance" and no refund before it. (Not in code yet.)
+  "Confirm performance" and no refund before it. The DJ can mark the performance done only after its
+  scheduled end (offer date + start time + set length, counteroffer values if accepted): hidden in the
+  UI and refused by the server (`transition/deliver` is privileged).
 - Refunds follow the terms (after MVP).
 
 | Stage | Organizer | DJ |
@@ -61,9 +64,9 @@ Decisions:
 | Paying | Your payment is being processed | {customerName} is completing the payment |
 | Payment expired | Your payment was not completed · The booking was not confirmed | {customerName} did not complete the payment · The booking was not confirmed |
 | Booking confirmed | Your booking is confirmed · Your payment has been received. {providerName} will receive their payout after the performance | Your booking is confirmed · Your payout will be released after {customerName} confirms the performance |
-| DJ marked the performance | {providerName} marked the performance as completed · Confirm the performance within 14 days, or it is confirmed automatically | You marked the performance as completed · {customerName} has been notified and can now confirm the performance |
+| DJ marked the performance | {providerName} marked the performance as completed · Confirm the performance within 24 hours, or it is confirmed automatically | You marked the performance as completed · {customerName} has been notified and can now confirm the performance |
 | Organizer confirmed | You confirmed the performance · {providerName} has been notified and will receive their payout | {customerName} confirmed the performance · Your payout has been released |
-| Confirmed automatically | The performance has been confirmed · It was confirmed automatically after 14 days | The performance has been confirmed · Your payout has been released |
+| Confirmed automatically | The performance has been confirmed · It was confirmed automatically after 24 hours | The performance has been confirmed · Your payout has been released |
 | Changes requested | open | open |
 | Canceled by the team | The booking was canceled · Your payment has been refunded | The booking was canceled · {customerName} has been refunded |
 | Closed | Booking complete · This booking is complete | same |
