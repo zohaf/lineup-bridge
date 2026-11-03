@@ -6,13 +6,13 @@ out through the platform.
 
 Product, design and engineering by [Zoha Fard](https://github.com/zohaf).
 
-| Where       | Link                                                                                      |
-| ----------- | ----------------------------------------------------------------------------------------- |
-| Live app    | [lineupbridge.com](https://www.lineupbridge.com)                                          |
-| Figma       | [LineupBridge design file](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ)           |
-| Storybook   | [Component library](https://claude.ai/artifact/6tPY5AR84QkRBGcw3R6kUH) (`yarn storybook`) |
-| Docs        | [docs/README.md](docs/README.md)                                                          |
-| Coming soon | [lineupbridge-landing](https://github.com/zohaf/lineupbridge-landing) (separate repo)     |
+| Where       | Link                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------- |
+| Live app    | [lineupbridge.com](https://www.lineupbridge.com)                                      |
+| Figma       | [LineupBridge design file](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ)       |
+| Storybook   | [Component library](https://lineupbridge-storybook.vercel.app) (`yarn storybook`)     |
+| Docs        | [docs/README.md](docs/README.md)                                                      |
+| Coming soon | [lineupbridge-landing](https://github.com/zohaf/lineupbridge-landing) (separate repo) |
 
 ## The application
 
