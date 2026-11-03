@@ -4,12 +4,12 @@ A marketplace for booking professional DJs. An event organizer sends a DJ a stru
 set times, venue, fee), the two negotiate for at most three rounds, and the booking is paid and paid
 out through the platform.
 
-| Where     | Link                                                                                      |
-| --------- | ----------------------------------------------------------------------------------------- |
-| Live app  | [lineupbridge.com](https://www.lineupbridge.com)                                          |
-| Figma     | [LineupBridge design file](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ)           |
-| Storybook | [Component library](https://claude.ai/artifact/6tPY5AR84QkRBGcw3R6kUH) (`yarn storybook`) |
-| Docs      | [docs/README.md](docs/README.md)                                                          |
+| Where     | Link                                                                              |
+| --------- | --------------------------------------------------------------------------------- |
+| Live app  | [lineupbridge.com](https://www.lineupbridge.com)                                  |
+| Figma     | [LineupBridge design file](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ)   |
+| Storybook | [Component library](https://lineupbridge-storybook.vercel.app) (`yarn storybook`) |
+| Docs      | [docs/README.md](docs/README.md)                                                  |
 
 ## The application
 
