@@ -29,6 +29,7 @@ by Claude Code itself (a hook or a permission), so it does not depend on the mod
 | [`.claude/agents/design-system-reviewer.md`](../../.claude/agents/design-system-reviewer.md) | Read-only reviewer | Diff against rules, tokens, layouts, components |
 | [`.claude/agents/spec-reviewer.md`](../../.claude/agents/spec-reviewer.md) | Read-only reviewer | Diff against the page or journey spec: structure, states, words, scope |
 | [`.claude/agents/a11y-reviewer.md`](../../.claude/agents/a11y-reviewer.md) | Read-only reviewer | Diff against WCAG 2.2 AA |
+| [`.claude/agents/fe-auditor.md`](../../.claude/agents/fe-auditor.md) | Read-only auditor | Rendered site: axe, layout at four widths, Lighthouse, keyboard; traces findings to components |
 | [`.claude/settings.json`](../../.claude/settings.json) | Enforced | Hooks below; `.env` cannot be read |
 | [`.claude/hooks/protect-processes.sh`](../../.claude/hooks/protect-processes.sh) | Hook, before edits | Blocks edits to `ext/transaction-processes/` (deployed in Sharetribe; needs approval) |
 | [`.claude/hooks/format.sh`](../../.claude/hooks/format.sh) | Hook, after edits | Prettier on each edited JS/CSS file |

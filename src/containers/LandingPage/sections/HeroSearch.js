@@ -7,7 +7,7 @@ import { useRouteConfiguration } from '../../../context/routeConfigurationContex
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { createResourceLocatorString } from '../../../util/routes';
 
-import { FieldTextInput, Form, PrimaryButton } from '../../../components';
+import { FieldTextInput, Form } from '../../../components';
 
 import buttonCss from '../../../styles/lineupButtons.module.css';
 import css from './HeroSearch.module.css';
@@ -15,6 +15,10 @@ import css from './HeroSearch.module.css';
 /**
  * Keyword search bar of the landing hero: input and Search button on one line.
  * Searches like the Console hero: keywords go to the search page as a query parameter.
+ *
+ * The button is a plain <button>, not the template's Button: that one is disabled until the page
+ * hydrates, so it rendered gray first and then turned black. Before hydration the form submits
+ * as a GET to the search page, which gives the same URL; keywords are not sensitive.
  *
  * @component
  * @param {Object} props
@@ -26,7 +30,11 @@ const HeroSearch = props => {
   const intl = useIntl();
   const history = useHistory();
   const routeConfiguration = useRouteConfiguration();
-  const placeholder = intl.formatMessage({ id: 'PageBuilder.SearchCTA.keywordFilterPlaceholderDJ' });
+  const placeholder = intl.formatMessage({
+    id: 'PageBuilder.SearchCTA.keywordFilterPlaceholderDJ',
+  });
+
+  const searchPath = createResourceLocatorString('SearchPage', routeConfiguration, {}, {});
 
   const onSubmit = values => {
     const queryParams = values.keywords ? { keywords: values.keywords } : {};
@@ -37,7 +45,13 @@ const HeroSearch = props => {
     <FinalForm
       onSubmit={onSubmit}
       render={({ handleSubmit }) => (
-        <Form role="search" className={classNames(css.root, className)} onSubmit={handleSubmit}>
+        <Form
+          role="search"
+          className={classNames(css.root, className)}
+          method="get"
+          action={searchPath}
+          onSubmit={handleSubmit}
+        >
           <FieldTextInput
             rootClassName={css.field}
             inputRootClass={css.input}
@@ -46,9 +60,9 @@ const HeroSearch = props => {
             placeholder={placeholder}
             aria-label={placeholder}
           />
-          <PrimaryButton type="submit" rootClassName={buttonCss.primary} className={css.button}>
+          <button type="submit" className={classNames(buttonCss.primary, css.button)}>
             <FormattedMessage id="PageBuilder.SearchCTA.buttonLabel" />
-          </PrimaryButton>
+          </button>
         </Form>
       )}
     />
