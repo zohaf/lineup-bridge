@@ -704,7 +704,7 @@ legend { padding: 0; margin-bottom: var(--lb-label-gap); }
       <ul class="rules"><li>Trigger: initials avatar 32px (<code>--lb-avatar-header</code>), no chevron, 44px tap area, <code>aria-expanded</code>. Guest on phones: lucide <code>Menu</code> icon.</li><li>Dropdown (768px and up): white, 1px <code>--colorGrey100</code>, 8px radius, <code>--lb-shadow-search</code>, <code>--lb-menu-width</code> 240px, 44px rows, current page 600.</li><li>Phone panel: full width under the bar, 48px rows, no divider lines, scrim <code>--lb-scrim</code> behind, Log out last.</li><li>Closes on Esc, outside click or choosing an item; focus returns to the trigger. Red unread dot on the avatar (phones) and next to Home (768px and up).</li></ul>
     </section>
     <section class="block" id="hero-search">
-      <div class="block-head"><h2 class="reset h3">Hero search</h2><p class="reset code">Component <b>HeroSearch</b> · one white bar, max 520px (<b>--lb-width-search</b>) · landing hero only</p></div>
+      <div class="block-head"><h2 class="reset h3">Hero search</h2><p class="reset code">Component <b>HeroSearch</b> · one white bar, max 520px (<b>--lb-width-search</b>) · landing hero only · button enabled from the server render, GET to the search page before the app loads</p></div>
       <div class="specimen on-page">
         <form class="hero-search" role="search" onsubmit="return false"><input type="text" placeholder="Type a DJ name" aria-label="Type a DJ name"><button class="btn" type="submit">Search</button></form>
         <form class="hero-search is-focus" role="search" onsubmit="return false"><input type="text" placeholder="Type a DJ name" aria-label="Type a DJ name"><button class="btn" type="submit">Search</button></form>

@@ -23,3 +23,6 @@ storybook-static
 .claude/work/
 .claude/settings.local.json
 .DS_Store
+
+# Frontend audit output (yarn audit-fe)
+audit-results/
