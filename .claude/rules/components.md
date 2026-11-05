@@ -5,8 +5,9 @@ paths:
 
 # Shared components
 
-- A new or changed component is in `docs/4-design-system/rules.md` (section 4) and
-  `docs/4-design-system/components.html` first, with every state, then in code.
+- A new or changed component is in `docs/4-design-system/rules.md` (section 4) first, then in code
+  with a `Name.stories.js` covering every state, then mirrored in Figma (Components page).
+  `components.html` is frozen: no new entries.
 - One folder per component: `Name.js`, `Name.module.css`, optional `Name.example.js`. Export from
   `src/components/index.js` in the existing import order.
 - Props for content; no hardcoded text. Text comes from translations passed in by the page.

@@ -1,6 +1,6 @@
 # Account and public profile setup
 
-2026-10-15 · approved · design: [account-and-profile-setup.html](account-and-profile-setup.html) ·
+2026-10-15 · approved · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=26-1462) ·
 rules: [../1-product/business-rules.md](../1-product/business-rules.md) · layout: `LayoutSplit` · nav
 
 From sign-up to a published public profile with payouts set up. Pages: `EditListingPage` (public

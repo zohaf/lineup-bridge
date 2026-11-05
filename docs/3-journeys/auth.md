@@ -1,7 +1,6 @@
 # Log in, sign up, verify email
 
-2026-10-13 · built · design: [../4-design-system/layouts.html](../4-design-system/layouts.html) (pages
-"Log in", "Sign up", "After sign up") · code: `src/containers/AuthenticationPage/`
+2026-10-13 · built · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=26-1648) · code: `src/containers/AuthenticationPage/`
 
 UI-only redesign of `/login`, `/signup`, `/signup/:userType` on `LayoutCentered variant="narrow"`
 (440px). Option A: tabs on the page, form in one white card.

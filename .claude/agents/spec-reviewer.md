@@ -14,11 +14,13 @@ You review code you did not write. Do not edit files. Use Bash only for read com
    - **States:** every state in the spec is handled (user types, transaction states, empty, error,
      loading).
    - **Words:** every visible string uses an existing translation key; no new words unless the spec
-     records Zoha's approval. Flag text that differs from the spec.
+     records the product owner's approval. Flag text that differs from the spec.
    - **Scope:** nothing the spec marks as unchanged was changed (keys, data loading, validation,
      logic, routes).
    - **Business rules:** nothing contradicts `docs/1-product/`.
-3. Flag open items in the spec that the code decided on its own.
+3. Docs control, for every changed file under `docs/`: it is listed in the index in `docs/README.md`;
+   a spec starts with `date · status · Figma · code`; it holds no open items, draft notes or
+   personal names (the repo is public; open items belong in `.claude/work/open-items.md`).
 
 Report: requirement · met / missing / contradicted · `file:line`. Then a list of spec gaps (things
 the code needed that the spec does not say). Do not review style or design-system rules.

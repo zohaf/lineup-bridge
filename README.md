@@ -21,8 +21,8 @@ payment, performance, confirmation, payout.
   "Request changes" after a performance.
 
 Product rules, user journeys, the design system and page specs are in [docs/](docs/README.md). The
-same components are defined in the docs, in Figma and in Storybook, which renders them from the
-app's own code.
+design system lives in code: Storybook renders its tokens and components from the app's own code,
+and Figma mirrors them. User flows and wireframes are worked out in Figma.
 
 ## Engineering
 
@@ -70,6 +70,17 @@ Styles are layered: tokens, then shared styles, then components, then pages. Tem
 restyled through their class props, so upstream Sharetribe updates still merge.
 
 Branches: feature branch → `dev` (staging) → `main` (live).
+
+### How the design system is enforced
+
+Development uses Claude Code with the rules in [docs/](docs/README.md). The parts that check work
+are in `.claude/`:
+
+| Check | Where | What it does |
+| --- | --- | --- |
+| Rules per file type | `.claude/rules/` | Tokens only in CSS, no new UI words, component conventions |
+| Hooks | `.claude/hooks/`, `scripts/check-tokens.sh` | Prettier on save; raw CSS values fail; transaction process files cannot be edited |
+| Reviewers | `.claude/agents/` | Read-only checks of a change against the design system, the page spec and WCAG 2.2 AA |
 
 ## Run locally
 

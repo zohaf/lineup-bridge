@@ -1,6 +1,6 @@
 # Negotiation, payment and performance
 
-2026-10-15 · approved (open items marked) · Zoha Fard · code: `TransactionPage.stateDataNegotiation.js`,
+2026-10-15 · approved · code: `TransactionPage.stateDataNegotiation.js`,
 `server/api-util/negotiation.js`
 
 How an offer becomes a booking. Built on Sharetribe's `default-negotiation` process, which has more
@@ -39,9 +39,6 @@ is one. No "!". No full stop on one-sentence lines.
 | 10 | DJ | Accept final offer | note | You accepted the final offer | {customerName} has been notified and can now complete the payment to confirm the booking |
 | 11 | DJ | Reject final offer | confirm | You rejected the final offer | {customerName} has been notified |
 
-Open: what the organizer sees after 3 (proposal: "{providerName} accepted your offer" · "Complete the
-payment to confirm the booking", only "Accept and pay"); what the other person sees after each action.
-
 ## After payment
 
 Paid → DJ marks the performance done → organizer confirms (payout) or requests changes → DJ delivers
@@ -67,7 +64,7 @@ Decisions:
 | DJ marked the performance | {providerName} marked the performance as completed · Confirm the performance within 24 hours, or it is confirmed automatically | You marked the performance as completed · {customerName} has been notified and can now confirm the performance |
 | Organizer confirmed | You confirmed the performance · {providerName} has been notified and will receive their payout | {customerName} confirmed the performance · Your payout has been released |
 | Confirmed automatically | The performance has been confirmed · It was confirmed automatically after 24 hours | The performance has been confirmed · Your payout has been released |
-| Changes requested | open | open |
+| Changes requested | outside the MVP | outside the MVP |
 | Canceled by the team | The booking was canceled · Your payment has been refunded | The booking was canceled · {customerName} has been refunded |
 | Closed | Booking complete · This booking is complete | same |
 

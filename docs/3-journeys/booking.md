@@ -1,6 +1,6 @@
 # Booking journey: from "Send offer" to payment
 
-2026-10-15 · built (wiring issues open) · design: [booking.html](booking.html) · code: `RequestQuotePage`,
+2026-10-15 · built · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=26-1210) · code: `RequestQuotePage`,
 `TransactionPage` → `NegotiationPanel`, `CheckoutPageWithPayment`
 
 Every screen the organizer and the DJ see from "Send offer" until the organizer has paid. Rules and
@@ -50,14 +50,3 @@ live Console text or `en.json`.
   from 768px); reject is a text link at the end.
 - **Pop-ups:** one Modal pattern in the library (`lineupModal.module.css`); all five use it.
 - No status chips for now. Copy = live Console text; fixes go into Console and `en.json` together.
-
-## Open (wiring, not UI)
-
-1. After paying, `?bookingRequestSuccess=1` forces the payment title and hides all buttons for the rest
-   of the browser session.
-2. When the DJ accepts unchanged, the organizer still reads "counteroffer".
-3. After "Make final offer" the organizer reads "You made a counteroffer."
-4. DJ notes and rejection reasons are sent as messages, but the message feed is hidden.
-5. Template words remain: "order", "Complete order", "booking request".
-6. Offer sent has no line items (`request-quote` sets none), so no price in the summary yet; needs
-   `privileged-set-line-items` on `request-quote` (process change).

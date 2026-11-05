@@ -1,6 +1,6 @@
 # Home (logged in, `/p/home`)
 
-2026-10-14 · built (decision 4 open) · design: [home.html](home.html) · code: `CMSPage.js` (`HomeNextSteps`, `OwnListingsSummary`)
+2026-10-14 · built · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=20-25) · code: `CMSPage.js` (`HomeNextSteps`, `OwnListingsSummary`)
 
 UI-only redesign of the logged-in home page in `src/containers/CMSPage/CMSPage.js` (`HomeNextSteps`,
 `OwnListingsSummary`) and `CMSPage.module.css`. Follow [rules.md](../4-design-system/rules.md),
@@ -85,12 +85,6 @@ Status chip (`StatusChip`, existing library component):
 2. **Approved:** the item rows (action row, link row, hover) are a library piece: added to
    [components.html](../4-design-system/components.html) and the rules.md table.
 3. **Approved:** every row button is secondary, including "Pay".
-4. **Open, recommended:** a DJ with a published profile, payouts set and no offers sees only
-   "Welcome back" today. Recommendation: show the existing "Keep your public profile up to date"
-   row (`manageListingTitleDj` / `SubtitleDj`, "Edit") in What's next, so the page never ends at a
-   greeting. Same words as today; the condition gains `isDj && hasPublishedProfile &&
-   hasPayoutDetails && offerTxs.length === 0`. This is a small logic change, so it needs Zoha's yes.
-   **Status: open.** 
 
 ## Noted, not changed (content or logic, outside this redesign)
 
@@ -101,4 +95,4 @@ Status chip (`StatusChip`, existing library component):
   unreachable. Leave it as is.
 - `en.json` has `Home.pendingApprovalMessageOrganizer` and `Home.pendingApprovalCtaOrganizer` twice;
   the second ("While you wait, start exploring DJs for your next event." / "Find a DJ") wins.
-- The logged-in header is header stage 2 ([header.md](header.md)); the mockup shows today's items only.
+- The logged-in header is header stage 2 ([header.md](header.md)).

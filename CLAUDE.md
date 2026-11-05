@@ -27,13 +27,19 @@ Branches: work on a feature branch → `dev` (deploys to staging) → `main` (de
   approval; `ext/transaction-processes/` is blocked by a hook.
 - When done: run the reviewer agents that fit the change (`design-system-reviewer`,
   `spec-reviewer`, `a11y-reviewer`) and `CI=true yarn test <pattern>` for changed components; check
-  the page at 375, 768, 1024 and 1280px. Summarize files changed and open items in a few bullets.
+  the page at 375, 768, 1024 and 1280px. Summarize files changed and open items in a few bullets; add new open items to
+  `.claude/work/open-items.md`.
 
 ## Docs control
 
 - A doc exists only in `docs/<stage>/` and in the index in `docs/README.md`.
 - Prompts, plans and explorations are working files: `.claude/work/` (gitignored).
-- Every spec starts with: date · status (draft / approved / built) · design · code.
+- Every spec starts with: date · status (approved / built) · Figma · code.
+- The repo, Storybook and Figma are public. `docs/` holds only decided or built behaviour; drafts and
+  open questions go to `.claude/work/` (`open-items.md` is the one list). Public docs say "the product
+  owner", not a name.
+- Code leads the design system: a token or component change updates its Storybook story and Figma in
+  the same change (`docs/4-design-system/rules.md` §2).
 
 ## Gotchas
 
