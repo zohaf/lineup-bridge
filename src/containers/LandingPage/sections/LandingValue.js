@@ -25,7 +25,7 @@ const LandingValue = props => {
   const message = key => intl.formatMessage({ id: `${messageKeyPrefix}.${key}` });
 
   return (
-    <LandingSection id={sectionId} variant="dark" wide>
+    <LandingSection id={sectionId} variant="clear" wide className={css.section}>
       <SectionHeader
         eyebrow={message('eyebrow')}
         heading={message('heading')}

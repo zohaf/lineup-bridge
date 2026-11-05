@@ -1,5 +1,13 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* Row 2 of main's grid, above the shared black area (LandingHero .darkArea) */
+.section {
+  position: relative;
+  z-index: 1;
+  grid-row: 2;
+  grid-column: 1;
+}
+
 .stages {
   display: grid;
   grid-template-columns: 1fr;

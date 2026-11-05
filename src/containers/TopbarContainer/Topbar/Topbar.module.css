@@ -136,3 +136,10 @@
   composes: label from '../../../styles/lineupType.module.css';
   color: inherit;
 }
+
+/* Landing page at the top: the bar is see-through over the black hero and its dots.
+   Doubled selector wins over SiteHeader's .inverse. */
+.headerOverDots.headerOverDots {
+  background-color: transparent;
+  border-bottom-color: transparent;
+}

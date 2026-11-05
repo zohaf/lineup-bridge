@@ -13,7 +13,7 @@ export const landingSections = [
     sectionType: 'landingValue',
     sectionId: 'landing-value',
     sectionName: 'Why LineupBridge',
-    variant: 'dark',
+    variant: 'clear',
     align: 'center',
     messageKeyPrefix: 'LandingPage.value',
     stages: [

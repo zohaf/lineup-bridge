@@ -13,14 +13,18 @@ import css from './LandingSection.module.css';
  * @param {Object} props
  * @param {string?} props.className
  * @param {string} props.id section id
- * @param {'page'|'dark'} props.variant background
+ * @param {'page'|'dark'|'clear'} props.variant background; 'clear' sits on the landing page's black area
  * @param {boolean?} props.wide wider content area with smaller side padding
  * @param {ReactNode} props.children
  * @returns {JSX.Element}
  */
 const LandingSection = props => {
   const { className, id, variant = 'page', wide = false, children } = props;
-  const rootClasses = classNames(css.root, { [css.dark]: variant === 'dark' }, className);
+  const rootClasses = classNames(
+    css.root,
+    { [css.dark]: variant === 'dark', [css.clear]: variant === 'clear' },
+    className
+  );
 
   return (
     <SectionContainer id={id} rootClassName={rootClasses} sectionContentClassName={css.content}>

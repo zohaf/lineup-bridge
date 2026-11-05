@@ -9,7 +9,8 @@
 }
 
 .landingPage :global(main#main-content) {
-  margin-top: 0;
+  /* Starts under the topbar, so the black area and its dots reach the top of the window */
+  margin-top: calc(-1 * var(--lb-topbar-height));
   padding-top: 0;
 }
 
