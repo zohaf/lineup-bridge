@@ -22,6 +22,8 @@ storybook-static
 # Claude working files (prompts, plans, explorations); not part of the docs
 .claude/work/
 .claude/settings.local.json
+# Preview servers per machine (holds local paths)
+.claude/launch.json
 .DS_Store
 
 # Frontend audit output (yarn audit-fe)
