@@ -1,0 +1,49 @@
+/* Storybook only: layout of the Foundations/Tokens stories */
+.table {
+  border-collapse: collapse;
+
+  & td {
+    padding: var(--lb-space-2) var(--lb-space-4) var(--lb-space-2) 0;
+    border-bottom: 1px solid var(--colorGrey100);
+    vertical-align: middle;
+  }
+}
+
+.sample {
+  min-width: var(--lb-space-10);
+}
+
+.value {
+  color: var(--lb-text-muted);
+}
+
+.swatch {
+  display: block;
+  width: var(--lb-space-7);
+  height: var(--lb-space-6);
+  border: 1px solid var(--colorGrey100);
+  border-radius: var(--borderRadiusMedium);
+}
+
+.bar {
+  display: block;
+  height: var(--lb-space-3);
+  background-color: var(--colorBlack);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-5);
+}
+
+.typeRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--lb-space-5);
+}
+
+.typeName {
+  min-width: var(--lb-space-10);
+  color: var(--lb-text-muted);
+}
