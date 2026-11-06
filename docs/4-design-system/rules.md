@@ -6,36 +6,43 @@ The baseline for the LineupBridge redesign. Every page that gets redesigned foll
 
 ## 1. Rules for every redesign
 
-1. **No new words.** Design files (HTML), specs and coding prompts use only text that already exists in the app (translations, labels and placeholders in code, hosted content). **The live wording is the Console translations (`translations.json` hosted asset), which override `src/translations/en.json`.** Check a key there before quoting it; `en.json` is only the fallback. A new word, label, section or piece of content needs Zoha's approval first. Example data in mockups (a DJ name, a venue) is marked as an example.
+1. **No new words.** Figma designs, specs and coding prompts use only text that already exists in the app (translations, labels and placeholders in code, hosted content). **The live wording is the Console translations (`translations.json` hosted asset), which override `src/translations/en.json`.** Check a key there before quoting it; `en.json` is only the fallback. A new word, label, section or piece of content needs the product owner's approval first. Example data in mockups (a DJ name, a venue) is marked as an example.
 2. **No new content, only UI.** A redesign changes how existing content looks and is arranged. It does not add fields, sections, claims or features.
-3. **Same component, same look.** A select, an input, a card title or a button looks identical on every page. If a page needs something the library does not have, the library is extended first (here and in the UI library page), then used.
+3. **Same component, same look.** A select, an input, a card title or a button looks identical on every page. If a page needs something the library does not have, the library is extended first (here, in code with a Storybook story, then in Figma), then used.
 4. **Tokens only.** Font sizes, weights, line heights, letter spacing, colors and spacing come from `--lb-*` tokens. No raw values in component CSS (exceptions: `0`, `1px` borders, `%`, `--borderRadius*`, and one approved one: the focus ring, which is the token `--lb-focus-ring: 0 0 0 3px rgba(0,0,0,.08)` defined once in `lineupTokens.css`).
-5. **Icons.** Use `lucide-react` for new icons (import the named icon, for example `ChevronDown`). Do not draw icons as CSS or data-URI SVGs. One approved exception: social brand icons use the shared `SocialIcon` component, whose paths are copied from the template's SVGs (lucide has none). Platforms: facebook, instagram, linkedin, pinterest, tiktok, twitter, youtube and, approved Oct 15, resident-advisor (logo path supplied by Zoha); soundcloud and spotify follow when Zoha supplies their SVGs. Website uses lucide `Globe`.
+5. **Icons.** Use `lucide-react` for new icons (import the named icon, for example `ChevronDown`). Do not draw icons as CSS or data-URI SVGs. One approved exception: social brand icons use the shared `SocialIcon` component, whose paths are copied from the template's SVGs (lucide has none). Platforms: facebook, instagram, linkedin, pinterest, tiktok, twitter, youtube and, approved Oct 15, resident-advisor (logo path supplied by the product owner); soundcloud and spotify follow when their SVGs are supplied. Website uses lucide `Globe`.
 6. **Mobile first.** Base styles are for phones; larger layouts use `--viewportMedium` (768px) and `--viewportLarge` (1024px).
 7. **Three design widths.** Every page design has three views: **Mobile** (390px frame, checked at 375px), **iPad 768** and **Desktop** (1280px). There is no separate iPad landscape design: from 1024px a page uses the desktop design (the 1024 token step only makes the title and lead larger). Do not add tablet-only breakpoints.
 8. **Selection is an outline, not a fill.** Checkboxes, selected tiles, section numbers and the selected day in a calendar show selection with a black border (and a black tick or bold text), never a solid black fill. Solid black is only for the primary button.
 9. **Do not edit shared template components to restyle one page.** Style them through the class props they accept, using the shared style files below.
-10. **Nothing outside the design system. No guessing, no assuming.** Every component, token, type role, spacing value, layout, icon and word must come from this file, [tokens.md](tokens.md), [layouts.md](layouts.md), the UI library ([components.html](components.html)) or an approved page design. If something a task needs is not there, stop and ask Zoha before building it. Do not invent a value, pick a close one or carry on with an assumption. Once Zoha decides, the answer is added to these docs (and the UI library) first, then built.
+10. **Nothing outside the design system. No guessing, no assuming.** Every component, token, type role, spacing value, layout, icon and word must come from this file, [tokens.md](tokens.md), [layouts.md](layouts.md), Storybook or an approved Figma design. If something a task needs is not there, stop and ask the product owner before building it. Do not invent a value, pick a close one or carry on with an assumption. Once decided, the answer is added to these docs first, then built, then mirrored in Storybook and Figma.
 11. **Sentence case for all UI text.** Buttons, CTAs, links, titles, labels and menu items capitalize only the first word and proper nouns (brand and product names such as LineupBridge, SoundCloud, Spotify). "Edit public profile", not "Edit Public Profile". English only: other languages follow their own rules (German nouns stay capitalized). Fixing capitalization is not a new word, but the live text is in Console (`translations.json`), so a fix in `en.json` must also be made in Console.
 12. **No final full stop on a one-sentence caption.** A caption, message or label made of one sentence has no full stop at the end (it reads as a label, like a button). Text with two or more sentences keeps the full stops, including the last one. Same as rule 11: a punctuation fix is not a new word, but it must also be made in Console. Example: "This listing is a draft", but "Your listing has been closed. It's no longer visible on the marketplace."
 
-## 2. Sources of truth
+## 2. Sources and sync
 
-| What | File |
-| --- | --- |
-| Rules, components, architecture | this file |
-| Token values | [tokens.md](tokens.md) → `src/styles/lineupTokens.css` |
-| Every component in every state | [components.html](components.html) (open in a browser) |
-| Page layouts | [layouts.md](layouts.md) · [layouts.html](layouts.html) |
-| Logo, colours, type | [brand.html](brand.html) |
-| Journeys and page specs | [../3-journeys/](../3-journeys/), [../5-pages/](../5-pages/) |
-| Business rules | [../1-product/business-rules.md](../1-product/business-rules.md) |
+| What | Source of truth | Shown in | Written rules |
+| --- | --- | --- | --- |
+| Tokens (colour, type, spacing, motion) | `src/styles/lineupTokens.css` | Storybook (Foundations) · Figma variables | [tokens.md](tokens.md) |
+| Components | `src/components/` | Storybook · Figma (Components) | this file |
+| Layouts | `src/components/Layout*` | Storybook · Figma (Layouts) | [layouts.md](layouts.md) |
+| Pages | `src/containers/` | the running app · Figma (Pages) | [../5-pages/](../5-pages/) |
+| Journeys and wireframes | none in code | Figma (Journeys, Wireframes) | [../3-journeys/](../3-journeys/) |
+| Product rules | [../1-product/](../1-product/) | | |
 
-**Order of change:** design file and this document first, then token or style files, then components. Never the other way round.
+- **Code leads.** A design can be explored in Figma, but it ships only through code. A change to a token or a component updates its Storybook story and its Figma mirror in the same change.
+- **Figma for journeys and wireframes** is a light working space; it shows the flow, not every pixel.
+- **`.md` holds what a picture cannot:** behaviour, states, conditions and decisions.
+
+**Order of change:** this document first, then token or style files, then components (with their story), then pages. Never the other way round.
+
+**Two surfaces.** The **app** is every page except `/`. The **landing page** (`/`) is the marketing surface: it may use expressive elements (larger type, the speaker-grille dots, motion) in its own sections in `src/containers/LandingPage/sections/`, on the same tokens. Header and footer are app components shared by both.
+
+**Motion.** Decorative motion is for the landing page only. It stops when the system asks for reduced motion (`prefers-reduced-motion`), never covers text or controls, and never carries meaning on its own.
 
 ## 3. Foundations
 
-- **Font:** the system font (`--lb-font`: San Francisco, Segoe UI, Roboto). Two weights only: 400 for text, 600 for titles, labels and buttons. The logo is the wordmark in SF Pro Semibold, −0.01em, cap height 16px, used as an outlined SVG ([brand.html](brand.html)).
+- **Font:** the system font (`--lb-font`: San Francisco, Segoe UI, Roboto). Two weights only: 400 for text, 600 for titles, labels and buttons. The logo is the wordmark in SF Pro Semibold, −0.01em, cap height 16px, used as an outlined SVG (`src/assets/lineupbridge-logo.svg`; spec in [tokens.md](tokens.md)).
 - **Proposed changes (offer flow):** red (`--colorFail`) is approved for counteroffer and final offer changes, Oct 15: the "proposed changes" note as a small red caption (`.small` 600) with an 8px red dot; each changed field sits in a pale red row (`--colorFailSubtle`, 4px radius, 8px 12px padding, offset so the text stays aligned); proposed values red 600, the previous value muted and struck through. It is a feature, not an error.
 - **Colors:** existing template tokens only. Page `--colorPageBackground` (beige `#eeede9`), cards `--colorWhite`, ink and primary buttons `--colorBlack`, secondary text `--colorGrey700`, muted text `--colorGrey600`, borders `--colorGrey200` (inputs) and `--colorGrey100` (cards, rules), error `--colorFail` with `--colorFailSubtle` fill, success `--colorSuccess`. One dark surface exists: the landing page band in black.
 - **Type roles:** `.display`, `.h2`, `.h3`, `.leadLarge`, `.lead`, `.body`, `.small`, `.eyebrow`, `.label`, `.fieldLabel`, `.button`. Sizes and line heights are in the typography spec.
@@ -44,7 +51,7 @@ The baseline for the LineupBridge redesign. Every page that gets redesigned foll
 
 ## 4. Component library
 
-Each component below is drawn, with all its states, in the UI library page. The "Code" column says what it is built on.
+Each component below is shown, with its states, in Storybook (components that have a story) and in Figma. The "Code" column says what it is built on.
 
 ### Page structure
 
@@ -75,7 +82,7 @@ All fields share one anatomy: **label → 8px → control → 8px → helper or 
 | **Date** | Same box as the text input with the lucide `Calendar` icon (16px, black) where the select chevron sits; the whole box opens the calendar. Calendar popup under the field: white, 1px border, 8px radius, as wide as the field (max 360px); header with `ChevronLeft` / `ChevronRight` (44px, existing "Previous month" / "Next month" labels) and the month; weekdays 12px muted, Monday first; days 40px. Selected day: 1px black outline, 600. Today: 600 + underline. Value format, placeholder and behaviour unchanged. Error: red box and red icon. | `SingleDatePicker` restyled through `inputClassName` / `popupClassName` (replace its data-URI calendar icon) |
 | **Checkbox tiles** | Each option is a 44px tile with a 1px border and the checkbox inside; the whole tile is clickable; checked tile gets a black border. The checkbox itself is outlined, not filled: 18px, 1px `--colorGrey600` border, 3px radius, white; checked = black border + lucide `Check` (14px, black, 2px stroke). 1 column (stacked) on phones, 3 columns from 768px. | New shared `CheckboxTileGroup` (FieldCheckboxGroup does not pass classes to each option) |
 | **Time select** | One label (a `<legend>`) over two selects side by side: hour `00`–`23` and minutes `00` / `30` (half hours only), with a muted ":" between them. 24-hour format. Saved value stays `HH:MM`. The hour box opens on the default from the code (23 for start times, 09 for end time). Error: both boxes red, one message under the pair. Used for every time field in the app (offer form, profile booking box, propose-changes window). | New shared `TimeSelect` (replaces `TimeSelectField` in `RequestQuoteForm`, the native time input on `ProfilePage`, and the time row in `ProposeChangesModal`) |
-| **Duration select** | Same pair layout without the ":": hours `1`–`12` with the unit "hours" inside the box, and minutes `00` / `30` with the unit "min" inside the box. **"min" is a new word and needs approval. Half-hour durations also change data (see open items).** | `TimeSelect` duration variant |
+| **Duration select** | Hours select `1`–`12` with the unit "hours" inside the box; whole hours. | `TimeSelect` duration variant |
 | **Phone number** | One `<fieldset>` with the label "Phone number" as its `<legend>`, then one row: country select (104px) + 8px + number input (rest of the row), the same row pattern as the time select. **No placeholder.** The country select is the native `<select>` laid invisibly over a box that shows only the dial code ("+31") and the select chevron; the open list shows "Netherlands +31" for every country, names in the current language. Default Netherlands. Saved value: `+` dial code and digits in one string (`+31612345678`). Error: both boxes red, one message under the row. | New shared `PhoneNumberField` (replaces `FieldPhoneNumberInput` in `UserFieldPhoneNumber`, sign up only) with `src/translations/countryDialCodes.js` |
 | **Choice tiles** | One choice from a few: buttons with `aria-pressed`, 2 columns at every width, 48px, centred text in the button style (600). Selected = black border + 1px black inset (no fill). No error state (the form button stays disabled until a choice is made). Sign up user type, payout account type. | `.choiceTiles` classes in `lineupForm.module.css` (exist) |
 | **Password** | Text input with a **Show** text button at the right end inside the box (14px 600 underlined, 44px tap area) that switches to "Hide" (`aria-pressed`). Change-password order: current, then new. | New shared `FieldPasswordInput` (Final Form field; keys `FieldPasswordInput.show` / `.hide`) |
@@ -153,19 +160,12 @@ How it is wired:
 
 ## 7. Review checklist (every page)
 
-- [ ] Every visible word exists in the app, or Zoha approved it.
-- [ ] Only components from this library; any new one was added to the library first.
-- [ ] No raw font, color or spacing values in the page's CSS.
-- [ ] Error states use the existing validation messages.
-- [ ] Design has Mobile, iPad 768 and Desktop views (no separate 1024 design).
-- [ ] Works at 375px, 768px, 1024px and 1280px with no horizontal scroll; touch targets at least 44px.
-- [ ] Shared template components were not edited.
-- [ ] Accessible: labels, keyboard, visible focus, colour never the only signal (WCAG 2.2 AA).
-- [ ] `design-system-reviewer`, `spec-reviewer` and `a11y-reviewer` ran; findings fixed or listed.
-
-## 8. Open
-
-- [ ] Decide whether to fix the broken global font-weight tokens.
-- [ ] Approve the unit word "min" for the duration minutes box (no word for minutes exists in the app yet; "hour" and "hours" do).
-- [ ] Approve half-hour durations as a data change: `durationHours` is a whole number today (validation: integer of at least 1) and is used in `RequestQuoteForm`, `RequestQuotePage`, `ProfilePage`, `TransactionPage`, `OfferDetailsCard`, `ListingPage.shared` and `BookingDatesForm`. Allowing 30 minutes is not UI-only.
-- [ ] Confirm the duration range 1–12 hours (today there is no maximum).
+- Every visible word exists in the app, or the product owner approved it.
+- Only components from this library; any new or changed one has a Storybook story and is mirrored in Figma.
+- No raw font, color or spacing values in the page's CSS.
+- Error states use the existing validation messages.
+- Design has Mobile, iPad 768 and Desktop views (no separate 1024 design).
+- Works at 375px, 768px, 1024px and 1280px with no horizontal scroll; touch targets at least 44px.
+- Shared template components were not edited.
+- Accessible: labels, keyboard, visible focus, colour never the only signal (WCAG 2.2 AA).
+- `design-system-reviewer`, `spec-reviewer` and `a11y-reviewer` ran; findings fixed or listed.

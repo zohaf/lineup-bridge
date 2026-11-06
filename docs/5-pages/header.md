@@ -1,6 +1,6 @@
 # Header
 
-2026-10-15 · built in stages (migration plan below) · design: [header.html](header.html), [header-plan.html](header-plan.html) · code: `SiteHeader`, `HeaderMenu`, `Topbar`
+2026-10-15 · built in stages (migration plan below) · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=25-1182) · code: `SiteHeader`, `HeaderMenu`, `Topbar`
 
 ## Today
 
@@ -26,10 +26,10 @@ What each user sees (code + Console, unchanged by this redesign):
 | --- | --- |
 | Logo position | Always on the left. Everything else on the right. |
 | Bar height | 60px at every width (reference: peec.ai). |
-| Logo | The wordmark SVG (`src/assets/lineupbridge-logo.svg`, white version on black): SF Pro Semibold, letter spacing −0.01em, cap height 16px, 21px tall × 133px wide. Decided Oct 17, 2026; spec in [brand.html](../4-design-system/brand.html). |
+| Logo | The wordmark SVG (`src/assets/lineupbridge-logo.svg`, white version on black): SF Pro Semibold, letter spacing −0.01em, cap height 16px, 21px tall × 133px wide. Decided Oct 17, 2026; spec in [tokens.md](../4-design-system/tokens.md#logo). |
 | Logo position in the bar | Centred vertically from the top of the L to the bottom of the p and g: about 20px above and 20px below in the 60px bar. |
 | Side padding | 16px on phones, 32px from 768px (`--lb-header-side`, new; the page gutter stays 24px on phones). The links on the right use the same distance. |
-| Landing page (Oct 17) | The bar is always shown. Over the black hero and Why LineupBridge it is black with a white logo and links; over the beige sections it is beige. The window behind the page is black at the top and beige at the bottom, so no beige shows above the hero when the page bounces. |
+| Landing page | The bar is always shown. At the top of the page (scrolled 24px or less) it is transparent, with a white logo and links over the black area and its dots. Further down, over the black hero and Why LineupBridge, it is black with a white logo and links; over the beige sections it is beige. The window behind the page is black at the top and beige at the bottom, so no beige shows above the hero when the page bounces. Details: [landing.md](landing.md#header-on-the-landing-page). |
 | Sign up / Log in | In the bar at every width, phones included. Styled like peec.ai's menu links but black: 14px (`--lb-size-small`), regular 400, letter spacing -0.01em, no underline; underlined on hover (offset 3px). 44px tap height. |
 | Rule under the bar | 1px `--colorGrey100`. |
 | Items per role | Exactly as in code today. Nothing added, removed or reordered. |
@@ -60,8 +60,7 @@ What each user sees (code + Console, unchanged by this redesign):
 
 ## Migration plan: every page on the new header (approved Oct 15, 2026)
 
-Picture of every page × user × width, today and proposed, with bugs and dead code:
-[header-plan.html](header-plan.html).
+Every page uses the same header for each user type and width; the stages below list what changed.
 
 ### What we are building
 
@@ -100,20 +99,4 @@ Picture of every page × user × width, today and proposed, with bugs and dead c
 6. **Unread offers.** Red dot from the existing notification count. *Fixes: dot leading nowhere.*
 7. **Clean-up.** Delete `TopbarSimplified`, `TopbarDesktop`, `TopbarMobileMenu`, `CustomLinksMenu`,
    header search, "Post a new listing", the guest "Hello there" menu; update `header.md`,
-   the bug list, `components.html`.
-
-### Still open
-
-- [ ] Accounts with both roles: show both Find a DJ and My public profile? (Recommended; stage 3.)
-- [ ] Offer builder form is not saved: warn before leaving with changes? Needs existing wording
-      (stage 5).
-
-## Open items (not part of stage 1)
-
-- [ ] **Activity link.** "Activity" is the existing label for the inbox, the page listing all
-      bookings, offers and messages (`/inbox/orders` for organizers, `/inbox/sales` for DJs). The
-      code has the label and works out the right tab but shows no link. The phone menu button
-      shows a red unread dot that leads nowhere. Showing the link is a feature decision.
-- [ ] Where the logo goes for logged-in users: `/` (marketing landing) or `/p/home`.
-- [ ] "Home" is hardcoded in English in `Topbar.js`, not translated.
-- [ ] A user without a known user type sees neither Find a DJ nor My public profile.
+   the bug list, Storybook.

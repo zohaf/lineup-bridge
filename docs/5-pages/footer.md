@@ -1,6 +1,6 @@
 # Footer
 
-2026-10-14 · built · design: [footer.html](footer.html) · code: `src/containers/FooterContainer/Footer.js`
+2026-10-14 · built · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=25-1182) · code: `src/containers/FooterContainer/Footer.js`
 
 ## Today
 

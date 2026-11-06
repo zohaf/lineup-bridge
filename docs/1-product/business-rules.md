@@ -1,6 +1,6 @@
 # Business rules
 
-2026-10-15 · approved · Zoha Fard
+2026-10-15 · approved
 
 Product decisions that UI, copy and code must respect. The negotiation, payment and performance rules
 are in [negotiation-flow.md](negotiation-flow.md).
@@ -20,7 +20,7 @@ Two separate sources of truth, joined by a mapping layer in our code:
 - **Sharetribe defines what the platform supports.** Its processes, states and transitions
   (`ext/transaction-processes/`) are not changed to match a business rule.
 - When the two disagree: describe the gap, then choose a mapping, a guard, a UI change, a process
-  change or a rule change. A process change or a rule change needs Zoha's approval.
+  change or a rule change. A process change or a rule change needs the product owner's approval.
 
 ## Account (both user types)
 

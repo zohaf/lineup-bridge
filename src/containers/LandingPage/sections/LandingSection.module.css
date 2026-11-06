@@ -9,6 +9,11 @@
   background-color: var(--colorBlack);
 }
 
+/* On the landing page's shared black area (LandingHero .darkArea), which supplies the black */
+.root.clear {
+  background-color: transparent;
+}
+
 .root .content {
   padding: var(--lb-section-pad) 0;
 }

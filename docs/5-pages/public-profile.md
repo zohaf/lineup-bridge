@@ -1,12 +1,12 @@
 # Public profile
 
-2026-10-15 · built · design: [public-profile.html](public-profile.html) (Square) · code: `src/containers/ListingPage/`
+2026-10-15 · built · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=21-113) (photo ratio Square) · code: `src/containers/ListingPage/`
 
 UI-only redesign of the DJ's public profile, the listing page `/l/:slug/:id`
 (`src/containers/ListingPage/`, cover photo variant `ListingPageCoverPhoto.js`). Follow
 [rules.md](../4-design-system/rules.md), [tokens.md](../4-design-system/tokens.md) and [layouts.md](../4-design-system/layouts.md).
 
-## Rules (decided by Zoha)
+## Rules (decided)
 
 1. **The public profile is the listing page** `/l/:slug/:id`. `/u/:id` (`ProfilePage`) is not part of
    this work. This settles the bug list 4 for the redesign.
@@ -51,7 +51,7 @@ With no button, the caption sits alone, centered.
 | Who | State | Button | Caption |
 | --- | --- | --- | --- |
 | Visitor (organizer or logged out) | Published | "Create new booking" (`NegotiationRequestQuoteForm.nextCta`) → `RequestQuotePage` | none |
-| Visitor | Closed | none | `ListingPage.closedListing`, no full stop. **Open:** Zoha may choose no caption at all |
+| Visitor | Closed | none | `ListingPage.closedListing`, no full stop |
 | DJ owner | Published | "Edit public profile" (`NegotiationRequestQuoteForm.editProfile`) → `EditListingPage` | none |
 | DJ owner | Draft | "Finish listing" (`ListingPage.finishListing`) → `EditListingPage` | `ListingPage.ownListingDraft`, no full stop |
 | DJ owner | Pending approval | "Edit public profile" | `ListingPage.ownListingPendingApproval`, no full stop. If Console enables the approval CTA (`CTAButtonMaybe`), it shows as a text link under the caption |
@@ -122,16 +122,5 @@ First in the page column, under the topbar, above the photos, at the column widt
 - Restyling `ActionBarMaybe` elsewhere: it is removed from this page only (its messages become the
   caption and the notice banner); other pages that use it are untouched.
 - `ProfilePage` `/u/:id`.
-- Adding the photo pair, link list and sticky area to [components.html](../4-design-system/components.html). (`NoticeBanner` is
-  already there.)
+- Adding the photo pair, link list and sticky area to Storybook. (`NoticeBanner` has a story.)
 - Reusing `NoticeBanner` on Home and account pages.
-
-## Still open (Zoha)
-
-1. Closed public profile for visitors: caption (`ListingPage.closedListing`) or nothing.
-2. Whether DJs can book other DJs. Today a DJ sees "Create new booking" on other DJs' profiles; kept
-   as today.
-3. "Listing" vs "public profile" in the captions (rule 2). Today's keys say "listing"; changing them is
-   an `en.json` and Console text change.
-4. The payout banner says "you won't receive booking requests", but organizers can still send offers
-   to a DJ without payout details today. Needs a copy change or a logic change.

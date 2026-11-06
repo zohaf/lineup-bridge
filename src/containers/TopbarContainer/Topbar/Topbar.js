@@ -82,6 +82,8 @@ const getResolvedCustomLinks = (customLinks, routeConfiguration) => {
  */
 // Landing page: the black area ends with this section (see LandingPage/landingSections.js)
 const LANDING_DARK_END_ID = 'landing-value';
+// Scroll distance (px) after which the landing page's transparent bar turns solid
+const LANDING_TOP_SCROLL = 24;
 
 const isHomeTopbarLink = link => {
   if (link.route?.name === 'LandingPage') {
@@ -207,6 +209,8 @@ const TopbarComponent = props => {
   // over the rest of the page. It is always shown.
   const isLandingPage = resolvedCurrentPage === 'LandingPage';
   const [isOverDark, setIsOverDark] = useState(true);
+  // At the very top of the landing page the bar is transparent, so the hero's dots run behind it.
+  const [isAtTop, setIsAtTop] = useState(true);
   useEffect(() => {
     if (!isLandingPage) return undefined;
     let frame = null;
@@ -219,6 +223,7 @@ const TopbarComponent = props => {
           getComputedStyle(document.documentElement).getPropertyValue('--lb-topbar-height')
         ) || 60;
       setIsOverDark(darkEnd ? darkEnd.getBoundingClientRect().bottom > barHeight : false);
+      setIsAtTop(window.scrollY <= LANDING_TOP_SCROLL);
     };
     const onScroll = () => {
       if (frame === null) {
@@ -238,6 +243,7 @@ const TopbarComponent = props => {
     };
   }, [isLandingPage]);
   const isInverse = isLandingPage && isOverDark;
+  const headerClassName = isLandingPage && isAtTop ? css.headerOverDots : null;
 
   const isFindDjCurrent = SEARCH_PAGES.includes(resolvedCurrentPage);
   const isMyProfileCurrent = resolvedCurrentPage === 'ManageListingsPage';
@@ -336,6 +342,7 @@ const TopbarComponent = props => {
       logoAlt={logoAlt}
       linkToExternalSite={config?.topbar?.logoLink}
       inverse={isInverse}
+      className={headerClassName}
     >
       <NamedLink
         id="signup-link"
@@ -374,6 +381,7 @@ const TopbarComponent = props => {
       logoAlt={logoAlt}
       logoLinkProps={{ name: homeRoute.name, params: homeRoute.params }}
       inverse={isInverse}
+      className={headerClassName}
     >
       {homeLabel ? (
         <NamedLink

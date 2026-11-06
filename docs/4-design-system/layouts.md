@@ -1,6 +1,6 @@
 # Page layouts
 
-2026-10-12 · built · design: [layouts.html](layouts.html) · code: `LayoutCentered`, `LayoutSplit`,
+2026-10-12 · built · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=1-3) · code: `LayoutCentered`, `LayoutSplit`,
 `src/styles/lineupLayout.module.css`
 
 Every redesigned page uses one of two layouts: **Centered** or **Split**. A page picks a layout and a
@@ -79,7 +79,7 @@ Same visual language as the offer builder's section titles. Shared component `St
 - **Account settings: no numbers** (decided Oct 15). These pages are not steps in order. The current
   item gets a 2px black bar (left on desktop, under the label on phones); on phones the labels sit in a
   row that scrolls sideways if they don't fit.
-- Drawn in [components.html](components.html) (Step menu), used in [../3-journeys/account-and-profile-setup.html](../3-journeys/account-and-profile-setup.html).
+- Component `StepMenu` (Storybook and Figma), used in the [account and profile setup](../3-journeys/account-and-profile-setup.md) journey.
 
 ### Shared by both
 
@@ -161,7 +161,3 @@ src/components/
 Build a layout only when a page needs it. Centered (`narrow`, `profile`, `form`, `wide`) and Split
 (`nav`, `summary`) are built. Each page gets its own spec in [../5-pages/](../5-pages/); this doc only fixes the
 frame they sit in.
-
-## 5. Open
-
-- [ ] Email verification `/verify-email`: centered narrow too? Not listed yet.

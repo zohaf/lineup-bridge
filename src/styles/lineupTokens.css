@@ -112,6 +112,14 @@
   /* Hero */
   --lb-width-search: 520px;
   --lb-shadow-search: 0 6px 24px rgba(0, 0, 0, 0.06);
+
+  /* Landing page only: speaker-grille dots around the pointer on the black area */
+  --lb-grille-dot: #6f6f6b;
+  --lb-grille-pitch: 9px;
+  --lb-grille-dot-size: 1.6px;
+  --lb-grille-dot-edge: 2.2px;
+  --lb-grille-reveal: 460px;
+  --lb-motion-fade: 0.4s;
 }
 
 @media (--viewportMedium) {

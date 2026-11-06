@@ -1,6 +1,6 @@
 # Offer builder ("Complete your offer")
 
-2026-10-12 · built · design: [offer-builder.html](offer-builder.html) · code: `src/containers/RequestQuotePage/`
+2026-10-12 · built · [Figma](https://www.figma.com/design/uUt1bfNw7imHngWi1QFXGJ?node-id=22-187) · code: `src/containers/RequestQuotePage/`
 
 UI-only redesign of the organizer's offer page, `RequestQuotePage` (`/l/:slug/:id/request-quote`, `src/containers/RequestQuotePage/`). **Approved layout: one column.** Follow [rules.md](../4-design-system/rules.md) for every component and [tokens.md](../4-design-system/tokens.md) for every value.
 
@@ -86,10 +86,7 @@ design (rules.md rule 7).
 ## Time and duration fields
 
 - Every time field is a **time select**: hour `00`–`23` + minutes `00` / `30`, half hours only (rules.md, "Time select"). Today the form offers minutes 00/15/30/45; :15 and :45 go.
-- **Set duration** becomes a **duration select**: hours `1`–`12` ("hours") + minutes `00` / `30` ("min").
-- **Needs Zoha's approval before building the duration minutes box:**
-    - the new unit word "min";
-    - half-hour durations, which change data: `durationHours` is a whole number and is used on six other pages and components (list in rules.md, open items). Until approved, build the duration hours box only and keep whole hours.
+- **Set duration** is a **duration select**, hours box only: hours `1`–`12` ("hours"), whole hours. `durationHours` is a whole number used on six other pages and components.
 - Decisions (Oct 12): keep the "(optional)" on Previous DJ and Headliner as in the code; add the translation key `RequestQuotePage.listingTitle` = `{listingTitle}` (en, de, es, fr) for the eyebrow, the only new key; `HeadingDetails` supplies the eyebrow link and its price line is not styled.
 - Error look: computed in the form per field and passed through `inputRootClass` / `selectClassName` (see rules.md); `PrimaryButton` gets `--colorPrimaryButton: var(--colorBlack)` in the shared primary class so the loading state is not green.
 - The saved time value format (`HH:MM`) does not change, so time selects are UI-only.
