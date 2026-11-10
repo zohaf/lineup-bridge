@@ -48,6 +48,13 @@ stays; the stock form (background image, envelope icon, "Verify my email address
   (`EmailVerificationForm.successButtonText`). Home then shows the verify-email reminder with "Resend it".
 - Signed out: the route sends the user to log in first (`auth: true` in `routeConfiguration.js`).
 
+**Waiting for approval** (`/no-user-approval`, `src/containers/NoAccessPage/`): where the app sends a
+user whose account is not approved yet when they open a page they can't use. Same layout as "After
+sign up": title (`NoAccessPage.*.heading`), card with the text (`NoAccessPage.*.content`) and the
+Console call-to-action, if one is set, as a full-width secondary button. The stock background image,
+door icon and modal card are removed. The other no-access pages (posting, transactions, viewing) use
+the same layout.
+
 ## States
 
 Field errors: `.inputError` + existing `ValidationError`. Form error above the card (page scrolls to it).
