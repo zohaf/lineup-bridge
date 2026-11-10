@@ -8,6 +8,18 @@ import { LandingPageComponent } from './LandingPage';
 const { waitFor } = testingLibrary;
 
 describe('LandingPage', () => {
+  it('sends a signed-in user to home instead of showing the landing page', () => {
+    const { container } = render(
+      <LandingPageComponent
+        pageAssetsData={{ landingPage: { data: { sections: [] } } }}
+        inProgress={false}
+        error={null}
+        isAuthenticated
+      />
+    );
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it('renders the Fallback page on error', async () => {
     const errorMessage = 'LandingPage failed';
     let e = new Error(errorMessage);

@@ -1,25 +1,21 @@
-@import '../../styles/customMediaQueries.css';
-
-.layoutWrapperMain {
-  min-height: calc(100vh - var(--topbarHeight));
-
-  @media (--viewportMedium) {
-    min-height: calc(100vh - var(--topbarHeightDesktop));
-  }
-}
-
-.root {
-  flex-grow: 1;
-}
-
-.contentContainer {
-  composes: marketplaceModalRootStyles from global;
-}
-
+/* Same layout as the "check your email" screen after sign up (AuthenticationPage). */
 .content {
-  composes: marketplaceModalBaseStyles from global;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-6);
 }
 
-.error {
-  composes: marketplaceModalPasswordMargins from global;
+.title {
+  composes: h2 from '../../styles/lineupType.module.css';
+  margin: 0;
+}
+
+.message {
+  composes: body from '../../styles/lineupType.module.css';
+  margin: 0;
+}
+
+.homeLink {
+  composes: secondary from '../../styles/lineupButtons.module.css';
+  width: 100%;
 }

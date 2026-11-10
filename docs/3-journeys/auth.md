@@ -36,6 +36,25 @@ input, no placeholder. Saved as one string, `+31612345678`. Dial codes in
 **After sign up** (`EmailVerificationInfo`): title on the page, message and help lines in one card,
 "Later" as a full-width secondary button. No icon.
 
+**Verify email** (`/verify-email?t=…`, `src/containers/EmailVerificationPage/`): the page the
+"Verify email" link in the email opens. Its `loadData` sends the token to Sharetribe, so the page
+stays; the stock form (background image, envelope icon, "Verify my email address" button) is removed.
+- Link being checked: empty page (header and footer only).
+- Verified, or already verified and the link opened again: redirect to home. On the server this is an
+  HTTP redirect, so the email link opens home with no page in between.
+- Link failed and the email is not verified: same layout as "After sign up": title "Verify your email
+  address" (`EmailVerificationPage.title`), card with "Could not verify the email address."
+  (`EmailVerificationForm.verificationFailed`) and a full-width secondary link to home
+  (`EmailVerificationForm.successButtonText`). Home then shows the verify-email reminder with "Resend it".
+- Signed out: the route sends the user to log in first (`auth: true` in `routeConfiguration.js`).
+
+**Waiting for approval** (`/no-user-approval`, `src/containers/NoAccessPage/`): where the app sends a
+user whose account is not approved yet when they open a page they can't use. Same layout as "After
+sign up": title (`NoAccessPage.*.heading`), card with the text (`NoAccessPage.*.content`) and the
+Console call-to-action, if one is set, as a full-width secondary button. The stock background image,
+door icon and modal card are removed. The other no-access pages (posting, transactions, viewing) use
+the same layout.
+
 ## States
 
 Field errors: `.inputError` + existing `ValidationError`. Form error above the card (page scrolls to it).

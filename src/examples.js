@@ -116,7 +116,6 @@ import * as SeatsFilter from './containers/SearchPage/SeatsFilter/SeatsFilter.ex
 import * as FilterForm from './containers/SearchPage/FilterForm/FilterForm.example';
 import * as FilterPlain from './containers/SearchPage/FilterPlain/FilterPlain.example';
 import * as FilterPopup from './containers/SearchPage/FilterPopup/FilterPopup.example';
-import * as EmailVerificationForm from './containers/EmailVerificationPage/EmailVerificationForm/EmailVerificationForm.example';
 import * as InquiryForm from './containers/ListingPage/InquiryForm/InquiryForm.example';
 import * as ImageCarousel from './containers/ListingPage/ImageCarousel/ImageCarousel.example';
 import * as ListingImageGallery from './containers/ListingPage/ListingImageGallery/ListingImageGallery.example';
@@ -155,7 +154,6 @@ export {
   EditListingPhotosForm,
   EditListingPricingForm,
   EditListingPricingAndStockForm,
-  EmailVerificationForm,
   InquiryForm,
   EstimatedCustomerBreakdownMaybe,
   ExpandingTextarea,

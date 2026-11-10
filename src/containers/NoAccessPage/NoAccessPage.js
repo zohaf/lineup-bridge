@@ -15,20 +15,11 @@ import {
 import { generateLinkProps } from '../../util/routes';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
-import {
-  Heading,
-  Page,
-  ResponsiveBackgroundImageContainer,
-  LayoutSingleColumn,
-  NamedLink,
-  ExternalLink,
-} from '../../components';
+import { Page, LayoutCentered, SectionCard, NamedLink, ExternalLink } from '../../components';
 
 import NotFoundPage from '../NotFoundPage/NotFoundPage';
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer';
-
-import IconDoor from './IconDoor';
 
 import css from './NoAccessPage.module.css';
 
@@ -157,25 +148,13 @@ export const NoAccessPageComponent = props => {
       title={intl.formatMessage({ id: pageData.schemaTitle })}
       scrollingDisabled={scrollingDisabled}
     >
-      <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
-        <ResponsiveBackgroundImageContainer
-          className={css.root}
-          childrenWrapperClassName={css.contentContainer}
-          as="section"
-          image={config.branding.brandImage}
-          sizes="100%"
-          useOverlay
-        >
-          <div className={css.emailSubmittedContent}>
-            <IconDoor className={css.modalIcon} />
-            <Heading as="h1" rootClassName={css.modalTitle}>
-              {intl.formatMessage({ id: pageData.heading })}
-            </Heading>
-            <p className={css.modalMessage}>
+      {/* LineupBridge: the stock background image, door icon and modal card are removed; same layout
+          as the "check your email" screen after sign up (AuthenticationPage). */}
+      <LayoutCentered variant="narrow" topbar={<TopbarContainer />} footer={<FooterContainer />}>
+        <div className={css.content}>
+          <h1 className={css.title}>{intl.formatMessage({ id: pageData.heading })}</h1>
+          <SectionCard>
+            <p className={css.message}>
               {intl.formatMessage({ id: pageData.content }, { marketplaceName })}
             </p>
             <CTAButtonMaybe
@@ -184,9 +163,9 @@ export const NoAccessPageComponent = props => {
               userId={currentUser?.id?.uuid}
               userEmail={currentUser?.attributes?.email}
             />
-          </div>
-        </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn>
+          </SectionCard>
+        </div>
+      </LayoutCentered>
     </Page>
   );
 };
