@@ -26,6 +26,9 @@ Two separate sources of truth, joined by a mapping layer in our code:
 
 - Account settings is one page: profile picture, contact details, password, delete account.
 - Phone number is required for DJs, not for event organizers (user type `phoneNumberSettings`).
+- DJ sign up requires Instagram and SoundCloud (saved on the user, `publicData.instagram`,
+  `publicData.soundcloud`).
+- The word is "DJ", never "artist" (until the terminology is revisited).
 - Changing the email or password, or deleting the account, asks for the current password.
 - DJs have Payout details; event organizers have Payment methods.
 
@@ -44,7 +47,7 @@ Two separate sources of truth, joined by a mapping layer in our code:
   several DJs later). Only the product and its wording assume one profile.
 - The page at `/l/:slug/:id` is the "public profile". The word "listing" is never shown to users.
 - Three steps: Profile, Links, Photos.
-- Required: Artist name (max 60 characters), Bio, City (from the list), Resident Advisor link.
+- Required: DJ name (max 60 characters), Bio, City (from the list), Resident Advisor link.
   Optional: Genre, Website, SoundCloud, Spotify, Instagram.
 - Photos: the first two are required (both are shown on the public profile). Max 20 MB each, .JPG or .PNG.
 

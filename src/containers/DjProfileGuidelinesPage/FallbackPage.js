@@ -12,9 +12,9 @@ A clear and complete profile increases your chances of getting booked and helps 
 
 ## Profile Basics
 
-### Artist Name
+### DJ name
 
-Use your official DJ or artist name.
+Use your official DJ name.
 
 Keep it simple and consistent with your other platforms. Avoid adding extra text, symbols, or emojis.
 
@@ -48,7 +48,7 @@ At least one active and up-to-date link is strongly recommended.
 
 ### Profile Image
 
-Choose a clear, high-quality image that represents you as an artist.
+Choose a clear, high-quality image that represents you as a DJ.
 
 Avoid screenshots, flyers, or low-resolution images.
 
@@ -74,7 +74,7 @@ Start with a default weekly schedule, and adjust specific dates when needed.
 
 Before finishing your profile, make sure you have:
 
-- A clear artist name
+- A clear DJ name
 - A short, structured bio
 - At least one external link
 - A high-quality profile image
