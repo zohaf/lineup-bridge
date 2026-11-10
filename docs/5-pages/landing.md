@@ -8,6 +8,9 @@ It uses the app's tokens, header and footer, and may add expressive elements in 
 sections are defined in code (`landingSections.js`); the hosted Console sections are ignored. Text
 comes from the `LandingPage.*` translation keys.
 
+The landing page is for visitors who are not signed in. A signed-in user who opens `/` goes to home
+(`/p/home`), for example from the "Go to LineupBridge" button in emails.
+
 ## Sections, top to bottom
 
 | # | Section | Id | Surface |

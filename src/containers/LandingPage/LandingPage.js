@@ -15,6 +15,7 @@ import { ASSET_NAME } from './LandingPage.duck';
 import { fetchFeaturedListings } from '../../ducks/featuredListings.duck';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { getFeaturedListingsProps } from '../../util/data';
+import { NamedRedirect } from '../../components';
 
 import css from './LandingPage.module.css';
 
@@ -23,7 +24,14 @@ const PageBuilder = loadable(() =>
 );
 
 export const LandingPageComponent = props => {
-  const { pageAssetsData, inProgress, error } = props;
+  const { pageAssetsData, inProgress, error, isAuthenticated } = props;
+
+  // LineupBridge: the landing page is for visitors. Signed-in users go to home, so links to the site
+  // root (for example the "Go to LineupBridge" button in emails) open their home page.
+  if (isAuthenticated) {
+    return <NamedRedirect name="CMSPage" params={{ pageId: 'home' }} />;
+  }
+
   const landingPageData = pageAssetsData?.[camelize(ASSET_NAME)]?.data;
   // The hosted sections are ignored, the page sections are defined in landingSections.js
   const pageAssetsDataForLanding = landingPageData
@@ -48,6 +56,7 @@ LandingPageComponent.propTypes = {
   pageAssetsData: object,
   inProgress: bool,
   error: propTypes.error,
+  isAuthenticated: bool,
 };
 
 const mapStateToProps = state => {
@@ -56,7 +65,15 @@ const mapStateToProps = state => {
 
   const getListingEntitiesById = listingIds => getListingsById(state, listingIds);
 
-  return { pageAssetsData, featuredListingData, getListingEntitiesById, inProgress, error };
+  const { isAuthenticated } = state.auth;
+  return {
+    pageAssetsData,
+    featuredListingData,
+    getListingEntitiesById,
+    inProgress,
+    error,
+    isAuthenticated,
+  };
 };
 
 const mapDispatchToProps = dispatch => ({

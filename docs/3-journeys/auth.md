@@ -36,6 +36,17 @@ input, no placeholder. Saved as one string, `+31612345678`. Dial codes in
 **After sign up** (`EmailVerificationInfo`): title on the page, message and help lines in one card,
 "Later" as a full-width secondary button. No icon.
 
+**Verify email** (`/verify-email?t=…`, `src/containers/EmailVerificationPage/`): the page the
+"Verify email" link in the email opens. Its `loadData` sends the token to Sharetribe, so the page
+stays; the stock form (background image, envelope icon, "Verify my email address" button) is removed.
+- Link being checked: empty page (header and footer only).
+- Verified, or already verified and the link opened again: redirect to home.
+- Link failed and the email is not verified: same layout as "After sign up": title "Verify your email
+  address" (`EmailVerificationPage.title`), card with "Could not verify the email address."
+  (`EmailVerificationForm.verificationFailed`) and a full-width secondary link to home
+  (`EmailVerificationForm.successButtonText`). Home then shows the verify-email reminder with "Resend it".
+- Signed out: the route sends the user to log in first (`auth: true` in `routeConfiguration.js`).
+
 ## States
 
 Field errors: `.inputError` + existing `ValidationError`. Form error above the card (page scrolls to it).
