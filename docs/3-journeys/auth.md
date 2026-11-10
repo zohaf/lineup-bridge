@@ -24,11 +24,11 @@ UI-only redesign of `/login`, `/signup`, `/signup/:userType` on `LayoutCentered 
 - No role chosen: only "I am a ..." and two tiles (Event organizer, DJ). No fields, no button.
 - Role chosen: tiles stay at the top; the role's fields open below. `/signup/:userType` skips the choice.
 - Tiles: 48px, `<fieldset>` + `<legend>`, `<button aria-pressed>`; selected = black fill, white text.
-- DJ: Artist Name, Full Name, Email, Phone number, Password, Confirm Password. Organizer: Business Name,
+- DJ: DJ name, Instagram, SoundCloud, Full name, Email, Phone number, Password, Confirm password. Organizer: Business Name,
   Contact Person, Business Email, Phone number, Password, Confirm Password.
 - Authorization and terms checkboxes in bordered tiles; checked = black border.
 
-**Phone number** (`PhoneNumberField`): required for both user types, default Netherlands. One
+**Phone number** (`PhoneNumberField`): required for DJs, optional for event organizers, default Netherlands. One
 `<fieldset>`: country select (104px; list shows "Netherlands +31", closed box shows "+31") + number
 input, no placeholder. Saved as one string, `+31612345678`. Dial codes in
 `src/translations/countryDialCodes.js`.
