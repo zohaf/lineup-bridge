@@ -43,8 +43,10 @@ export const EmailVerificationPageComponent = props => {
   const { emailVerified, pendingEmail } = user.attributes;
   const hasVerifiedEmail = !!user.id && emailVerified && pendingEmail == null;
 
-  // Verified now, or verified earlier and the link was opened again: nothing to do here.
-  if (hasVerifiedEmail && (isVerified || verificationError)) {
+  // Verified now, or verified earlier and the link was opened again: go to home. `isVerified` alone
+  // is enough: the user refetch after verifying is not awaited, so waiting for it would render this
+  // page first. On the server this becomes an HTTP redirect, so the email link opens home directly.
+  if (isVerified || (hasVerifiedEmail && verificationError)) {
     return <NamedRedirect name="CMSPage" params={{ pageId: 'home' }} />;
   }
 

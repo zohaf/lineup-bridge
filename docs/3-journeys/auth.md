@@ -40,7 +40,8 @@ input, no placeholder. Saved as one string, `+31612345678`. Dial codes in
 "Verify email" link in the email opens. Its `loadData` sends the token to Sharetribe, so the page
 stays; the stock form (background image, envelope icon, "Verify my email address" button) is removed.
 - Link being checked: empty page (header and footer only).
-- Verified, or already verified and the link opened again: redirect to home.
+- Verified, or already verified and the link opened again: redirect to home. On the server this is an
+  HTTP redirect, so the email link opens home with no page in between.
 - Link failed and the email is not verified: same layout as "After sign up": title "Verify your email
   address" (`EmailVerificationPage.title`), card with "Could not verify the email address."
   (`EmailVerificationForm.verificationFailed`) and a full-width secondary link to home

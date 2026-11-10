@@ -47,6 +47,11 @@ describe('EmailVerificationPage', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it('redirects to home as soon as the link is verified, before the user is refetched', () => {
+    const { container } = renderPage({ currentUser: unverifiedUser, isVerified: true });
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it('redirects to home when the link is opened again after verifying', () => {
     const { container } = renderPage({
       currentUser: verifiedUser,
