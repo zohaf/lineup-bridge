@@ -14,7 +14,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: sudo corepack enable && yarn install --immutable
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -37,7 +37,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: sudo corepack enable && yarn install --immutable
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -60,7 +60,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: sudo corepack enable && yarn install --immutable
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -83,7 +83,7 @@ jobs:
             - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: sudo corepack enable && yarn install --immutable
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
