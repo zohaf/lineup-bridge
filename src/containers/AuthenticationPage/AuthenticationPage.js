@@ -36,6 +36,7 @@ import {
   SocialLoginButton,
   Modal,
   LayoutCentered,
+  LayoutSingleColumn,
   SectionCard,
 } from '../../components';
 
